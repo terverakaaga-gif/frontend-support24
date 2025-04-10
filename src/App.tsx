@@ -65,6 +65,16 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
+      {/* New Invite Management route for admins */}
+      <Route path="/admin/invites" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <>
+            <Navbar />
+            <InviteManagementPage />
+          </>
+        </ProtectedRoute>
+      } />
+
       <Route path="/guardian" element={
         <ProtectedRoute allowedRoles={['guardian', 'admin']}>
           <>
