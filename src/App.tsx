@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import ParticipantProfile from "./pages/ParticipantProfile";
 import SupportWorkerProfile from "./pages/SupportWorkerProfile";
 import InviteManagementPage from "./pages/InviteManagementPage";
+import AdminChat from "./pages/AdminChat";
 
 const queryClient = new QueryClient();
 
@@ -65,12 +66,20 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
-      {/* New Invite Management route for admins */}
       <Route path="/admin/invites" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <>
             <Navbar />
             <InviteManagementPage />
+          </>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/chat/:workerId" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <>
+            <Navbar />
+            <AdminChat />
           </>
         </ProtectedRoute>
       } />
