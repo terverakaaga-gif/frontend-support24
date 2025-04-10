@@ -8,6 +8,7 @@ import { ChartSection } from "@/components/ChartSection";
 import { NotificationsList } from "@/components/NotificationsList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ShiftManagement from "@/components/ShiftManagement";
+import { ConnectionsList } from "@/components/participant/ConnectionsList";
 
 // Mock data for charts
 const activityData = [
@@ -196,6 +197,7 @@ export default function ParticipantDashboard() {
         </Card>
 
         <NotificationsList notifications={notifications} />
+        <ConnectionsList />
       </div>
     </div>
   );

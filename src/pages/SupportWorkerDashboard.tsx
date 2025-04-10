@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { NotificationsList } from "@/components/NotificationsList";
+import { ParticipantInvitations } from "@/components/supportworker/ParticipantInvitations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
@@ -245,6 +246,9 @@ export default function SupportWorkerDashboard() {
         </div>
         
         <NotificationsList notifications={notifications} />
+
+        {/* Participant invitations section */}
+        <ParticipantInvitations />
       </div>
 
       {/* Trainings & Calendar */}
