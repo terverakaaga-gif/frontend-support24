@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   Users, Clock, DollarSign, Calendar, Search, Filter, Download,
-  ArrowRight, ArrowLeft
+  ArrowRight, ArrowLeft, BellRing
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { ChartSection } from "@/components/ChartSection";
 import { NotificationsList } from "@/components/NotificationsList";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { Link } from "react-router-dom";
 
 // Mock data for charts
 const bookingTrendsData = [
@@ -138,7 +139,17 @@ export default function AdminDashboard() {
           <Button variant="outline" size="sm">
             {currentMonth}
           </Button>
-          <Button variant="default" className="bg-guardian hover:bg-guardian-dark">
+          <Link to="/admin/invites">
+            <Button variant="default" className="bg-guardian hover:bg-guardian-dark">
+              <BellRing className="h-4 w-4 mr-2" />
+              Manage Invitations
+            </Button>
+          </Link>
+          {/* <Button variant="default" className="bg-guardian hover:bg-guardian-dark">
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
+          </Button> */}
+          <Button variant="outline" className="ml-2">
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
@@ -165,11 +176,17 @@ export default function AdminDashboard() {
           icon={<DollarSign size={24} />}
           change={{ value: "+15% from last month", positive: true }}
         />
-        <StatCard
+        {/* <StatCard
           title="Active Bookings"
           value="342"
           icon={<Calendar size={24} />}
           additionalText="28 pending approval"
+        /> */}
+        <StatCard
+          title="Pending Invitations"
+          value="5"
+          icon={<Users size={24} />}
+          additionalText="3 new today"
         />
       </div>
 
