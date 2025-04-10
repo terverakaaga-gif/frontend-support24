@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Home, UserRound, Users, Calendar, Settings, Bell, Search } from "lucide-react";
+import { Heart, Home, UserRound, Users, Calendar, Settings, Bell, Search, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -48,19 +48,28 @@ export function Navbar() {
       case 'admin':
         return (
           <>
-            <NavLink to="/admin" icon={<Home size={20} />} text="Coordinator" active={true} />
+            {/* <NavLink to="/admin" icon={<Home size={20} />} text="Coordinator" active={true} />
             <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" />
             <NavLink to="/worker" icon={<Calendar size={20} />} text="Worker" />
             <NavLink to="/support-workers" icon={<Users size={20} />} text="Support Workers" />
             <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" />
-            <NavLink to="/admin-settings" icon={<Settings size={20} />} text="Admin" />
+            <NavLink to="/admin-settings" icon={<Settings size={20} />} text="Admin" /> */}
+            <NavLink to="/admin" icon={<Home size={20} />} text="Coordinator" active={isActive('/admin')} />
+            <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} />
+            <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={isActive('/guardian')} />
+            <NavLink to="/worker" icon={<Calendar size={20} />} text="Worker" active={isActive('/worker')} />
+            <NavLink to="/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/support-workers')} />
+            <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />
+            <NavLink to="/admin-settings" icon={<Settings size={20} />} text="Admin" active={isActive('/admin-settings')} />
           </>
         );
       case 'guardian':
         return (
           <>
-            <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={true} />
-            <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" />
+            {/* <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={true} />
+            <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" /> */}
+            <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={isActive('/guardian')} />
+            <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />
           </>
         );
       case 'participant':
