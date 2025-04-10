@@ -1,0 +1,245 @@
+
+import { 
+  Target, Clock, Heart, MessageSquare, Calendar, Plus, User
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/StatCard";
+import { ChartSection } from "@/components/ChartSection";
+import { NotificationsList } from "@/components/NotificationsList";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ShiftManagement from "@/components/ShiftManagement";
+
+// Mock data for charts
+const activityData = [
+  { day: "Mon", hours: 4, minutes: 3 },
+  { day: "Tue", hours: 6, minutes: 4 },
+  { day: "Wed", hours: 4, minutes: 3 },
+  { day: "Thu", hours: 5, minutes: 4 },
+  { day: "Fri", hours: 3, minutes: 2 },
+  { day: "Sat", hours: 2, minutes: 2 },
+  { day: "Sun", hours: 4, minutes: 3 },
+];
+
+const satisfactionData = [
+  { week: "Week 1", score: 4.6 },
+  { week: "Week 2", score: 4.8 },
+  { week: "Week 3", score: 4.7 },
+  { week: "Week 4", score: 4.9 },
+];
+
+// Mock recent updates
+const recentUpdates = [
+  {
+    id: "1",
+    worker: "Sarah Johnson",
+    type: "Progress Note",
+    time: "2 hours ago",
+    content: "Great progress with physical therapy exercises. Completed all sets with improved form.",
+    rating: 5
+  },
+  {
+    id: "2",
+    worker: "Michael Smith",
+    type: "Activity Log",
+    time: "5 hours ago",
+    content: "Enjoyed community garden visit. Participated in planting new herbs.",
+    rating: 4
+  }
+];
+
+// Mock notifications - fixed type values to match the allowed types
+const notifications = [
+  {
+    id: "1",
+    type: "booking" as const,
+    title: "Care Session Confirmed",
+    description: "Sarah Johnson has confirmed your booking for tomorrow",
+    time: "15 minutes ago"
+  },
+  {
+    id: "2",
+    type: "message" as const,
+    title: "New Message",
+    description: "Michael Smith sent you an update on your progress",
+    time: "3 hours ago"
+  },
+  {
+    id: "3",
+    type: "reminder" as const,
+    title: "Upcoming Session",
+    description: "You have a session with Sarah Johnson tomorrow at 9:00 AM",
+    time: "1 day ago"
+  }
+];
+
+// Render star rating (filled stars based on rating)
+const renderRating = (rating: number) => {
+  return (
+    <div className="flex">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="text-yellow-400">
+          {i < rating ? "★" : "☆"}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default function ParticipantDashboard() {
+  return (
+    <div className="container py-6">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">Participant Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back, Emma! Here's your care overview.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" className="flex items-center gap-2">
+            <MessageSquare className="h-4 w-4" />
+            Message Support
+          </Button>
+          <Button variant="outline" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Schedule
+          </Button>
+          <Button variant="ghost" size="icon" className="relative">
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
+              3
+            </div>
+            <Bell className="h-5 w-5" />
+          </Button>
+          <Button className="flex items-center gap-2 bg-guardian hover:bg-guardian-dark">
+            <User className="h-4 w-4" />
+            View Profile
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <StatCard
+          title="Weekly Goals Met"
+          value="21/25"
+          icon={<Target size={24} />}
+          additionalText="84% completion rate"
+        />
+        <StatCard
+          title="Support Hours"
+          value="28h"
+          icon={<Clock size={24} />}
+          additionalText="This week"
+        />
+        <StatCard
+          title="Well-being Score"
+          value="4.8/5"
+          icon={<Heart size={24} />}
+          change={{ value: "+0.3 from last week", positive: true }}
+        />
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <ChartSection 
+          title="Weekly Activity Overview" 
+          data={activityData} 
+          type="bar" 
+          dataKey="hours"
+          xAxisKey="day"
+        />
+        <ChartSection 
+          title="Satisfaction Trend" 
+          data={satisfactionData} 
+          type="line" 
+          dataKey="score"
+          xAxisKey="week"
+        />
+      </div>
+
+      {/* Shift Management */}
+      <div className="mb-8">
+        <ShiftManagement />
+      </div>
+
+      {/* Updates & Notifications */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-lg font-medium">Recent Updates</CardTitle>
+              <Button variant="link" className="text-sm p-0">View All</Button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-4">
+              {recentUpdates.map((update) => (
+                <div key={update.id} className="border-b last:border-0 pb-4 last:pb-0">
+                  <div className="flex justify-between mb-1">
+                    <div className="font-medium">{update.worker}</div>
+                    <div className="flex items-center gap-1">
+                      {renderRating(update.rating)}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+                    <FileText className="h-3 w-3" />
+                    <span>{update.type}</span>
+                    <span>•</span>
+                    <span>{update.time}</span>
+                  </div>
+                  {update.content && <p className="text-sm">{update.content}</p>}
+                  <div className="flex gap-3 mt-2">
+                    <Button variant="ghost" size="sm">Reply</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <NotificationsList notifications={notifications} />
+      </div>
+    </div>
+  );
+}
+
+function Bell(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  );
+}
+
+function FileText(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" x2="8" y1="13" y2="13" />
+      <line x1="16" x2="8" y1="17" y2="17" />
+      <line x1="10" x2="8" y1="9" y2="9" />
+    </svg>
+  );
+}
