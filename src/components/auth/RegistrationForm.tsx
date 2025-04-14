@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -179,7 +178,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
           )}
         />
 
-        <Button type="submit" className="w-full">Create Account</Button>
+        <Button type="submit" className="w-full py-6">Sign Up</Button>
       </form>
     </Form>
   );

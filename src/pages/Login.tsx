@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -7,14 +6,6 @@ import { z } from "zod";
 import { Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -25,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -76,21 +68,61 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 flex flex-col items-center text-center">
+    <div className="flex h-screen w-full overflow-hidden">
+      {/* Brand section - Left side */}
+      <motion.div 
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="hidden md:flex md:w-1/2 bg-gradient-to-br from-guardian-light to-guardian p-12 flex-col justify-between"
+      >
+        <div className="mb-auto">
           <div className="flex items-center gap-2 mb-2">
-            <Heart className="h-6 w-6 text-guardian" />
-            <span className="text-xl font-bold">Guardian Care Pro</span>
+            <Heart className="h-8 w-8 text-white" />
+            <span className="text-2xl font-bold text-white">Guardian Care Pro</span>
           </div>
-          <CardTitle className="text-2xl">Sign in</CardTitle>
-          <CardDescription>
-            Enter your email and password to access your dashboard
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        </div>
+        
+        <div className="space-y-6 max-w-md">
+          <h1 className="text-4xl font-bold text-white">Welcome back to your care platform</h1>
+          <p className="text-white/90 text-lg">
+            Connect with your care network, manage appointments, and access support services all in one place.
+          </p>
+          
+          <div className="bg-white/20 backdrop-blur-sm p-6 rounded-lg border border-white/30">
+            <p className="text-white italic">
+              "Guardian Care Pro has transformed how we manage care for our family members. The platform makes coordination seamless and gives us peace of mind."
+            </p>
+            <p className="text-white/80 mt-4 font-medium">— Jane Wilson, Guardian</p>
+          </div>
+        </div>
+        
+        <div className="mt-auto">
+          <p className="text-white/70 text-sm">
+            © 2025 Guardian Care Pro. All rights reserved.
+          </p>
+        </div>
+      </motion.div>
+      
+      {/* Form section - Right side */}
+      <motion.div 
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full md:w-1/2 flex items-center justify-center p-8 bg-muted/30"
+      >
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+              Let's get you started
+            </h2>
+            <p className="mt-2 text-gray-600">
+              Sign in to your account to continue
+            </p>
+          </div>
+          
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="email"
@@ -104,6 +136,7 @@ export default function Login() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="password"
@@ -117,55 +150,57 @@ export default function Login() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
+              
+              <Button type="submit" className="w-full py-6" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Login"}
               </Button>
             </form>
           </Form>
           
-          <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <a href="/register" className="text-guardian hover:underline">
-              Sign up
+          <div className="text-center">
+            <span className="text-gray-600">Don't have an account? </span>
+            <a href="/register" className="text-guardian font-medium hover:underline">
+              Register here...
             </a>
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <div className="text-sm text-muted-foreground text-center w-full">
-            Demo Accounts
+          
+          <div className="pt-4">
+            <p className="text-center text-sm text-gray-600 mb-4">
+              Demo Accounts
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleDemoLogin("admin@example.com")}
+              >
+                Admin
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleDemoLogin("john@example.com")}
+              >
+                Guardian
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleDemoLogin("emma@example.com")}
+              >
+                Participant
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleDemoLogin("sarah@example.com")}
+              >
+                Support Worker
+              </Button>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 w-full">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleDemoLogin("admin@example.com")}
-            >
-              Admin
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleDemoLogin("john@example.com")}
-            >
-              Guardian
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleDemoLogin("emma@example.com")}
-            >
-              Participant
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleDemoLogin("sarah@example.com")}
-            >
-              Support Worker
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </motion.div>
     </div>
   );
 }

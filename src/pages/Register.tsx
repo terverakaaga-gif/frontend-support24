@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RegistrationForm } from "@/components/auth/RegistrationForm";
@@ -7,6 +6,8 @@ import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
 import { UserRegistrationInput } from "@/entities/UserRegistration";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { Heart, Users, Calendar, MessageSquare } from "lucide-react";
+import { motion } from "framer-motion";
 
 type RegistrationStep = 'form' | 'verification' | 'setup';
 
@@ -87,40 +88,97 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-8">
-      {currentStep === 'form' && (
-        <div className="w-full max-w-md">
-          <div className="bg-white shadow-lg rounded-lg p-6">
+    <div className="flex h-screen w-full overflow-hidden">
+      {/* Registration form section - Left side */}
+      <motion.div 
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full md:w-1/2 p-8 flex items-center justify-center"
+      >
+        {currentStep === 'form' && (
+          <div className="w-full max-w-md">
             <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold">Create an Account</h1>
+              <h1 className="text-3xl font-bold">Create an Account</h1>
               <p className="text-muted-foreground">Join our community of care providers and participants</p>
             </div>
             <RegistrationForm onSubmit={handleRegistration} />
             <div className="mt-6 text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <a href="/login" className="text-guardian hover:underline">
-                Sign in
+              Have an account already?{" "}
+              <a href="/login" className="text-guardian font-medium hover:underline">
+                Login here...
               </a>
             </div>
           </div>
+        )}
+        
+        {currentStep === 'verification' && registrationData && (
+          <div className="w-full max-w-md">
+            <OTPVerification 
+              email={registrationData.email} 
+              onVerified={handleVerification}
+              onResend={handleResendOTP}
+            />
+          </div>
+        )}
+        
+        {currentStep === 'setup' && (
+          <div className="w-full">
+            <SupportWorkerSetup onComplete={handleSetupComplete} />
+          </div>
+        )}
+      </motion.div>
+
+      {/* Brand section - Right side */}
+      <motion.div 
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="hidden md:flex md:w-1/2 bg-gradient-to-br from-guardian-light to-guardian p-12 flex-col justify-between"
+      >
+        <div className="mb-auto">
+          <div className="flex items-center gap-2 mb-2">
+            <Heart className="h-8 w-8 text-white" />
+            <span className="text-2xl font-bold text-white">Guardian Care Pro</span>
+          </div>
         </div>
-      )}
-      
-      {currentStep === 'verification' && registrationData && (
-        <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
-          <OTPVerification 
-            email={registrationData.email} 
-            onVerified={handleVerification}
-            onResend={handleResendOTP}
-          />
+        
+        <div className="space-y-6 max-w-md">
+          <h1 className="text-4xl font-bold text-white">Join our caring community</h1>
+          <p className="text-white/90 text-lg">
+            Guardian Care Pro connects participants, guardians, and support workers in a seamless care ecosystem.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
+              <Users className="h-8 w-8 text-white mb-2" />
+              <h3 className="text-white font-medium">Connect</h3>
+              <p className="text-white/80 text-sm text-center">Find qualified care professionals</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
+              <Calendar className="h-8 w-8 text-white mb-2" />
+              <h3 className="text-white font-medium">Schedule</h3>
+              <p className="text-white/80 text-sm text-center">Manage appointments easily</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
+              <MessageSquare className="h-8 w-8 text-white mb-2" />
+              <h3 className="text-white font-medium">Communicate</h3>
+              <p className="text-white/80 text-sm text-center">Stay in touch with your team</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
+              <Heart className="h-8 w-8 text-white mb-2" />
+              <h3 className="text-white font-medium">Care</h3>
+              <p className="text-white/80 text-sm text-center">Provide the best support possible</p>
+            </div>
+          </div>
         </div>
-      )}
-      
-      {currentStep === 'setup' && (
-        <div className="w-full">
-          <SupportWorkerSetup onComplete={handleSetupComplete} />
+        
+        <div className="mt-auto">
+          <p className="text-white/70 text-sm">
+            © 2025 Guardian Care Pro. All rights reserved.
+          </p>
         </div>
-      )}
+      </motion.div>
     </div>
   );
 }
