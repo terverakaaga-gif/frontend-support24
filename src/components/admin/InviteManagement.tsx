@@ -45,13 +45,15 @@ import {
   RefreshCw,
   UserCheck,
   UserX,
-  Info
+  Info,
+  Send
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getUserFullName } from "@/entities/User";
 import { Invitation } from "@/entities/Invitation";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 // Mock data for invitations
 const mockInvitations: Invitation[] = [
@@ -154,25 +156,25 @@ export function InviteManagement() {
     console.log(`Admin notification: Message sent to ${getUserFullName(selectedInvitation.supportWorker)}`);
   };
 
-  const handleUpdateInvitationStatus = (invitationId: string, newStatus: "accepted" | "declined") => {
+  const handleMakeInvitationAvailable = (invitationId: string) => {
     setInvitations(prev => 
       prev.map(inv => 
-        inv._id === invitationId 
-          ? {...inv, status: newStatus, updatedAt: new Date()} 
+        inv._id === invitationId && inv.status === "pending"
+          ? {...inv, updatedAt: new Date()} 
           : inv
       )
     );
 
     const invitation = invitations.find(inv => inv._id === invitationId);
     if (invitation) {
-      const actionText = newStatus === "accepted" ? "accepted" : "declined";
+      // const actionText = newStatus === "accepted" ? "accepted" : "declined";
       toast({
-        title: `Invitation ${actionText}`,
-        description: `You've ${actionText} the invitation on behalf of ${getUserFullName(invitation.supportWorker)}`,
+        title: "Invitation Made Available",
+        description: `Invitation from ${getUserFullName(invitation.participant)} is now available to ${getUserFullName(invitation.supportWorker)}`,
       });
       
       // Log for debugging
-      console.log(`Admin notification: ${getUserFullName(invitation.supportWorker)}'s invitation ${actionText}`);
+      // console.log(`Admin notification: ${getUserFullName(invitation.supportWorker)}'s invitation ${actionText}`);
     }
   };
 
@@ -378,7 +380,7 @@ export function InviteManagement() {
                         </DialogContent>
                       </Dialog>
                       
-                      <Dialog>
+                      {/* <Dialog>
                         <DialogTrigger asChild>
                           <Button 
                             variant="outline" 
@@ -451,6 +453,30 @@ export function InviteManagement() {
                             Decline
                           </Button>
                         </>
+                      )} */}
+
+                      {/* Chat button linking to the AdminChat page */}
+                      <Link to={`/admin/chat/${invitation.supportWorker._id}`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Chat
+                        </Button>
+                      </Link>
+                      
+                      {invitation.status === "pending" && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
+                          onClick={() => handleMakeInvitationAvailable(invitation._id)}
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          Make Available
+                        </Button>
                       )}
                     </div>
                   </TableCell>
