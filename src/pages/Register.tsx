@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RegistrationForm } from "@/components/auth/RegistrationForm";
 import { OTPVerification } from "@/components/auth/OTPVerification";
@@ -13,83 +13,83 @@ type RegistrationStep = 'form' | 'verification' | 'setup';
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register, verifyEmail, completeOnboarding, user } = useAuth();
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('form');
   const [registrationData, setRegistrationData] = useState<UserRegistrationInput | null>(null);
+
+  useEffect(() => {
+    if (user && !user.isOnboarded && user.isEmailVerified) {
+      if (user.role === 'support-worker') {
+        setCurrentStep('setup');
+      } else {
+        redirectToDashboard(user.role);
+      }
+    } else if (user && user.isOnboarded && user.isEmailVerified) {
+      redirectToDashboard(user.role);
+    }
+  }, [user]);
 
   const handleRegistration = async (data: UserRegistrationInput) => {
     setRegistrationData(data);
     
-    // For role-based flow
-    if (data.role === 'support-worker') {
+    try {
+      await register(data);
       setCurrentStep('verification');
       toast.success(`Verification code sent to ${data.email}`);
-    } else {
-      // For other roles, just mock the registration
-      toast.success('Account created successfully!');
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo purposes, we'll log in the user immediately
-      try {
-        await login(data.email, data.password);
-        
-        // Navigate to appropriate dashboard based on role
-        switch (data.role) {
-          case 'admin':
-            navigate('/admin');
-            break;
-          case 'guardian':
-            navigate('/guardian');
-            break;
-          case 'participant':
-            navigate('/participant');
-            break;
-          default:
-            navigate('/');
-        }
-      } catch (error) {
-        toast.error('Failed to log in with new account');
-      }
+    } catch (error) {
+      toast.error('Registration failed. Please try again.');
     }
   };
 
-  const handleVerification = () => {
-    setCurrentStep('setup');
+  const handleVerification = async () => {
+    if (!registrationData) return;
+    
+    try {
+      await verifyEmail(registrationData.email);
+      if (registrationData.role === 'support-worker') {
+        setCurrentStep('setup');
+      } else {
+        redirectToDashboard(registrationData.role);
+      }
+    } catch (error) {
+      toast.error('Verification failed. Please try again.');
+    }
   };
 
   const handleResendOTP = async () => {
-    // In a real app, this would call an API endpoint to resend the code
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast.success(`New verification code sent to ${registrationData?.email}`);
   };
 
-  const handleSetupComplete = async () => {
-    if (!registrationData) return;
+  const handleSetupComplete = () => {
+    if (!user) return;
     
-    toast.success('Registration completed successfully!');
-    
-    try {
-      // Log in the user first
-      await login(registrationData.email, registrationData.password);
-      
-      // Directly navigate to support worker dashboard after login
-      navigate('/support-worker');
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error('Failed to log in with new account. Please go to the login page.');
-      
-      // Even if login fails, redirect to login page
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+    completeOnboarding();
+    toast.success('Profile setup completed successfully!');
+    navigate('/support-worker');
+  };
+
+  const redirectToDashboard = (role: string) => {
+    switch (role) {
+      case 'admin':
+        navigate('/admin');
+        break;
+      case 'guardian':
+        navigate('/guardian');
+        break;
+      case 'participant':
+        navigate('/participant');
+        break;
+      case 'support-worker':
+        navigate('/support-worker');
+        break;
+      default:
+        navigate('/');
     }
   };
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Registration form section - Left side */}
       <motion.div 
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -122,14 +122,13 @@ export default function Register() {
           </div>
         )}
         
-        {currentStep === 'setup' && (
+        {currentStep === 'setup' && user && (
           <div className="w-full">
             <SupportWorkerSetup onComplete={handleSetupComplete} />
           </div>
         )}
       </motion.div>
 
-      {/* Brand section - Right side */}
       <motion.div 
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}

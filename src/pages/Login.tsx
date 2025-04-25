@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +7,7 @@ import { z } from "zod";
 import { Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Form,
   FormControl,
@@ -24,9 +26,27 @@ const formSchema = z.object({
 });
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Effect to redirect based on user state
+  useEffect(() => {
+    if (user) {
+      // User is authenticated but needs to complete onboarding
+      if (!user.isOnboarded && user.isEmailVerified) {
+        if (user.role === 'support-worker') {
+          navigate("/register");
+          return;
+        }
+      }
+      
+      // User is fully authenticated and onboarded
+      if (user.isOnboarded && user.isEmailVerified) {
+        redirectToDashboard(user.role);
+      }
+    }
+  }, [user]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,25 +61,31 @@ export default function Login() {
     
     try {
       await login(values.email, values.password);
-      
-      // Demo account auto-navigation
-      if (values.email === "admin@example.com") {
-        navigate("/admin");
-      } else if (values.email === "john@example.com") {
-        navigate("/guardian");
-      } else if (values.email === "emma@example.com") {
-        navigate("/participant");
-      } else if (values.email === "sarah@example.com") {
-        navigate("/support-worker");
-      } else {
-        navigate("/");
-      }
     } catch (error) {
       // Error is handled in the AuthContext
     } finally {
       setIsLoading(false);
     }
   }
+
+  const redirectToDashboard = (role: string) => {
+    switch (role) {
+      case 'admin':
+        navigate('/admin');
+        break;
+      case 'guardian':
+        navigate('/guardian');
+        break;
+      case 'participant':
+        navigate('/participant');
+        break;
+      case 'support-worker':
+        navigate('/support-worker');
+        break;
+      default:
+        navigate('/');
+    }
+  };
 
   const handleDemoLogin = (email: string) => {
     form.setValue("email", email);
@@ -123,33 +149,37 @@ export default function Login() {
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="your@email.com" type="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input placeholder="••••••••" type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <ScrollArea className="h-[180px] pr-4">
+                <div className="space-y-6 px-1">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="your@email.com" type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input placeholder="••••••••" type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </ScrollArea>
               
               <Button type="submit" className="w-full py-6" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Login"}

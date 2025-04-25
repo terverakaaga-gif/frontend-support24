@@ -1,172 +1,12 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { Navbar } from "./components/Navbar";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import AdminDashboard from "./pages/AdminDashboard";
-import GuardianDashboard from "./pages/GuardianDashboard";
-import ParticipantDashboard from "./pages/ParticipantDashboard";
-import SupportWorkerDashboard from "./pages/SupportWorkerDashboard";
-import ShiftsPage from "./pages/ShiftsPage";
-import ShiftDetails from "./pages/ShiftDetails";
-import NotFound from "./pages/NotFound";
-import ParticipantProfile from "./pages/ParticipantProfile";
-import SupportWorkerProfile from "./pages/SupportWorkerProfile";
-import InviteManagementPage from "./pages/InviteManagementPage";
-import AdminChat from "./pages/AdminChat";
+import { AuthProvider } from '@/contexts/AuthContext';
+import AppRoutes from '@/routes';
+import './App.css';
 
 const queryClient = new QueryClient();
-
-const AppRoutes = () => {
-  const { user } = useAuth();
-
-  // Helper to redirect to the appropriate dashboard based on user role
-  const getDefaultRoute = () => {
-    if (!user) return '/login';
-    
-    switch (user.role) {
-      case 'admin':
-        return '/admin';
-      case 'guardian':
-        return '/guardian';
-      case 'participant':
-        return '/participant';
-      case 'support-worker':
-        return '/support-worker';
-      default:
-        return '/login';
-    }
-  };
-
-  return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/login" element={
-        user ? <Navigate to={getDefaultRoute()} /> : <Login />
-      } />
-      
-      <Route path="/register" element={
-        user ? <Navigate to={getDefaultRoute()} /> : <Register />
-      } />
-      
-      {/* Protected routes */}
-      <Route path="/admin" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <>
-            <Navbar />
-            <AdminDashboard />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/invites" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <>
-            <Navbar />
-            <InviteManagementPage />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/chat/:workerId" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <>
-            <Navbar />
-            <AdminChat />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/guardian" element={
-        <ProtectedRoute allowedRoles={['guardian', 'admin']}>
-          <>
-            <Navbar />
-            <GuardianDashboard />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/participant" element={
-        <ProtectedRoute allowedRoles={['participant', 'admin']}>
-          <>
-            <Navbar />
-            <ParticipantDashboard />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/support-worker" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <SupportWorkerDashboard />
-          </>
-        </ProtectedRoute>
-      } />
-
-      {/* Shift management routes */}
-      <Route path="/support-worker/shifts" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <ShiftsPage />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/support-worker/shifts/:shiftId" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <ShiftDetails />
-          </>
-        </ProtectedRoute>
-      } />
-
-      {/* Profile routes */}
-      <Route path="/participant/profile" element={
-        <ProtectedRoute allowedRoles={['participant', 'admin']}>
-          <>
-            <Navbar />
-            <ParticipantProfile />
-          </>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/support-worker/profile" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <SupportWorkerProfile />
-          </>
-        </ProtectedRoute>
-      } />
-      
-      {/* Support worker profile view for participants */}
-      <Route path="/support-worker/profile/:workerId" element={
-        <ProtectedRoute allowedRoles={['participant', 'guardian', 'admin']}>
-          <>
-            <Navbar />
-            <SupportWorkerProfile />
-          </>
-        </ProtectedRoute>
-      } />
-
-      {/* Default route */}
-      <Route path="/" element={<Navigate to={getDefaultRoute()} />} />
-
-      {/* 404 route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -174,9 +14,10 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        {/* <BrowserRouter>
           <AppRoutes />
-        </BrowserRouter>
+        </BrowserRouter> */}
+        <AppRoutes />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
