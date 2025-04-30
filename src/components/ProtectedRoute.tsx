@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { Navbar } from './Navbar';
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -67,5 +68,8 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
   
   // User is authenticated and has the required role
-  return <>{children}</>;
+  return <>
+  {/* <Navbar /> */}
+  {children}
+  </>;
 }

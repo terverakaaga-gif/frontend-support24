@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,9 +63,9 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				guardian: {
-					DEFAULT: '#9b87f5',
-					light: '#E5DEFF',
-					dark: '#7E69AB',
+					DEFAULT: '#1e40af', // Changed from #9b87f5 to blue-800
+					light: '#dbeafe', // Updated to a light blue shade
+					dark: '#1e3a8a', // Updated to a darker blue shade
 				},
 				status: {
 					confirmed: '#10b981',

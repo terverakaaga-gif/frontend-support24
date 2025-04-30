@@ -10,6 +10,7 @@ import SupportWorkerDashboard from '@/pages/SupportWorkerDashboard';
 import ShiftsPage from './pages/ShiftsPage';
 import ShiftDetails from './pages/ShiftDetails';
 import NotFound from '@/pages/NotFound';
+import ParticipantProfile from './pages/ParticipantProfile';
 
 // Define routes with role-based protection
 const router = createBrowserRouter([
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <Navbar />
+        {/* <Navbar /> */}
         <AdminDashboard />
       </ProtectedRoute>
     ),
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
     path: "/guardian",
     element: (
       <ProtectedRoute allowedRoles={['guardian']}>
-        <Navbar />
+        {/* <Navbar /> */}
         <GuardianDashboard />
       </ProtectedRoute>
     ),
@@ -47,19 +48,39 @@ const router = createBrowserRouter([
     path: "/participant",
     element: (
       <ProtectedRoute allowedRoles={['participant']}>
-        <Navbar />
+        {/* <Navbar /> */}
         <ParticipantDashboard />
       </ProtectedRoute>
     ),
+    children: [
+      {
+        path: 'profile',
+        element: (
+          <ProtectedRoute allowedRoles={['participant']}>
+            <ParticipantProfile />
+          </ProtectedRoute>
+        )
+      }
+    ]
   },
   {
     path: "/support-worker",
     element: (
       <ProtectedRoute allowedRoles={['support-worker']}>
-        <Navbar />
+        {/* <Navbar /> */}
         <SupportWorkerDashboard />
       </ProtectedRoute>
     ),
+    children: [
+      {
+        path: 'profile',
+        element: (
+          <ProtectedRoute allowedRoles={['support-worker', 'participant']}>
+            <ParticipantProfile />
+          </ProtectedRoute>
+        )
+      }
+    ]
   },
   {
     path: "*",

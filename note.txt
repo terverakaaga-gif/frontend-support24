@@ -1,0 +1,11 @@
+We currently have 4 types of users in this system 
+('admin', 'support-worker', 'participant', 'guardian').Please, kindly analyze all the code. 
+When a new user registers, there are atleast 2 steps - 'form', 'verification'. 
+Once a new user registers, I want a situation whereby when the user passes the 'verfication' step, 
+he's now a real user in the app i.e, he has been authentication and can now be redirected to his 
+dashboard. But for a 'support-worker', after he passes the 'verification' step, he is also 
+authenticated and identify as a real user but before he goes to his dashboard, i want a check if 
+he has setup his profile which is the SupportWorkerSetup.tsx component. If he hasn't setup his 
+profile, he should be redirected to the SupportWorkerSetup flow otherwise, he should be redirected 
+to his dashboard. So, you can make SupportWorkerSetup a page that can only be accessible by a 
+'support-worker' only.
