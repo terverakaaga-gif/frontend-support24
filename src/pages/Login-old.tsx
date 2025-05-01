@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,10 +25,28 @@ const formSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-export default function Login() {
-  const { login } = useAuth();
+export default function LoginOld() {
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Effect to redirect based on user state
+  useEffect(() => {
+    if (user) {
+      // User is authenticated but needs to complete onboarding
+      if (!user.isOnboarded && user.isEmailVerified) {
+        if (user.role === 'support-worker') {
+          navigate("/register");
+          return;
+        }
+      }
+      
+      // User is fully authenticated and onboarded
+      if (user.isOnboarded && user.isEmailVerified) {
+        redirectToDashboard(user.role);
+      }
+    }
+  }, [user]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,13 +61,31 @@ export default function Login() {
     
     try {
       await login(values.email, values.password);
-      // Auth context will handle redirects via ProtectedRoute component
     } catch (error) {
       // Error is handled in the AuthContext
     } finally {
       setIsLoading(false);
     }
   }
+
+  const redirectToDashboard = (role: string) => {
+    switch (role) {
+      case 'admin':
+        navigate('/admin');
+        break;
+      case 'guardian':
+        navigate('/guardian');
+        break;
+      case 'participant':
+        navigate('/participant');
+        break;
+      case 'support-worker':
+        navigate('/support-worker');
+        break;
+      default:
+        navigate('/');
+    }
+  };
 
   const handleDemoLogin = (email: string) => {
     form.setValue("email", email);
