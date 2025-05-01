@@ -22,20 +22,12 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   
   // If the user hasn't verified their email
   if (!user.isEmailVerified) {
-    // Only redirect if not already on the register page to prevent loops
-    if (location.pathname !== "/register") {
-      return <Navigate to="/register" replace />;
-    }
-    return <>{children}</>;
+    return <Navigate to="/register" replace />;
   }
   
   // If the user is a support worker who hasn't completed onboarding
   if (user.role === 'support-worker' && !user.isOnboarded) {
-    // Only redirect if not already on the register page to prevent loops
-    if (location.pathname !== "/register") {
-      return <Navigate to="/register" replace />;
-    }
-    return <>{children}</>;
+    return <Navigate to="/support-worker-setup" replace />;
   }
   
   // Check if the user has the required role
