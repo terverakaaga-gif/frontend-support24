@@ -11,6 +11,8 @@ import { ParticipantInvitations } from "@/components/supportworker/ParticipantIn
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
+import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Mock notifications - fixed type values to match the allowed types
 const notifications = [
@@ -144,6 +146,7 @@ const calendarData = {
 };
 
 export default function SupportWorkerDashboard() {
+  const { user } = useAuth();
   const [availabilityStatus, setAvailabilityStatus] = useState("available");
   const navigate = useNavigate();
 
@@ -154,6 +157,10 @@ export default function SupportWorkerDashboard() {
 
   return (
     <div className="container py-6">
+      {/* Show alert if support worker hasn't completed onboarding */}
+      {user && user.role === 'support-worker' && !user.isOnboarded && (
+        <ProfileSetupAlert userName={user.name.split(' ')[0]} />
+      )}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Support Worker Dashboard</h1>
