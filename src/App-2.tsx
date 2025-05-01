@@ -1,9 +1,8 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Navbar } from "./components/Navbar";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -26,6 +25,7 @@ const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   const { user } = useAuth();
+  const location = useLocation();
 
   // Helper to redirect to the appropriate dashboard based on user role
   const getDefaultRoute = () => {
@@ -49,118 +49,98 @@ const AppRoutes = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={
-        user ? <Navigate to={getDefaultRoute()} /> : <Login />
+        user ? <Navigate to={getDefaultRoute()} replace /> : <Login />
       } />
       
       <Route path="/register" element={
-        user ? <Navigate to={getDefaultRoute()} /> : <Register />
+        user && user.isEmailVerified && (user.role !== 'support-worker' || user.isOnboarded) 
+          ? <Navigate to={getDefaultRoute()} replace /> 
+          : <Register />
       } />
       
       {/* Protected routes */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <>
-            <Navbar />
-            <AdminDashboard />
-          </>
+          <Navbar />
+          <AdminDashboard />
         </ProtectedRoute>
       } />
 
       <Route path="/admin/invites" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <>
-            <Navbar />
-            <InviteManagementPage />
-          </>
+          <Navbar />
+          <InviteManagementPage />
         </ProtectedRoute>
       } />
 
       <Route path="/admin/chat/:workerId" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <>
-            <Navbar />
-            <AdminChat />
-          </>
+          <Navbar />
+          <AdminChat />
         </ProtectedRoute>
       } />
 
       <Route path="/guardian" element={
         <ProtectedRoute allowedRoles={['guardian', 'admin']}>
-          <>
-            <Navbar />
-            <GuardianDashboard />
-          </>
+          <Navbar />
+          <GuardianDashboard />
         </ProtectedRoute>
       } />
 
       <Route path="/participant" element={
         <ProtectedRoute allowedRoles={['participant', 'admin']}>
-          <>
-            <Navbar />
-            <ParticipantDashboard />
-          </>
+          <Navbar />
+          <ParticipantDashboard />
         </ProtectedRoute>
       } />
 
       <Route path="/support-worker" element={
         <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <SupportWorkerDashboard />
-          </>
+          <Navbar />
+          <SupportWorkerDashboard />
         </ProtectedRoute>
       } />
 
       {/* Shift management routes */}
       <Route path="/support-worker/shifts" element={
         <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <ShiftsPage />
-          </>
+          <Navbar />
+          <ShiftsPage />
         </ProtectedRoute>
       } />
 
       <Route path="/support-worker/shifts/:shiftId" element={
         <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <ShiftDetails />
-          </>
+          <Navbar />
+          <ShiftDetails />
         </ProtectedRoute>
       } />
 
       {/* Profile routes */}
       <Route path="/participant/profile" element={
         <ProtectedRoute allowedRoles={['participant', 'admin']}>
-          <>
-            <Navbar />
-            <ParticipantProfile />
-          </>
+          <Navbar />
+          <ParticipantProfile />
         </ProtectedRoute>
       } />
 
       <Route path="/support-worker/profile" element={
         <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
-          <>
-            <Navbar />
-            <SupportWorkerProfile />
-          </>
+          <Navbar />
+          <SupportWorkerProfile />
         </ProtectedRoute>
       } />
       
       {/* Support worker profile view for participants */}
       <Route path="/support-worker/profile/:workerId" element={
         <ProtectedRoute allowedRoles={['participant', 'guardian', 'admin']}>
-          <>
-            <Navbar />
-            <SupportWorkerProfile />
-          </>
+          <Navbar />
+          <SupportWorkerProfile />
         </ProtectedRoute>
       } />
 
       {/* Default route */}
-      <Route path="/" element={<Navigate to={getDefaultRoute()} />} />
+      <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
 
       {/* 404 route */}
       <Route path="*" element={<NotFound />} />

@@ -7,5 +7,6 @@ dashboard. But for a 'support-worker', after he passes the 'verification' step, 
 authenticated and identify as a real user but before he goes to his dashboard, i want a check if 
 he has setup his profile which is the SupportWorkerSetup.tsx component. If he hasn't setup his 
 profile, he should be redirected to the SupportWorkerSetup flow otherwise, he should be redirected 
-to his dashboard. So, you can make SupportWorkerSetup a page that can only be accessible by a 
-'support-worker' only.
+to his dashboard. So, you can make SupportWorkerSetup.tsx a page that can only be accessible by a 
+'support-worker' only. SupportWorkerSetup.tsx should be a single page on its own - the screen only 
+comes up when a newly registered 'support-worker' hasn't setup their profile.
