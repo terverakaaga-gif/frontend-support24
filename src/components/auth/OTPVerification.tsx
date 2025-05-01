@@ -10,13 +10,20 @@ import { toast } from "sonner";
 
 interface OTPVerificationProps {
   email: string;
-  onVerified: () => void;
+  onVerified: (otp: string) => void;
   onResend: () => Promise<void>;
+  isVerifying?: boolean;
+  isResending?: boolean;
 }
 
-export function OTPVerification({ email, onVerified, onResend }: OTPVerificationProps) {
+export function OTPVerification({ 
+  email, 
+  onVerified, 
+  onResend,
+  isVerifying = false,
+  isResending = false
+}: OTPVerificationProps) {
   const [otp, setOtp] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
@@ -37,20 +44,10 @@ export function OTPVerification({ email, onVerified, onResend }: OTPVerification
       return;
     }
 
-    setIsVerifying(true);
-
     try {
-      // This is a mock verification for demonstration
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo purposes, any 6-digit code is valid
-      toast.success("Email successfully verified!");
-      onVerified();
+      await onVerified(otp);
     } catch (error) {
-      toast.error("Failed to verify email. Please try again.");
-    } finally {
-      setIsVerifying(false);
+      // Error is handled by the API client or parent component
     }
   };
 
@@ -60,9 +57,8 @@ export function OTPVerification({ email, onVerified, onResend }: OTPVerification
     
     try {
       await onResend();
-      toast.success("A new verification code has been sent to your email");
     } catch (error) {
-      toast.error("Failed to resend verification code");
+      // Error is handled by the API client
       setCanResend(true);
     }
   };
@@ -106,8 +102,9 @@ export function OTPVerification({ email, onVerified, onResend }: OTPVerification
                 variant="link" 
                 className="p-0 h-auto" 
                 onClick={handleResend}
+                disabled={isResending}
               >
-                Resend Code
+                {isResending ? "Sending..." : "Resend Code"}
               </Button>
             ) : (
               <span>Resend code in {countdown}s</span>
