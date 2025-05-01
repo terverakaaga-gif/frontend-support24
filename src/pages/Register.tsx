@@ -2,52 +2,76 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RegistrationForm } from "@/components/auth/RegistrationForm";
 import { OTPVerification } from "@/components/auth/OTPVerification";
-import { UserRegistrationInput } from "@/entities/UserRegistration";
-import { useAuth } from "@/contexts/AuthContext";
+import { UserRegistrationInput } from "@/types/user.types";
 import { toast } from "sonner";
 import { Heart, Users, Calendar, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRegister, useVerifyEmail, useResendVerification } from "@/hooks/useAuthHooks";
 
 type RegistrationStep = 'form' | 'verification';
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register, verifyEmail, user } = useAuth();
+  const register = useRegister();
+  const verifyEmail = useVerifyEmail();
+  const resendVerification = useResendVerification();
+  
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('form');
   const [registrationData, setRegistrationData] = useState<UserRegistrationInput | null>(null);
+  const [userId, setUserId] = useState<string>("");
 
   const handleRegistration = async (data: UserRegistrationInput) => {
     setRegistrationData(data);
     
     try {
-      await register(data);
+      const response = await register.mutateAsync(data);
+      setUserId(response.userId);
       setCurrentStep('verification');
-      toast.success(`Verification code sent to ${data.email}`);
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
+      // Error handled by API client
+      console.error("Registration failed:", error);
     }
   };
 
-  const handleVerification = async () => {
-    if (!registrationData) return;
+  const handleVerification = async (otpCode: string) => {
+    if (!userId) {
+      toast.error('User ID is missing. Please try registering again.');
+      setCurrentStep('form');
+      return;
+    }
     
     try {
-      await verifyEmail(registrationData.email);
+      await verifyEmail.mutateAsync({
+        userId: userId,
+        otpCode: otpCode
+      });
       
       // After verification, if user is a support worker, redirect to setup choice page
-      if (registrationData.role === 'support-worker') {
+      if (registrationData?.role === 'supportWorker') {
         navigate('/setup-choice');
       } else {
-        redirectToDashboard(registrationData.role);
+        redirectToDashboard(registrationData?.role || 'participant');
       }
     } catch (error) {
-      toast.error('Verification failed. Please try again.');
+      // Error handled by API client
+      console.error("Verification failed:", error);
     }
   };
 
   const handleResendOTP = async () => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast.success(`New verification code sent to ${registrationData?.email}`);
+    if (!registrationData?.email) {
+      toast.error('Email is missing. Please try registering again.');
+      setCurrentStep('form');
+      return;
+    }
+    
+    try {
+      const response = await resendVerification.mutateAsync(registrationData.email);
+      setUserId(response.userId);
+    } catch (error) {
+      // Error handled by API client
+      console.error("Resend verification failed:", error);
+    }
   };
 
   const redirectToDashboard = (role: string) => {
@@ -61,7 +85,7 @@ export default function Register() {
       case 'participant':
         navigate('/participant');
         break;
-      case 'support-worker':
+      case 'supportWorker':
         navigate('/support-worker');
         break;
       default:
@@ -83,7 +107,7 @@ export default function Register() {
               <h1 className="text-3xl font-bold">Create an Account</h1>
               <p className="text-muted-foreground">Join our community of care providers and participants</p>
             </div>
-            <RegistrationForm onSubmit={handleRegistration} />
+            <RegistrationForm onSubmit={handleRegistration} isLoading={register.isPending} />
             <div className="mt-6 text-center text-sm text-muted-foreground">
               Have an account already?{" "}
               <a href="/login" className="text-guardian font-medium hover:underline">
@@ -99,6 +123,8 @@ export default function Register() {
               email={registrationData.email} 
               onVerified={handleVerification}
               onResend={handleResendOTP}
+              isVerifying={verifyEmail.isPending}
+              isResending={resendVerification.isPending}
             />
           </div>
         )}
