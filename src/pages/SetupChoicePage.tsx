@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { AlertCircle, CheckCircle, UserCog, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { SupportWorker } from "@/types/user.types";
 
 export default function SetupChoicePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const supportWorker = user as SupportWorker | null;
 
   useEffect(() => {
     // If no user is logged in, redirect to login
@@ -18,13 +20,13 @@ export default function SetupChoicePage() {
     }
 
     // If user is not a support worker, redirect to their dashboard
-    if (user.role !== 'support-worker') {
+    if (user.role !== 'supportWorker') {
       redirectToDashboard(user.role);
       return;
     }
 
-    // If support worker has already completed onboarding, redirect to dashboard
-    if (user.isOnboarded) {
+    // If support worker has already completed profile setup, redirect to dashboard
+    if (supportWorker?.verificationStatus.profileSetupComplete) {
       navigate('/support-worker');
       return;
     }
@@ -52,7 +54,7 @@ export default function SetupChoicePage() {
       case 'participant':
         navigate('/participant');
         break;
-      case 'support-worker':
+      case 'supportWorker':
         navigate('/support-worker');
         break;
       default:
@@ -60,7 +62,7 @@ export default function SetupChoicePage() {
     }
   };
 
-  if (!user || user.role !== 'support-worker') {
+  if (!user || user.role !== 'supportWorker') {
     return null; // Return null during the redirect, the useEffect will handle navigation
   }
 
