@@ -7,18 +7,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Heart, Users, Calendar, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 type RegistrationStep = 'form' | 'verification';
 
@@ -27,7 +15,6 @@ export default function Register() {
   const { register, verifyEmail, user } = useAuth();
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('form');
   const [registrationData, setRegistrationData] = useState<UserRegistrationInput | null>(null);
-  const [showSetupDialog, setShowSetupDialog] = useState(false);
 
   const handleRegistration = async (data: UserRegistrationInput) => {
     setRegistrationData(data);
@@ -47,9 +34,9 @@ export default function Register() {
     try {
       await verifyEmail(registrationData.email);
       
-      // After verification, if user is a support worker, show setup option dialog
+      // After verification, if user is a support worker, redirect to setup choice page
       if (registrationData.role === 'support-worker') {
-        setShowSetupDialog(true);
+        navigate('/setup-choice');
       } else {
         redirectToDashboard(registrationData.role);
       }
@@ -80,16 +67,6 @@ export default function Register() {
       default:
         navigate('/');
     }
-  };
-
-  const handleSkipSetup = () => {
-    toast.success("Account created successfully!");
-    toast.error("Please complete your profile setup when you're ready.");
-    navigate('/support-worker');
-  };
-
-  const handleContinueToSetup = () => {
-    navigate('/support-worker-setup');
   };
 
   return (
@@ -176,28 +153,6 @@ export default function Register() {
           </p>
         </div>
       </motion.div>
-
-      {/* Setup Dialog for Support Workers */}
-      <AlertDialog open={showSetupDialog} onOpenChange={setShowSetupDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Complete Your Profile Setup</AlertDialogTitle>
-            <AlertDialogDescription>
-              Setting up your profile now will help participants find and connect with you. You'll need to add your skills, experience, and availability.
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md flex items-start">
-                <AlertCircle className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-blue-700">
-                  A complete profile significantly increases your chances of getting matched with participants.
-                </p>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleSkipSetup}>Skip for now</AlertDialogCancel>
-            <AlertDialogAction onClick={handleContinueToSetup}>Complete setup</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
