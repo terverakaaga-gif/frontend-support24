@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { SupportWorkerSkill } from "@/types/user.types";
+import { SupportWorkerSkill } from "@/entities/types";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,6 +20,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -42,12 +44,8 @@ import {
   Bandage
 } from "lucide-react";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
 import { TimeInput } from "@/components/auth/TimeInput";
-import {
-  useUpdateSupportWorkerProfile,
-  useUpdateAvailability,
-  useAddExperience
-} from "@/hooks/useSupportWorkerHooks";
 
 const bioSchema = z.object({
   bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
@@ -85,7 +83,6 @@ const availabilitySchema = z.object({
 
 interface SupportWorkerSetupProps {
   onComplete: () => void;
-  isSubmitting?: boolean;
 }
 
 const availableSkills: { value: SupportWorkerSkill; label: string; icon: React.ElementType }[] = [
@@ -111,7 +108,13 @@ const weekdays = [
   { value: "sunday", label: "Sunday" },
 ];
 
-export function SupportWorkerSetup({ onComplete, isSubmitting = false }: SupportWorkerSetupProps) {
+// Australian names and details for mock data
+const australianCities = [
+  "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", 
+  "Gold Coast", "Newcastle", "Canberra", "Wollongong", "Hobart"
+];
+
+export function SupportWorkerSetup({ onComplete }: SupportWorkerSetupProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     bio: "",
@@ -136,12 +139,6 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
     }
   });
 
-  // API mutations
-  const updateProfile = useUpdateSupportWorkerProfile();
-  const updateAvailability = useUpdateAvailability();
-  const addExperience = useAddExperience();
-
-  // Forms
   const bioForm = useForm<z.infer<typeof bioSchema>>({
     resolver: zodResolver(bioSchema),
     defaultValues: {
@@ -194,134 +191,66 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
     setStep(step - 1);
   };
 
-  const handleBioSubmit = async (data: z.infer<typeof bioSchema>) => {
-    try {
-      // Update profile with bio and languages
-      await updateProfile.mutateAsync({
-        bio: data.bio,
-        languages: data.languages.split(',').map(lang => lang.trim())
-      });
-
-      setFormData({ ...formData, bio: data.bio, languages: data.languages });
-      nextStep();
-    } catch (error) {
-      // Error handled by API client
-      console.error('Failed to update bio:', error);
-    }
+  const handleBioSubmit = (data: z.infer<typeof bioSchema>) => {
+    setFormData({ ...formData, bio: data.bio, languages: data.languages });
+    nextStep();
   };
 
-  const handleSkillsSubmit = async (data: z.infer<typeof skillsSchema>) => {
-    try {
-      // Update profile with skills
-      await updateProfile.mutateAsync({
-        skills: data.skills
-      });
-
-      setFormData({ ...formData, skills: data.skills });
-      nextStep();
-    } catch (error) {
-      // Error handled by API client
-      console.error('Failed to update skills:', error);
-    }
+  const handleSkillsSubmit = (data: z.infer<typeof skillsSchema>) => {
+    setFormData({ ...formData, skills: data.skills });
+    nextStep();
   };
 
-  const handleExperienceSubmit = async (data: z.infer<typeof experienceSchema>) => {
-    try {
-      // Add experience
-      await addExperience.mutateAsync({
+  const handleExperienceSubmit = (data: z.infer<typeof experienceSchema>) => {
+    setFormData({ 
+      ...formData, 
+      experience: {
         title: data.title,
         organization: data.organization,
         startDate: data.startDate,
-        endDate: data.endDate,
-        description: data.description
-      });
-
-      setFormData({ 
-        ...formData, 
-        experience: {
-          title: data.title,
-          organization: data.organization,
-          startDate: data.startDate,
-          endDate: data.endDate || "",
-          description: data.description,
-        }
-      });
-      nextStep();
-    } catch (error) {
-      // Error handled by API client
-      console.error('Failed to add experience:', error);
-    }
+        endDate: data.endDate || "",
+        description: data.description,
+      }
+    });
+    nextStep();
   };
 
-  const handleRateSubmit = async (data: z.infer<typeof rateSchema>) => {
-    try {
-      // Update profile with rates
-      await updateProfile.mutateAsync({
-        hourlyRate: Number(data.baseRate),
-        weekendRate: data.weekendRate ? Number(data.weekendRate) : undefined,
-        holidayRate: data.holidayRate ? Number(data.holidayRate) : undefined,
-        overnightRate: data.overnightRate ? Number(data.overnightRate) : undefined
-      });
-
-      setFormData({
-        ...formData,
-        rates: {
-          baseRate: data.baseRate,
-          weekendRate: data.weekendRate || "",
-          holidayRate: data.holidayRate || "",
-          overnightRate: data.overnightRate || "",
-        }
-      });
-      nextStep();
-    } catch (error) {
-      // Error handled by API client
-      console.error('Failed to update rates:', error);
-    }
+  const handleRateSubmit = (data: z.infer<typeof rateSchema>) => {
+    setFormData({
+      ...formData,
+      rates: {
+        baseRate: data.baseRate,
+        weekendRate: data.weekendRate || "",
+        holidayRate: data.holidayRate || "",
+        overnightRate: data.overnightRate || "",
+      }
+    });
+    nextStep();
   };
 
-  const handleAvailabilitySubmit = async (data: z.infer<typeof availabilitySchema>) => {
-    try {
-      // Format weekdays availability
-      const availabilityInput = data.availableWeekdays.map(day => {
-        const slots = (data.timeSlots[day] || []).map(slot => ({
+  const handleAvailabilitySubmit = (data: z.infer<typeof availabilitySchema>) => {
+    const timeSlots: Record<string, { start: string; end: string }[]> = {};
+    
+    Object.entries(data.timeSlots || {}).forEach(([day, slots]) => {
+      if (slots && slots.length > 0) {
+        timeSlots[day] = slots.map(slot => ({
           start: slot.start || "09:00",
           end: slot.end || "17:00"
         }));
-        
-        return {
-          day,
-          slots
-        };
-      });
-      
-      // Update availability
-      await updateAvailability.mutateAsync(availabilityInput);
-      
-      // Store in local state
-      const timeSlots: Record<string, { start: string; end: string }[]> = {};
-      Object.entries(data.timeSlots || {}).forEach(([day, slots]) => {
-        if (slots && slots.length > 0) {
-          timeSlots[day] = slots.map(slot => ({
-            start: slot.start || "09:00",
-            end: slot.end || "17:00"
-          }));
-        }
-      });
+      }
+    });
 
-      setFormData({
-        ...formData,
-        availability: {
-          availableWeekdays: data.availableWeekdays,
-          timeSlots: timeSlots,
-        }
-      });
-      
-      // Complete profile setup
-      onComplete();
-    } catch (error) {
-      // Error handled by API client
-      console.error('Failed to update availability:', error);
-    }
+    setFormData({
+      ...formData,
+      availability: {
+        availableWeekdays: data.availableWeekdays,
+        timeSlots: timeSlots,
+      }
+    });
+    
+    toast.success("Profile setup completed!");
+    
+    onComplete();
   };
 
   const addTimeSlot = (day: string) => {
@@ -404,17 +333,9 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
               )}
             />
             <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                className="w-full mt-4"
-                disabled={updateProfile.isPending}
-              >
-                {updateProfile.isPending ? "Saving..." : (
-                  <>
-                    Next
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+              <Button type="submit" className="w-full mt-4">
+                Next
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>
@@ -485,16 +406,9 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
-                type="submit" 
-                disabled={updateProfile.isPending}
-              >
-                {updateProfile.isPending ? "Saving..." : (
-                  <>
-                    Next
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+              <Button type="submit">
+                Next
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>
@@ -592,16 +506,9 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
-                type="submit"
-                disabled={addExperience.isPending}
-              >
-                {addExperience.isPending ? "Saving..." : (
-                  <>
-                    Next
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+              <Button type="submit">
+                Next
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>
@@ -689,16 +596,9 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
-                type="submit"
-                disabled={updateProfile.isPending}
-              >
-                {updateProfile.isPending ? "Saving..." : (
-                  <>
-                    Next
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+              <Button type="submit">
+                Next
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>
@@ -855,25 +755,14 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 </FormItem>
               )}
             />
-
-// This continues from where we left off in the SupportWorkerSetup component
-// Finishing the form submission part
-
             <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep} disabled={updateAvailability.isPending || isSubmitting}>
+              <Button type="button" variant="outline" onClick={prevStep}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
-                type="submit"
-                disabled={updateAvailability.isPending || isSubmitting}
-              >
-                {updateAvailability.isPending || isSubmitting ? "Completing Setup..." : (
-                  <>
-                    Complete Setup
-                    <CheckCircle className="ml-2 h-4 w-4" />
-                  </>
-                )}
+              <Button type="submit">
+                Complete Setup
+                <CheckCircle className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>

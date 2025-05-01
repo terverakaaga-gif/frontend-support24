@@ -2,13 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCompleteProfileSetup } from "@/hooks/useSupportWorkerHooks";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { SupportWorker } from "@/types/user.types";
 
 export default function SupportWorkerSetupPage() {
   const navigate = useNavigate();
-  const { user, completeOnboarding } = useAuth();
+  const { user } = useAuth();
+  const supportWorker = user as SupportWorker | null;
+  const completeProfileSetup = useCompleteProfileSetup();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,13 +26,13 @@ export default function SupportWorkerSetupPage() {
     }
 
     // If user is not a support worker, redirect to their dashboard
-    if (user.role !== 'support-worker') {
+    if (user.role !== 'supportWorker') {
       redirectToDashboard(user.role);
       return;
     }
 
     // If support worker has already completed onboarding, show a message
-    if (user.isOnboarded) {
+    if (supportWorker?.verificationStatus.profileSetupComplete) {
       toast.success("Your profile is already set up!");
       navigate('/support-worker');
       return;
@@ -38,12 +42,17 @@ export default function SupportWorkerSetupPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
-  const handleSetupComplete = () => {
-    if (!user) return;
+  const handleSetupComplete = async () => {
+    if (!user || user.role !== 'supportWorker') return;
     
-    completeOnboarding();
-    toast.success('Profile setup completed successfully!');
-    navigate('/support-worker');
+    try {
+      await completeProfileSetup.mutateAsync();
+      toast.success('Profile setup completed successfully!');
+      navigate('/support-worker');
+    } catch (error) {
+      // Error handled by API client
+      console.error('Failed to complete profile setup:', error);
+    }
   };
 
   const handleSkipSetup = () => {
@@ -61,7 +70,7 @@ export default function SupportWorkerSetupPage() {
       case 'participant':
         navigate('/participant');
         break;
-      case 'support-worker':
+      case 'supportWorker':
         navigate('/support-worker');
         break;
       default:
@@ -79,7 +88,7 @@ export default function SupportWorkerSetupPage() {
   }
 
   // Only render the setup component if user is a support worker who needs setup
-  if (!user || user.role !== 'support-worker') {
+  if (!user || user.role !== 'supportWorker') {
     return null; // Return null during the redirect, the useEffect will handle navigation
   }
 
@@ -99,7 +108,10 @@ export default function SupportWorkerSetupPage() {
           <div className="w-24"></div> {/* Spacer for centering */}
         </div>
       </div>
-      <SupportWorkerSetup onComplete={handleSetupComplete} />
+      <SupportWorkerSetup 
+        onComplete={handleSetupComplete} 
+        isSubmitting={completeProfileSetup.isPending}
+      />
     </div>
   );
 }

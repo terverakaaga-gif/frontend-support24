@@ -22,6 +22,7 @@ import ParticipantProfile from "./pages/ParticipantProfile";
 import SupportWorkerProfile from "./pages/SupportWorkerProfile";
 import InviteManagementPage from "./pages/InviteManagementPage";
 import AdminChat from "./pages/AdminChat";
+import { SupportWorker } from "./types/user.types";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,7 @@ const AppRoutes = () => {
         return '/guardian';
       case 'participant':
         return '/participant';
-      case 'support-worker':
+      case 'supportWorker':
         return '/support-worker';
       default:
         return '/login';
@@ -63,15 +64,16 @@ const AppRoutes = () => {
       {/* Setup Choice Page - for newly registered support workers */}
       <Route path="/setup-choice" element={
         !user ? <Navigate to="/login" replace /> :
-        user.role !== 'support-worker' ? <Navigate to={getDefaultRoute()} replace /> :
-        user.isOnboarded ? <Navigate to="/support-worker" replace /> :
+        user.role !== 'supportWorker' ? <Navigate to={getDefaultRoute()} replace /> :
+        // user.isOnboarded ? <Navigate to="/support-worker" replace /> :
+        (user as SupportWorker).verificationStatus?.profileSetupComplete ? <Navigate to="/support-worker" replace /> :
         <SetupChoicePage />
       } />
       
       {/* Support Worker Setup Route - accessible but not mandatory */}
       <Route path="/support-worker-setup" element={
         !user ? <Navigate to="/login" replace /> :
-        user.role !== 'support-worker' ? <Navigate to={getDefaultRoute()} replace /> :
+        user.role !== 'supportWorker' ? <Navigate to={getDefaultRoute()} replace /> :
         <SupportWorkerSetupPage />
       } />
       

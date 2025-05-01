@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
 import { useAuth } from "@/contexts/AuthContext";
+import { SupportWorker } from "@/types/user.types";
 
 // Mock notifications - fixed type values to match the allowed types
 const notifications = [
@@ -158,13 +159,13 @@ export default function SupportWorkerDashboard() {
   return (
     <div className="container py-6">
       {/* Show alert if support worker hasn't completed onboarding */}
-      {user && user.role === 'support-worker' && !user.isOnboarded && (
-        <ProfileSetupAlert userName={user.name.split(' ')[0]} />
+      {user && user.role === 'supportWorker' && !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
+        <ProfileSetupAlert userName={user.firstName.split(' ')[0]} />
       )}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Support Worker Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Sarah! Here's your overview.</p>
+          <p className="text-muted-foreground">Welcome back, {user.firstName}! Here's your overview.</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="flex items-center gap-2">

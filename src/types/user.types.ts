@@ -20,6 +20,19 @@ export interface BaseUser {
   lastLogin?: string;
 }
 
+export type SupportWorkerSkill =
+  | "personal-care"
+  | "transport"
+  | "therapy"
+  | "social-support"
+  | "household"
+  | "communication"
+  | "behavior-support"
+  | "medication-management"
+  | "meal-preparation"
+  | "first-aid";
+
+
 // Support Worker Verification Status
 export interface VerificationStatus {
   profileSetupComplete: boolean;

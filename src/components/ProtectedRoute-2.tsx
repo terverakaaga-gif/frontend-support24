@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { SupportWorker } from '@/types/user.types';
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
   
   // If the user is a support worker who hasn't completed onboarding
-  if (user.role === 'support-worker' && !user.isOnboarded) {
+  if (user.role === 'supportWorker' && !(user as SupportWorker).verificationStatus?.profileSetupComplete) {
     return <Navigate to="/support-worker-setup" replace />;
   }
   
@@ -45,7 +46,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
       case 'participant':
         redirectPath = '/participant';
         break;
-      case 'support-worker':
+      case 'supportWorker':
         redirectPath = '/support-worker';
         break;
       default:

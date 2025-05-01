@@ -44,7 +44,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
       case 'participant':
         redirectPath = '/participant';
         break;
-      case 'support-worker':
+      case 'supportWorker':
         redirectPath = '/support-worker';
         break;
       default:
