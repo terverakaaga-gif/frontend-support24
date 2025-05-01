@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import GuardianDashboard from "./pages/GuardianDashboard";
 import ParticipantDashboard from "./pages/ParticipantDashboard";
 import SupportWorkerDashboard from "./pages/SupportWorkerDashboard";
+import SupportWorkerSetupPage from "./pages/SupportWorkerSetupPage";
 import ShiftsPage from "./pages/ShiftsPage";
 import ShiftDetails from "./pages/ShiftDetails";
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,11 @@ const AppRoutes = () => {
   // Helper to redirect to the appropriate dashboard based on user role
   const getDefaultRoute = () => {
     if (!user) return '/login';
+    
+    // For support workers that aren't onboarded, send to setup
+    if (user.role === 'support-worker' && !user.isOnboarded) {
+      return '/support-worker-setup';
+    }
     
     switch (user.role) {
       case 'admin':
@@ -56,6 +62,14 @@ const AppRoutes = () => {
         user && user.isEmailVerified && (user.role !== 'support-worker' || user.isOnboarded) 
           ? <Navigate to={getDefaultRoute()} replace /> 
           : <Register />
+      } />
+      
+      {/* Support Worker Setup Route - only for authenticated support workers who need onboarding */}
+      <Route path="/support-worker-setup" element={
+        !user ? <Navigate to="/login" replace /> :
+        user.role !== 'support-worker' ? <Navigate to={getDefaultRoute()} replace /> :
+        user.isOnboarded ? <Navigate to="/support-worker" replace /> :
+        <SupportWorkerSetupPage />
       } />
       
       {/* Protected routes */}
@@ -148,7 +162,7 @@ const AppRoutes = () => {
   );
 };
 
-const App2Old = () => (
+const App2 = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
@@ -162,4 +176,4 @@ const App2Old = () => (
   </QueryClientProvider>
 );
 
-export default App2Old;
+export default App2;
