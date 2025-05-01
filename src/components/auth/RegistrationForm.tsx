@@ -29,7 +29,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
   lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email." }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number." }),
+  // phone: z.string().min(10, { message: "Please enter a valid phone number." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string(),
   role: z.enum(["admin", "guardian", "participant", "support-worker"] as const),
@@ -51,7 +51,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
+      // phone: "",
       password: "",
       confirmPassword: "",
       role: "participant" as UserRole,
@@ -66,7 +66,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <ScrollArea className="h-[400px] pr-4">
+        {/* <ScrollArea className=""> */}
           <div className="space-y-4 px-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -111,7 +111,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="phone"
               render={({ field }) => (
@@ -123,7 +123,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -180,7 +180,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
               )}
             />
           </div>
-        </ScrollArea>
+        {/* </ScrollArea> */}
         
         <Button type="submit" className="w-full py-6 mt-4">Sign Up</Button>
       </form>
