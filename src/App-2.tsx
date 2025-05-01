@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SetupChoicePage from "./pages/SetupChoicePage";
 import AdminDashboard from "./pages/AdminDashboard";
 import GuardianDashboard from "./pages/GuardianDashboard";
 import ParticipantDashboard from "./pages/ParticipantDashboard";
@@ -57,6 +58,14 @@ const AppRoutes = () => {
         user && user.isEmailVerified 
           ? <Navigate to={getDefaultRoute()} replace /> 
           : <Register />
+      } />
+      
+      {/* Setup Choice Page - for newly registered support workers */}
+      <Route path="/setup-choice" element={
+        !user ? <Navigate to="/login" replace /> :
+        user.role !== 'support-worker' ? <Navigate to={getDefaultRoute()} replace /> :
+        user.isOnboarded ? <Navigate to="/support-worker" replace /> :
+        <SetupChoicePage />
       } />
       
       {/* Support Worker Setup Route - accessible but not mandatory */}
