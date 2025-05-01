@@ -26,6 +26,7 @@ export default function SupportWorkerSetupPage() {
       navigate('/support-worker');
       return;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
   const handleSetupComplete = () => {
