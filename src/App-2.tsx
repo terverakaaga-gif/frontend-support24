@@ -32,11 +32,6 @@ const AppRoutes = () => {
   const getDefaultRoute = () => {
     if (!user) return '/login';
     
-    // For support workers that aren't onboarded, send to setup
-    if (user.role === 'support-worker' && !user.isOnboarded) {
-      return '/support-worker-setup';
-    }
-    
     switch (user.role) {
       case 'admin':
         return '/admin';
@@ -59,16 +54,15 @@ const AppRoutes = () => {
       } />
       
       <Route path="/register" element={
-        user && user.isEmailVerified && (user.role !== 'support-worker' || user.isOnboarded) 
+        user && user.isEmailVerified 
           ? <Navigate to={getDefaultRoute()} replace /> 
           : <Register />
       } />
       
-      {/* Support Worker Setup Route - only for authenticated support workers who need onboarding */}
+      {/* Support Worker Setup Route - accessible but not mandatory */}
       <Route path="/support-worker-setup" element={
         !user ? <Navigate to="/login" replace /> :
         user.role !== 'support-worker' ? <Navigate to={getDefaultRoute()} replace /> :
-        user.isOnboarded ? <Navigate to="/support-worker" replace /> :
         <SupportWorkerSetupPage />
       } />
       
