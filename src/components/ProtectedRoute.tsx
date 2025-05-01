@@ -25,10 +25,9 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/register" replace />;
   }
   
-  // If the user is a support worker who hasn't completed onboarding
-  if (user.role === 'support-worker' && !user.isOnboarded) {
-    return <Navigate to="/support-worker-setup" replace />;
-  }
+  // For support workers who haven't completed onboarding, we don't redirect
+  // We'll show a warning banner instead (in their dashboard component)
+  // This allows them to access their dashboard without being forced to complete setup
   
   // Check if the user has the required role
   if (!allowedRoles.includes(user.role)) {

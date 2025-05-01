@@ -9,47 +9,55 @@ type ProtectedRouteProps = {
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const location = useLocation();
-
+  
   // Show loading state while checking auth
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
-
+  
   // Not logged in, redirect to login
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-
-  // If the user hasn't verified their email and isn't in the process of verifying
-  // Only redirect if not already on the registration page to prevent loops
-  if (!user.isEmailVerified && location.pathname !== "/register") {
+  
+  // If the user hasn't verified their email
+  if (!user.isEmailVerified) {
     return <Navigate to="/register" replace />;
   }
-
-  // If the user hasn't completed onboarding (support worker only)
-  // Only redirect if not already on the registration page to prevent loops
-  if (user.role === 'support-worker' && !user.isOnboarded && location.pathname !== "/register") {
-    return <Navigate to="/register" replace />;
+  
+  // If the user is a support worker who hasn't completed onboarding
+  if (user.role === 'support-worker' && !user.isOnboarded) {
+    return <Navigate to="/support-worker-setup" replace />;
   }
-
+  
   // Check if the user has the required role
   if (!allowedRoles.includes(user.role)) {
-    // Redirect to appropriate dashboard based on role
-    // Only redirect if not already on the target path to prevent loops
+    // Determine where to redirect based on user's role
+    let redirectPath;
+    
     switch (user.role) {
       case 'admin':
-        return location.pathname !== "/admin" ? <Navigate to="/admin" replace /> : <>{children}</>;
+        redirectPath = '/admin';
+        break;
       case 'guardian':
-        return location.pathname !== "/guardian" ? <Navigate to="/guardian" replace /> : <>{children}</>;
+        redirectPath = '/guardian';
+        break;
       case 'participant':
-        return location.pathname !== "/participant" ? <Navigate to="/participant" replace /> : <>{children}</>;
+        redirectPath = '/participant';
+        break;
       case 'support-worker':
-        return location.pathname !== "/support-worker" ? <Navigate to="/support-worker" replace /> : <>{children}</>;
+        redirectPath = '/support-worker';
+        break;
       default:
-        return location.pathname !== "/login" ? <Navigate to="/login" replace /> : <>{children}</>;
+        redirectPath = '/login';
+    }
+    
+    // Only redirect if not already on the target path to prevent loops
+    if (location.pathname !== redirectPath) {
+      return <Navigate to={redirectPath} replace />;
     }
   }
-
-  // User is authenticated, has verified email, completed onboarding (if required), and has the required role
+  
+  // User is authenticated and has the required role
   return <>{children}</>;
 }
