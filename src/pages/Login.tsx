@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Heart } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -18,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useLogin } from "@/hooks/useAuthHooks";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -25,9 +25,8 @@ const formSchema = z.object({
 });
 
 export default function Login() {
-  const { login } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const login = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,21 +37,22 @@ export default function Login() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    
     try {
-      await login(values.email, values.password);
+      await login.mutateAsync({
+        email: values.email,
+        password: values.password
+      });
       // Auth context will handle redirects via ProtectedRoute component
     } catch (error) {
-      // Error is handled in the AuthContext
-    } finally {
-      setIsLoading(false);
+      // Error is handled by the API client
+      console.error("Login failed:", error);
     }
   }
 
-  const handleDemoLogin = (email: string) => {
+  // Demo account logins for development
+  const handleDemoLogin = (email: string, password: string = "password") => {
     form.setValue("email", email);
-    form.setValue("password", "password");
+    form.setValue("password", password);
     form.handleSubmit(onSubmit)();
   };
 
@@ -144,8 +144,12 @@ export default function Login() {
                 </div>
               </ScrollArea>
               
-              <Button type="submit" className="w-full py-6" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Login"}
+              <Button 
+                type="submit" 
+                className="w-full py-6" 
+                disabled={login.isPending}
+              >
+                {login.isPending ? "Signing in..." : "Login"}
               </Button>
             </form>
           </Form>
@@ -157,41 +161,31 @@ export default function Login() {
             </a>
           </div>
           
-          <div className="pt-4">
-            <p className="text-center text-sm text-gray-600 mb-4">
-              Demo Accounts
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleDemoLogin("admin@example.com")}
-              >
-                Admin
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleDemoLogin("john@example.com")}
-              >
-                Guardian
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleDemoLogin("emma@example.com")}
-              >
-                Participant
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleDemoLogin("sarah@example.com")}
-              >
-                Support Worker
-              </Button>
+          {/* {process.env.NODE_ENV !== 'production' && (
+            <div className="pt-4">
+              <p className="text-center text-sm text-gray-600 mb-4">
+                Demo Accounts
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDemoLogin("timiayanlola@outlook.com", "workerPro23!")}
+                  disabled={login.isPending}
+                >
+                  Support Worker
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDemoLogin("timiayanlola@outlook.com", "participantPro23!")}
+                  disabled={login.isPending}
+                >
+                  Participant
+                </Button>
+              </div>
             </div>
-          </div>
+          )} */}
         </div>
       </motion.div>
     </div>
