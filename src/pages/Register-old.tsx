@@ -1,33 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RegistrationForm } from "@/components/auth/RegistrationForm";
 import { OTPVerification } from "@/components/auth/OTPVerification";
-import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
 import { UserRegistrationInput } from "@/entities/UserRegistration";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Heart, Users, Calendar, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 
-type RegistrationStep = 'form' | 'verification' | 'setup';
+type RegistrationStep = 'form' | 'verification';
 
-export default function RegisterOld() {
+export default function Register() {
   const navigate = useNavigate();
-  const { register, verifyEmail, completeOnboarding, user } = useAuth();
+  const { register, verifyEmail, user } = useAuth();
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('form');
   const [registrationData, setRegistrationData] = useState<UserRegistrationInput | null>(null);
-
-  useEffect(() => {
-    if (user && !user.isOnboarded && user.isEmailVerified) {
-      if (user.role === 'support-worker') {
-        setCurrentStep('setup');
-      } else {
-        redirectToDashboard(user.role);
-      }
-    } else if (user && user.isOnboarded && user.isEmailVerified) {
-      redirectToDashboard(user.role);
-    }
-  }, [user]);
 
   const handleRegistration = async (data: UserRegistrationInput) => {
     setRegistrationData(data);
@@ -46,8 +33,10 @@ export default function RegisterOld() {
     
     try {
       await verifyEmail(registrationData.email);
+      
+      // After verification, if user is a support worker, check if they need setup
       if (registrationData.role === 'support-worker') {
-        setCurrentStep('setup');
+        navigate('/support-worker-setup');
       } else {
         redirectToDashboard(registrationData.role);
       }
@@ -59,14 +48,6 @@ export default function RegisterOld() {
   const handleResendOTP = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast.success(`New verification code sent to ${registrationData?.email}`);
-  };
-
-  const handleSetupComplete = () => {
-    if (!user) return;
-    
-    completeOnboarding();
-    toast.success('Profile setup completed successfully!');
-    navigate('/support-worker');
   };
 
   const redirectToDashboard = (role: string) => {
@@ -119,12 +100,6 @@ export default function RegisterOld() {
               onVerified={handleVerification}
               onResend={handleResendOTP}
             />
-          </div>
-        )}
-        
-        {currentStep === 'setup' && user && (
-          <div className="w-full">
-            <SupportWorkerSetup onComplete={handleSetupComplete} />
           </div>
         )}
       </motion.div>
