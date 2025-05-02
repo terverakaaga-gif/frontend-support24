@@ -114,7 +114,7 @@ const AppRoutes = () => {
       } />
 
       <Route path="/support-worker" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
+        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
           <Navbar />
           <SupportWorkerDashboard />
         </ProtectedRoute>
@@ -122,14 +122,14 @@ const AppRoutes = () => {
 
       {/* Shift management routes */}
       <Route path="/support-worker/shifts" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
+        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
           <Navbar />
           <ShiftsPage />
         </ProtectedRoute>
       } />
 
       <Route path="/support-worker/shifts/:shiftId" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
+        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
           <Navbar />
           <ShiftDetails />
         </ProtectedRoute>
@@ -144,7 +144,7 @@ const AppRoutes = () => {
       } />
 
       <Route path="/support-worker/profile" element={
-        <ProtectedRoute allowedRoles={['support-worker', 'admin']}>
+        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
           <Navbar />
           <SupportWorkerProfile />
         </ProtectedRoute>

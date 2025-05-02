@@ -13,6 +13,7 @@ export interface BaseUser {
   role: UserRole;
   status: UserStatus;
   phone: string;
+  profileImage: string;
   notificationPreferences: string;
   isEmailVerified: boolean;
   createdAt: string;

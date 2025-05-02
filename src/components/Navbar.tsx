@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocation } from "react-router-dom";
 import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
 
@@ -32,7 +32,7 @@ export function Navbar() {
     switch (user.role) {
       case 'participant':
         return '/participant/profile';
-      case 'support-worker':
+      case 'supportWorker':
         return '/support-worker/profile';
       case 'guardian':
         return '/guardian/profile';
@@ -79,7 +79,7 @@ export function Navbar() {
             <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />
           </>
         );
-      case 'support-worker':
+      case 'supportWorker':
         return (
           <>
             <NavLink to="/support-worker" icon={<Users size={20} />} text="Worker" active={isActive('/support-worker')} />
@@ -134,8 +134,9 @@ export function Navbar() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar>
+                <AvatarImage src={user?.profileImage} alt={`${user?.firstName} ${user.lastName}`}/>
                   <AvatarFallback className="bg-guardian text-white">
-                    {user?.avatar || user?.name?.charAt(0)}
+                    {user?.firstName?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
               </Button>

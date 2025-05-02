@@ -167,13 +167,13 @@ export default function SupportWorkerProfile() {
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={supportWorker.profileImage} alt={supportWorker.fullName} />
+                <AvatarImage src={user?.profileImage} alt={`${user?.firstName} ${user?.lastName}`} />
                 <AvatarFallback className="text-2xl bg-guardian text-white">
-                  {supportWorker.firstName.charAt(0)}{supportWorker.lastName.charAt(0)}
+                  {user?.firstName.charAt(0)}{user?.lastName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
             </div>
-            <CardTitle className="text-2xl">{supportWorker.fullName}</CardTitle>
+            <CardTitle className="text-2xl">{`${user?.firstName} ${user?.lastName}`}</CardTitle>
             <CardDescription>
               <Badge className="mt-1 bg-guardian">Support Worker</Badge>
             </CardDescription>
@@ -182,11 +182,11 @@ export default function SupportWorkerProfile() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-guardian" />
-                <span>{supportWorker.email}</span>
+                <span>{user?.email}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-guardian" />
-                <span>{supportWorker.phone}</span>
+                <span>{user?.phone}</span>
               </div>
               {supportWorker.address && (
                 <div className="flex items-start gap-3">
