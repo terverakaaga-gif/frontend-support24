@@ -172,6 +172,7 @@ export function RegistrationForm({ onSubmit, isLoading = false }: RegistrationFo
                     <SelectItem value="guardian">Guardian</SelectItem>
                     <SelectItem value="participant">Participant</SelectItem>
                     <SelectItem value="supportWorker">Support Worker</SelectItem>
+                    {/* <SelectItem value="admin">Admin</SelectItem> */}
                   </SelectContent>
                 </Select>
                 <FormMessage />

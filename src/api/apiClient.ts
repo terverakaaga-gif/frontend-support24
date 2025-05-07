@@ -12,7 +12,7 @@ export interface ApiResponse<T = unknown> {
 
 // Create axios instance with default config
 const apiClient = axios.create({
-  baseURL: 'https://guardian-care-pro-api.onrender.com/api/v1',
+  baseURL: 'http://localhost:5000/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },

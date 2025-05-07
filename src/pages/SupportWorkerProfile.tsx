@@ -11,6 +11,7 @@ import {
   Calendar, Clock, MapPin, Phone, Mail, User, Edit, Briefcase,
   Languages, Star, DollarSign, CheckSquare, X, Calendar as CalendarIcon
 } from "lucide-react";
+import EditableAvatar from "@/components/EditableAvatar";
 
 // This is a placeholder - in a real app we would fetch the support worker data
 // from an API or context based on authentication
@@ -165,14 +166,15 @@ export default function SupportWorkerProfile() {
         {/* Profile Summary Card */}
         <Card className="lg:col-span-1">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
+            {/* <div className="flex justify-center mb-4">
               <Avatar className="h-24 w-24">
                 <AvatarImage src={user?.profileImage} alt={`${user?.firstName} ${user?.lastName}`} />
                 <AvatarFallback className="text-2xl bg-guardian text-white">
                   {user?.firstName.charAt(0)}{user?.lastName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-            </div>
+            </div> */}
+            <EditableAvatar />
             <CardTitle className="text-2xl">{`${user?.firstName} ${user?.lastName}`}</CardTitle>
             <CardDescription>
               <Badge className="mt-1 bg-guardian">Support Worker</Badge>
