@@ -18,6 +18,7 @@ export interface Invitation {
     email: string;
     profileImage?: string;
   };
+  proposedRate?: string;
   status: InvitationStatus;
   createdAt: Date;
   updatedAt?: Date;

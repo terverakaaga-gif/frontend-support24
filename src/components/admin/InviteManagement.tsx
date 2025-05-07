@@ -73,6 +73,7 @@ const mockInvitations: Invitation[] = [
       email: "olivia.thompson@example.com.au",
       profileImage: "https://i.pravatar.cc/150?img=5"
     },
+    proposedRate: '$50',
     status: "pending",
     createdAt: new Date("2025-03-15T09:30:00"),
     message: "I would like to connect with you for support services."
@@ -93,6 +94,7 @@ const mockInvitations: Invitation[] = [
       email: "michael.brown@example.com.au",
       profileImage: "https://i.pravatar.cc/150?img=6"
     },
+    proposedRate: '$85',
     status: "accepted",
     createdAt: new Date("2025-03-10T14:15:00"),
     updatedAt: new Date("2025-03-11T10:45:00"),
@@ -114,6 +116,7 @@ const mockInvitations: Invitation[] = [
       email: "jessica.white@example.com.au",
       profileImage: "https://i.pravatar.cc/150?img=7"
     },
+    proposedRate: '$125',
     status: "declined",
     createdAt: new Date("2025-03-05T11:20:00"),
     updatedAt: new Date("2025-03-06T09:15:00"),
@@ -344,6 +347,10 @@ export function InviteManagement() {
                             <div className="space-y-2">
                               <h4 className="font-medium">Status</h4>
                               <div>{getStatusBadge(invitation.status)}</div>
+                            </div>
+                            <div className="flex items-center gap-12 space-y-2">
+                              <h4 className="font-medium">Proposed Rate</h4>
+                              <div className="font-medium">{invitation.proposedRate}</div>
                             </div>
                             <div className="space-y-2">
                               <h4 className="font-medium">Dates</h4>

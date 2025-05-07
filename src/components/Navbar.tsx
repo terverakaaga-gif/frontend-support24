@@ -74,8 +74,8 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <NavLink to="/participant" icon={<Heart size={20} />} text="Participants" active={isActive('/participant')} />
-            <NavLink to="/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/support-workers')} />
+            <NavLink to="/admin/participants" icon={<Heart size={20} />} text="Participants" active={isActive('/admin/participants')} />
+            <NavLink to="/admin/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/admin/support-workers')} />
             {/* <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} /> */}
             <NavLink to="/events" icon={<Calendar size={20} />} text="Events" active={isActive('/events')} />
             <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />

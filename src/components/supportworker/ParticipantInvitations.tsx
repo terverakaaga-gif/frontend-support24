@@ -38,8 +38,9 @@ const mockInvitations: Invitation[] = [
       firstName: "Robert",
       lastName: "Davis",
       email: "robert.davis@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=9"
+      profileImage: "https://i.pravatar.cc/150?img=9",
     },
+    proposedRate: '$50',
     status: "accepted",
     createdAt: new Date("2025-03-20T10:30:00"),
     updatedAt: new Date("2025-03-21T09:15:00"),
@@ -61,6 +62,7 @@ const mockInvitations: Invitation[] = [
       email: "robert.davis@example.com.au",
       profileImage: "https://i.pravatar.cc/150?img=9"
     },
+    proposedRate: '$80',
     status: "pending",
     createdAt: new Date("2025-03-22T14:45:00"),
     message: "I need help with transportation and social activities."
