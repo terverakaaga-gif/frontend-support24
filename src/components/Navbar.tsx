@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Home, UserRound, Users, Calendar, Settings, Bell, Search, BellRing } from "lucide-react";
+import { Heart, Home, UserRound, Users, Calendar, ShieldCheck, Settings, Bell, ReceiptText, Search, BellRing, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -48,26 +47,45 @@ export function Navbar() {
       case 'admin':
         return (
           <>
-            {/* <NavLink to="/admin" icon={<Home size={20} />} text="Coordinator" active={true} />
-            <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" />
-            <NavLink to="/worker" icon={<Calendar size={20} />} text="Worker" />
-            <NavLink to="/support-workers" icon={<Users size={20} />} text="Support Workers" />
-            <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" />
-            <NavLink to="/admin-settings" icon={<Settings size={20} />} text="Admin" /> */}
-            <NavLink to="/admin" icon={<Home size={20} />} text="Coordinator" active={isActive('/admin')} />
-            <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} />
-            <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={isActive('/guardian')} />
-            <NavLink to="/worker" icon={<Calendar size={20} />} text="Worker" active={isActive('/worker')} />
+            {/* Specialist dropdown menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/admin') ? "text-guardian" : "text-muted-foreground hover:text-foreground"
+              }`}>
+                <div className="flex items-center gap-2">
+                  <Home size={20} />
+                  <span>Specialists</span>
+                  <ChevronDown size={16} />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/coordinators" className="w-full">Coordinators</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/therapists" className="w-full">Therapists</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/counselors" className="w-full">Counselors</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/specialists" className="w-full">All Specialists</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <NavLink to="/participant" icon={<Heart size={20} />} text="Participants" active={isActive('/participant')} />
             <NavLink to="/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/support-workers')} />
+            {/* <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} /> */}
+            <NavLink to="/events" icon={<Calendar size={20} />} text="Events" active={isActive('/events')} />
             <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />
-            <NavLink to="/admin-settings" icon={<Settings size={20} />} text="Admin" active={isActive('/admin-settings')} />
+            <NavLink to="/incidents" icon={<ShieldCheck size={20} />} text="Incidents" active={isActive('/incidents')} />
+            <NavLink to="/invoices" icon={<ReceiptText size={20} />} text="Invoices" active={isActive('/invoices')} />
           </>
         );
       case 'guardian':
         return (
           <>
-            {/* <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={true} />
-            <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" /> */}
             <NavLink to="/guardian" icon={<Heart size={20} />} text="Guardian" active={isActive('/guardian')} />
             <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />
           </>
