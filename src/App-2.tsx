@@ -25,6 +25,7 @@ import AdminChat from "./pages/AdminChat";
 import { SupportWorker } from "./types/user.types";
 import ParticipantsManagementPage from "./pages/ParticipantsManagementPage";
 import SupportWorkersManagementPage from "./pages/SupportWorkersManagementPage";
+import InviteDetailsPage from "./pages/InviteDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,13 @@ const AppRoutes = () => {
         <ProtectedRoute allowedRoles={['admin']}>
           <Navbar />
           <InviteManagementPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/invites/:inviteId/details" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Navbar />
+          <InviteDetailsPage />
         </ProtectedRoute>
       } />
 

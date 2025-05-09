@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Table, 
   TableBody, 
@@ -7,16 +7,6 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger,
-  DialogFooter,
-  DialogClose
-} from "@/components/ui/dialog";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -27,158 +17,433 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle 
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   MessageCircle, 
   ChevronDown, 
   Filter, 
   Search, 
-  Mail, 
-  CheckCircle, 
-  XCircle, 
   RefreshCw,
-  UserCheck,
-  UserX,
   Info,
   Send
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { getUserFullName } from "@/entities/User";
-import { Invitation } from "@/entities/Invitation";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
-// Mock data for invitations
-const mockInvitations: Invitation[] = [
+// Define interfaces based on API response
+interface RateTimeBand {
+  _id: string;
+  name: string;
+  code: string;
+  startTime?: string;
+  endTime?: string;
+  isActive: boolean;
+}
+
+interface ShiftRate {
+  rateTimeBandId: RateTimeBand;
+  hourlyRate: number;
+  _id: string;
+}
+
+interface ProposedRates {
+  baseHourlyRate: number;
+  shiftRates: ShiftRate[];
+}
+
+interface Invite {
+  inviteId: string;
+  workerId: string;
+  workerName: string;
+  inviteDate: string;
+  proposedRates: ProposedRates;
+  notes: string;
+}
+
+interface OrganizationInvites {
+  organizationId: string;
+  organizationName: string;
+  participantId: string;
+  participantName: string;
+  invites: Invite[];
+}
+
+// Actual API data from the provided JSON
+const mockApiResponse: OrganizationInvites[] = [
   {
-    _id: "inv1",
-    participant: {
-      _id: "part1",
-      firstName: "John",
-      lastName: "Smith",
-      email: "john.smith@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=1"
-    },
-    supportWorker: {
-      _id: "sw1",
-      firstName: "Olivia",
-      lastName: "Thompson",
-      email: "olivia.thompson@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=5"
-    },
-    proposedRate: '$50',
-    status: "pending",
-    createdAt: new Date("2025-03-15T09:30:00"),
-    message: "I would like to connect with you for support services."
+    organizationId: "681cbad118cb004b3456b169",
+    organizationName: "Michael's Organization",
+    participantId: "681cbad018cb004b3456b166",
+    participantName: "Michael Hishen",
+    invites: [
+      {
+        inviteId: "681cbff42481ff70cf87ae9a",
+        workerId: "6813df5a4d13ec4234a33960",
+        workerName: "Priscilla Friday",
+        inviteDate: "2025-05-08T14:30:12.827Z",
+        proposedRates: {
+          baseHourlyRate: 35,
+          shiftRates: [
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05c",
+                name: "Morning Shift",
+                code: "MORNING",
+                startTime: "06:00",
+                endTime: "14:00",
+                isActive: true
+              },
+              hourlyRate: 35,
+              _id: "681cbff42481ff70cf87ae9b"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05d",
+                name: "Afternoon Shift",
+                code: "AFTERNOON",
+                startTime: "14:00",
+                endTime: "22:00",
+                isActive: true
+              },
+              hourlyRate: 40,
+              _id: "681cbff42481ff70cf87ae9c"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05e",
+                name: "Night Shift",
+                code: "NIGHT",
+                startTime: "22:00",
+                endTime: "06:00",
+                isActive: true
+              },
+              hourlyRate: 45,
+              _id: "681cbff42481ff70cf87ae9d"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05f",
+                name: "Weekend Shift",
+                code: "WEEKEND",
+                isActive: true
+              },
+              hourlyRate: 50,
+              _id: "681cbff42481ff70cf87ae9e"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d060",
+                name: "Public Holiday Shift",
+                code: "HOLIDAY",
+                isActive: true
+              },
+              hourlyRate: 65,
+              _id: "681cbff42481ff70cf87ae9f"
+            }
+          ]
+        },
+        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
+      }
+    ]
   },
   {
-    _id: "inv2",
-    participant: {
-      _id: "part2",
-      firstName: "Emma",
-      lastName: "Wilson",
-      email: "emma.wilson@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=3"
-    },
-    supportWorker: {
-      _id: "sw2",
-      firstName: "Michael",
-      lastName: "Brown",
-      email: "michael.brown@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=6"
-    },
-    proposedRate: '$85',
-    status: "accepted",
-    createdAt: new Date("2025-03-10T14:15:00"),
-    updatedAt: new Date("2025-03-11T10:45:00"),
-    message: "I need assistance with daily activities."
-  },
-  {
-    _id: "inv3",
-    participant: {
-      _id: "part3",
-      firstName: "David",
-      lastName: "Lee",
-      email: "david.lee@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=4"
-    },
-    supportWorker: {
-      _id: "sw3",
-      firstName: "Jessica",
-      lastName: "White",
-      email: "jessica.white@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=7"
-    },
-    proposedRate: '$125',
-    status: "declined",
-    createdAt: new Date("2025-03-05T11:20:00"),
-    updatedAt: new Date("2025-03-06T09:15:00"),
-    message: "Looking for support with therapy sessions."
+    organizationId: "681cc78768061d1d6cb4b670",
+    organizationName: "Adams's Organization",
+    participantId: "681cc78668061d1d6cb4b66d",
+    participantName: "Adams Ben",
+    invites: [
+      {
+        inviteId: "681cc85968061d1d6cb4b67c",
+        workerId: "68148b23f8b7c8445a42a932",
+        workerName: "John Doe",
+        inviteDate: "2025-05-08T15:06:01.095Z",
+        proposedRates: {
+          baseHourlyRate: 30,
+          shiftRates: [
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05c",
+                name: "Morning Shift",
+                code: "MORNING",
+                startTime: "06:00",
+                endTime: "14:00",
+                isActive: true
+              },
+              hourlyRate: 30,
+              _id: "681cc85968061d1d6cb4b67d"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05d",
+                name: "Afternoon Shift",
+                code: "AFTERNOON",
+                startTime: "14:00",
+                endTime: "22:00",
+                isActive: true
+              },
+              hourlyRate: 35,
+              _id: "681cc85968061d1d6cb4b67e"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05e",
+                name: "Night Shift",
+                code: "NIGHT",
+                startTime: "22:00",
+                endTime: "06:00",
+                isActive: true
+              },
+              hourlyRate: 40,
+              _id: "681cc85968061d1d6cb4b67f"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05f",
+                name: "Weekend Shift",
+                code: "WEEKEND",
+                isActive: true
+              },
+              hourlyRate: 45,
+              _id: "681cc85968061d1d6cb4b680"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d060",
+                name: "Public Holiday Shift",
+                code: "HOLIDAY",
+                isActive: true
+              },
+              hourlyRate: 60,
+              _id: "681cc85968061d1d6cb4b681"
+            }
+          ]
+        },
+        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
+      },
+      {
+        inviteId: "681d8f0c68061d1d6cb4b6d0",
+        workerId: "6813df5a4d13ec4234a33960",
+        workerName: "Priscilla Friday",
+        inviteDate: "2025-05-09T05:13:48.065Z",
+        proposedRates: {
+          baseHourlyRate: 30,
+          shiftRates: [
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05c",
+                name: "Morning Shift",
+                code: "MORNING",
+                startTime: "06:00",
+                endTime: "14:00",
+                isActive: true
+              },
+              hourlyRate: 30,
+              _id: "681d8f0c68061d1d6cb4b6d1"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05d",
+                name: "Afternoon Shift",
+                code: "AFTERNOON",
+                startTime: "14:00",
+                endTime: "22:00",
+                isActive: true
+              },
+              hourlyRate: 35,
+              _id: "681d8f0c68061d1d6cb4b6d2"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05e",
+                name: "Night Shift",
+                code: "NIGHT",
+                startTime: "22:00",
+                endTime: "06:00",
+                isActive: true
+              },
+              hourlyRate: 40,
+              _id: "681d8f0c68061d1d6cb4b6d3"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05f",
+                name: "Weekend Shift",
+                code: "WEEKEND",
+                isActive: true
+              },
+              hourlyRate: 45,
+              _id: "681d8f0c68061d1d6cb4b6d4"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d060",
+                name: "Public Holiday Shift",
+                code: "HOLIDAY",
+                isActive: true
+              },
+              hourlyRate: 60,
+              _id: "681d8f0c68061d1d6cb4b6d5"
+            }
+          ]
+        },
+        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
+      },
+      {
+        inviteId: "681d916268061d1d6cb4b712",
+        workerId: "68147c5fc76eca4fd2ec3efa",
+        workerName: "Samson Adaramola",
+        inviteDate: "2025-05-09T05:23:46.302Z",
+        proposedRates: {
+          baseHourlyRate: 30,
+          shiftRates: [
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05c",
+                name: "Morning Shift",
+                code: "MORNING",
+                startTime: "06:00",
+                endTime: "14:00",
+                isActive: true
+              },
+              hourlyRate: 30,
+              _id: "681d916268061d1d6cb4b713"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05d",
+                name: "Afternoon Shift",
+                code: "AFTERNOON",
+                startTime: "14:00",
+                endTime: "22:00",
+                isActive: true
+              },
+              hourlyRate: 35,
+              _id: "681d916268061d1d6cb4b714"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05e",
+                name: "Night Shift",
+                code: "NIGHT",
+                startTime: "22:00",
+                endTime: "06:00",
+                isActive: true
+              },
+              hourlyRate: 40,
+              _id: "681d916268061d1d6cb4b715"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d05f",
+                name: "Weekend Shift",
+                code: "WEEKEND",
+                isActive: true
+              },
+              hourlyRate: 45,
+              _id: "681d916268061d1d6cb4b716"
+            },
+            {
+              rateTimeBandId: {
+                _id: "681c6f750ab224ca6685d060",
+                name: "Public Holiday Shift",
+                code: "HOLIDAY",
+                isActive: true
+              },
+              hourlyRate: 60,
+              _id: "681d916268061d1d6cb4b717"
+            }
+          ]
+        },
+        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
+      }
+    ]
   }
 ];
 
+// Helper function to generate an avatar placeholder
+const getAvatarPlaceholder = (name: string): string => {
+  const parts = name.split(' ');
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`;
+  }
+  return name.substring(0, 2).toUpperCase();
+};
+
+// Flatten invites for table display
+const flattenInvites = (orgs: OrganizationInvites[]) => {
+  const result: {
+    inviteId: string;
+    workerId: string;
+    workerName: string;
+    organizationName: string;
+    organizationId: string;
+    participantId: string;
+    participantName: string;
+    inviteDate: string;
+    proposedRates: ProposedRates;
+    notes: string;
+    status: string; // All will be "pending" as requested
+  }[] = [];
+  
+  orgs.forEach(org => {
+    org.invites.forEach(invite => {
+      result.push({
+        ...invite,
+        organizationName: org.organizationName,
+        organizationId: org.organizationId,
+        participantId: org.participantId,
+        participantName: org.participantName,
+        status: "pending" // All invites set to pending as requested
+      });
+    });
+  });
+  
+  return result;
+};
+
+// Format currency
+const formatCurrency = (amount: number) => {
+  return `$${amount}`;
+};
+
 export function InviteManagement() {
-  const [invitations, setInvitations] = useState<Invitation[]>(mockInvitations);
+  const [apiData, setApiData] = useState<OrganizationInvites[]>(mockApiResponse);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [messageText, setMessageText] = useState("");
-  const [selectedInvitation, setSelectedInvitation] = useState<Invitation | null>(null);
-
+  const [flattenedInvites, setFlattenedInvites] = useState<any[]>([]);
+  
+  // Process and flatten the invites when apiData changes
+  useEffect(() => {
+    const flattened = flattenInvites(apiData);
+    setFlattenedInvites(flattened);
+    console.log("Total invites:", flattened.length); // Debug log
+  }, [apiData]);
+  
   // Filter invitations based on search query and status filter
-  const filteredInvitations = invitations.filter(invitation => {
+  const filteredInvitations = flattenedInvites.filter(invite => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = 
-      getUserFullName(invitation.participant).toLowerCase().includes(searchLower) ||
-      getUserFullName(invitation.supportWorker).toLowerCase().includes(searchLower) ||
-      invitation.participant.email.toLowerCase().includes(searchLower) ||
-      invitation.supportWorker.email.toLowerCase().includes(searchLower);
+      invite.participantName.toLowerCase().includes(searchLower) ||
+      invite.workerName.toLowerCase().includes(searchLower) ||
+      invite.organizationName.toLowerCase().includes(searchLower);
     
-    const matchesStatus = statusFilter ? invitation.status === statusFilter : true;
+    const matchesStatus = statusFilter ? invite.status === statusFilter : true;
     
     return matchesSearch && matchesStatus;
   });
 
-  const handleSendMessage = () => {
-    if (!selectedInvitation || !messageText.trim()) return;
-    
+  const handleMakeInvitationAvailable = (inviteId: string) => {
+    // Just update the UI state to reflect action was taken
     toast({
-      title: "Message Sent",
-      description: `Message sent to ${getUserFullName(selectedInvitation.supportWorker)}`,
+      title: "Invitation Made Available",
+      description: `Invitation is now available to the support worker`,
     });
-    
-    setMessageText("");
-    
-    // Log for debugging
-    console.log(`Admin notification: Message sent to ${getUserFullName(selectedInvitation.supportWorker)}`);
-  };
-
-  const handleMakeInvitationAvailable = (invitationId: string) => {
-    setInvitations(prev => 
-      prev.map(inv => 
-        inv._id === invitationId && inv.status === "pending"
-          ? {...inv, updatedAt: new Date()} 
-          : inv
-      )
-    );
-
-    const invitation = invitations.find(inv => inv._id === invitationId);
-    if (invitation) {
-      // const actionText = newStatus === "accepted" ? "accepted" : "declined";
-      toast({
-        title: "Invitation Made Available",
-        description: `Invitation from ${getUserFullName(invitation.participant)} is now available to ${getUserFullName(invitation.supportWorker)}`,
-      });
-      
-      // Log for debugging
-      // console.log(`Admin notification: ${getUserFullName(invitation.supportWorker)}'s invitation ${actionText}`);
-    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -236,7 +501,7 @@ export function InviteManagement() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" size="sm" onClick={() => setInvitations(mockInvitations)}>
+            <Button variant="outline" size="sm" onClick={() => setApiData(mockApiResponse)}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
@@ -244,6 +509,9 @@ export function InviteManagement() {
         </div>
       </CardHeader>
       <CardContent>
+        <div className="text-muted-foreground mb-2">
+          Total Invitations: {flattenedInvites.length}
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -263,34 +531,34 @@ export function InviteManagement() {
               </TableRow>
             ) : (
               filteredInvitations.map((invitation) => (
-                <TableRow key={invitation._id}>
+                <TableRow key={invitation.inviteId}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={invitation.participant.profileImage} />
-                        <AvatarFallback>{invitation.participant.firstName.charAt(0)}{invitation.participant.lastName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{getAvatarPlaceholder(invitation.participantName)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{getUserFullName(invitation.participant)}</div>
-                        <div className="text-sm text-muted-foreground">{invitation.participant.email}</div>
+                        <div className="font-medium">{invitation.participantName}</div>
+                        <div className="text-sm text-muted-foreground">{invitation.organizationName}</div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={invitation.supportWorker.profileImage} />
-                        <AvatarFallback>{invitation.supportWorker.firstName.charAt(0)}{invitation.supportWorker.lastName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{getAvatarPlaceholder(invitation.workerName)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{getUserFullName(invitation.supportWorker)}</div>
-                        <div className="text-sm text-muted-foreground">{invitation.supportWorker.email}</div>
+                        <div className="font-medium">{invitation.workerName}</div>
+                        <div className="text-sm text-muted-foreground">
+                          Proposed Rate: {formatCurrency(invitation.proposedRates.baseHourlyRate)}/hr
+                        </div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(invitation.status)}</TableCell>
                   <TableCell>
-                    {new Date(invitation.createdAt).toLocaleDateString('en-AU', {
+                    {new Date(invitation.inviteDate).toLocaleDateString('en-AU', {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
@@ -298,172 +566,19 @@ export function InviteManagement() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8"
-                            onClick={() => setSelectedInvitation(invitation)}
-                          >
-                            <Info className="h-4 w-4 mr-2" />
-                            Details
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Invitation Details</DialogTitle>
-                            <DialogDescription>
-                              Review the connection invitation details
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                              <h4 className="font-medium">Participant</h4>
-                              <div className="flex items-center gap-3">
-                                <Avatar>
-                                  <AvatarImage src={invitation.participant.profileImage} />
-                                  <AvatarFallback>{invitation.participant.firstName.charAt(0)}{invitation.participant.lastName.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="font-medium">{getUserFullName(invitation.participant)}</div>
-                                  <div className="text-sm text-muted-foreground">{invitation.participant.email}</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <h4 className="font-medium">Support Worker</h4>
-                              <div className="flex items-center gap-3">
-                                <Avatar>
-                                  <AvatarImage src={invitation.supportWorker.profileImage} />
-                                  <AvatarFallback>{invitation.supportWorker.firstName.charAt(0)}{invitation.supportWorker.lastName.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="font-medium">{getUserFullName(invitation.supportWorker)}</div>
-                                  <div className="text-sm text-muted-foreground">{invitation.supportWorker.email}</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <h4 className="font-medium">Status</h4>
-                              <div>{getStatusBadge(invitation.status)}</div>
-                            </div>
-                            <div className="flex items-center gap-12 space-y-2">
-                              <h4 className="font-medium">Proposed Rate</h4>
-                              <div className="font-medium">{invitation.proposedRate}</div>
-                            </div>
-                            <div className="space-y-2">
-                              <h4 className="font-medium">Dates</h4>
-                              <div className="text-sm">
-                                <div>
-                                  <span className="text-muted-foreground">Created: </span>
-                                  {new Date(invitation.createdAt).toLocaleString('en-AU')}
-                                </div>
-                                {invitation.updatedAt && (
-                                  <div>
-                                    <span className="text-muted-foreground">Updated: </span>
-                                    {new Date(invitation.updatedAt).toLocaleString('en-AU')}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            {invitation.message && (
-                              <div className="space-y-2">
-                                <h4 className="font-medium">Message</h4>
-                                <div className="text-sm bg-muted p-3 rounded-md">
-                                  {invitation.message}
-                                </div>
-                              </div>
-                            )}
-                            {invitation.adminNotes && (
-                              <div className="space-y-2">
-                                <h4 className="font-medium">Admin Notes</h4>
-                                <div className="text-sm bg-muted p-3 rounded-md">
-                                  {invitation.adminNotes}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <Link to={`/admin/invites/${invitation.inviteId}/details`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8"
+                        >
+                          <Info className="h-4 w-4 mr-2" />
+                          Details
+                        </Button>
+                      </Link>
                       
-                      {/* <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8"
-                            onClick={() => setSelectedInvitation(invitation)}
-                          >
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            Message
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Send Message to Support Worker</DialogTitle>
-                            <DialogDescription>
-                              Notify {getUserFullName(invitation.supportWorker)} about this invitation
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <div className="flex items-center gap-3 p-3 bg-muted rounded-md">
-                              <Avatar>
-                                <AvatarImage src={invitation.supportWorker.profileImage} />
-                                <AvatarFallback>{invitation.supportWorker.firstName.charAt(0)}{invitation.supportWorker.lastName.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="font-medium">{getUserFullName(invitation.supportWorker)}</div>
-                                <div className="text-sm text-muted-foreground">{invitation.supportWorker.email}</div>
-                              </div>
-                            </div>
-                            <Textarea
-                              placeholder="Write a message about this invitation..."
-                              value={messageText}
-                              onChange={(e) => setMessageText(e.target.value)}
-                              className="min-h-[120px]"
-                            />
-                          </div>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button
-                              onClick={handleSendMessage}
-                              disabled={!messageText.trim()}
-                            >
-                              <Mail className="h-4 w-4 mr-2" />
-                              Send Message
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      
-                      {invitation.status === "pending" && (
-                        <>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8 text-green-600 hover:text-green-700 hover:bg-green-50" 
-                            onClick={() => handleUpdateInvitationStatus(invitation._id, "accepted")}
-                          >
-                            <UserCheck className="h-4 w-4 mr-2" />
-                            Accept
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50" 
-                            onClick={() => handleUpdateInvitationStatus(invitation._id, "declined")}
-                          >
-                            <UserX className="h-4 w-4 mr-2" />
-                            Decline
-                          </Button>
-                        </>
-                      )} */}
-
                       {/* Chat button linking to the AdminChat page */}
-                      <Link to={`/admin/chat/${invitation.supportWorker._id}`}>
+                      <Link to={`/admin/chat/${invitation.workerId}`}>
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -479,7 +594,7 @@ export function InviteManagement() {
                           variant="outline" 
                           size="sm" 
                           className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
-                          onClick={() => handleMakeInvitationAvailable(invitation._id)}
+                          onClick={() => handleMakeInvitationAvailable(invitation.inviteId)}
                         >
                           <Send className="h-4 w-4 mr-2" />
                           Make Available
