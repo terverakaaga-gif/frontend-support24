@@ -26,6 +26,7 @@ import { SupportWorker } from "./types/user.types";
 import ParticipantsManagementPage from "./pages/ParticipantsManagementPage";
 import SupportWorkersManagementPage from "./pages/SupportWorkersManagementPage";
 import InviteDetailsPage from "./pages/InviteDetailsPage";
+import InviteConfirmationPage from "./pages/InviteConfirmationPage";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,13 @@ const AppRoutes = () => {
         <ProtectedRoute allowedRoles={['admin']}>
           <Navbar />
           <InviteDetailsPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/invites/:inviteId/confirm" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Navbar />
+          <InviteConfirmationPage />
         </ProtectedRoute>
       } />
 

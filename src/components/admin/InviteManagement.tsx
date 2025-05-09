@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Table, 
   TableBody, 
@@ -417,6 +418,8 @@ export function InviteManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [flattenedInvites, setFlattenedInvites] = useState<any[]>([]);
+
+  const navigate = useNavigate();
   
   // Process and flatten the invites when apiData changes
   useEffect(() => {
@@ -440,10 +443,11 @@ export function InviteManagement() {
 
   const handleMakeInvitationAvailable = (inviteId: string) => {
     // Just update the UI state to reflect action was taken
-    toast({
-      title: "Invitation Made Available",
-      description: `Invitation is now available to the support worker`,
-    });
+    // toast({
+    //   title: "Invitation Made Available",
+    //   description: `Invitation is now available to the support worker`,
+    // });
+    // navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=make-available`);
   };
 
   const getStatusBadge = (status: string) => {

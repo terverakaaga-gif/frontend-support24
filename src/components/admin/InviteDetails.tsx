@@ -429,24 +429,27 @@ export function InviteDetails() {
   };
 
   const handleMakeAvailable = () => {
-    toast({
-      title: "Invitation Made Available",
-      description: `Invitation is now available to ${inviteDetails.workerName}`,
-    });
+    // toast({
+    //   title: "Invitation Made Available",
+    //   description: `Invitation is now available to ${inviteDetails.workerName}`,
+    // });
+    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=make-available`);
   };
 
   const handleAccept = () => {
-    toast({
-      title: "Invitation Accepted",
-      description: `You've accepted the invitation from ${inviteDetails.participantName}`,
-    });
+    // toast({
+    //   title: "Invitation Accepted",
+    //   description: `You've accepted the invitation from ${inviteDetails.participantName}`,
+    // });
+    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=accept`);
   };
 
   const handleDecline = () => {
-    toast({
-      title: "Invitation Declined",
-      description: `You've declined the invitation from ${inviteDetails.participantName}`,
-    });
+    // toast({
+    //   title: "Invitation Declined",
+    //   description: `You've declined the invitation from ${inviteDetails.participantName}`,
+    // });
+    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=decline`);
   };
 
   if (loading) {
