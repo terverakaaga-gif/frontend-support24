@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Home, UserRound, Users, Calendar, ShieldCheck, Settings, Bell, ReceiptText, Search, BellRing, ChevronDown } from "lucide-react";
+import { Heart, Home, UserRound, Users, Calendar, ShieldCheck, Settings, Bell, ReceiptText, Search, BellRing, ChevronDown, CalendarSync } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -73,14 +73,39 @@ export function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* User dropdown menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/admin') ? "text-guardian" : "text-muted-foreground hover:text-foreground"
+              }`}>
+                <div className="flex items-center gap-2">
+                  <Users size={20} />
+                  <span>Users</span>
+                  <ChevronDown size={16} />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link to="/admin" className="w-full">Admin</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/participants" className="w-full">Participants</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/support-workers" className="w-full">Support Workers</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
-            <NavLink to="/admin/participants" icon={<Heart size={20} />} text="Participants" active={isActive('/admin/participants')} />
-            <NavLink to="/admin/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/admin/support-workers')} />
-            {/* <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} /> */}
-            <NavLink to="/events" icon={<Calendar size={20} />} text="Events" active={isActive('/events')} />
+            {/* <NavLink to="/admin/participants" icon={<Heart size={20} />} text="Participants" active={isActive('/admin/participants')} />
+            <NavLink to="/admin/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/admin/support-workers')} /> */}
+            <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} />
+            <NavLink to="/admin/rate-time-band" icon={<CalendarSync size={20} />} text="Rate-Time-Band" active={isActive('/admin/rate-time-band')} />
             <NavLink to="/bookings" icon={<Calendar size={20} />} text="Bookings" active={isActive('/bookings')} />
             <NavLink to="/incidents" icon={<ShieldCheck size={20} />} text="Incidents" active={isActive('/incidents')} />
             <NavLink to="/invoices" icon={<ReceiptText size={20} />} text="Invoices" active={isActive('/invoices')} />
+            <NavLink to="/events" icon={<Calendar size={20} />} text="Events" active={isActive('/events')} />
           </>
         );
       case 'guardian':
