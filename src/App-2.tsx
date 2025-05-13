@@ -27,6 +27,9 @@ import ParticipantsManagementPage from "./pages/ParticipantsManagementPage";
 import SupportWorkersManagementPage from "./pages/SupportWorkersManagementPage";
 import InviteDetailsPage from "./pages/InviteDetailsPage";
 import InviteConfirmationPage from "./pages/InviteConfirmationPage";
+import RateTimeBandManagementPage from "./pages/RateTimeBandManagementPage";
+import { RateTimeBandDetailsPage } from "./components/admin/RateTimeBandDetails";
+import { RateTimeBandForm } from "./components/admin/RateTimeBandForm";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +110,34 @@ const AppRoutes = () => {
         <ProtectedRoute allowedRoles={['admin']}>
           <Navbar />
           <InviteConfirmationPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/rate-time-band" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Navbar />
+          <RateTimeBandManagementPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/rate-time-band/create" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Navbar />
+          <RateTimeBandForm />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/rate-time-band/:id/view" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Navbar />
+          <RateTimeBandDetailsPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/rate-time-band/:id/edit" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Navbar />
+          <RateTimeBandForm />
         </ProtectedRoute>
       } />
 
