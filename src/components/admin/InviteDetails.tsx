@@ -539,7 +539,7 @@ export function InviteDetails() {
                           <div className="flex items-center gap-3">
                             <DollarSign className="h-5 w-5 text-green-600" />
                             <p className="text-lg font-semibold text-green-600">
-                              {formatCurrency(inviteDetails.proposedRates.baseHourlyRate)}/hr
+                              {formatCurrency(inviteDetails.proposedRates.baseHourlyRate)}
                             </p>
                           </div>
                         </div>
@@ -568,7 +568,7 @@ export function InviteDetails() {
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-medium">Base Hourly Rate</h3>
                         <p className="text-lg font-semibold text-green-600">
-                          {formatCurrency(inviteDetails.proposedRates.baseHourlyRate)}/hr
+                          {formatCurrency(inviteDetails.proposedRates.baseHourlyRate)}
                         </p>
                       </div>
                       <Separator className="my-4" />
@@ -588,7 +588,7 @@ export function InviteDetails() {
                               </p>
                             </div>
                             <p className="text-lg font-semibold text-green-600">
-                              {formatCurrency(rate.hourlyRate)}/hr
+                              {formatCurrency(rate.hourlyRate)}
                             </p>
                           </div>
                         ))}
