@@ -50,6 +50,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useGetShifts } from "@/hooks/useShiftHooks";
 
 // Shift status enum
 enum ShiftStatus {
@@ -361,6 +362,10 @@ export function ShiftsManagement() {
   const navigate = useNavigate();
   const [shifts] = useState<Shift[]>(mockShifts);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const {data} = useGetShifts()
+
+  console.log(data);
   
   // Filter states
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
