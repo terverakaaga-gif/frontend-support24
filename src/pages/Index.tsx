@@ -26,7 +26,7 @@ const Index = () => {
       case 'participant':
         navigate('/participant');
         break;
-      case 'support-worker':
+      case 'supportWorker':
         navigate('/support-worker');
         break;
       default:

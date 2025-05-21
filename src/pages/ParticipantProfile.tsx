@@ -9,8 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock, Heart, MapPin, Phone, Mail, User, AlertCircle, Edit, FileText } from "lucide-react";
 
-// This is a placeholder - in a real app we would fetch the participant data
-// from an API or context based on authentication
+
 const mockParticipant = {
   _id: "p1",
   email: "emma@example.com",

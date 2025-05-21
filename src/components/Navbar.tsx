@@ -74,7 +74,7 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* User dropdown menu */}
+            {/* Booking dropdown menu */}
             <DropdownMenu>
               <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors ${
                 isActive('/admin') ? "text-guardian" : "text-muted-foreground hover:text-foreground"

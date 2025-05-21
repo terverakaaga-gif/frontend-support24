@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import EditableAvatar from "@/components/EditableAvatar";
 
-// This is a placeholder - in a real app we would fetch the support worker data
-// from an API or context based on authentication
 const mockSupportWorker = {
   _id: "sw1",
   email: "sarah.johnson@example.com",
