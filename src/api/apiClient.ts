@@ -10,9 +10,11 @@ export interface ApiResponse<T = unknown> {
   error?: string | null;
 }
 
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
 // Create axios instance with default config
 const apiClient = axios.create({
-  baseURL: 'http://localhost:5000/api/v1',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
