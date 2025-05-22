@@ -87,12 +87,6 @@ export function ShiftsManagement() {
 
   // Fetch shifts data - backend handles all filtering
   const { data: shifts = [], isLoading, error } = useGetShifts(apiFilters);
-
-  // Ensure shifts is always an array
-  const safeShifts = Array.isArray(shifts) ? shifts : [];
-  
-  console.log('Shifts: ', shifts);
-  console.log('Safe Shifts: ', safeShifts)
   
   // Helper functions
   const formatTime = (dateString: string) => format(new Date(dateString), "h:mm a");
@@ -338,14 +332,14 @@ export function ShiftsManagement() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {safeShifts.length === 0 ? (
+                {shifts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
                       No shifts found.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  safeShifts.map((shift) => (
+                  shifts.map((shift) => (
                     <TableRow key={shift._id}>
                       <TableCell className="font-medium">
                         <div className="flex flex-col">
