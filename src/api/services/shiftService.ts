@@ -11,6 +11,15 @@ export interface ShiftFilters {
   workerId?: string;
 }
 
+// Interface for the API response structure
+interface ShiftsResponse {
+  shifts: Shift[];
+}
+
+interface ShiftResponse {
+    shift: Shift;
+}
+
 // Service for shift GET operations only
 const shiftService = {
   // Get all shifts with optional filters
@@ -28,17 +37,29 @@ const shiftService = {
     const queryString = queryParams.toString();
     const url = queryString ? `/shifts?${queryString}` : '/shifts';
     
-    return await get<Shift[]>(url);
+    // return await get<Shift[]>(url);
+
+    // Get the response which contains { shifts: [...] }
+    const response = await get<ShiftsResponse>(url);
+    
+    // Return just the shifts array
+    return response.shifts;
   },
   
   // Get a specific shift by MongoDB ID
   getShiftById: async (id: string): Promise<Shift> => {
-    return await get<Shift>(`/shifts/${id}`);
+    // return await get<Shift>(`/shifts/${id}`);
+
+    const response =  await get<ShiftResponse>(`/shifts/${id}`);
+    return response.shift
   },
   
   // Get shift by shiftId reference
   getShiftByShiftId: async (shiftIdRef: string): Promise<Shift> => {
-    return await get<Shift>(`/shifts/byShiftId/${shiftIdRef}`);
+    // return await get<Shift>(`/shifts/byShiftId/${shiftIdRef}`);
+
+    const response =  await get<ShiftResponse>(`/shifts/byShiftId/${shiftIdRef}`);
+    return response.shift
   }
 };
 

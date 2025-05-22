@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft,
@@ -16,7 +16,8 @@ import {
   AlertCircle,
   Briefcase,
   Info,
-  Send
+  Send,
+  RefreshCw
 } from "lucide-react";
 import { 
   Card,
@@ -37,330 +38,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { format, isToday, isPast, isFuture } from "date-fns";
-
-// Define the enum for shift status
-enum ShiftStatus {
-  OPEN = 'open',
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  IN_PROGRESS = 'inProgress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  NO_SHOW = 'noShow'
-}
-
-// Define interfaces based on API response
-interface Recurrence {
-  pattern: string;
-  parentShiftId?: string;
-  occurrences?: number;
-}
-
-interface Organization {
-  _id: string;
-  name: string;
-}
-
-interface User {
-  _id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  profileImage?: string;
-}
-
-interface Shift {
-  _id: string;
-  organizationId: Organization;
-  participantId: User;
-  workerId: User;
-  serviceType: string;
-  startTime: string;
-  endTime: string;
-  locationType: string;
-  address: string;
-  shiftType: string;
-  requiresSupervision: boolean;
-  specialInstructions: string;
-  status: string;
-  shiftId: string;
-  recurrence: Recurrence;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Mock data based on the provided API response
-const mockShifts: Shift[] = [
-  {
-    "recurrence": {
-      "pattern": "weekly",
-      "parentShiftId": "SHIFT-BO1_TXZRC7"
-    },
-    "_id": "682428c619f7a0ac113e06cf",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6813df5a4d13ec4234a33960",
-      "email": "priscillafriday@gmail.com",
-      "firstName": "Priscilla",
-      "lastName": "Friday",
-      "phone": "07081785091",
-      "profileImage": "https://res.cloudinary.com/dj8g798ed/image/upload/v1746165207/user-profiles/profile-6813df5a4d13ec4234a33960.jpg"
-    },
-    "serviceType": "personalCare",
-    "startTime": "2025-06-10T09:00:00.000Z",
-    "endTime": "2025-06-10T12:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "Please bring medical gloves and face mask. Client needs assistance with bathing and medication.",
-    "status": "pending",
-    "shiftId": "SHIFT-TKXWSHF3GE",
-    "createdAt": "2025-05-14T05:23:18.642Z",
-    "updatedAt": "2025-05-14T05:23:18.642Z",
-    "__v": 0
-  },
-  {
-    "recurrence": {
-      "pattern": "weekly",
-      "parentShiftId": "SHIFT-BO1_TXZRC7"
-    },
-    "_id": "682428c619f7a0ac113e06cb",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6813df5a4d13ec4234a33960",
-      "email": "priscillafriday@gmail.com",
-      "firstName": "Priscilla",
-      "lastName": "Friday",
-      "phone": "07081785091",
-      "profileImage": "https://res.cloudinary.com/dj8g798ed/image/upload/v1746165207/user-profiles/profile-6813df5a4d13ec4234a33960.jpg"
-    },
-    "serviceType": "personalCare",
-    "startTime": "2025-06-03T09:00:00.000Z",
-    "endTime": "2025-06-03T12:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "Please bring medical gloves and face mask. Client needs assistance with bathing and medication.",
-    "status": "confirmed",
-    "shiftId": "SHIFT-W0KDJG0JM_",
-    "createdAt": "2025-05-14T05:23:18.123Z",
-    "updatedAt": "2025-05-14T05:23:18.123Z",
-    "__v": 0
-  },
-  {
-    "recurrence": {
-      "pattern": "weekly",
-      "parentShiftId": "SHIFT-BO1_TXZRC7"
-    },
-    "_id": "682428c519f7a0ac113e06c7",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6813df5a4d13ec4234a33960",
-      "email": "priscillafriday@gmail.com",
-      "firstName": "Priscilla",
-      "lastName": "Friday",
-      "phone": "07081785091",
-      "profileImage": "https://res.cloudinary.com/dj8g798ed/image/upload/v1746165207/user-profiles/profile-6813df5a4d13ec4234a33960.jpg"
-    },
-    "serviceType": "personalCare",
-    "startTime": "2025-05-27T09:00:00.000Z",
-    "endTime": "2025-05-27T12:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "Please bring medical gloves and face mask. Client needs assistance with bathing and medication.",
-    "status": "inProgress",
-    "shiftId": "SHIFT-KE7JSMABEW",
-    "createdAt": "2025-05-14T05:23:17.434Z",
-    "updatedAt": "2025-05-14T05:23:17.434Z",
-    "__v": 0
-  },
-  {
-    "recurrence": {
-      "pattern": "none"
-    },
-    "_id": "68242b7419f7a0ac113e0750",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6824214c428844008e125919",
-      "email": "workerthree@gmail.com",
-      "firstName": "Support",
-      "lastName": "Worker3",
-      "phone": "08081785091"
-    },
-    "serviceType": "socialSupport",
-    "startTime": "2025-05-23T15:00:00.000Z",
-    "endTime": "2025-05-23T17:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "Come with your ride.",
-    "status": "open",
-    "shiftId": "SHIFT-5QYHWKDKGP",
-    "createdAt": "2025-05-14T05:34:44.514Z",
-    "updatedAt": "2025-05-14T05:34:44.514Z",
-    "__v": 0
-  },
-  {
-    "recurrence": {
-      "pattern": "none"
-    },
-    "_id": "68242af519f7a0ac113e0725",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6824212b428844008e125914",
-      "email": "workertwo@gmail.com",
-      "firstName": "Support",
-      "lastName": "Worker2",
-      "phone": "08081785091"
-    },
-    "serviceType": "mealPreparation",
-    "startTime": "2025-05-22T15:00:00.000Z",
-    "endTime": "2025-05-22T17:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "One-time shift for doctor's appointment.",
-    "status": "cancelled",
-    "shiftId": "SHIFT-T68_WQ2CRK",
-    "createdAt": "2025-05-14T05:32:37.370Z",
-    "updatedAt": "2025-05-14T05:32:37.370Z",
-    "__v": 0
-  },
-  {
-    "recurrence": {
-      "pattern": "none"
-    },
-    "_id": "68242a0f19f7a0ac113e06fa",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "682420e3428844008e12590f",
-      "email": "workerone@gmail.com",
-      "firstName": "Support",
-      "lastName": "Worker1",
-      "phone": "08081785091"
-    },
-    "serviceType": "personalCare",
-    "startTime": "2025-05-20T14:00:00.000Z",
-    "endTime": "2025-05-20T16:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "One-time shift for doctor's appointment.",
-    "status": "completed",
-    "shiftId": "SHIFT-1KANJXX694",
-    "createdAt": "2025-05-14T05:28:47.029Z",
-    "updatedAt": "2025-05-14T05:28:47.029Z",
-    "__v": 0
-  },
-  {
-    "recurrence": {
-      "pattern": "weekly",
-      "occurrences": 4
-    },
-    "_id": "682428c519f7a0ac113e06c5",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6813df5a4d13ec4234a33960",
-      "email": "priscillafriday@gmail.com",
-      "firstName": "Priscilla",
-      "lastName": "Friday",
-      "phone": "07081785091",
-      "profileImage": "https://res.cloudinary.com/dj8g798ed/image/upload/v1746165207/user-profiles/profile-6813df5a4d13ec4234a33960.jpg"
-    },
-    "serviceType": "personalCare",
-    "startTime": "2025-05-20T09:00:00.000Z",
-    "endTime": "2025-05-20T12:00:00.000Z",
-    "locationType": "inPerson",
-    "address": "123 Main Street, Lagos, Nigeria",
-    "shiftType": "directBooking",
-    "requiresSupervision": false,
-    "specialInstructions": "Please bring medical gloves and face mask. Client needs assistance with bathing and medication.",
-    "status": "noShow",
-    "shiftId": "SHIFT-BO1_TXZRC7",
-    "createdAt": "2025-05-14T05:23:17.257Z",
-    "updatedAt": "2025-05-14T05:23:17.257Z",
-    "__v": 0
-  }
-];
+import { useGetShiftById } from "@/hooks/useShiftHooks";
+import { UserSummary } from "@/entities/types";
+import { Recurrence, ShiftStatus } from "@/entities/Shift";
 
 // Format time for display
 const formatTime = (dateString: string) => {
@@ -383,7 +63,7 @@ const formatDateTime = (dateString: string) => {
 };
 
 // Get full name
-const getFullName = (user: User) => {
+const getFullName = (user: UserSummary) => {
   return `${user.firstName} ${user.lastName}`;
 };
 
@@ -436,6 +116,10 @@ const getStatusBadge = (status: string) => {
     [ShiftStatus.NO_SHOW]: { 
       className: "bg-red-100 text-red-800 border-red-200", 
       label: "No Show" 
+    },
+    [ShiftStatus.DECLINED]: { 
+      className: "bg-red-100 text-red-800 border-red-200", 
+      label: "Declined" 
     }
   };
 
@@ -488,6 +172,11 @@ const getLargeStatusBadge = (status: string) => {
       className: "bg-red-100 text-red-800 border-red-200", 
       label: "No Show",
       icon: <AlertCircle className="h-4 w-4 mr-2" />
+    },
+    [ShiftStatus.DECLINED]: { 
+      className: "bg-red-100 text-red-800 border-red-200", 
+      label: "Declined",
+      icon: <AlertCircle className="h-4 w-4 mr-2" />
     }
   };
 
@@ -524,6 +213,14 @@ const getServiceTypeBadge = (serviceType: string) => {
     "socialSupport": { 
       icon: <Users className="h-4 w-4 mr-2" />, 
       className: "bg-purple-50 text-purple-700 border-purple-200" 
+    },
+    "therapySupport": { 
+      icon: <UserCircle className="h-4 w-4 mr-2" />, 
+      className: "bg-indigo-50 text-indigo-700 border-indigo-200" 
+    },
+    "mobilityAssistance": { 
+      icon: <Users className="h-4 w-4 mr-2" />, 
+      className: "bg-orange-50 text-orange-700 border-orange-200" 
     }
   };
 
@@ -541,8 +238,8 @@ const getServiceTypeBadge = (serviceType: string) => {
 };
 
 // Get recurrence badge
-const getRecurrenceBadge = (recurrence: Recurrence) => {
-  if (recurrence.pattern === "none") return null;
+const getRecurrenceBadge = (recurrence?: Recurrence | null) => {
+  if (!recurrence || recurrence.pattern === "none") return null;
   
   return (
     <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 flex items-center text-xs">
@@ -581,36 +278,52 @@ const getTimeStatusBadge = (dateTimeString: string) => {
 export function ShiftDetailView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [shift, setShift] = useState<Shift | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("details");
 
-  useEffect(() => {
-    // Simulate API call to fetch shift details
-    const fetchShiftDetails = () => {
-      setLoading(true);
-      setTimeout(() => {
-        const foundShift = mockShifts.find(s => s._id === id) || null;
-        setShift(foundShift);
-        setLoading(false);
-      }, 500);
-    };
+  const { data: shift, isLoading, error } = useGetShiftById(id);
 
-    fetchShiftDetails();
-  }, [id]);
+  console.log('shift: ', shift);
 
   const handleGoBack = () => {
     navigate('/admin/shifts');
   };
 
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Loading shift details...</p>
+        </div>
       </div>
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <Card className="max-w-4xl mx-auto mt-8">
+        <CardHeader>
+          <div className="flex items-center">
+            <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <CardTitle>Error Loading Shift</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-red-600">There was an error loading the shift details. Please try again.</p>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={handleGoBack}>Return to Shifts</Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  // Not found state
   if (!shift) {
     return (
       <Card className="max-w-4xl mx-auto mt-8">
@@ -695,6 +408,13 @@ export function ShiftDetailView() {
                           </div>
                           
                           <div>
+                            <p className="text-sm font-medium mb-1">Worker Assignment</p>
+                            <p className="text-sm">
+                              {shift.isMultiWorkerShift ? "Multi-worker shift" : "Single worker shift"}
+                            </p>
+                          </div>
+                          
+                          <div>
                             <p className="text-sm font-medium mb-1">Requires Supervision</p>
                             <p className="text-sm">{shift.requiresSupervision ? "Yes" : "No"}</p>
                           </div>
@@ -721,6 +441,45 @@ export function ShiftDetailView() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Multi-worker assignments */}
+                    {shift.isMultiWorkerShift && shift.workerAssignments && shift.workerAssignments.length > 0 && (
+                      <div className="space-y-4">
+                        <h3 className="text-sm font-medium text-muted-foreground">Worker Assignments</h3>
+                        <div className="bg-muted/30 p-4 rounded-lg space-y-4">
+                          {shift.workerAssignments.map((assignment, index) => (
+                            <div key={assignment._id} className="flex items-center justify-between p-3 bg-white rounded-md border">
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8">
+                                  {assignment.workerId.profileImage ? (
+                                    <AvatarImage 
+                                      src={assignment.workerId.profileImage}
+                                      alt={getFullName(assignment.workerId)}
+                                    />
+                                  ) : null}
+                                  <AvatarFallback>
+                                    {assignment.workerId.firstName.charAt(0)}
+                                    {assignment.workerId.lastName.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="text-sm font-medium">{getFullName(assignment.workerId)}</p>
+                                  <p className="text-xs text-muted-foreground">{assignment.workerId.email}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                {getStatusBadge(assignment.status)}
+                                {assignment.declineReason && (
+                                  <p className="text-xs text-red-600 mt-1">
+                                    Declined: {assignment.declineReason}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Date and Time */}
                     <div className="space-y-4">
@@ -765,6 +524,11 @@ export function ShiftDetailView() {
                                 <p className="text-sm capitalize">
                                   {shift.recurrence.pattern}
                                   {shift.recurrence.occurrences ? ` (${shift.recurrence.occurrences} occurrences)` : ""}
+                                  {shift.recurrence.parentShiftId && (
+                                    <span className="text-muted-foreground">
+                                      {" "}• Parent: {shift.recurrence.parentShiftId}
+                                    </span>
+                                  )}
                                 </p>
                               </div>
                             </div>
@@ -863,15 +627,26 @@ export function ShiftDetailView() {
                   Message Participant
                 </Button>
                 
-                <Button variant="outline">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Message Support Worker
-                </Button>
+                {!shift.isMultiWorkerShift && shift.workerId && (
+                  <Button variant="outline">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message Support Worker
+                  </Button>
+                )}
                 
-                <Button variant="outline">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  View Series
-                </Button>
+                {shift.isMultiWorkerShift && (
+                  <Button variant="outline">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message All Workers
+                  </Button>
+                )}
+                
+                {shift.recurrence.pattern !== "none" && (
+                  <Button variant="outline">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    View Series
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -901,113 +676,198 @@ export function ShiftDetailView() {
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{shift.participantId.email}</span>
-                </li>
-                
-                <li className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{shift.participantId.phone}</span>
-                </li>
-              </ul>
-              
-              <div className="mt-4">
-                <Button variant="outline" className="w-full">
-                  <UserCircle className="h-4 w-4 mr-2" />
-                  View Participant Profile
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Support Worker Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Support Worker</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4 mb-4">
-                {shift.workerId.profileImage ? (
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage 
-                      src={shift.workerId.profileImage}
-                      alt={getFullName(shift.workerId)}
-                    />
-                    <AvatarFallback>
-                      {shift.workerId.firstName.charAt(0)}
-                      {shift.workerId.lastName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback>
-                      {shift.workerId.firstName.charAt(0)}
-                      {shift.workerId.lastName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <div>
-                  <h3 className="font-medium">{getFullName(shift.workerId)}</h3>
-                  <p className="text-sm text-muted-foreground">Support Worker</p>
-                </div>
-              </div>
-              
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{shift.workerId.email}</span>
-                </li>
-                
-                <li className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{shift.workerId.phone}</span>
-                </li>
-              </ul>
-              
-              <div className="mt-4 space-y-2">
-                <Button variant="outline" className="w-full">
-                  <UserCircle className="h-4 w-4 mr-2" />
-                  View Worker Profile
-                </Button>
-                
-                <Button variant="outline" className="w-full">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  View Worker Schedule
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* System Info Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">System Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 text-sm">
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">Shift ID:</span>
-                  <span className="font-mono">{shift.shiftId}</span>
-                </li>
-                
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">Created:</span>
-                  <span>{formatDate(shift.createdAt)}</span>
-                </li>
-                
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">Last Updated:</span>
-                  <span>{formatDate(shift.updatedAt)}</span>
-                </li>
-                
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">Database ID:</span>
-                  <span className="font-mono truncate max-w-[180px]">{shift._id}</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
+                 <span className="text-sm">{shift.participantId.email}</span>
+               </li>
+               
+               <li className="flex items-center gap-3">
+                 <Phone className="h-4 w-4 text-muted-foreground" />
+                 <span className="text-sm">{shift.participantId.phone}</span>
+               </li>
+             </ul>
+             
+             <div className="mt-4">
+               <Button variant="outline" className="w-full">
+                 <UserCircle className="h-4 w-4 mr-2" />
+                 View Participant Profile
+               </Button>
+             </div>
+           </CardContent>
+         </Card>
+         
+         {/* Support Worker Card - Single Worker */}
+         {!shift.isMultiWorkerShift && shift.workerId && (
+           <Card>
+             <CardHeader className="pb-3">
+               <CardTitle className="text-base">Support Worker</CardTitle>
+             </CardHeader>
+             <CardContent>
+               <div className="flex items-center gap-4 mb-4">
+                 <Avatar className="h-12 w-12">
+                   {shift.workerId.profileImage ? (
+                     <AvatarImage 
+                       src={shift.workerId.profileImage}
+                       alt={getFullName(shift.workerId)}
+                     />
+                   ) : null}
+                   <AvatarFallback>
+                     {shift.workerId.firstName.charAt(0)}
+                     {shift.workerId.lastName.charAt(0)}
+                   </AvatarFallback>
+                 </Avatar>
+                 <div>
+                   <h3 className="font-medium">{getFullName(shift.workerId)}</h3>
+                   <p className="text-sm text-muted-foreground">Support Worker</p>
+                 </div>
+               </div>
+               
+               <ul className="space-y-3">
+                 <li className="flex items-center gap-3">
+                   <Mail className="h-4 w-4 text-muted-foreground" />
+                   <span className="text-sm">{shift.workerId.email}</span>
+                 </li>
+                 
+                 <li className="flex items-center gap-3">
+                   <Phone className="h-4 w-4 text-muted-foreground" />
+                   <span className="text-sm">{shift.workerId.phone}</span>
+                 </li>
+               </ul>
+               
+               <div className="mt-4 space-y-2">
+                 <Button variant="outline" className="w-full">
+                   <UserCircle className="h-4 w-4 mr-2" />
+                   View Worker Profile
+                 </Button>
+                 
+                 <Button variant="outline" className="w-full">
+                   <Calendar className="h-4 w-4 mr-2" />
+                   View Worker Schedule
+                 </Button>
+               </div>
+             </CardContent>
+           </Card>
+         )}
+         
+         {/* Multi-Worker Summary Card */}
+         {shift.isMultiWorkerShift && (
+           <Card>
+             <CardHeader className="pb-3">
+               <CardTitle className="text-base">Support Workers</CardTitle>
+             </CardHeader>
+             <CardContent>
+               <div className="flex items-center gap-4 mb-4">
+                 <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                   <Users className="h-6 w-6 text-blue-600" />
+                 </div>
+                 <div>
+                   <h3 className="font-medium">Multi-worker shift</h3>
+                   <p className="text-sm text-muted-foreground">
+                     {shift.workerAssignments?.length || 0} workers assigned
+                   </p>
+                 </div>
+               </div>
+               
+               {shift.workerAssignments && shift.workerAssignments.length > 0 && (
+                 <div className="space-y-3">
+                   {shift.workerAssignments.slice(0, 3).map((assignment) => (
+                     <div key={assignment._id} className="flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                         <Avatar className="h-6 w-6">
+                           {assignment.workerId.profileImage ? (
+                             <AvatarImage 
+                               src={assignment.workerId.profileImage}
+                               alt={getFullName(assignment.workerId)}
+                             />
+                           ) : null}
+                           <AvatarFallback className="text-xs">
+                             {assignment.workerId.firstName.charAt(0)}
+                             {assignment.workerId.lastName.charAt(0)}
+                           </AvatarFallback>
+                         </Avatar>
+                         <span className="text-sm">{getFullName(assignment.workerId)}</span>
+                       </div>
+                       <div className="text-xs">
+                         {getStatusBadge(assignment.status)}
+                       </div>
+                     </div>
+                   ))}
+                   
+                   {shift.workerAssignments.length > 3 && (
+                     <p className="text-xs text-muted-foreground text-center pt-2">
+                       +{shift.workerAssignments.length - 3} more workers
+                     </p>
+                   )}
+                 </div>
+               )}
+               
+               <div className="mt-4">
+                 <Button variant="outline" className="w-full">
+                   <Users className="h-4 w-4 mr-2" />
+                   View All Workers
+                 </Button>
+               </div>
+             </CardContent>
+           </Card>
+         )}
+         
+         {/* No Worker Assigned Card */}
+         {!shift.isMultiWorkerShift && !shift.workerId && (
+           <Card>
+             <CardHeader className="pb-3">
+               <CardTitle className="text-base">Support Worker</CardTitle>
+             </CardHeader>
+             <CardContent>
+               <div className="text-center py-6">
+                 <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                 <p className="text-sm text-muted-foreground mb-4">
+                   No support worker assigned to this shift yet.
+                 </p>
+                 <Button variant="outline" className="w-full">
+                   <UserCircle className="h-4 w-4 mr-2" />
+                   Assign Worker
+                 </Button>
+               </div>
+             </CardContent>
+           </Card>
+         )}
+         
+         {/* System Info Card */}
+         <Card>
+           <CardHeader className="pb-3">
+             <CardTitle className="text-base">System Information</CardTitle>
+           </CardHeader>
+           <CardContent>
+             <ul className="space-y-3 text-sm">
+               <li className="flex justify-between">
+                 <span className="text-muted-foreground">Shift ID:</span>
+                 <span className="font-mono">{shift.shiftId}</span>
+               </li>
+               
+               <li className="flex justify-between">
+                 <span className="text-muted-foreground">Created:</span>
+                 <span>{formatDate(shift.createdAt)}</span>
+               </li>
+               
+               <li className="flex justify-between">
+                 <span className="text-muted-foreground">Last Updated:</span>
+                 <span>{formatDate(shift.updatedAt)}</span>
+               </li>
+               
+               <li className="flex justify-between">
+                 <span className="text-muted-foreground">Database ID:</span>
+                 <span className="font-mono truncate max-w-[180px]">{shift._id}</span>
+               </li>
+               
+               {shift.recurrence.parentShiftId && (
+                 <li className="flex justify-between">
+                   <span className="text-muted-foreground">Parent Shift:</span>
+                   <span className="font-mono truncate max-w-[180px]">{shift.recurrence.parentShiftId}</span>
+                 </li>
+               )}
+             </ul>
+           </CardContent>
+         </Card>
+       </div>
+     </div>
+   </div>
+ );
 }

@@ -1,3 +1,5 @@
+import { UserSummary } from "./types";
+
 /**
  * Cancellation reason enumeration
  * Reasons for shift cancellation
@@ -38,13 +40,14 @@ export enum ShiftType {
    * Recurrence pattern enumeration
    * For recurring shifts
    */
-  export enum RecurrencePattern {
-    NONE = 'none',
-    DAILY = 'daily',
-    WEEKLY = 'weekly',
-    BIWEEKLY = 'biweekly',
-    MONTHLY = 'monthly'
-  }
+  export type RecurrencePattern = 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' 
+
+  export interface Recurrence {
+    pattern: RecurrencePattern;
+    occurrences?: number;
+    endDate?: Date;
+    parentShiftId?: string;
+}
   
   /**
    * Service type enumeration
@@ -72,11 +75,19 @@ export enum ShiftType {
     // VIRTUAL = 'virtual'      // Online/video call
   }
 
+// Interfaces based on API response
+interface Organization {
+  _id: string;
+  name: string;
+}
+
+
 /**
  * Worker assignment status for multi-worker shifts
  */
-export interface WorkerAssignment {
-  workerId: string; // originally mongoose.Types.ObjectId
+interface WorkerAssignment {
+  _id: string;
+  workerId: UserSummary;
   status: ShiftStatus;
   declineReason?: string;
   responseDate?: Date;
@@ -89,14 +100,14 @@ export interface WorkerAssignment {
 export interface Shift {
   _id: string;                              // Unique MongoDB ID
   shiftId: string;                          // Unique shift identifier
-  organizationId: string;                   // Organization this shift belongs to
-  participantId: string;                    // Participant who created the shift
+  organizationId: Organization;                   // Organization this shift belongs to
+  participantId: UserSummary;                    // Participant who created the shift
   isMultiWorkerShift: boolean;              // Whether shift requires multiple workers
-  workerId?: string;                        // Support worker assigned (single-worker mode)
+  workerId?: UserSummary;                        // Support worker assigned (single-worker mode)
   workerAssignments?: WorkerAssignment[];   // Support workers assigned (multi-worker mode)
   serviceType: ServiceType;                 // Type of service requested
-  startTime: Date;                          // Scheduled start time
-  endTime: Date;                            // Scheduled end time
+  startTime: string;                          // Scheduled start time
+  endTime: string;                            // Scheduled end time
 
   // Location details
   locationType: LocationType;
@@ -115,14 +126,11 @@ export interface Shift {
   declineReason?: string;                   // Reason for worker declining
 
   // Recurrence for recurring shifts
-  recurrence?: {
-    pattern: RecurrencePattern;             // Recurrence pattern (daily, weekly, etc.)
-    occurrences?: number;                   // Number of occurrences
-    endDate?: Date;                         // End date for recurring shifts
-    parentShiftId?: string;                 // Parent shift ID for recurring instances
-  };
+  recurrence?: Recurrence;
 
   // Timestamps
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
+
+
