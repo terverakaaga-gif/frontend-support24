@@ -268,7 +268,7 @@ export default function Login() {
               href="/register"
               className="text-guardian font-medium hover:text-guardian hover:underline"
             >
-              Register here
+              Register
             </a>
           </div>
 
