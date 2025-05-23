@@ -263,7 +263,7 @@ export default function Login() {
           </Form>
 
           <div className="text-center pt-2">
-            <span className="text-gray-600">Don't have an account? </span>
+            <span className="text-gray-600">Don't have an account yet ? </span>
             <a
               href="/register"
               className="text-guardian font-medium hover:text-guardian hover:underline"
