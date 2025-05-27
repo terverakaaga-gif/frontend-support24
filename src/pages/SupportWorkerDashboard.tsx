@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Clock,
   Users,
@@ -11,6 +12,7 @@ import {
   Inbox,
   Calendar,
   CheckCircle,
+  MapPin,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,7 @@ import { useState } from "react";
 import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
 import { useAuth } from "@/contexts/AuthContext";
 import { SupportWorker } from "@/types/user.types";
+import { cn } from "@/lib/utils";
 
 // Mock notifications - fixed type values to match the allowed types
 const notifications = [
@@ -168,38 +171,45 @@ export default function SupportWorkerDashboard() {
   };
 
   return (
-    <div className="container py-6">
+    <div className="container py-6 space-y-8">
       {/* Show alert if support worker hasn't completed onboarding */}
       {user &&
         user.role === "supportWorker" &&
         !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
           <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
         )}
-      <div className="flex justify-between items-center mb-6">
+
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Support Worker Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">
+            Support Worker Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-2">
             Welcome back, {user.firstName}! Here's your overview.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Contact Admin
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
+          >
+            <MessageSquare className="h-4 w-4 text-[#1e3b93]" />
+            <span className="text-[#1e3b93]">Contact Admin</span>
           </Button>
           <Button
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
             onClick={() => navigate("/support-worker/shifts")}
           >
-            <CalendarIcon className="h-4 w-4" />
-            View Schedule
+            <CalendarIcon className="h-4 w-4 text-[#1e3b93]" />
+            <span className="text-[#1e3b93]">View Schedule</span>
           </Button>
-          <Button className="flex items-center gap-2 bg-guardian hover:bg-guardian-dark">
+          <Button className="flex items-center gap-2 bg-[#1e3b93] hover:bg-[#1e3b93]/90">
             <Download className="h-4 w-4" />
             Export Report
           </Button>
-          <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600">
+          <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
             <CheckCircle className="h-4 w-4" />
             Start Shift
           </Button>
@@ -207,30 +217,34 @@ export default function SupportWorkerDashboard() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatCard
           title="Total Hours"
           value="156h"
-          icon={<Clock size={24} />}
+          icon={<Clock size={24} className="text-[#1e3b93]" />}
           additionalText="This month"
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Active Clients"
           value="12"
-          icon={<Users size={24} />}
+          icon={<Users size={24} className="text-[#1e3b93]" />}
           change={{ value: "+2 from last month", positive: true }}
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Earnings"
           value="$3,240"
-          icon={<DollarSign size={24} />}
+          icon={<DollarSign size={24} className="text-[#1e3b93]" />}
           additionalText="This month"
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Rating"
           value="4.8/5"
-          icon={<Star size={24} />}
+          icon={<Star size={24} className="text-[#1e3b93]" />}
           change={{ value: "+0.2 from last month", positive: true }}
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
       </div>
 
@@ -238,73 +252,144 @@ export default function SupportWorkerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Upcoming Shifts */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+            <CardHeader className="pb-4 border-b border-[#1e3b93]/10">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">
+                <CardTitle className="text-lg font-medium text-[#1e3b93]">
                   Upcoming Shifts
                 </CardTitle>
-                <Button variant="link" className="text-sm p-0">
+                <Button
+                  variant="link"
+                  className="text-sm p-0 text-[#1e3b93] hover:text-[#1e3b93]/80"
+                >
                   View All
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="border-2 border-guardian">
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
+                  <Card className="border-2 border-[#1e3b93]/20 bg-[#1e3b93]/5 transition-all duration-200 hover:shadow-md">
+                    <CardContent className="p-5">
+                      <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h4 className="font-medium">Emma Wilson</h4>
+                          <h4 className="font-semibold text-gray-900">
+                            Emma Wilson
+                          </h4>
                           <p className="text-sm text-muted-foreground">
                             Personal Care
                           </p>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                        >
                           View Details
                         </Button>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span>Today, 2:00 PM - 5:00 PM</span>
+                          <div className="w-6 h-6 rounded-full bg-[#1e3b93]/10 flex items-center justify-center">
+                            <Calendar className="h-3 w-3 text-[#1e3b93]" />
+                          </div>
+                          <span className="text-gray-700">
+                            Today, 2:00 PM - 5:00 PM
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <FileCheck className="h-4 w-4 text-green-500" />
-                          <span className="text-green-600">Confirmed</span>
+                          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                            <FileCheck className="h-3 w-3 text-green-600" />
+                          </div>
+                          <span className="text-green-600 font-medium">
+                            Confirmed
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                            <MapPin className="h-3 w-3 text-gray-600" />
+                          </div>
+                          <span className="text-gray-600">Brighton East</span>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
+                  <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-md hover:border-[#1e3b93]/20">
+                    <CardContent className="p-5">
+                      <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h4 className="font-medium">John Smith</h4>
+                          <h4 className="font-semibold text-gray-900">
+                            John Smith
+                          </h4>
                           <p className="text-sm text-muted-foreground">
                             Physiotherapy
                           </p>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                        >
                           View Details
                         </Button>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span>Tomorrow, 10:00 AM - 12:00 PM</span>
+                          <div className="w-6 h-6 rounded-full bg-[#1e3b93]/10 flex items-center justify-center">
+                            <Calendar className="h-3 w-3 text-[#1e3b93]" />
+                          </div>
+                          <span className="text-gray-700">
+                            Tomorrow, 10:00 AM - 12:00 PM
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <FileWarning className="h-4 w-4 text-yellow-500" />
-                          <span className="text-yellow-600">
+                          <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center">
+                            <FileWarning className="h-3 w-3 text-yellow-600" />
+                          </div>
+                          <span className="text-yellow-600 font-medium">
                             Pending Confirmation
                           </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                            <MapPin className="h-3 w-3 text-gray-600" />
+                          </div>
+                          <span className="text-gray-600">Melbourne CBD</span>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="mt-6 p-4 bg-[#1e3b93]/5 rounded-lg border border-[#1e3b93]/10">
+                  <h4 className="font-medium text-[#1e3b93] mb-3">
+                    Quick Actions
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                    >
+                      Clock In
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                    >
+                      Submit Report
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                    >
+                      Update Availability
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -313,34 +398,32 @@ export default function SupportWorkerDashboard() {
 
         {/* Notifications */}
         <div>
-          <NotificationsList notifications={notifications} />
+          <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+            <CardHeader className="border-b border-[#1e3b93]/10">
+              <CardTitle className="text-lg font-medium text-[#1e3b93]">
+                Notifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <NotificationsList notifications={notifications} />
+            </CardContent>
+          </Card>
         </div>
       </div>
 
       {/* Participant Invitations */}
-      <div className="mt-8">
-        <ParticipantInvitations />
+      <div>
+        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+          <CardHeader className="border-b border-[#1e3b93]/10">
+            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              Participant Invitations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ParticipantInvitations />
+          </CardContent>
+        </Card>
       </div>
     </div>
-  );
-}
-
-function MapPin(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
   );
 }
