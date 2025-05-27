@@ -361,3 +361,4 @@ const NavItem = ({ to, icon, label, active = false }: NavItemProps) => (
     {label}
   </Link>
 );
+ 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   Target,
@@ -5,13 +6,13 @@ import {
   Heart,
   Calendar,
   MessageSquare,
-  // Bell,
   User,
   ChevronRight,
   ChevronLeft,
   Star,
   CheckCircle,
   XCircle,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
@@ -24,6 +25,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import ShiftManagement from "@/components/ShiftManagement";
 import { ConnectionsList } from "@/components/participant/ConnectionsList";
+import { cn } from "@/lib/utils";
 
 // Mock data for charts
 const activityData = [
@@ -139,9 +141,13 @@ const renderRating = (rating: number) => {
   return (
     <div className="flex">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="text-yellow-400">
-          {i < rating ? "★" : "☆"}
-        </div>
+        <Star
+          key={i}
+          className={cn("w-3 h-3", {
+            "fill-yellow-400 text-yellow-400": i < rating,
+            "text-gray-300": i >= rating,
+          })}
+        />
       ))}
     </div>
   );
@@ -150,11 +156,16 @@ const renderRating = (rating: number) => {
 // Shift Management Component
 const ShiftManagementComponent = () => {
   return (
-    <Card>
+    <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-medium">Upcoming Shifts</CardTitle>
-          <Button variant="link" className="text-sm p-0">
+          <CardTitle className="text-lg font-medium text-[#1e3b93]">
+            Upcoming Shifts
+          </CardTitle>
+          <Button
+            variant="link"
+            className="text-sm p-0 text-[#1e3b93] hover:text-[#1e3b93]/80"
+          >
             View Calendar
           </Button>
         </div>
@@ -164,15 +175,19 @@ const ShiftManagementComponent = () => {
           {upcomingShifts.map((shift) => (
             <div
               key={shift.id}
-              className="flex items-center justify-between p-4 rounded-lg border"
+              className="flex items-center justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <Avatar>
+                <Avatar className="border-2 border-[#1e3b93]/10">
                   <AvatarImage src={shift.worker.avatar} />
-                  <AvatarFallback>{shift.worker.name[0]}</AvatarFallback>
+                  <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                    {shift.worker.name[0]}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-medium">{shift.worker.name}</h4>
+                  <h4 className="font-medium text-gray-900">
+                    {shift.worker.name}
+                  </h4>
                   <p className="text-sm text-muted-foreground">
                     {shift.date} • {shift.time}
                   </p>
@@ -183,16 +198,25 @@ const ShiftManagementComponent = () => {
                   variant={
                     shift.status === "confirmed" ? "default" : "secondary"
                   }
+                  className={cn("capitalize", {
+                    "bg-[#1e3b93] text-white": shift.status === "confirmed",
+                    "bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20":
+                      shift.status === "pending",
+                  })}
                 >
                   {shift.status === "confirmed" ? (
-                    <CheckCircle className="w-4 h-4 mr-1" />
+                    <CheckCircle className="w-3 h-3 mr-1" />
                   ) : (
-                    <Clock className="w-4 h-4 mr-1" />
+                    <Clock className="w-3 h-3 mr-1" />
                   )}
                   {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
                 </Badge>
-                <Button variant="ghost" size="icon">
-                  <ChevronRight className="h-4 w-4" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-[#1e3b93]/10"
+                >
+                  <ChevronRight className="h-4 w-4 text-[#1e3b93]" />
                 </Button>
               </div>
             </div>
@@ -207,20 +231,26 @@ export default function ParticipantDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="container py-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container py-6 space-y-8">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Participant Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">
+            Participant Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-2">
             Welcome back, {user?.firstName}! Here's your care overview.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Message Support
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
+          >
+            <MessageSquare className="h-4 w-4 text-[#1e3b93]" />
+            <span className="text-[#1e3b93]">Message Support</span>
           </Button>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button className="flex items-center gap-2 bg-[#1e3b93] hover:bg-[#1e3b93]/90">
             <Calendar className="h-4 w-4" />
             Schedule
           </Button>
@@ -228,35 +258,39 @@ export default function ParticipantDashboard() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Weekly Goals Met"
           value="21/25"
-          icon={<Target size={24} />}
+          icon={<Target size={24} className="text-[#1e3b93]" />}
           additionalText="84% completion rate"
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Support Hours"
           value="28h"
-          icon={<Clock size={24} />}
+          icon={<Clock size={24} className="text-[#1e3b93]" />}
           additionalText="This week"
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Well-being Score"
           value="4.8/5"
-          icon={<Heart size={24} />}
+          icon={<Heart size={24} className="text-[#1e3b93]" />}
           change={{ value: "+0.3 from last week", positive: true }}
+          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartSection
           title="Weekly Activity Overview"
           data={activityData}
           type="bar"
           dataKey="hours"
           xAxisKey="day"
+          className="border-[#1e3b93]/10"
         />
         <ChartSection
           title="Satisfaction Trend"
@@ -264,30 +298,34 @@ export default function ParticipantDashboard() {
           type="line"
           dataKey="score"
           xAxisKey="week"
+          className="border-[#1e3b93]/10"
         />
       </div>
 
       {/* Shift Management */}
-      <div className="mb-8">
-        <ShiftManagementComponent />
-      </div>
+      <ShiftManagementComponent />
 
       {/* Support Workers Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {supportWorkers.map((worker) => (
-          <Card key={worker.id}>
+          <Card
+            key={worker.id}
+            className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg"
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 border-2 border-[#1e3b93]/10">
                     <AvatarImage src={worker.avatar} />
-                    <AvatarFallback>{worker.name[0]}</AvatarFallback>
+                    <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                      {worker.name[0]}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-medium">{worker.name}</h4>
+                    <h4 className="font-medium text-gray-900">{worker.name}</h4>
                     <div className="flex items-center gap-1 mt-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-medium text-[#1e3b93]">
                         {worker.rating}
                       </span>
                     </div>
@@ -296,7 +334,7 @@ export default function ParticipantDashboard() {
                         <Badge
                           key={index}
                           variant="secondary"
-                          className="text-xs"
+                          className="text-xs bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20"
                         >
                           {specialty}
                         </Badge>
@@ -308,8 +346,13 @@ export default function ParticipantDashboard() {
                   <p className="text-sm text-muted-foreground">
                     Next Available
                   </p>
-                  <p className="font-medium">{worker.nextAvailable}</p>
-                  <Button className="mt-2" size="sm">
+                  <p className="font-medium text-[#1e3b93]">
+                    {worker.nextAvailable}
+                  </p>
+                  <Button
+                    className="mt-2 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
+                    size="sm"
+                  >
                     Book Session
                   </Button>
                 </div>
@@ -320,14 +363,17 @@ export default function ParticipantDashboard() {
       </div>
 
       {/* Updates & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-center">
-              <CardTitle className="text-lg font-medium">
+              <CardTitle className="text-lg font-medium text-[#1e3b93]">
                 Recent Updates
               </CardTitle>
-              <Button variant="link" className="text-sm p-0">
+              <Button
+                variant="link"
+                className="text-sm p-0 text-[#1e3b93] hover:text-[#1e3b93]/80"
+              >
                 View All
               </Button>
             </div>
@@ -337,10 +383,12 @@ export default function ParticipantDashboard() {
               {recentUpdates.map((update) => (
                 <div
                   key={update.id}
-                  className="border-b last:border-0 pb-4 last:pb-0"
+                  className="border-b last:border-0 pb-4 last:pb-0 border-[#1e3b93]/10"
                 >
                   <div className="flex justify-between mb-1">
-                    <div className="font-medium">{update.worker}</div>
+                    <div className="font-medium text-gray-900">
+                      {update.worker}
+                    </div>
                     <div className="flex items-center gap-1">
                       {renderRating(update.rating)}
                     </div>
@@ -352,10 +400,14 @@ export default function ParticipantDashboard() {
                     <span>{update.time}</span>
                   </div>
                   {update.content && (
-                    <p className="text-sm">{update.content}</p>
+                    <p className="text-sm text-gray-700">{update.content}</p>
                   )}
                   <div className="flex gap-3 mt-2">
-                    <Button variant="ghost" size="sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                    >
                       Reply
                     </Button>
                   </div>
@@ -365,9 +417,29 @@ export default function ParticipantDashboard() {
           </CardContent>
         </Card>
 
-        <NotificationsList notifications={notifications} />
-        <ConnectionsList />
+        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              Notifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <NotificationsList notifications={notifications} />
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Connections List */}
+      <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-lg font-medium text-[#1e3b93]">
+            My Connections
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ConnectionsList />
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -388,29 +460,6 @@ function Bell(props: any) {
     >
       <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
-  );
-}
-
-function FileText(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" x2="8" y1="13" y2="13" />
-      <line x1="16" x2="8" y1="17" y2="17" />
-      <line x1="10" x2="8" y1="9" y2="9" />
     </svg>
   );
 }
