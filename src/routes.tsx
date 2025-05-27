@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
-import { Navbar } from './components/Navbar';
+// import { Navbar } from './components/Navbar';
 import AdminDashboard from '@/pages/AdminDashboard';
 import GuardianDashboard from '@/pages/GuardianDashboard';
 import ParticipantDashboard from '@/pages/ParticipantDashboard';

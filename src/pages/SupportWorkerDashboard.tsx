@@ -1,7 +1,16 @@
-
-import { 
-  Clock, Users, DollarSign, Star, MessageSquare, CalendarIcon, Download,
-  FileCheck, FileWarning, Inbox, Calendar, CheckCircle
+import {
+  Clock,
+  Users,
+  DollarSign,
+  Star,
+  MessageSquare,
+  CalendarIcon,
+  Download,
+  FileCheck,
+  FileWarning,
+  Inbox,
+  Calendar,
+  CheckCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,22 +31,23 @@ const notifications = [
     type: "booking" as const,
     title: "New Booking Request",
     description: "Emma Wilson requested support for tomorrow at 2 PM",
-    time: "10 minutes ago"
+    time: "10 minutes ago",
   },
   {
     id: "2",
     type: "message" as const,
     title: "New Message",
-    description: "John's guardian sent you a message about the upcoming session",
-    time: "1 hour ago"
+    description:
+      "John's guardian sent you a message about the upcoming session",
+    time: "1 hour ago",
   },
   {
     id: "3",
     type: "reminder" as const,
     title: "Shift Starting Soon",
     description: "You have a shift with Emma Wilson in 30 minutes",
-    time: "unread"
-  }
+    time: "unread",
+  },
 ];
 
 // Mock upcoming shifts
@@ -49,7 +59,7 @@ const upcomingShifts = [
     timeStart: "9:00 AM",
     timeEnd: "2:00 PM",
     location: "Brighton East",
-    details: "Personal care and mobility assistance"
+    details: "Personal care and mobility assistance",
   },
   {
     id: "2",
@@ -58,7 +68,7 @@ const upcomingShifts = [
     timeStart: "9:00 AM",
     timeEnd: "2:00 PM",
     location: "Brighton East",
-    details: "Community outing to library and park"
+    details: "Community outing to library and park",
   },
   {
     id: "3",
@@ -67,8 +77,8 @@ const upcomingShifts = [
     timeStart: "9:00 AM",
     timeEnd: "2:00 PM",
     location: "Brighton East",
-    details: "Swimming therapy and exercise routine"
-  }
+    details: "Swimming therapy and exercise routine",
+  },
 ];
 
 // Mock certifications
@@ -77,10 +87,11 @@ const certifications = [
     id: "1",
     name: "First Aid Certification",
     status: "expiring",
-    description: "Required for all support workers. Must be completed within 30 days.",
+    description:
+      "Required for all support workers. Must be completed within 30 days.",
     dueDate: "2024-04-15",
     action: "Start Training",
-    actionType: "training"
+    actionType: "training",
   },
   {
     id: "2",
@@ -89,7 +100,7 @@ const certifications = [
     description: "Completed: 2024-02-01",
     expiry: "2025-02-01",
     action: "View Certificate",
-    actionType: "view"
+    actionType: "view",
   },
   {
     id: "3",
@@ -97,8 +108,8 @@ const certifications = [
     status: "recommended",
     description: "Recommended for enhanced safety protocols.",
     action: "Start Training",
-    actionType: "training"
-  }
+    actionType: "training",
+  },
 ];
 
 // Calendar data
@@ -141,9 +152,9 @@ const calendarData = {
       date: "3/12/2024",
       time: "9:00 AM - 2:00 PM",
       location: "Brighton East",
-      type: "Personal Care"
-    }
-  ]
+      type: "Personal Care",
+    },
+  ],
 };
 
 export default function SupportWorkerDashboard() {
@@ -159,21 +170,25 @@ export default function SupportWorkerDashboard() {
   return (
     <div className="container py-6">
       {/* Show alert if support worker hasn't completed onboarding */}
-      {user && user.role === 'supportWorker' && !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
-        <ProfileSetupAlert userName={user.firstName.split(' ')[0]} />
-      )}
+      {user &&
+        user.role === "supportWorker" &&
+        !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
+          <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+        )}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Support Worker Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {user.firstName}! Here's your overview.</p>
+          <p className="text-muted-foreground">
+            Welcome back, {user.firstName}! Here's your overview.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
             Contact Admin
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="flex items-center gap-2"
             onClick={() => navigate("/support-worker/shifts")}
           >
@@ -192,167 +207,119 @@ export default function SupportWorkerDashboard() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <StatCard
-          title="Monthly Hours"
-          value="86"
+          title="Total Hours"
+          value="156h"
           icon={<Clock size={24} />}
-          change={{ value: "+12% from last month", positive: true }}
+          additionalText="This month"
         />
         <StatCard
-          title="Active Guardians"
-          value="5"
+          title="Active Clients"
+          value="12"
           icon={<Users size={24} />}
-          additionalText="All shifts covered"
+          change={{ value: "+2 from last month", positive: true }}
         />
         <StatCard
-          title="Monthly Earnings"
-          value="$2,450"
+          title="Earnings"
+          value="$3,240"
           icon={<DollarSign size={24} />}
-          // Fix: Changed from React element to string
-          additionalText="Export"
+          additionalText="This month"
         />
         <StatCard
-          title="Average Rating"
-          value="4.9"
+          title="Rating"
+          value="4.8/5"
           icon={<Star size={24} />}
-          additionalText="★★★★★"
+          change={{ value: "+0.2 from last month", positive: true }}
         />
       </div>
 
-      {/* Shifts & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-xl font-bold mb-6">Upcoming Shifts</h2>
-          <div className="space-y-4">
-            {upcomingShifts.map((shift, index) => (
-              <div key={shift.id} className="flex items-center justify-between border-b pb-4 last:border-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-guardian/10 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-guardian" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{shift.client}</h3>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>{shift.timeStart} - {shift.timeEnd}</span>
-                      <MapPin className="h-3 w-3 ml-1" />
-                      <span>{shift.location}</span>
-                    </div>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleViewShiftDetails(shift.id)}
-                >
-                  View Details
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <NotificationsList notifications={notifications} />
-
-        {/* Participant invitations section */}
-        <ParticipantInvitations />
-      </div>
-
-      {/* Trainings & Calendar */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-xl font-bold mb-6">Training & Certifications</h2>
-          <div className="space-y-6">
-            {certifications.map((cert) => (
-              <div key={cert.id} className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-full ${
-                    cert.status === 'valid' ? 'bg-green-100' :
-                    cert.status === 'expiring' ? 'bg-red-100' :
-                    'bg-yellow-100'
-                  }`}>
-                    {cert.status === 'valid' ? 
-                      <FileCheck className={`h-5 w-5 ${cert.status === 'valid' ? 'text-green-600' : 'text-red-600'}`} /> : 
-                      <FileWarning className={`h-5 w-5 ${cert.status === 'expiring' ? 'text-red-600' : 'text-yellow-600'}`} />
-                    }
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium">{cert.name}</h3>
-                    <p className="text-xs text-muted-foreground">{cert.description}</p>
-                    {cert.dueDate && (
-                      <p className="text-xs text-red-600 font-medium">Due by: {cert.dueDate}</p>
-                    )}
-                    {cert.expiry && (
-                      <p className="text-xs text-green-600">Expires: {cert.expiry}</p>
-                    )}
-                  </div>
-                  <Button variant="outline" size="sm" className={`${
-                    cert.actionType === 'training' ? 'text-guardian' : 'text-blue-600'
-                  }`}>
-                    {cert.action}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Upcoming Shifts */}
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">Monthly Schedule</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">Previous</Button>
-                  <span className="text-sm font-medium">{calendarData.month}</span>
-                  <Button variant="ghost" size="sm">Next</Button>
-                </div>
+                <CardTitle className="text-lg font-medium">
+                  Upcoming Shifts
+                </CardTitle>
+                <Button variant="link" className="text-sm p-0">
+                  View All
+                </Button>
               </div>
             </CardHeader>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-7 gap-1 mb-4">
-                <div className="text-center text-xs font-medium">Sun</div>
-                <div className="text-center text-xs font-medium">Mon</div>
-                <div className="text-center text-xs font-medium">Tue</div>
-                <div className="text-center text-xs font-medium">Wed</div>
-                <div className="text-center text-xs font-medium">Thu</div>
-                <div className="text-center text-xs font-medium">Fri</div>
-                <div className="text-center text-xs font-medium">Sat</div>
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {calendarData.days.map((day, i) => (
-                  <div 
-                    key={i} 
-                    className={`aspect-square flex flex-col items-center justify-center border rounded-md p-1
-                      ${day.shifts > 0 ? 'bg-guardian/10 border-guardian' : ''}
-                    `}
-                  >
-                    <div className="text-xs font-medium">{day.number}</div>
-                    {day.shifts > 0 && <div className="text-[10px] text-guardian-dark">{day.shifts} shifts</div>}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-medium mb-2">Upcoming Shifts</h3>
-                {calendarData.upcomingShifts.map((shift, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm border-l-2 border-guardian pl-2">
-                    <Calendar className="h-4 w-4 text-guardian shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-medium">{shift.date}</div>
-                      <div className="text-xs text-muted-foreground">{shift.time}</div>
-                      <div className="text-xs text-muted-foreground">{shift.location}</div>
-                      <div className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full inline-block mt-1">
-                        {shift.type}
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card className="border-2 border-guardian">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-medium">Emma Wilson</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Personal Care
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>Today, 2:00 PM - 5:00 PM</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <FileCheck className="h-4 w-4 text-green-500" />
+                          <span className="text-green-600">Confirmed</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-medium">John Smith</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Physiotherapy
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>Tomorrow, 10:00 AM - 12:00 PM</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <FileWarning className="h-4 w-4 text-yellow-500" />
+                          <span className="text-yellow-600">
+                            Pending Confirmation
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Notifications */}
+        <div>
+          <NotificationsList notifications={notifications} />
+        </div>
+      </div>
+
+      {/* Participant Invitations */}
+      <div className="mt-8">
+        <ParticipantInvitations />
       </div>
     </div>
   );
