@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { 
+import {
   ArrowLeft,
   ArrowRight,
   Briefcase,
@@ -39,31 +39,40 @@ import {
   ShieldAlert,
   Pill,
   UtensilsCrossed,
-  Bandage
+  Bandage,
 } from "lucide-react";
 import { toast } from "sonner";
 import { TimeInput } from "@/components/auth/TimeInput";
 import {
   useUpdateSupportWorkerProfile,
   useUpdateAvailability,
-  useAddExperience
+  useAddExperience,
 } from "@/hooks/useSupportWorkerHooks";
+import { cn } from "@/lib/utils";
 
 const bioSchema = z.object({
   bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
-  languages: z.string().min(1, { message: "Please enter at least one language." }),
+  languages: z
+    .string()
+    .min(1, { message: "Please enter at least one language." }),
 });
 
 const skillsSchema = z.object({
-  skills: z.array(z.string()).min(1, { message: "Please select at least one skill." }),
+  skills: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one skill." }),
 });
 
 const experienceSchema = z.object({
   title: z.string().min(2, { message: "Job title is required." }),
-  organization: z.string().min(2, { message: "Organization name is required." }),
+  organization: z
+    .string()
+    .min(2, { message: "Organization name is required." }),
   startDate: z.string().min(1, { message: "Start date is required." }),
   endDate: z.string().optional(),
-  description: z.string().min(10, { message: "Please provide a description of your experience." }),
+  description: z
+    .string()
+    .min(10, { message: "Please provide a description of your experience." }),
 });
 
 const rateSchema = z.object({
@@ -79,7 +88,9 @@ const timeSlotSchema = z.object({
 });
 
 const availabilitySchema = z.object({
-  availableWeekdays: z.array(z.string()).min(1, { message: "Please select at least one day of availability." }),
+  availableWeekdays: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one day of availability." }),
   timeSlots: z.record(z.array(timeSlotSchema).optional()),
 });
 
@@ -88,16 +99,32 @@ interface SupportWorkerSetupProps {
   isSubmitting?: boolean;
 }
 
-const availableSkills: { value: SupportWorkerSkill; label: string; icon: React.ElementType }[] = [
+const availableSkills: {
+  value: SupportWorkerSkill;
+  label: string;
+  icon: React.ElementType;
+}[] = [
   { value: "personal-care", label: "Personal Care", icon: Heart },
   { value: "transport", label: "Transport", icon: Car },
   { value: "therapy", label: "Therapy Support", icon: Stethoscope },
   { value: "social-support", label: "Social Support", icon: Users },
   { value: "household", label: "Household Tasks", icon: Home },
-  { value: "communication", label: "Communication Support", icon: MessageSquare },
+  {
+    value: "communication",
+    label: "Communication Support",
+    icon: MessageSquare,
+  },
   { value: "behavior-support", label: "Behavior Support", icon: ShieldAlert },
-  { value: "medication-management", label: "Medication Management", icon: Pill },
-  { value: "meal-preparation", label: "Meal Preparation", icon: UtensilsCrossed },
+  {
+    value: "medication-management",
+    label: "Medication Management",
+    icon: Pill,
+  },
+  {
+    value: "meal-preparation",
+    label: "Meal Preparation",
+    icon: UtensilsCrossed,
+  },
   { value: "first-aid", label: "First Aid", icon: Bandage },
 ];
 
@@ -111,7 +138,10 @@ const weekdays = [
   { value: "sunday", label: "Sunday" },
 ];
 
-export function SupportWorkerSetup({ onComplete, isSubmitting = false }: SupportWorkerSetupProps) {
+export function SupportWorkerSetup({
+  onComplete,
+  isSubmitting = false,
+}: SupportWorkerSetupProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     bio: "",
@@ -133,7 +163,7 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
     availability: {
       availableWeekdays: [] as string[],
       timeSlots: {} as Record<string, { start: string; end: string }[]>,
-    }
+    },
   });
 
   // API mutations
@@ -199,14 +229,14 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
       // Update profile with bio and languages
       await updateProfile.mutateAsync({
         bio: data.bio,
-        languages: data.languages.split(',').map(lang => lang.trim())
+        languages: data.languages.split(",").map((lang) => lang.trim()),
       });
 
       setFormData({ ...formData, bio: data.bio, languages: data.languages });
       nextStep();
     } catch (error) {
       // Error handled by API client
-      console.error('Failed to update bio:', error);
+      console.error("Failed to update bio:", error);
     }
   };
 
@@ -214,18 +244,20 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
     try {
       // Update profile with skills
       await updateProfile.mutateAsync({
-        skills: data.skills
+        skills: data.skills,
       });
 
       setFormData({ ...formData, skills: data.skills });
       nextStep();
     } catch (error) {
       // Error handled by API client
-      console.error('Failed to update skills:', error);
+      console.error("Failed to update skills:", error);
     }
   };
 
-  const handleExperienceSubmit = async (data: z.infer<typeof experienceSchema>) => {
+  const handleExperienceSubmit = async (
+    data: z.infer<typeof experienceSchema>
+  ) => {
     try {
       // Add experience
       await addExperience.mutateAsync({
@@ -233,23 +265,23 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
         organization: data.organization,
         startDate: data.startDate,
         endDate: data.endDate,
-        description: data.description
+        description: data.description,
       });
 
-      setFormData({ 
-        ...formData, 
+      setFormData({
+        ...formData,
         experience: {
           title: data.title,
           organization: data.organization,
           startDate: data.startDate,
           endDate: data.endDate || "",
           description: data.description,
-        }
+        },
       });
       nextStep();
     } catch (error) {
       // Error handled by API client
-      console.error('Failed to add experience:', error);
+      console.error("Failed to add experience:", error);
     }
   };
 
@@ -260,7 +292,9 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
         hourlyRate: Number(data.baseRate),
         weekendRate: data.weekendRate ? Number(data.weekendRate) : undefined,
         holidayRate: data.holidayRate ? Number(data.holidayRate) : undefined,
-        overnightRate: data.overnightRate ? Number(data.overnightRate) : undefined
+        overnightRate: data.overnightRate
+          ? Number(data.overnightRate)
+          : undefined,
       });
 
       setFormData({
@@ -270,40 +304,42 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
           weekendRate: data.weekendRate || "",
           holidayRate: data.holidayRate || "",
           overnightRate: data.overnightRate || "",
-        }
+        },
       });
       nextStep();
     } catch (error) {
       // Error handled by API client
-      console.error('Failed to update rates:', error);
+      console.error("Failed to update rates:", error);
     }
   };
 
-  const handleAvailabilitySubmit = async (data: z.infer<typeof availabilitySchema>) => {
+  const handleAvailabilitySubmit = async (
+    data: z.infer<typeof availabilitySchema>
+  ) => {
     try {
       // Format weekdays availability
-      const availabilityInput = data.availableWeekdays.map(day => {
-        const slots = (data.timeSlots[day] || []).map(slot => ({
+      const availabilityInput = data.availableWeekdays.map((day) => {
+        const slots = (data.timeSlots[day] || []).map((slot) => ({
           start: slot.start || "09:00",
-          end: slot.end || "17:00"
+          end: slot.end || "17:00",
         }));
-        
+
         return {
           day,
-          slots
+          slots,
         };
       });
-      
+
       // Update availability
       await updateAvailability.mutateAsync(availabilityInput);
-      
+
       // Store in local state
       const timeSlots: Record<string, { start: string; end: string }[]> = {};
       Object.entries(data.timeSlots || {}).forEach(([day, slots]) => {
         if (slots && slots.length > 0) {
-          timeSlots[day] = slots.map(slot => ({
+          timeSlots[day] = slots.map((slot) => ({
             start: slot.start || "09:00",
-            end: slot.end || "17:00"
+            end: slot.end || "17:00",
           }));
         }
       });
@@ -313,57 +349,67 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
         availability: {
           availableWeekdays: data.availableWeekdays,
           timeSlots: timeSlots,
-        }
+        },
       });
-      
+
       // Complete profile setup
       onComplete();
     } catch (error) {
       // Error handled by API client
-      console.error('Failed to update availability:', error);
+      console.error("Failed to update availability:", error);
     }
   };
 
   const addTimeSlot = (day: string) => {
     const currentSlots = availabilityForm.getValues().timeSlots || {};
     const daySlots = currentSlots[day] || [];
-    
+
     const updatedSlots = {
       ...currentSlots,
-      [day]: [...daySlots, { start: "09:00", end: "17:00" }]
+      [day]: [...daySlots, { start: "09:00", end: "17:00" }],
     };
-    
+
     availabilityForm.setValue("timeSlots", updatedSlots);
   };
 
   const removeTimeSlot = (day: string, index: number) => {
     const currentSlots = availabilityForm.getValues().timeSlots || {};
     const daySlots = currentSlots[day] || [];
-    
+
     if (daySlots.length > 0) {
       const updatedDaySlots = daySlots.filter((_, i) => i !== index);
-      
+
       const updatedSlots = {
         ...currentSlots,
-        [day]: updatedDaySlots
+        [day]: updatedDaySlots,
       };
-      
+
       availabilityForm.setValue("timeSlots", updatedSlots);
     }
   };
 
   const stepComponents = [
-    <Card key="bio" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">1</span>
+    <Card
+      key="bio"
+      className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg"
+    >
+      <CardHeader className="border-b border-[#1e3b93]/10">
+        <CardTitle className="flex items-center text-[#1e3b93]">
+          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+            1
+          </span>
           About You
         </CardTitle>
-        <CardDescription>Tell us about yourself and languages you speak.</CardDescription>
+        <CardDescription className="text-gray-600">
+          Tell us about yourself and languages you speak.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...bioForm}>
-          <form onSubmit={bioForm.handleSubmit(handleBioSubmit)} className="space-y-4">
+          <form
+            onSubmit={bioForm.handleSubmit(handleBioSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={bioForm.control}
               name="bio"
@@ -371,9 +417,9 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <FormItem>
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="G'day! Tell us about yourself, your experience in supporting people, and what you enjoy about being a support worker..." 
-                      {...field} 
+                    <Textarea
+                      placeholder="G'day! Tell us about yourself, your experience in supporting people, and what you enjoy about being a support worker..."
+                      {...field}
                       className="min-h-[120px]"
                     />
                   </FormControl>
@@ -391,10 +437,7 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <FormItem>
                   <FormLabel>Languages</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="English, Auslan, etc." 
-                      {...field} 
-                    />
+                    <Input placeholder="English, Auslan, etc." {...field} />
                   </FormControl>
                   <FormDescription>
                     List languages you speak, separated by commas.
@@ -404,12 +447,14 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
               )}
             />
             <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                className="w-full mt-4"
+              <Button
+                type="submit"
+                className="w-full mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md"
                 disabled={updateProfile.isPending}
               >
-                {updateProfile.isPending ? "Saving..." : (
+                {updateProfile.isPending ? (
+                  "Saving..."
+                ) : (
                   <>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -422,24 +467,36 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
       </CardContent>
     </Card>,
 
-    <Card key="skills" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">2</span>
+    <Card
+      key="skills"
+      className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg"
+    >
+      <CardHeader className="border-b border-[#1e3b93]/10">
+        <CardTitle className="flex items-center text-[#1e3b93]">
+          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+            2
+          </span>
           Skills & Qualifications
         </CardTitle>
-        <CardDescription>Select the services you can provide.</CardDescription>
+        <CardDescription className="text-gray-600">
+          Select the services you can provide.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...skillsForm}>
-          <form onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)} className="space-y-4">
+          <form
+            onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={skillsForm.control}
               name="skills"
               render={({ field }) => (
                 <FormItem>
                   <div className="mb-4">
-                    <FormLabel className="text-base">Select your skills</FormLabel>
+                    <FormLabel className="text-base">
+                      Select your skills
+                    </FormLabel>
                     <FormDescription>
                       Choose all that apply. You can update these later.
                     </FormDescription>
@@ -447,30 +504,45 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {availableSkills.map((skill) => {
                       const isSelected = field.value?.includes(skill.value);
-                      
+
                       return (
                         <div
                           key={skill.value}
                           onClick={() => {
                             if (isSelected) {
-                              field.onChange(field.value?.filter((value) => value !== skill.value));
+                              field.onChange(
+                                field.value?.filter(
+                                  (value) => value !== skill.value
+                                )
+                              );
                             } else {
-                              field.onChange([...(field.value || []), skill.value]);
+                              field.onChange([
+                                ...(field.value || []),
+                                skill.value,
+                              ]);
                             }
                           }}
-                          className={`cursor-pointer p-3 rounded-lg border transition-all ${
+                          className={cn(
+                            "cursor-pointer p-3 rounded-lg border transition-all hover:shadow-md",
                             isSelected
-                              ? "border-guardian bg-guardian/10 shadow-sm"
-                              : "border-gray-200 hover:border-guardian/50 hover:bg-gray-50"
-                          }`}
+                              ? "border-[#1e3b93] bg-[#1e3b93]/10 shadow-sm"
+                              : "border-gray-200 hover:border-[#1e3b93]/50 hover:bg-[#1e3b93]/5"
+                          )}
                         >
                           <div className="flex flex-col items-center text-center">
-                            <div className={`p-2 rounded-full mb-2 ${
-                              isSelected ? "bg-guardian text-white" : "bg-gray-100 text-gray-600"
-                            }`}>
+                            <div
+                              className={cn(
+                                "p-2 rounded-full mb-2 transition-colors",
+                                isSelected
+                                  ? "bg-[#1e3b93] text-white"
+                                  : "bg-gray-100 text-gray-600"
+                              )}
+                            >
                               <skill.icon className="h-5 w-5" />
                             </div>
-                            <span className="font-medium text-sm">{skill.label}</span>
+                            <span className="font-medium text-sm">
+                              {skill.label}
+                            </span>
                           </div>
                         </div>
                       );
@@ -485,11 +557,10 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
-                type="submit" 
-                disabled={updateProfile.isPending}
-              >
-                {updateProfile.isPending ? "Saving..." : (
+              <Button type="submit" disabled={updateProfile.isPending}>
+                {updateProfile.isPending ? (
+                  "Saving..."
+                ) : (
                   <>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -502,17 +573,27 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
       </CardContent>
     </Card>,
 
-    <Card key="experience" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">3</span>
+    <Card
+      key="experience"
+      className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg"
+    >
+      <CardHeader className="border-b border-[#1e3b93]/10">
+        <CardTitle className="flex items-center text-[#1e3b93]">
+          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+            3
+          </span>
           Work Experience
         </CardTitle>
-        <CardDescription>Add your most relevant work experience.</CardDescription>
+        <CardDescription className="text-gray-600">
+          Add your most relevant work experience.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...experienceForm}>
-          <form onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)} className="space-y-4">
+          <form
+            onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={experienceForm.control}
               name="title"
@@ -574,10 +655,10 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Supported participants in Sydney with daily activities and community access..." 
+                    <Textarea
+                      placeholder="Supported participants in Sydney with daily activities and community access..."
                       className="min-h-[100px]"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormDescription>
@@ -588,15 +669,23 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
               )}
             />
             <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 disabled={addExperience.isPending}
+                className="bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md"
               >
-                {addExperience.isPending ? "Saving..." : (
+                {addExperience.isPending ? (
+                  "Saving..."
+                ) : (
                   <>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -609,17 +698,27 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
       </CardContent>
     </Card>,
 
-    <Card key="rates" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">4</span>
+    <Card
+      key="rates"
+      className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg"
+    >
+      <CardHeader className="border-b border-[#1e3b93]/10">
+        <CardTitle className="flex items-center text-[#1e3b93]">
+          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+            4
+          </span>
           Hourly Rates
         </CardTitle>
-        <CardDescription>Set your hourly rates for different types of work.</CardDescription>
+        <CardDescription className="text-gray-600">
+          Set your hourly rates for different types of work.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...rateForm}>
-          <form onSubmit={rateForm.handleSubmit(handleRateSubmit)} className="space-y-4">
+          <form
+            onSubmit={rateForm.handleSubmit(handleRateSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={rateForm.control}
               name="baseRate"
@@ -629,9 +728,7 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                   <FormControl>
                     <Input type="number" placeholder="35" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Standard weekday rate
-                  </FormDescription>
+                  <FormDescription>Standard weekday rate</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -645,9 +742,7 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                   <FormControl>
                     <Input type="number" placeholder="45" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Rate for weekend shifts
-                  </FormDescription>
+                  <FormDescription>Rate for weekend shifts</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -661,9 +756,7 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                   <FormControl>
                     <Input type="number" placeholder="55" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Rate for holiday shifts
-                  </FormDescription>
+                  <FormDescription>Rate for holiday shifts</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -677,23 +770,29 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                   <FormControl>
                     <Input type="number" placeholder="65" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Rate for overnight shifts
-                  </FormDescription>
+                  <FormDescription>Rate for overnight shifts</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 disabled={updateProfile.isPending}
+                className="bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md"
               >
-                {updateProfile.isPending ? "Saving..." : (
+                {updateProfile.isPending ? (
+                  "Saving..."
+                ) : (
                   <>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -706,17 +805,27 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
       </CardContent>
     </Card>,
 
-    <Card key="availability" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">5</span>
+    <Card
+      key="availability"
+      className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg"
+    >
+      <CardHeader className="border-b border-[#1e3b93]/10">
+        <CardTitle className="flex items-center text-[#1e3b93]">
+          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+            5
+          </span>
           Availability
         </CardTitle>
-        <CardDescription>Let us know when you're available to work.</CardDescription>
+        <CardDescription className="text-gray-600">
+          Let us know when you're available to work.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...availabilityForm}>
-          <form onSubmit={availabilityForm.handleSubmit(handleAvailabilitySubmit)} className="space-y-6">
+          <form
+            onSubmit={availabilityForm.handleSubmit(handleAvailabilitySubmit)}
+            className="space-y-6"
+          >
             <FormField
               control={availabilityForm.control}
               name="availableWeekdays"
@@ -725,15 +834,21 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                   <div className="mb-4">
                     <FormLabel className="text-base">Available Days</FormLabel>
                     <FormDescription>
-                      Select the days you're typically available to work and set your available hours.
+                      Select the days you're typically available to work and set
+                      your available hours.
                     </FormDescription>
                   </div>
                   <div className="space-y-6">
                     {weekdays.map((day) => {
-                      const isSelected = availabilityForm.watch("availableWeekdays")?.includes(day.value);
-                      
+                      const isSelected = availabilityForm
+                        .watch("availableWeekdays")
+                        ?.includes(day.value);
+
                       return (
-                        <div key={day.value} className="border rounded-lg p-4">
+                        <div
+                          key={day.value}
+                          className="border border-[#1e3b93]/10 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                               <input
@@ -741,78 +856,127 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                                 id={`day-${day.value}`}
                                 checked={isSelected}
                                 onChange={(e) => {
-                                  const currentWeekdays = availabilityForm.getValues("availableWeekdays") || [];
-                                  
+                                  const currentWeekdays =
+                                    availabilityForm.getValues(
+                                      "availableWeekdays"
+                                    ) || [];
+
                                   if (e.target.checked) {
                                     if (!currentWeekdays.includes(day.value)) {
-                                      availabilityForm.setValue("availableWeekdays", [...currentWeekdays, day.value]);
+                                      availabilityForm.setValue(
+                                        "availableWeekdays",
+                                        [...currentWeekdays, day.value]
+                                      );
                                       // Add a default time slot when day is selected
                                       addTimeSlot(day.value);
                                     }
                                   } else {
                                     availabilityForm.setValue(
                                       "availableWeekdays",
-                                      currentWeekdays.filter((d) => d !== day.value)
+                                      currentWeekdays.filter(
+                                        (d) => d !== day.value
+                                      )
                                     );
-                                    
-                                    const currentTimeSlots = availabilityForm.getValues("timeSlots") || {};
-                                    const { [day.value]: _, ...restTimeSlots } = currentTimeSlots;
-                                    availabilityForm.setValue("timeSlots", restTimeSlots);
+
+                                    const currentTimeSlots =
+                                      availabilityForm.getValues("timeSlots") ||
+                                      {};
+                                    const { [day.value]: _, ...restTimeSlots } =
+                                      currentTimeSlots;
+                                    availabilityForm.setValue(
+                                      "timeSlots",
+                                      restTimeSlots
+                                    );
                                   }
                                 }}
-                                className="h-4 w-4 rounded border-gray-300 text-guardian focus:ring-guardian"
+                                className="h-4 w-4 rounded border-gray-300 text-[#1e3b93] focus:ring-[#1e3b93]"
                               />
-                              <label htmlFor={`day-${day.value}`} className="font-medium">
+                              <label
+                                htmlFor={`day-${day.value}`}
+                                className="font-medium"
+                              >
                                 {day.label}
                               </label>
                             </div>
-                            
+
                             {isSelected && (
-                              <Button 
-                                type="button" 
-                                variant="outline" 
+                              <Button
+                                type="button"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => addTimeSlot(day.value)}
+                                className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
                               >
                                 Add Time Slot
                               </Button>
                             )}
                           </div>
-                          
+
                           {isSelected && (
                             <div className="mt-3 space-y-3 pl-6">
-                              {(availabilityForm.watch(`timeSlots.${day.value}`) || []).map((slot, index) => (
-                                <div key={index} className="flex items-center space-x-3">
+                              {(
+                                availabilityForm.watch(
+                                  `timeSlots.${day.value}`
+                                ) || []
+                              ).map((slot, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center space-x-3"
+                                >
                                   <div className="grid grid-cols-2 gap-2 flex-1">
                                     <div>
-                                      <FormLabel className="text-xs">Start Time</FormLabel>
+                                      <FormLabel className="text-xs">
+                                        Start Time
+                                      </FormLabel>
                                       <TimeInput
                                         value={slot.start || ""}
                                         onChange={(value) => {
-                                          const currentSlots = availabilityForm.getValues().timeSlots || {};
-                                          const daySlots = [...(currentSlots[day.value] || [])];
-                                          daySlots[index] = { ...daySlots[index], start: value };
-                                          
-                                          availabilityForm.setValue("timeSlots", {
-                                            ...currentSlots,
-                                            [day.value]: daySlots
-                                          });
+                                          const currentSlots =
+                                            availabilityForm.getValues()
+                                              .timeSlots || {};
+                                          const daySlots = [
+                                            ...(currentSlots[day.value] || []),
+                                          ];
+                                          daySlots[index] = {
+                                            ...daySlots[index],
+                                            start: value,
+                                          };
+
+                                          availabilityForm.setValue(
+                                            "timeSlots",
+                                            {
+                                              ...currentSlots,
+                                              [day.value]: daySlots,
+                                            }
+                                          );
                                         }}
                                       />
                                     </div>
                                     <div>
-                                      <FormLabel className="text-xs">End Time</FormLabel>
+                                      <FormLabel className="text-xs">
+                                        End Time
+                                      </FormLabel>
                                       <TimeInput
                                         value={slot.end || ""}
                                         onChange={(value) => {
-                                          const currentSlots = availabilityForm.getValues().timeSlots || {};
-                                          const daySlots = [...(currentSlots[day.value] || [])];
-                                          daySlots[index] = { ...daySlots[index], end: value };
-                                          
-                                          availabilityForm.setValue("timeSlots", {
-                                            ...currentSlots,
-                                            [day.value]: daySlots
-                                          });
+                                          const currentSlots =
+                                            availabilityForm.getValues()
+                                              .timeSlots || {};
+                                          const daySlots = [
+                                            ...(currentSlots[day.value] || []),
+                                          ];
+                                          daySlots[index] = {
+                                            ...daySlots[index],
+                                            end: value,
+                                          };
+
+                                          availabilityForm.setValue(
+                                            "timeSlots",
+                                            {
+                                              ...currentSlots,
+                                              [day.value]: daySlots,
+                                            }
+                                          );
                                         }}
                                       />
                                     </div>
@@ -822,21 +986,27 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 mt-4"
-                                    onClick={() => removeTimeSlot(day.value, index)}
+                                    onClick={() =>
+                                      removeTimeSlot(day.value, index)
+                                    }
                                   >
                                     ✕
                                   </Button>
                                 </div>
                               ))}
-                              
-                              {!(availabilityForm.watch(`timeSlots.${day.value}`) || []).length && (
+
+                              {!(
+                                availabilityForm.watch(
+                                  `timeSlots.${day.value}`
+                                ) || []
+                              ).length && (
                                 <div className="flex justify-center">
-                                  <Button 
-                                    type="button" 
-                                    variant="ghost" 
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
                                     size="sm"
                                     onClick={() => addTimeSlot(day.value)}
-                                    className="text-guardian"
+                                    className="text-[#1e3b93] hover:text-[#1e3b93]/80"
                                   >
                                     + Add Time Slot
                                   </Button>
@@ -855,20 +1025,27 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
                 </FormItem>
               )}
             />
-
-// This continues from where we left off in the SupportWorkerSetup component
-// Finishing the form submission part
-
+            // This continues from where we left off in the SupportWorkerSetup
+            component // Finishing the form submission part
             <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep} disabled={updateAvailability.isPending || isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                disabled={updateAvailability.isPending || isSubmitting}
+                className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 disabled={updateAvailability.isPending || isSubmitting}
+                className="bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md"
               >
-                {updateAvailability.isPending || isSubmitting ? "Completing Setup..." : (
+                {updateAvailability.isPending || isSubmitting ? (
+                  "Completing Setup..."
+                ) : (
                   <>
                     Complete Setup
                     <CheckCircle className="ml-2 h-4 w-4" />
@@ -892,26 +1069,34 @@ export function SupportWorkerSetup({ onComplete, isSubmitting = false }: Support
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="bg-white shadow-sm py-4 sticky top-0 z-10">
+      <div className="bg-white shadow-sm py-4 sticky top-0 z-10 border-b border-[#1e3b93]/10">
         <div className="container max-w-3xl mx-auto px-4">
           <div className="flex justify-between items-center overflow-x-auto pb-2">
             {steps.map((item, i) => (
               <div key={i} className="flex flex-col items-center mx-2">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm",
                     i + 1 === step
-                      ? "bg-guardian text-white"
+                      ? "bg-[#1e3b93] text-white"
                       : i + 1 < step
-                      ? "bg-gray-200 text-guardian"
+                      ? "bg-[#1e3b93]/10 text-[#1e3b93] border border-[#1e3b93]/20"
                       : "bg-gray-100 text-gray-400"
-                  }`}
+                  )}
                 >
-                  {i + 1 < step ? <CheckCircle className="h-5 w-5" /> : item.icon}
+                  {i + 1 < step ? (
+                    <CheckCircle className="h-5 w-5" />
+                  ) : (
+                    item.icon
+                  )}
                 </div>
                 <span
-                  className={`text-xs mt-1 ${
-                    i + 1 === step ? "text-guardian font-medium" : "text-gray-500"
-                  }`}
+                  className={cn(
+                    "text-xs mt-1 transition-colors",
+                    i + 1 === step
+                      ? "text-[#1e3b93] font-medium"
+                      : "text-gray-500"
+                  )}
                 >
                   {item.label}
                 </span>
