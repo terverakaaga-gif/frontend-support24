@@ -97,7 +97,6 @@ export function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
             {/* <NavLink to="/admin/participants" icon={<Heart size={20} />} text="Participants" active={isActive('/admin/participants')} />
             <NavLink to="/admin/support-workers" icon={<Users size={20} />} text="Support Workers" active={isActive('/admin/support-workers')} /> */}
             <NavLink to="/admin/invites" icon={<BellRing size={20} />} text="Invitations" active={isActive('/admin/invites')} />

@@ -223,6 +223,10 @@ export function ParticipantsList() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentParticipants = filteredParticipants.slice(indexOfFirstItem, indexOfLastItem);
+  
+  console.log(participants)
+  console.log(filteredParticipants)
+  console.log(currentParticipants)
 
   // Pagination controls
   const handlePageChange = (pageNumber: number) => {
@@ -295,30 +299,30 @@ export function ParticipantsList() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            {/* <Select value={filterSupport} onValueChange={setFilterSupport}>
+            <Select value={filterSupport} onValueChange={setFilterSupport}>
               <SelectTrigger className="w-full md:w-[200px]">
                 <SelectValue placeholder="Filter by support need" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All support needs</SelectItem>
+                <SelectItem value="all">All support needs</SelectItem>
                 {allSupportNeeds.map(need => (
                   <SelectItem key={need} value={need}>
                     {need.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select> */}
+            </Select>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        {currentParticipants.length === 0 ? (
+        {participants.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">No participants found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {currentParticipants.map(participant => (
+            {participants.map(participant => (
               <Card key={participant._id} className="overflow-hidden">
                 <div className="flex flex-col h-full">
                   <div className="flex items-start p-4 gap-4">
@@ -405,7 +409,7 @@ export function ParticipantsList() {
           <p className="text-sm text-muted-foreground">
             Showing {filteredParticipants.length > 0 ? indexOfFirstItem + 1 : 0} to {Math.min(indexOfLastItem, filteredParticipants.length)} of {filteredParticipants.length} participants
           </p>
-          {/* <Select value={itemsPerPage.toString()} onValueChange={(value) => {
+          <Select value={itemsPerPage.toString()} onValueChange={(value) => {
             setItemsPerPage(parseInt(value));
             setCurrentPage(1);
           }}>
@@ -418,7 +422,7 @@ export function ParticipantsList() {
               <SelectItem value="8">8</SelectItem>
               <SelectItem value="12">12</SelectItem>
             </SelectContent>
-          </Select> */}
+          </Select>
         </div>
         <div className="flex items-center gap-1">
           <Button
