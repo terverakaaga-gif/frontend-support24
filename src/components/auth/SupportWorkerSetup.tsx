@@ -224,7 +224,10 @@ export function SupportWorkerSetup({
     setStep(step - 1);
   };
 
-  const handleBioSubmit = async (data: z.infer<typeof bioSchema>) => {
+  const 
+  
+  
+  handleBioSubmit = async (data: z.infer<typeof bioSchema>) => {
     try {
       // Update profile with bio and languages
       await updateProfile.mutateAsync({

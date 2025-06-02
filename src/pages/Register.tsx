@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 import { RegistrationForm } from "@/components/auth/RegistrationForm";
 import { OTPVerification } from "@/components/auth/OTPVerification";
 import { UserRegistrationInput } from "@/types/user.types";
@@ -150,12 +150,12 @@ export default function Register() {
                 className="text-center text-sm"
               >
                 <span className="text-gray-600">Have an account already? </span>
-                <a
-                  href="/login"
+                <Link
+                  to="/login"
                   className="text-guardian font-medium hover:text-guardian hover:underline transition-colors"
                 >
                   Sign in
-                </a>
+                </Link>
               </motion.div>
             </>
           )}
