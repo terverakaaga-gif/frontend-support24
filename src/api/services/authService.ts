@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { post } from '../apiClient';
+import { tokenStorage } from '../apiClient';
 import { 
   User, 
   UserRegistrationInput, 
@@ -13,12 +14,26 @@ import {
   Admin
 } from '../../types/user.types';
 
+// Token interface matching your backend response
+interface Tokens {
+  access: {
+    token: string;
+    expires: string;
+  };
+  refresh: {
+    token: string;
+    expires: string;
+  };
+}
+
 interface LoginResponse {
   user: User;
+  tokens: Tokens;
 }
 
 interface RegisterResponse {
   user: User;
+  tokens: Tokens;
   verificationRequired: boolean;
   userId: string;
 }
@@ -29,6 +44,16 @@ interface VerifyEmailResponse {
 
 interface ResendVerificationResponse {
   userId: string;
+}
+
+interface ForgotPasswordResponse {
+  userId: string;
+}
+
+interface ResetPasswordData {
+  userId: string;
+  otpCode: string;
+  password: string;
 }
 
 // Helper function to determine user type and cast accordingly
@@ -49,6 +74,12 @@ const authService = {
   // Register a new user
   register: async (userData: UserRegistrationInput): Promise<RegisterResponse> => {
     const response = await post<RegisterResponse>('/auth/register', userData);
+    
+    // Store tokens if registration is successful
+    if (response.tokens) {
+      tokenStorage.setTokens(response.tokens);
+    }
+    
     return {
       ...response,
       user: castUser(response.user)
@@ -58,8 +89,13 @@ const authService = {
   // Login with email and password
   login: async (credentials: LoginInput): Promise<LoginResponse> => {
     const response = await post<LoginResponse>('/auth/login', credentials);
+    
+    // Store tokens after successful login
+    tokenStorage.setTokens(response.tokens);
+    
     return {
-      user: castUser(response.user)
+      user: castUser(response.user),
+      tokens: response.tokens
     };
   },
   
@@ -76,9 +112,67 @@ const authService = {
     return await post<ResendVerificationResponse>('/auth/resend-verification', data);
   },
   
+  // Forgot password - send OTP to email
+  forgotPassword: async (email: string): Promise<ForgotPasswordResponse> => {
+    return await post<ForgotPasswordResponse>('/auth/forgot-password', { email });
+  },
+  
+  // Reset password with OTP
+  resetPassword: async (data: ResetPasswordData): Promise<void> => {
+    await post<void>('/auth/reset-password', data);
+  },
+  
+  // Refresh authentication tokens
+  refreshToken: async (): Promise<Tokens> => {
+    const refreshToken = tokenStorage.getRefreshToken();
+    
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+    
+    const response = await post<{ tokens: Tokens }>('/auth/refresh-token', { 
+      refreshToken 
+    });
+    
+    // Update stored tokens
+    tokenStorage.setTokens(response.tokens);
+    
+    return response.tokens;
+  },
+  
   // Logout the current user
   logout: async (): Promise<void> => {
-    await post('/auth/logout');
+    const refreshToken = tokenStorage.getRefreshToken();
+    
+    try {
+      // Send logout request to server with refresh token
+      if (refreshToken) {
+        await post('/auth/logout', { refreshToken });
+      }
+    } catch (error) {
+      // If logout fails on server, we still want to clear local tokens
+      console.warn('Server logout failed, clearing local tokens:', error);
+    } finally {
+      // Always clear local tokens
+      tokenStorage.clearTokens();
+    }
+  },
+  
+  // Check if user is authenticated
+  isAuthenticated: (): boolean => {
+    const accessToken = tokenStorage.getAccessToken();
+    return accessToken !== null && !tokenStorage.isTokenExpired(accessToken);
+  },
+  
+  // Get current access token
+  getAccessToken: (): string | null => {
+    return tokenStorage.getAccessToken();
+  },
+  
+  // Check if token needs refresh
+  needsRefresh: (): boolean => {
+    const accessToken = tokenStorage.getAccessToken();
+    return accessToken !== null && tokenStorage.isTokenExpired(accessToken);
   }
 };
 

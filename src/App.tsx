@@ -40,6 +40,7 @@ import { ShiftDetailView } from "./components/admin/ShiftDetails";
 import { ShiftsManagement } from "./components/admin/ShiftsManagement";
 import { TimesheetManagement } from "./components/admin/TimesheetsManagement";
 import { TimesheetDetail } from "./components/admin/TimesheetDetail";
+import ApartmentRentalUI from "./components/admin/ApartmentRenntalUI";
 
 const queryClient = new QueryClient();
 
