@@ -2,9 +2,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { Navbar } from "./components/Navbar";
+import { DashboardLayout } from "./components/layouts/DashboardLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
@@ -44,215 +50,166 @@ const AppRoutes = () => {
 
   // Helper to redirect to the appropriate dashboard based on user role
   const getDefaultRoute = () => {
-    if (!user) return '/login';
-    
+    if (!user) return "/login";
+
     switch (user.role) {
-      case 'admin':
-        return '/admin';
-      case 'guardian':
-        return '/guardian';
-      case 'participant':
-        return '/participant';
-      case 'supportWorker':
-        return '/support-worker';
+      case "admin":
+        return "/admin";
+      case "guardian":
+        return "/guardian";
+      case "participant":
+        return "/participant";
+      case "supportWorker":
+        return "/support-worker";
       default:
-        return '/login';
+        return "/login";
     }
   };
 
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/login" element={
-        user ? <Navigate to={getDefaultRoute()} replace /> : <Login />
-      } />
-      
-      <Route path="/register" element={
-        user && user.isEmailVerified 
-          ? <Navigate to={getDefaultRoute()} replace /> 
-          : <Register />
-      } />
-      
+      <Route
+        path="/login"
+        element={user ? <Navigate to={getDefaultRoute()} replace /> : <Login />}
+      />
+
+      <Route
+        path="/register"
+        element={
+          user && user.isEmailVerified ? (
+            <Navigate to={getDefaultRoute()} replace />
+          ) : (
+            <Register />
+          )
+        }
+      />
+
       {/* Setup Choice Page - for newly registered support workers */}
-      <Route path="/setup-choice" element={
-        !user ? <Navigate to="/login" replace /> :
-        user.role !== 'supportWorker' ? <Navigate to={getDefaultRoute()} replace /> :
-        // user.isOnboarded ? <Navigate to="/support-worker" replace /> :
-        (user as SupportWorker).verificationStatus?.profileSetupComplete ? <Navigate to="/support-worker" replace /> :
-        <SetupChoicePage />
-      } />
-      
+      <Route
+        path="/setup-choice"
+        element={
+          !user ? (
+            <Navigate to="/login" replace />
+          ) : user.role !== "supportWorker" ? (
+            <Navigate to={getDefaultRoute()} replace />
+          ) : (user as SupportWorker).verificationStatus
+              ?.profileSetupComplete ? (
+            <Navigate to="/support-worker" replace />
+          ) : (
+            <SetupChoicePage />
+          )
+        }
+      />
+
       {/* Support Worker Setup Route - accessible but not mandatory */}
-      <Route path="/support-worker-setup" element={
-        !user ? <Navigate to="/login" replace /> :
-        user.role !== 'supportWorker' ? <Navigate to={getDefaultRoute()} replace /> :
-        <SupportWorkerSetupPage />
-      } />
-      
+      <Route
+        path="/support-worker-setup"
+        element={
+          !user ? (
+            <Navigate to="/login" replace />
+          ) : user.role !== "supportWorker" ? (
+            <Navigate to={getDefaultRoute()} replace />
+          ) : (
+            <SupportWorkerSetupPage />
+          )
+        }
+      />
+
       {/* Protected routes */}
-      <Route path="/admin" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <AdminDashboard />
-        </ProtectedRoute>
-      } />
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <Routes>
+                <Route path="/" element={<AdminDashboard />} />
+                <Route path="/invites" element={<InviteManagementPage />} />
+                <Route
+                  path="/invites/:inviteId/details"
+                  element={<InviteDetailsPage />}
+                />
+                <Route
+                  path="/invites/:inviteId/confirm"
+                  element={<InviteConfirmationPage />}
+                />
+                <Route
+                  path="/rate-time-band"
+                  element={<RateTimeBandManagementPage />}
+                />
+                <Route
+                  path="/rate-time-band/create"
+                  element={<RateTimeBandForm />}
+                />
+                <Route
+                  path="/rate-time-band/:id/view"
+                  element={<RateTimeBandDetailsPage />}
+                />
+                <Route
+                  path="/rate-time-band/:id/edit"
+                  element={<RateTimeBandForm />}
+                />
+                <Route
+                  path="/participants"
+                  element={<ParticipantsManagementPage />}
+                />
+                <Route
+                  path="/support-workers"
+                  element={<SupportWorkersManagementPage />}
+                />
+                <Route path="/shifts" element={<ShiftsManagement />} />
+                <Route path="/shifts/:id" element={<ShiftDetailView />} />
+                <Route path="/timesheets" element={<TimesheetManagement />} />
+                <Route path="/timesheets/:id" element={<TimesheetDetail />} />
+                <Route path="/chat/:workerId" element={<AdminChat />} />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/admin/invites" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <InviteManagementPage />
-        </ProtectedRoute>
-      } />
+      <Route
+        path="/guardian/*"
+        element={
+          <ProtectedRoute allowedRoles={["guardian", "admin"]}>
+            <DashboardLayout>
+              <Routes>
+                <Route path="/" element={<GuardianDashboard />} />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/admin/invites/:inviteId/details" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <InviteDetailsPage />
-        </ProtectedRoute>
-      } />
+      <Route
+        path="/participant/*"
+        element={
+          <ProtectedRoute allowedRoles={["participant", "admin"]}>
+            <DashboardLayout>
+              <Routes>
+                <Route path="/" element={<ParticipantDashboard />} />
+                <Route path="/profile" element={<ParticipantProfile />} />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/admin/invites/:inviteId/confirm" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <InviteConfirmationPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/rate-time-band" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <RateTimeBandManagementPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/rate-time-band/create" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <RateTimeBandForm />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/rate-time-band/:id/view" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <RateTimeBandDetailsPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/rate-time-band/:id/edit" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <RateTimeBandForm />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/participants" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <ParticipantsManagementPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/support-workers" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <SupportWorkersManagementPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/shifts" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <ShiftsManagement />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/shifts/:id" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <ShiftDetailView />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/timesheets" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <TimesheetManagement />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/timesheets/:id" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <TimesheetDetail />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/admin/chat/:workerId" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <Navbar />
-          <AdminChat />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/guardian" element={
-        <ProtectedRoute allowedRoles={['guardian', 'admin']}>
-          <Navbar />
-          <GuardianDashboard />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/participant" element={
-        <ProtectedRoute allowedRoles={['participant', 'admin']}>
-          <Navbar />
-          <ParticipantDashboard />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/support-worker" element={
-        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
-          <Navbar />
-          <SupportWorkerDashboard />
-        </ProtectedRoute>
-      } />
-
-      {/* Shift management routes */}
-      <Route path="/support-worker/shifts" element={
-        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
-          <Navbar />
-          <ShiftsPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/support-worker/shifts/:shiftId" element={
-        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
-          <Navbar />
-          <ShiftDetails />
-        </ProtectedRoute>
-      } />
-
-      {/* Profile routes */}
-      <Route path="/participant/profile" element={
-        <ProtectedRoute allowedRoles={['participant', 'admin']}>
-          <Navbar />
-          <ParticipantProfile />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/support-worker/profile" element={
-        <ProtectedRoute allowedRoles={['supportWorker', 'admin']}>
-          <Navbar />
-          <SupportWorkerProfile />
-        </ProtectedRoute>
-      } />
-      
-      {/* Support worker profile view for participants */}
-      <Route path="/support-worker/profile/:workerId" element={
-        <ProtectedRoute allowedRoles={['participant', 'guardian', 'admin']}>
-          <Navbar />
-          <SupportWorkerProfile />
-        </ProtectedRoute>
-      } />
+      <Route
+        path="/support-worker/*"
+        element={
+          <ProtectedRoute allowedRoles={["supportWorker", "admin"]}>
+            <DashboardLayout>
+              <Routes>
+                <Route path="/" element={<SupportWorkerDashboard />} />
+                <Route path="/shifts" element={<ShiftsPage />} />
+                <Route path="/shifts/:shiftId" element={<ShiftDetails />} />
+                <Route path="/profile" element={<SupportWorkerProfile />} />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
 
       {/* Default route */}
       <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
@@ -263,18 +220,18 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
-
-export default App;
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <TooltipProvider>
+            <AppRoutes />
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+}
