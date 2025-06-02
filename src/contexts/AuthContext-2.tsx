@@ -1,50 +1,46 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from "sonner";
-import { UserRegistrationInput } from "@/entities/UserRegistration";
-
-export type UserRole = 'admin' | 'guardian' | 'participant' | 'support-worker';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  avatar?: string;
-  isOnboarded?: boolean;
-  isEmailVerified?: boolean;
-}
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  User,
+  UserRegistrationInput,
+  EmailVerificationInput,
+  SupportWorker,
+  Participant,
+  Guardian,
+  Admin
+} from '../types/user.types';
+import authService from '../api/services/authService';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (data: UserRegistrationInput) => Promise<User>;
+  logout: () => Promise<void>;
+  register: (data: UserRegistrationInput) => Promise<{ userId: string }>;
   completeOnboarding: () => void;
-  verifyEmail: (email: string) => Promise<void>;
+  verifyEmail: (data: EmailVerificationInput) => Promise<void>;
+  resendVerification: (email: string) => Promise<{ userId: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for demonstration purposes
-const mockUsers: User[] = [
-  { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', avatar: 'AD', isOnboarded: true, isEmailVerified: true },
-  { id: '2', name: 'John Smith', email: 'john@example.com', role: 'guardian', avatar: 'JS', isOnboarded: true, isEmailVerified: true },
-  { id: '3', name: 'Emma Wilson', email: 'emma@example.com', role: 'participant', avatar: 'EW', isOnboarded: true, isEmailVerified: true },
-  { id: '4', name: 'Sarah Johnson', email: 'sarah@example.com', role: 'support-worker', avatar: 'SJ', isOnboarded: true, isEmailVerified: true },
-];
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [pendingRegistration, setPendingRegistration] = useState<User | null>(null);
+  const queryClient = useQueryClient();
 
   // Load user data from localStorage once on initial render
   useEffect(() => {
     const loadUserData = () => {
       const storedUser = localStorage.getItem('guardianCareUser');
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          // Handle potential JSON parse error
+          localStorage.removeItem('guardianCareUser');
+        }
       }
       setIsLoading(false);
     };
@@ -54,111 +50,93 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
-    
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const foundUser = mockUsers.find(user => user.email === email);
-      
-      if (foundUser && password === 'password') { // Simple password check for demo
-        setUser(foundUser);
-        localStorage.setItem('guardianCareUser', JSON.stringify(foundUser));
-        toast.success(`Welcome back, ${foundUser.name}!`);
-      } else {
-        toast.error('Invalid email or password');
-        throw new Error('Invalid credentials');
-      }
+      const { user } = await authService.login({ email, password });
+      setUser(user);
+      localStorage.setItem('guardianCareUser', JSON.stringify(user));
+      toast.success(`Welcome back, ${user.firstName}!`);
+      queryClient.invalidateQueries();
     } finally {
       setIsLoading(false);
     }
   };
+  
 
-  const register = async (data: UserRegistrationInput): Promise<User> => {
+  const register = async (data: UserRegistrationInput): Promise<{ userId: string }> => {
     setIsLoading(true);
-    
+  
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if user already exists
-      const existingUser = mockUsers.find(user => user.email === data.email);
-      if (existingUser) {
-        toast.error('User with this email already exists');
-        throw new Error('User already exists');
-      }
-      
-      // Create new user - all users need email verification
-      const newUser: User = {
-        id: `${mockUsers.length + 1}`,
-        name: `${data.firstName} ${data.lastName}`,
-        email: data.email,
-        role: data.role,
-        avatar: `${data.firstName.charAt(0)}${data.lastName.charAt(0)}`,
-        isOnboarded: false,
-        isEmailVerified: false
-      };
-      
-      // Add to mock data (in a real app, this would be a database operation)
-      mockUsers.push(newUser);
-      
-      // Store the pending registration for later verification
-      setPendingRegistration(newUser);
-      
-      // Return the new user but don't authenticate yet
+      const response = await authService.register(data);
       toast.success('Registration successful! Please verify your email.');
-      return newUser;
+      return { userId: response.userId };
     } finally {
       setIsLoading(false);
     }
   };
+  
 
-  const verifyEmail = async (email: string): Promise<void> => {
+  const verifyEmail = async (data: EmailVerificationInput): Promise<void> => {
     setIsLoading(true);
-    
+  
     try {
-      // Find the user with the provided email
-      const userToVerify = mockUsers.find(user => user.email === email);
-      
-      if (!userToVerify) {
-        toast.error('User not found');
-        throw new Error('User not found');
-      }
-      
-      // Update user's email verification status
-      userToVerify.isEmailVerified = true;
-      
-      // Set as current user after verification
-      setUser(userToVerify);
-      localStorage.setItem('guardianCareUser', JSON.stringify(userToVerify));
-      
-      // Clear pending registration
-      setPendingRegistration(null);
-      
+      const { user } = await authService.verifyEmail(data);
+      setUser(user);
+      localStorage.setItem('guardianCareUser', JSON.stringify(user));
       toast.success('Email verification successful!');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
-  const completeOnboarding = () => {
-    if (user) {
-      const updatedUser = { ...user, isOnboarded: true };
-      setUser(updatedUser);
-      localStorage.setItem('guardianCareUser', JSON.stringify(updatedUser));
-      
-      // In a real app, this would be an API call to update the user's status
-      const userIndex = mockUsers.findIndex(u => u.id === user.id);
-      if (userIndex !== -1) {
-        mockUsers[userIndex] = updatedUser;
-      }
+  const resendVerification = async (email: string): Promise<{ userId: string }> => {
+    setIsLoading(true);
+  
+    try {
+      const response = await authService.resendVerification({ email });
+      toast.success('Verification code has been sent to your email.');
+      return { userId: response.userId };
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('guardianCareUser');
-    toast.success('You have been logged out');
+  const completeOnboarding = () => {
+    // if (user && user.role === 'supportWorker') {
+      // Create a new user object with updated verification status
+      // const updatedUser = {
+      //   ...user,
+      //   verificationStatus: {
+      //     ...user.verificationStatus,
+      //     profileSetupComplete: true
+      //   }
+      // };
+      
+      // setUser(updatedUser);
+      // localStorage.setItem('guardianCareUser', JSON.stringify(updatedUser));
+      
+      // In reality, this should call an API endpoint to update the user's status
+      // We'll implement this in the next iteration
+    // }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await authService.logout();
+      setUser(null);
+      localStorage.removeItem('guardianCareUser');
+      toast.success('You have been logged out');
+      
+      // Clear all queries from cache on logout
+      queryClient.clear();
+    } catch (error) {
+      // If logout fails on the server but we want to ensure the user is logged out locally
+      setUser(null);
+      localStorage.removeItem('guardianCareUser');
+      toast.success('You have been logged out');
+      queryClient.clear();
+    }
   };
 
   return (
@@ -169,7 +147,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout, 
       register, 
       completeOnboarding,
-      verifyEmail
+      verifyEmail,
+      resendVerification
     }}>
       {children}
     </AuthContext.Provider>
