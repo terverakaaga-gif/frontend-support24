@@ -1,5 +1,4 @@
-import { ParticipantsList } from "@/components/admin/ParticipantsManagement";
-import { SupportWorkersList } from "@/components/admin/SupportWorkersManagement";
+import SupportWorkersList from "@/components/admin/SupportWorkersManagement";
 
 export default function SupportWorkersManagementPage() {
   return (

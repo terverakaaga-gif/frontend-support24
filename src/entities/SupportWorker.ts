@@ -31,6 +31,8 @@
 //   languages: string[];
 // }
 
+// entities/SupportWorker.ts
+
 // types/supportWorker.ts
 
 export interface SupportWorker {
@@ -50,11 +52,11 @@ export interface SupportWorker {
   };
   serviceAreas: string[];
   languages: string[];
-  ratings: {
+  ratings?: {
     average: number;
     count: number;
   };
-  verificationStatus: {
+  verificationStatus?: {
     profileSetupComplete: boolean;
     identityVerified: boolean;
     policeCheckVerified: boolean;
