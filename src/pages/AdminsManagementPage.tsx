@@ -1,6 +1,6 @@
 import AdminsList from "@/components/admin/AdminManagement";
 
-export default function SupportWorkersManagementPage() {
+export default function AdminsManagementPage() {
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">

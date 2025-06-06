@@ -263,13 +263,32 @@ const AdminsList: React.FC = () => {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
+          {/* <div>
             <h1 className="text-3xl font-bold tracking-tight">Administrators</h1>
             <p className="text-muted-foreground">
               Manage and view all administrators in the system
             </p>
-          </div>
-          <div className="flex items-center space-x-2">
+          </div> */}
+          
+        </div>
+
+        {/* Search Bar */}
+        <div className='flex items-center justify-between'>
+            <div className="flex items-center space-x-4">
+            <div className="flex-1 max-w-md">
+                <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search by name or email..."
+                    value={filters.search || ''}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className="pl-10"
+                />
+                </div>
+            </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
             <Button variant="outline" onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -282,21 +301,7 @@ const AdminsList: React.FC = () => {
             </Button>
           </div>
         </div>
-
-        {/* Search Bar */}
-        <div className="flex items-center space-x-4">
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or email..."
-                value={filters.search || ''}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-        </div>
+        
 
         {/* Filters */}
         <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
@@ -596,7 +601,7 @@ const AdminsList: React.FC = () => {
                       <TableHead>Status</TableHead>
                       <TableHead>Admin Type</TableHead>
                       <TableHead>Permissions</TableHead>
-                      <TableHead>Organizations</TableHead>
+                      {/* <TableHead>Organizations</TableHead> */}
                       <TableHead 
                         className="cursor-pointer hover:bg-muted/50"
                         onClick={() => handleSortChange('createdAt')}
@@ -715,14 +720,14 @@ const AdminsList: React.FC = () => {
                             </Tooltip>
                           </TableCell>
                           
-                          <TableCell>
+                          {/* <TableCell>
                             <div className="flex items-center space-x-1">
                               <Building className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm">
                                 {admin.assignedOrganizationCount} org{admin.assignedOrganizationCount !== 1 ? 's' : ''}
                               </span>
                             </div>
-                          </TableCell>
+                          </TableCell> */}
                           
                           <TableCell>
                             <div className="flex items-center space-x-1">

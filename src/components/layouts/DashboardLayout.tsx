@@ -87,6 +87,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </h2>
               <div className="space-y-1">
                 <NavItem
+                  to="/admin/all-admin"
+                  icon={<Users size={20} />}
+                  label="Admins"
+                  active={isActive("/admin/all-admin")}
+                />
+                <NavItem
                   to="/admin/participants"
                   icon={<Heart size={20} />}
                   label="Participants"
