@@ -1,4 +1,4 @@
-// entities/timesheet.ts
+// types/timesheet.ts
 
 export interface Timesheet {
   _id: string;
@@ -113,27 +113,7 @@ export interface TimesheetClientFilters extends TimesheetFilters {
   limit?: number;
 }
 
-// API Response interface
-// export interface TimesheetsResponse {
-//   success: boolean;
-//   code: number;
-//   message: string;
-//   data: {
-//     timesheets: Timesheet[];
-//   };
-//   error: string | null;
-// }
-
-// export interface TimesheetResponse {
-//   success: boolean;
-//   code: number;
-//   message: string;
-//   data: {
-//     timesheet: Timesheet;
-//   };
-//   error: string | null;
-// }
-
+// API Response interface (what we get after apiClient.get() extracts response.data.data)
 export interface TimesheetsResponse {
   timesheets: Timesheet[];
 }
