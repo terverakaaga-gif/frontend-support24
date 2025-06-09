@@ -181,7 +181,8 @@ export const timesheetService = {
   // Get single timesheet by ID
   getTimesheetById: async (timesheetId: string): Promise<Timesheet> => {
     const response = await get<TimesheetResponse>(`/timesheets/${timesheetId}`);
-    return response.data.timesheet;
+    // return response.data.timesheet;
+    return response.timesheet;
   },
 
   // Get all timesheets without processing (for exports, etc.)
@@ -190,7 +191,8 @@ export const timesheetService = {
     const url = queryString ? `/timesheets?${queryString}` : '/timesheets';
     
     const response = await get<TimesheetsResponse>(url);
-    return response.data.timesheets;
+    // return response.data.timesheets;
+    return response.timesheets;
   },
 
   // Get timesheet summary statistics

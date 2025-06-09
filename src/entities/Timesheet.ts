@@ -1,4 +1,4 @@
-// types/timesheet.ts
+// entities/timesheet.ts
 
 export interface Timesheet {
   _id: string;
@@ -114,24 +114,32 @@ export interface TimesheetClientFilters extends TimesheetFilters {
 }
 
 // API Response interface
+// export interface TimesheetsResponse {
+//   success: boolean;
+//   code: number;
+//   message: string;
+//   data: {
+//     timesheets: Timesheet[];
+//   };
+//   error: string | null;
+// }
+
+// export interface TimesheetResponse {
+//   success: boolean;
+//   code: number;
+//   message: string;
+//   data: {
+//     timesheet: Timesheet;
+//   };
+//   error: string | null;
+// }
+
 export interface TimesheetsResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    timesheets: Timesheet[];
-  };
-  error: string | null;
+  timesheets: Timesheet[];
 }
 
 export interface TimesheetResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    timesheet: Timesheet;
-  };
-  error: string | null;
+  timesheet: Timesheet;
 }
 
 // Helper interfaces for display

@@ -38,7 +38,7 @@ import { RateTimeBandDetailsPage } from "./components/admin/RateTimeBandDetails"
 import { RateTimeBandForm } from "./components/admin/RateTimeBandForm";
 import { ShiftDetailView } from "./components/admin/ShiftDetails";
 import { ShiftsManagement } from "./components/admin/ShiftsManagement";
-import { TimesheetManagement } from "./components/admin/TimesheetsManagement";
+import TimesheetsManagement from "./components/admin/TimesheetsManagement";
 import { TimesheetDetail } from "./components/admin/TimesheetDetail";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
 
@@ -163,7 +163,7 @@ const AppRoutes = () => {
                 />
                 <Route path="/shifts" element={<ShiftsManagement />} />
                 <Route path="/shifts/:id" element={<ShiftDetailView />} />
-                <Route path="/timesheets" element={<TimesheetManagement />} />
+                <Route path="/timesheets" element={<TimesheetsManagement />} />
                 <Route path="/timesheets/:id" element={<TimesheetDetail />} />
                 <Route path="/chat/:workerId" element={<AdminChat />} />
               </Routes>
