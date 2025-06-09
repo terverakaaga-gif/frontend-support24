@@ -153,7 +153,7 @@ export const timesheetService = {
     
     // Fetch data from backend
     const response = await get<TimesheetsResponse>(url);
-    let timesheets = response.data.timesheets;
+    let timesheets = response.timesheets; // Changed from response.data.timesheets
 
     // Apply client-side filters
     timesheets = applyClientFilters(timesheets, filters);
@@ -181,7 +181,6 @@ export const timesheetService = {
   // Get single timesheet by ID
   getTimesheetById: async (timesheetId: string): Promise<Timesheet> => {
     const response = await get<TimesheetResponse>(`/timesheets/${timesheetId}`);
-    // return response.data.timesheet;
     return response.timesheet;
   },
 
@@ -191,8 +190,7 @@ export const timesheetService = {
     const url = queryString ? `/timesheets?${queryString}` : '/timesheets';
     
     const response = await get<TimesheetsResponse>(url);
-    // return response.data.timesheets;
-    return response.timesheets;
+    return response.timesheets; // Changed from response.data.timesheets
   },
 
   // Get timesheet summary statistics
