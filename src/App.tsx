@@ -25,6 +25,8 @@ import ShiftsPage from "./pages/ShiftsPage";
 import ShiftDetails from "./pages/ShiftDetails";
 import NotFound from "./pages/NotFound";
 import ParticipantProfile from "./pages/ParticipantProfile";
+import ParticipantShifts from "./pages/ParticipantShifts";
+import ParticipantShiftDetails from "./pages/ParticipantShiftDetails";
 import SupportWorkerProfile from "./pages/SupportWorkerProfile";
 import InviteManagementPage from "./pages/InviteManagementPage";
 import AdminChat from "./pages/AdminChat";
@@ -41,6 +43,9 @@ import { ShiftsManagement } from "./components/admin/ShiftsManagement";
 import { TimesheetManagement } from "./components/admin/TimesheetsManagement";
 import { TimesheetDetail } from "./components/admin/TimesheetDetail";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
+import OrganizationsPage from "./pages/OrganizationsPage";
+import ParticipantOrganizationsPage from "./pages/ParticipantOrganizationsPage";
+import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -149,10 +154,7 @@ const AppRoutes = () => {
                   path="/rate-time-band/:id/edit"
                   element={<RateTimeBandForm />}
                 />
-                <Route
-                  path="/all-admin"
-                  element={<AdminsManagementPage />}
-                />
+                <Route path="/all-admin" element={<AdminsManagementPage />} />
                 <Route
                   path="/participants"
                   element={<ParticipantsManagementPage />}
@@ -193,6 +195,19 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="/" element={<ParticipantDashboard />} />
                 <Route path="/profile" element={<ParticipantProfile />} />
+                <Route path="/shifts" element={<ParticipantShifts />} />
+                <Route
+                  path="/shifts/:shiftId"
+                  element={<ParticipantShiftDetails />}
+                />
+                <Route
+                  path="/organizations"
+                  element={<ParticipantOrganizationsPage />}
+                />
+                <Route
+                  path="/organizations/:id"
+                  element={<OrganizationDetailsPage />}
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -208,6 +223,11 @@ const AppRoutes = () => {
                 <Route path="/" element={<SupportWorkerDashboard />} />
                 <Route path="/shifts" element={<ShiftsPage />} />
                 <Route path="/shifts/:shiftId" element={<ShiftDetails />} />
+                <Route path="/organizations" element={<OrganizationsPage />} />
+                <Route
+                  path="/organizations/:id"
+                  element={<OrganizationDetailsPage />}
+                />
                 <Route path="/profile" element={<SupportWorkerProfile />} />
               </Routes>
             </DashboardLayout>

@@ -23,6 +23,7 @@ import {
   X,
   LogOut,
   ChevronRight,
+  Building2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -48,6 +49,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   if (!user) return null;
 
   const isActive = (path: string) => {
+    // For exact dashboard routes, only match exactly
+    if (
+      path === "/participant" ||
+      path === "/admin" ||
+      path === "/guardian" ||
+      path === "/support-worker"
+    ) {
+      return location.pathname === path;
+    }
+    // For other routes, use the original logic
     return (
       location.pathname === path || location.pathname.startsWith(`${path}/`)
     );
@@ -193,11 +204,23 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/participant")}
             />
             <NavItem
+              to="/participant/shifts"
+              icon={<Calendar size={20} />}
+              label="My Shifts"
+              active={isActive("/participant/shifts")}
+            />
+            <NavItem
+              to="/participant/organizations"
+              icon={<Building2 size={20} />}
+              label="Organizations"
+              active={isActive("/participant/organizations")}
+            />
+            {/* <NavItem
               to="/bookings"
               icon={<Calendar size={20} />}
               label="Bookings"
               active={isActive("/bookings")}
-            />
+            /> */}
           </>
         );
       case "supportWorker":
@@ -214,6 +237,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Calendar size={20} />}
               label="Shifts"
               active={isActive("/support-worker/shifts")}
+            />
+            <NavItem
+              to="/support-worker/organizations"
+              icon={<Building2 size={20} />}
+              label="Organizations"
+              active={isActive("/support-worker/organizations")}
             />
           </>
         );
@@ -367,4 +396,3 @@ const NavItem = ({ to, icon, label, active = false }: NavItemProps) => (
     {label}
   </Link>
 );
- 
