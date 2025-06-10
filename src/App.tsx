@@ -25,6 +25,8 @@ import ShiftsPage from "./pages/ShiftsPage";
 import ShiftDetails from "./pages/ShiftDetails";
 import NotFound from "./pages/NotFound";
 import ParticipantProfile from "./pages/ParticipantProfile";
+import ParticipantShifts from "./pages/ParticipantShifts";
+import ParticipantShiftDetails from "./pages/ParticipantShiftDetails";
 import SupportWorkerProfile from "./pages/SupportWorkerProfile";
 import InviteManagementPage from "./pages/InviteManagementPage";
 import AdminChat from "./pages/AdminChat";
@@ -193,6 +195,11 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="/" element={<ParticipantDashboard />} />
                 <Route path="/profile" element={<ParticipantProfile />} />
+                <Route path="/shifts" element={<ParticipantShifts />} />
+                <Route
+                  path="/shifts/:shiftId"
+                  element={<ParticipantShiftDetails />}
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>

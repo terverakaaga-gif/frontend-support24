@@ -100,10 +100,10 @@ interface WorkerAssignment {
 export interface Shift {
   _id: string;                              // Unique MongoDB ID
   shiftId: string;                          // Unique shift identifier
-  organizationId: Organization;                   // Organization this shift belongs to
-  participantId: UserSummary;                    // Participant who created the shift
+  organizationId: string | Organization;           // Organization this shift belongs to
+  participantId: string | UserSummary;            // Participant who created the shift
   isMultiWorkerShift: boolean;              // Whether shift requires multiple workers
-  workerId?: UserSummary;                        // Support worker assigned (single-worker mode)
+  workerId?: string | UserSummary;               // Support worker assigned (single-worker mode)
   workerAssignments?: WorkerAssignment[];   // Support workers assigned (multi-worker mode)
   serviceType: ServiceType;                 // Type of service requested
   startTime: string;                          // Scheduled start time
