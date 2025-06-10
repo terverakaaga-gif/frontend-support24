@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+// pages/admin/TimesheetDetail.tsx
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { 
@@ -34,6 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -42,254 +44,25 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
-// Interfaces based on API response
-interface RateTimeBand {
-  _id: string;
-  name: string;
-  code: string;
-  isWeekend: boolean;
-  isPublicHoliday: boolean;
-  baseRateMultiplier: number;
-}
+// Import our types and hooks
+import { useGetTimesheet } from "@/hooks/useTimesheetHooks";
+import { 
+  Timesheet,
+  SERVICE_TYPE_LABELS,
+  TIMESHEET_STATUS_CONFIG
+} from "@/entities/Timesheet";
 
-interface RateCalculation {
-  _id: string;
-  rateTimeBandId: RateTimeBand;
-  name: string;
-  hourlyRate: number;
-  hours: number;
-  amount: number;
-}
-
-interface Expense {
-  _id: string;
-  title: string;
-  description: string;
-  amount: number;
-  receiptUrl?: string;
-}
-
-interface ShiftRef {
-  _id: string;
-  serviceType: string;
-  shiftId: string;
-}
-
-interface Organization {
-  _id: string;
-  name: string;
-}
-
-interface User {
-  _id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  profileImage?: string;
-}
-
-interface Timesheet {
-  _id: string;
-  shiftId: ShiftRef;
-  shiftIdRef: string;
-  organizationId: Organization;
-  participantId: User;
-  workerId: User;
-  scheduledStartTime: string;
-  scheduledEndTime: string;
-  actualStartTime: string;
-  actualEndTime: string;
-  extraTime: number;
-  notes: string;
-  expenses: Expense[];
-  totalExpenses: number;
-  rateCalculations: RateCalculation[];
-  subtotal: number;
-  totalAmount: number;
-  status: string;
-  isPaid: boolean;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Mock data
-const mockTimesheets: Timesheet[] = [
-  {
-    "_id": "6824314d19f7a0ac113e07a5",
-    "shiftId": {
-      "_id": "682428c519f7a0ac113e06c5",
-      "serviceType": "personalCare",
-      "shiftId": "SHIFT-BO1_TXZRC7"
-    },
-    "shiftIdRef": "SHIFT-BO1_TXZRC7",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6813df5a4d13ec4234a33960",
-      "email": "priscillafriday@gmail.com",
-      "firstName": "Priscilla",
-      "lastName": "Friday",
-      "phone": "07081785091",
-      "profileImage": "https://res.cloudinary.com/dj8g798ed/image/upload/v1746165207/user-profiles/profile-6813df5a4d13ec4234a33960.jpg"
-    },
-    "scheduledStartTime": "2025-05-20T09:00:00.000Z",
-    "scheduledEndTime": "2025-05-20T12:00:00.000Z",
-    "actualStartTime": "2025-05-20T09:00:00.000Z",
-    "actualEndTime": "2025-05-20T12:30:00.000Z",
-    "extraTime": 30,
-    "notes": "Client needed extra assistance with meal preparation. All tasks completed successfully.",
-    "expenses": [
-      {
-        "title": "Transportation",
-        "description": "Taxi fare to client's home",
-        "amount": 15.5,
-        "_id": "6824314d19f7a0ac113e07a6"
-      },
-      {
-        "title": "Supplies",
-        "description": "Medical supplies purchased for client",
-        "amount": 25.75,
-        "receiptUrl": "https://example.com/receipts/r123456.jpg",
-        "_id": "6824314d19f7a0ac113e07a7"
-      }
-    ],
-    "totalExpenses": 41.25,
-    "rateCalculations": [
-      {
-        "rateTimeBandId": {
-          "_id": "681c6f750ab224ca6685d05c",
-          "name": "Morning Shift",
-          "code": "MORNING",
-          "isWeekend": false,
-          "isPublicHoliday": false,
-          "baseRateMultiplier": 1
-        },
-        "name": "Morning Shift",
-        "hourlyRate": 30,
-        "hours": 4,
-        "amount": 120,
-        "_id": "6824314d19f7a0ac113e07a8"
-      }
-    ],
-    "subtotal": 120,
-    "totalAmount": 161.25,
-    "status": "pending",
-    "isPaid": false,
-    "createdAt": "2025-05-14T05:59:41.966Z",
-    "updatedAt": "2025-05-14T05:59:41.966Z",
-    "__v": 0
-  },
-  {
-    "_id": "6824328119f7a0ac113e07d6",
-    "shiftId": {
-      "_id": "682428c619f7a0ac113e06cf",
-      "serviceType": "personalCare",
-      "shiftId": "SHIFT-TKXWSHF3GE"
-    },
-    "shiftIdRef": "SHIFT-TKXWSHF3GE",
-    "organizationId": {
-      "_id": "681cbad118cb004b3456b169",
-      "name": "Michael's Organization"
-    },
-    "participantId": {
-      "_id": "681cbad018cb004b3456b166",
-      "email": "milbert@gmail.com",
-      "firstName": "Michael",
-      "lastName": "Hishen",
-      "phone": "08081785091"
-    },
-    "workerId": {
-      "_id": "6813df5a4d13ec4234a33960",
-      "email": "priscillafriday@gmail.com",
-      "firstName": "Priscilla",
-      "lastName": "Friday",
-      "phone": "07081785091",
-      "profileImage": "https://res.cloudinary.com/dj8g798ed/image/upload/v1746165207/user-profiles/profile-6813df5a4d13ec4234a33960.jpg"
-    },
-    "scheduledStartTime": "2025-06-10T09:00:00.000Z",
-    "scheduledEndTime": "2025-06-10T12:00:00.000Z",
-    "actualStartTime": "2025-05-20T08:00:00.000Z",
-    "actualEndTime": "2025-05-20T12:13:00.000Z",
-    "extraTime": 30,
-    "notes": "Client needed extra assistance with meal preparation. All tasks completed successfully.",
-    "expenses": [
-      {
-        "title": "Transportation",
-        "description": "Taxi fare to client's home",
-        "amount": 38.5,
-        "_id": "6824328119f7a0ac113e07d7"
-      },
-      {
-        "title": "Supplies",
-        "description": "Medical supplies purchased for client",
-        "amount": 89.75,
-        "receiptUrl": "https://example.com/receipts/r123456.jpg",
-        "_id": "6824328119f7a0ac113e07d8"
-      }
-    ],
-    "totalExpenses": 128.25,
-    "rateCalculations": [
-      {
-        "rateTimeBandId": {
-          "_id": "681c6f750ab224ca6685d05c",
-          "name": "Morning Shift",
-          "code": "MORNING",
-          "isWeekend": false,
-          "isPublicHoliday": false,
-          "baseRateMultiplier": 1
-        },
-        "name": "Morning Shift",
-        "hourlyRate": 30,
-        "hours": 4.716666666666667,
-        "amount": 141.5,
-        "_id": "6824328119f7a0ac113e07d9"
-      }
-    ],
-    "subtotal": 141.5,
-    "totalAmount": 269.75,
-    "status": "approved",
-    "isPaid": true,
-    "createdAt": "2025-05-14T06:04:49.810Z",
-    "updatedAt": "2025-05-14T06:04:49.810Z",
-    "__v": 0
-  }
-];
-
-export function TimesheetDetail() {
+const TimesheetDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("details");
   const [processingPayment, setProcessingPayment] = useState(false);
   const [processingApproval, setProcessingApproval] = useState(false);
 
-  useEffect(() => {
-    // Simulate API call to fetch timesheet details
-    const fetchTimesheetDetails = () => {
-      setLoading(true);
-      setTimeout(() => {
-        const found = mockTimesheets.find(t => t._id === id) || null;
-        setTimesheet(found);
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchTimesheetDetails();
-  }, [id]);
+  // API call to get timesheet details
+  const { data: timesheet, isLoading, error } = useGetTimesheet(id || '', !!id);
 
   const handleGoBack = () => {
     navigate('/admin/timesheets');
@@ -299,18 +72,10 @@ export function TimesheetDetail() {
     if (!timesheet) return;
     
     setProcessingApproval(true);
-    // Simulate API call
+    // TODO: Implement actual API call
     setTimeout(() => {
-      setTimesheet({
-        ...timesheet,
-        status: 'approved',
-        updatedAt: new Date().toISOString()
-      });
       setProcessingApproval(false);
-      toast({
-        title: "Timesheet Approved",
-        description: "The timesheet has been approved successfully.",
-      });
+      toast.success("Timesheet approved successfully");
     }, 1000);
   };
 
@@ -318,18 +83,10 @@ export function TimesheetDetail() {
     if (!timesheet) return;
     
     setProcessingApproval(true);
-    // Simulate API call
+    // TODO: Implement actual API call
     setTimeout(() => {
-      setTimesheet({
-        ...timesheet,
-        status: 'rejected',
-        updatedAt: new Date().toISOString()
-      });
       setProcessingApproval(false);
-      toast({
-        title: "Timesheet Rejected",
-        description: "The timesheet has been rejected.",
-      });
+      toast.success("Timesheet rejected");
     }, 1000);
   };
 
@@ -337,18 +94,10 @@ export function TimesheetDetail() {
     if (!timesheet) return;
     
     setProcessingPayment(true);
-    // Simulate API call
+    // TODO: Implement actual API call
     setTimeout(() => {
-      setTimesheet({
-        ...timesheet,
-        isPaid: true,
-        updatedAt: new Date().toISOString()
-      });
       setProcessingPayment(false);
-      toast({
-        title: "Payment Processed",
-        description: `Payment of ${formatCurrency(timesheet.totalAmount)} has been processed successfully.`,
-      });
+      toast.success(`Payment of ${formatCurrency(timesheet.totalAmount)} processed successfully`);
     }, 1500);
   };
 
@@ -357,7 +106,7 @@ export function TimesheetDetail() {
   const formatDate = (dateString: string) => format(new Date(dateString), "MMM d, yyyy");
   const formatDateWithDay = (dateString: string) => format(new Date(dateString), "EEEE, MMMM d, yyyy");
   const formatDateTime = (dateString: string) => format(new Date(dateString), "PPpp");
-  const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
+  const getFullName = (user: { firstName: string; lastName: string }) => `${user.firstName} ${user.lastName}`;
   
   const formatDuration = (startTime: string, endTime: string) => {
     const start = new Date(startTime);
@@ -387,7 +136,6 @@ export function TimesheetDetail() {
 
   // Get status badge component with appropriate styling
   const getStatusBadge = (status: string, isPaid: boolean) => {
-    // If paid, show paid badge regardless of status
     if (isPaid) {
       return (
         <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 text-sm py-1 px-3 flex items-center">
@@ -397,65 +145,115 @@ export function TimesheetDetail() {
       );
     }
     
-    const statusMap: Record<string, { className: string, label: string, icon: JSX.Element }> = {
-      'pending': { 
-        className: "bg-yellow-100 text-yellow-800 border-yellow-200", 
-        label: "Pending Approval",
-        icon: <Clock className="h-4 w-4 mr-2" />
-      },
-      'approved': { 
-        className: "bg-blue-100 text-blue-800 border-blue-200", 
-        label: "Approved - Awaiting Payment",
-        icon: <CheckCircle className="h-4 w-4 mr-2" />
-      },
-      'rejected': { 
-        className: "bg-red-100 text-red-800 border-red-200", 
-        label: "Rejected",
-        icon: <AlertCircle className="h-4 w-4 mr-2" />
-      }
-    };
-    
-    const { className, label, icon } = statusMap[status] || { 
-      className: "bg-gray-100 text-gray-800 border-gray-200", 
-      label: status.charAt(0).toUpperCase() + status.slice(1),
-      icon: <Clock className="h-4 w-4 mr-2" />
-    };
+    const config = TIMESHEET_STATUS_CONFIG[status as keyof typeof TIMESHEET_STATUS_CONFIG];
+    if (!config) {
+      return (
+        <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200 text-sm py-1 px-3 flex items-center">
+          <Clock className="h-4 w-4 mr-2" />
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Badge>
+      );
+    }
     
     return (
-      <Badge variant="outline" className={`${className} text-sm py-1 px-3 flex items-center`}>
-        {icon}
-        {label}
+      <Badge variant={config.variant} className="text-sm py-1 px-3 flex items-center">
+        <Clock className="h-4 w-4 mr-2" />
+        {config.label}
       </Badge>
     );
   };
 
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="container mx-auto py-6 max-w-6xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Timesheets
+          </Button>
+          <h1 className="text-2xl font-bold">Loading Timesheet...</h1>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-32 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-5 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-24 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto py-6 max-w-6xl">
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <div className="flex items-center">
+              <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <CardTitle>Error Loading Timesheet</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-600">There was an error loading the timesheet details. Please try again.</p>
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleGoBack}>Return to Timesheets</Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  // Not found state
   if (!timesheet) {
     return (
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center">
-            <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <CardTitle>Timesheet Not Found</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p>The timesheet you're looking for could not be found.</p>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={handleGoBack}>Return to Timesheets</Button>
-        </CardFooter>
-      </Card>
+      <div className="container mx-auto py-6 max-w-6xl">
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <div className="flex items-center">
+              <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <CardTitle>Timesheet Not Found</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p>The timesheet you're looking for could not be found.</p>
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleGoBack}>Return to Timesheets</Button>
+          </CardFooter>
+        </Card>
+      </div>
     );
   }
 
@@ -511,8 +309,8 @@ export function TimesheetDetail() {
                           
                           <div>
                             <p className="text-sm font-medium mb-1">Service Type</p>
-                            <p className="text-sm capitalize">
-                              {timesheet.shiftId.serviceType.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                            <p className="text-sm">
+                              {SERVICE_TYPE_LABELS[timesheet.shiftId.serviceType] || timesheet.shiftId.serviceType}
                             </p>
                           </div>
                           
@@ -565,6 +363,21 @@ export function TimesheetDetail() {
                               </div>
                             </div>
                           )}
+                          
+                          {timesheet.distanceTravelKm > 0 && (
+                            <div>
+                              <p className="text-sm font-medium mb-1">Travel Distance</p>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <p className="text-sm">
+                                  {timesheet.distanceTravelKm} km @ {formatCurrency(timesheet.distanceTravelRate)}/km
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    = {formatCurrency(timesheet.distanceTravelAmount)}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -580,6 +393,16 @@ export function TimesheetDetail() {
                         )}
                       </div>
                     </div>
+
+                    {/* Rejection Reason (if applicable) */}
+                    {timesheet.status === 'rejected' && timesheet.rejectionReason && (
+                      <div className="space-y-4">
+                        <h3 className="text-sm font-medium text-muted-foreground">Rejection Reason</h3>
+                        <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                          <p className="text-sm text-red-800">{timesheet.rejectionReason}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
                 
@@ -598,6 +421,7 @@ export function TimesheetDetail() {
                             <TableRow>
                               <TableHead className="w-[200px]">Item</TableHead>
                               <TableHead>Description</TableHead>
+                              <TableHead>Payer</TableHead>
                               <TableHead className="text-right">Amount</TableHead>
                               <TableHead className="text-right">Receipt</TableHead>
                             </TableRow>
@@ -607,6 +431,11 @@ export function TimesheetDetail() {
                               <TableRow key={expense._id}>
                                 <TableCell className="font-medium">{expense.title}</TableCell>
                                 <TableCell>{expense.description}</TableCell>
+                                <TableCell>
+                                  <Badge variant={expense.payer === 'participant' ? 'default' : 'secondary'}>
+                                    {expense.payer === 'participant' ? 'Participant' : 'Worker'}
+                                  </Badge>
+                                </TableCell>
                                 <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
                                 <TableCell className="text-right">
                                   {expense.receiptUrl ? (
@@ -627,7 +456,12 @@ export function TimesheetDetail() {
                               </TableRow>
                             ))}
                             <TableRow>
-                              <TableCell colSpan={2} className="text-right font-medium">Total Expenses:</TableCell>
+                              <TableCell colSpan={3} className="text-right font-medium">
+                                <div className="space-y-1">
+                                  <div>Participant Expenses: {formatCurrency(timesheet.participantExpensesTotal)}</div>
+                                  <div>Worker Expenses: {formatCurrency(timesheet.workerExpensesTotal)}</div>
+                                </div>
+                              </TableCell>
                               <TableCell className="text-right font-medium">
                                 {formatCurrency(timesheet.totalExpenses)}
                               </TableCell>
@@ -657,7 +491,16 @@ export function TimesheetDetail() {
                         <TableBody>
                           {timesheet.rateCalculations.map((calc) => (
                             <TableRow key={calc._id}>
-                              <TableCell className="font-medium">{calc.name}</TableCell>
+                              <TableCell className="font-medium">
+                                <div>
+                                  <div>{calc.name}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {calc.rateTimeBandId.code}
+                                    {calc.rateTimeBandId.isWeekend && " (Weekend)"}
+                                    {calc.rateTimeBandId.isPublicHoliday && " (Holiday)"}
+                                  </div>
+                                </div>
+                              </TableCell>
                               <TableCell>{formatCurrency(calc.hourlyRate)}/hr</TableCell>
                               <TableCell>{calc.hours.toFixed(2)}</TableCell>
                               <TableCell className="text-right">{formatCurrency(calc.amount)}</TableCell>
@@ -673,6 +516,12 @@ export function TimesheetDetail() {
                           <span className="text-sm">Subtotal (Labor):</span>
                           <span className="text-sm font-medium">{formatCurrency(timesheet.subtotal)}</span>
                         </div>
+                        {timesheet.distanceTravelAmount > 0 && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Travel ({timesheet.distanceTravelKm} km):</span>
+                            <span className="text-sm font-medium">{formatCurrency(timesheet.distanceTravelAmount)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Expenses:</span>
                           <span className="text-sm font-medium">{formatCurrency(timesheet.totalExpenses)}</span>
@@ -681,6 +530,10 @@ export function TimesheetDetail() {
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">Total Amount:</span>
                           <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Grand Total:</span>
+                          <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
                         </div>
                       </div>
                     </div>
@@ -797,7 +650,7 @@ export function TimesheetDetail() {
               </div>
               
               <div className="mt-4">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => navigate(`/admin/participants/${timesheet.participantId._id}`)}>
                   <UserCircle className="h-4 w-4 mr-2" />
                   View Participant Profile
                 </Button>
@@ -850,14 +703,9 @@ export function TimesheetDetail() {
               </div>
               
               <div className="mt-4 space-y-2">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => navigate(`/admin/support-workers/${timesheet.workerId._id}`)}>
                   <UserCircle className="h-4 w-4 mr-2" />
                   View Worker Profile
-                </Button>
-                
-                <Button variant="outline" className="w-full">
-                  <Clock className="h-4 w-4 mr-2" />
-                  View Worker Schedule
                 </Button>
               </div>
             </CardContent>
@@ -875,6 +723,13 @@ export function TimesheetDetail() {
                   <span className="text-sm font-medium">{formatCurrency(timesheet.subtotal)}</span>
                 </div>
                 
+                {timesheet.distanceTravelAmount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Travel:</span>
+                    <span className="text-sm font-medium">{formatCurrency(timesheet.distanceTravelAmount)}</span>
+                  </div>
+                )}
+                
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Expenses:</span>
                   <span className="text-sm font-medium">{formatCurrency(timesheet.totalExpenses)}</span>
@@ -885,6 +740,11 @@ export function TimesheetDetail() {
                 <div className="flex justify-between">
                   <span className="text-sm font-medium">Total:</span>
                   <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm font-medium">Grand Total:</span>
+                  <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
                 </div>
                 
                 <div className="flex justify-between">
@@ -902,6 +762,13 @@ export function TimesheetDetail() {
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Payment Date:</span>
                     <span className="text-sm">{formatDate(timesheet.updatedAt)}</span>
+                  </div>
+                )}
+
+                {timesheet.approvedAt && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Approved:</span>
+                    <span className="text-sm">{formatDate(timesheet.approvedAt)}</span>
                   </div>
                 )}
               </div>
@@ -956,6 +823,18 @@ export function TimesheetDetail() {
                   <span className="text-muted-foreground">Shift Reference:</span>
                   <span className="font-mono text-xs truncate max-w-[150px]">{timesheet.shiftId._id}</span>
                 </div>
+
+                {timesheet.approvedBy && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Approved By:</span>
+                    <span className="font-mono text-xs">{timesheet.approvedBy}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Multi-Worker:</span>
+                  <span>{timesheet.isMultiWorkerShift ? 'Yes' : 'No'}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -963,4 +842,6 @@ export function TimesheetDetail() {
       </div>
     </div>
   );
-}
+};
+
+export default TimesheetDetail;

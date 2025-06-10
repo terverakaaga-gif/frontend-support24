@@ -39,7 +39,7 @@ import { RateTimeBandForm } from "./components/admin/RateTimeBandForm";
 import { ShiftDetailView } from "./components/admin/ShiftDetails";
 import { ShiftsManagement } from "./components/admin/ShiftsManagement";
 import TimesheetsManagement from "./components/admin/TimesheetsManagement";
-import { TimesheetDetail } from "./components/admin/TimesheetDetail";
+import TimesheetDetail from "./components/admin/TimesheetDetail";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
 
 const queryClient = new QueryClient();
