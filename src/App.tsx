@@ -43,6 +43,7 @@ import { ShiftsManagement } from "./components/admin/ShiftsManagement";
 import { TimesheetManagement } from "./components/admin/TimesheetsManagement";
 import { TimesheetDetail } from "./components/admin/TimesheetDetail";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
+import OrganizationsPage from "./pages/OrganizationsPage";
 
 const queryClient = new QueryClient();
 
@@ -151,10 +152,7 @@ const AppRoutes = () => {
                   path="/rate-time-band/:id/edit"
                   element={<RateTimeBandForm />}
                 />
-                <Route
-                  path="/all-admin"
-                  element={<AdminsManagementPage />}
-                />
+                <Route path="/all-admin" element={<AdminsManagementPage />} />
                 <Route
                   path="/participants"
                   element={<ParticipantsManagementPage />}
@@ -215,6 +213,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<SupportWorkerDashboard />} />
                 <Route path="/shifts" element={<ShiftsPage />} />
                 <Route path="/shifts/:shiftId" element={<ShiftDetails />} />
+                <Route path="/organizations" element={<OrganizationsPage />} />
                 <Route path="/profile" element={<SupportWorkerProfile />} />
               </Routes>
             </DashboardLayout>

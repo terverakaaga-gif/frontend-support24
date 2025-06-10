@@ -23,6 +23,7 @@ import {
   X,
   LogOut,
   ChevronRight,
+  Building2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -230,6 +231,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Calendar size={20} />}
               label="Shifts"
               active={isActive("/support-worker/shifts")}
+            />
+            <NavItem
+              to="/support-worker/organizations"
+              icon={<Building2 size={20} />}
+              label="Organizations"
+              active={isActive("/support-worker/organizations")}
             />
           </>
         );
