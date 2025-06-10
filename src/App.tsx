@@ -44,6 +44,8 @@ import { TimesheetManagement } from "./components/admin/TimesheetsManagement";
 import { TimesheetDetail } from "./components/admin/TimesheetDetail";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
+import ParticipantOrganizationsPage from "./pages/ParticipantOrganizationsPage";
+import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -198,6 +200,14 @@ const AppRoutes = () => {
                   path="/shifts/:shiftId"
                   element={<ParticipantShiftDetails />}
                 />
+                <Route
+                  path="/organizations"
+                  element={<ParticipantOrganizationsPage />}
+                />
+                <Route
+                  path="/organizations/:id"
+                  element={<OrganizationDetailsPage />}
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -214,6 +224,10 @@ const AppRoutes = () => {
                 <Route path="/shifts" element={<ShiftsPage />} />
                 <Route path="/shifts/:shiftId" element={<ShiftDetails />} />
                 <Route path="/organizations" element={<OrganizationsPage />} />
+                <Route
+                  path="/organizations/:id"
+                  element={<OrganizationDetailsPage />}
+                />
                 <Route path="/profile" element={<SupportWorkerProfile />} />
               </Routes>
             </DashboardLayout>

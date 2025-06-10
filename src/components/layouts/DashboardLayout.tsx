@@ -210,6 +210,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/participant/shifts")}
             />
             <NavItem
+              to="/participant/organizations"
+              icon={<Building2 size={20} />}
+              label="Organizations"
+              active={isActive("/participant/organizations")}
+            />
+            <NavItem
               to="/bookings"
               icon={<Calendar size={20} />}
               label="Bookings"

@@ -299,20 +299,20 @@ const ParticipantShifts = () => {
           </div>
         );
       } else {
-        return (
+      return (
           <div className="flex items-center gap-2">
             <Avatar className="w-6 h-6">
-              <AvatarImage src={shift.workerId.profileImage} />
+            <AvatarImage src={shift.workerId.profileImage} />
               <AvatarFallback className="text-xs">
-                {shift.workerId.firstName[0]}
-                {shift.workerId.lastName[0]}
-              </AvatarFallback>
-            </Avatar>
+              {shift.workerId.firstName[0]}
+              {shift.workerId.lastName[0]}
+            </AvatarFallback>
+          </Avatar>
             <span className="text-sm font-medium">
               {shift.workerId.firstName} {shift.workerId.lastName}
             </span>
-          </div>
-        );
+        </div>
+      );
       }
     } else {
       return (
@@ -364,113 +364,113 @@ const ParticipantShifts = () => {
       </div>
 
       {/* Enhanced Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Shifts */}
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10" />
-          <CardContent className="p-6 relative">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-blue-600">
-                  Total Shifts
-                </p>
-                <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {stats.total}
-                </p>
-                <p className="text-xs text-gray-500">All time</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Total Shifts */}
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-blue-600">
+                    Total Shifts
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    {stats.total}
+                  </p>
+                  <p className="text-xs text-gray-500">All time</p>
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Calendar className="w-7 h-7 text-white" />
+                </div>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Calendar className="w-7 h-7 text-white" />
+              <div className="mt-4 flex items-center gap-1 text-sm">
+                <TrendingUp className="w-4 h-4 text-green-500" />
+                <span className="text-green-600 font-medium">
+                  {stats.thisWeek} this week
+                </span>
               </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-sm">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-green-600 font-medium">
-                {stats.thisWeek} this week
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Upcoming Shifts */}
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" />
-          <CardContent className="p-6 relative">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
+          {/* Upcoming Shifts */}
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
                 <p className="text-sm font-medium text-purple-600">Upcoming</p>
-                <p className="text-3xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                  {stats.upcoming}
-                </p>
-                <p className="text-xs text-gray-500">Future shifts</p>
+                  <p className="text-3xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                    {stats.upcoming}
+                  </p>
+                  <p className="text-xs text-gray-500">Future shifts</p>
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <CalendarDays className="w-7 h-7 text-white" />
+                </div>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <CalendarDays className="w-7 h-7 text-white" />
+              <div className="mt-4 flex items-center gap-1 text-sm">
+                <Clock className="w-4 h-4 text-blue-500" />
+                <span className="text-blue-600 font-medium">
+                  {stats.confirmed} confirmed
+                </span>
               </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-sm">
-              <Clock className="w-4 h-4 text-blue-500" />
-              <span className="text-blue-600 font-medium">
-                {stats.confirmed} confirmed
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* In Progress */}
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" />
-          <CardContent className="p-6 relative">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-orange-600">
-                  Active Now
-                </p>
-                <p className="text-3xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                  {stats.inProgress}
-                </p>
-                <p className="text-xs text-gray-500">In progress</p>
+          {/* In Progress */}
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-orange-600">
+                    Active Now
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                    {stats.inProgress}
+                  </p>
+                  <p className="text-xs text-gray-500">In progress</p>
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <PlayCircle className="w-7 h-7 text-white" />
+                </div>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <PlayCircle className="w-7 h-7 text-white" />
+              <div className="mt-4 flex items-center gap-1 text-sm">
+                <Activity className="w-4 h-4 text-green-500" />
+                <span className="text-green-600 font-medium">Live updates</span>
               </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-sm">
-              <Activity className="w-4 h-4 text-green-500" />
-              <span className="text-green-600 font-medium">Live updates</span>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Completion Rate */}
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" />
-          <CardContent className="p-6 relative">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
+          {/* Completion Rate */}
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
                 <p className="text-sm font-medium text-green-600">Completed</p>
-                <p className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
-                  {stats.completed}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {stats.total > 0
-                    ? Math.round((stats.completed / stats.total) * 100)
-                    : 0}
-                  % completion rate
-                </p>
+                  <p className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
+                    {stats.completed}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {stats.total > 0
+                      ? Math.round((stats.completed / stats.total) * 100)
+                      : 0}
+                    % completion rate
+                  </p>
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <CalendarCheck className="w-7 h-7 text-white" />
+                </div>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <CalendarCheck className="w-7 h-7 text-white" />
+              <div className="mt-4 flex items-center gap-1 text-sm">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="text-green-600 font-medium">
+                  {stats.total - stats.cancelled} successful
+                </span>
               </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-sm">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span className="text-green-600 font-medium">
-                {stats.total - stats.cancelled} successful
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
       </div>
 
       {/* Enhanced Filters and Search */}
@@ -542,9 +542,9 @@ const ParticipantShifts = () => {
       {/* Modern Table */}
       <Card className="border-0 shadow-lg overflow-hidden">
         <CardContent className="p-0">
-          {isLoading ? (
+      {isLoading ? (
             <div className="p-6">
-              <div className="space-y-4">
+        <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex items-center gap-4">
                     <Skeleton className="w-8 h-8 rounded-full" />
@@ -552,22 +552,22 @@ const ParticipantShifts = () => {
                     <Skeleton className="h-4 w-24" />
                     <Skeleton className="h-4 w-20" />
                   </div>
-                ))}
+          ))}
               </div>
-            </div>
-          ) : filteredShifts.length === 0 ? (
+        </div>
+      ) : filteredShifts.length === 0 ? (
             <div className="p-12 text-center">
-              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No shifts found
-              </h3>
-              <p className="text-gray-600 max-w-md mx-auto">
-                {searchTerm ||
-                statusFilter !== "all" ||
-                serviceTypeFilter !== "all"
-                  ? "Try adjusting your filters to see more results."
-                  : "You don't have any shifts scheduled yet. Contact your support coordinator to schedule your first shift."}
-              </p>
+            <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No shifts found
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              {searchTerm ||
+              statusFilter !== "all" ||
+              serviceTypeFilter !== "all"
+                ? "Try adjusting your filters to see more results."
+                : "You don't have any shifts scheduled yet. Contact your support coordinator to schedule your first shift."}
+            </p>
             </div>
           ) : (
             <div>
@@ -625,10 +625,10 @@ const ParticipantShifts = () => {
                 </TableHeader>
                 <TableBody>
                   {paginatedShifts.map((shift) => {
-                    const statusInfo = getStatusInfo(shift.status);
-                    return (
+            const statusInfo = getStatusInfo(shift.status);
+            return (
                       <TableRow
-                        key={shift._id}
+                key={shift._id}
                         className="hover:bg-gray-50/50 transition-colors cursor-pointer border-b border-gray-100"
                         onClick={() =>
                           navigate(`/participant/shifts/${shift._id}`)
@@ -643,13 +643,13 @@ const ParticipantShifts = () => {
                               <code className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                                 {shift.shiftId}
                               </code>
-                              {shift.recurrence?.pattern !== "none" && (
-                                <Badge variant="outline" className="text-xs">
-                                  <Repeat className="w-3 h-3 mr-1" />
-                                  Recurring
-                                </Badge>
-                              )}
-                            </div>
+                            {shift.recurrence?.pattern !== "none" && (
+                              <Badge variant="outline" className="text-xs">
+                                <Repeat className="w-3 h-3 mr-1" />
+                                Recurring
+                              </Badge>
+                            )}
+                          </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-4">
@@ -676,7 +676,7 @@ const ParticipantShifts = () => {
                             <span className="text-sm text-gray-600 line-clamp-2">
                               {shift.address || "Location not specified"}
                             </span>
-                          </div>
+                        </div>
                         </TableCell>
                         <TableCell className="py-4">
                           <Badge
@@ -729,7 +729,7 @@ const ParticipantShifts = () => {
                     Showing {startIndex + 1} to{" "}
                     {Math.min(startIndex + itemsPerPage, filteredShifts.length)}{" "}
                     of {filteredShifts.length} shifts
-                  </div>
+                        </div>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
@@ -792,8 +792,8 @@ const ParticipantShifts = () => {
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+                </CardContent>
+              </Card>
     </div>
   );
 };

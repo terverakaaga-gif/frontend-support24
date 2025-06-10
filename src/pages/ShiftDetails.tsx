@@ -213,7 +213,7 @@ export default function ShiftDetails() {
         <ArrowLeft className="mr-2 h-4 w-4" />
         Go Back
       </Button>
-
+      
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-6">
         <div>
@@ -235,7 +235,7 @@ export default function ShiftDetails() {
           {shift.status}
         </Badge>
       </div>
-
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main Content */}
         <Card className="md:col-span-2 border-0 shadow-sm">
@@ -266,11 +266,11 @@ export default function ShiftDetails() {
                     <span className="text-sm text-gray-500">
                       ({getShiftDuration(shift.startTime, shift.endTime)})
                     </span>
-                  </div>
+                </div>
                 </div>
               </div>
             </div>
-
+            
             {/* Location */}
             <div className="flex items-start gap-4 pb-4 border-b">
               <div className="p-2 rounded-full bg-guardian/10">
@@ -307,7 +307,7 @@ export default function ShiftDetails() {
                 </div>
               </div>
             )}
-
+            
             {/* Additional Information */}
             <div className="flex items-start gap-4">
               <div className="p-2 rounded-full bg-guardian/10">
@@ -350,38 +350,38 @@ export default function ShiftDetails() {
                   )}
                 </div>
                 <div className="mt-4">
-                  <Badge className="bg-guardian">
+                <Badge className="bg-guardian">
                     {formatServiceType(shift.serviceType)}
-                  </Badge>
+                </Badge>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
-
+        
         {/* Participant Info */}
         <div className="space-y-6">
           <Card className="border-0 shadow-sm">
-            <CardHeader>
+          <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5 text-guardian" />
                 Participant
               </CardTitle>
-            </CardHeader>
+          </CardHeader>
             <CardContent>
               {participantInfo.hasDetails ? (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-guardian/10 flex items-center justify-center">
-                      <User className="h-6 w-6 text-guardian" />
-                    </div>
-                    <div>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-guardian/10 flex items-center justify-center">
+                <User className="h-6 w-6 text-guardian" />
+              </div>
+              <div>
                       <h3 className="font-medium text-gray-900">
                         {participantInfo.name}
                       </h3>
                       <p className="text-sm text-gray-500">Participant</p>
-                    </div>
-                  </div>
+              </div>
+            </div>
 
                   {(participantInfo.email || participantInfo.phone) && (
                     <>
@@ -402,11 +402,11 @@ export default function ShiftDetails() {
                       </div>
                     </>
                   )}
-
-                  <div className="pt-4 border-t">
-                    <Button className="w-full bg-guardian hover:bg-guardian-dark">
+            
+            <div className="pt-4 border-t">
+              <Button className="w-full bg-guardian hover:bg-guardian-dark">
                       Contact Participant
-                    </Button>
+              </Button>
                   </div>
                 </div>
               ) : (
@@ -458,9 +458,9 @@ export default function ShiftDetails() {
                     </p>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
         </div>
       </div>
     </div>
