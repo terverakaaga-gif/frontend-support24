@@ -89,7 +89,7 @@ interface WorkerProfile {
 
 interface Worker {
   serviceAgreement: ServiceAgreement;
-  workerId: WorkerProfile;
+  workerId: string | WorkerProfile;
   joinedDate: string;
   _id: string;
 }
@@ -103,9 +103,9 @@ interface ProposedRates {
 interface PendingInvite {
   proposedRates: ProposedRates;
   serviceAgreement: {
-    shiftRates: any[];
+    shiftRates: ShiftRate[];
   };
-  workerId: WorkerProfile;
+  workerId: string | WorkerProfile;
   inviteDate: string;
   status: string;
   notes: string;
@@ -182,7 +182,17 @@ export default function OrganizationDetailsPage() {
     if (typeof rateTimeBandId === "object") {
       return rateTimeBandId.name;
     }
-    return rateTimeBandId;
+    // For string IDs, try to provide a more readable name based on common patterns
+    const rateBandNames: { [key: string]: string } = {
+      "681c6f750ab224ca6685d05c": "Morning Shift",
+      "681c6f750ab224ca6685d05d": "Afternoon Shift",
+      "681c6f750ab224ca6685d05e": "Night Shift",
+      "681c6f750ab224ca6685d05f": "Weekend Shift",
+      "681c6f750ab224ca6685d060": "Holiday Shift",
+    };
+    return (
+      rateBandNames[rateTimeBandId] || `Rate Band ${rateTimeBandId.slice(-4)}`
+    );
   };
 
   // Helper function to get rate band details
@@ -199,6 +209,51 @@ export default function OrganizationDetailsPage() {
   const formatTime = (time?: string): string => {
     if (!time) return "";
     return time;
+  };
+
+  // Helper functions to handle worker ID (string or object)
+  const getWorkerIdString = (workerId: string | WorkerProfile): string => {
+    if (typeof workerId === "string") {
+      return workerId;
+    }
+    return workerId._id;
+  };
+
+  const getWorkerDisplayName = (workerId: string | WorkerProfile): string => {
+    if (typeof workerId === "string") {
+      return `Worker ${workerId.slice(-8)}`;
+    }
+    return `${workerId.firstName} ${workerId.lastName}`;
+  };
+
+  const getWorkerInitials = (workerId: string | WorkerProfile): string => {
+    if (typeof workerId === "string") {
+      return workerId.slice(-2).toUpperCase();
+    }
+    return `${workerId.firstName[0]}${workerId.lastName[0]}`;
+  };
+
+  const getWorkerEmail = (workerId: string | WorkerProfile): string => {
+    if (typeof workerId === "string") {
+      return "Email not available";
+    }
+    return workerId.email;
+  };
+
+  const getWorkerPhone = (workerId: string | WorkerProfile): string => {
+    if (typeof workerId === "string") {
+      return "Phone not available";
+    }
+    return workerId.phone;
+  };
+
+  const getWorkerProfileImage = (
+    workerId: string | WorkerProfile
+  ): string | undefined => {
+    if (typeof workerId === "string") {
+      return undefined;
+    }
+    return workerId.profileImage;
   };
 
   // Calculate stats
@@ -500,26 +555,35 @@ export default function OrganizationDetailsPage() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-4">
                           <Avatar className="w-16 h-16">
-                            <AvatarImage src={worker.workerId.profileImage} />
+                            <AvatarImage
+                              src={getWorkerProfileImage(worker.workerId)}
+                            />
                             <AvatarFallback className="text-lg">
-                              {worker.workerId.firstName[0]}
-                              {worker.workerId.lastName[0]}
+                              {getWorkerInitials(worker.workerId)}
                             </AvatarFallback>
                           </Avatar>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900">
-                              {worker.workerId.firstName}{" "}
-                              {worker.workerId.lastName}
+                              {getWorkerDisplayName(worker.workerId)}
                             </h3>
                             <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                              <span className="flex items-center gap-1">
-                                <Mail className="w-4 h-4" />
-                                {worker.workerId.email}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Phone className="w-4 h-4" />
-                                {worker.workerId.phone}
-                              </span>
+                              {typeof worker.workerId === "string" ? (
+                                <span className="flex items-center gap-1">
+                                  <User className="w-4 h-4" />
+                                  Worker ID: {worker.workerId}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className="flex items-center gap-1">
+                                    <Mail className="w-4 h-4" />
+                                    {getWorkerEmail(worker.workerId)}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="w-4 h-4" />
+                                    {getWorkerPhone(worker.workerId)}
+                                  </span>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -583,7 +647,7 @@ export default function OrganizationDetailsPage() {
                                   ${rate.hourlyRate}/hr
                                 </span>
                               </div>
-                              {getRateBandDetails(rate.rateTimeBandId) && (
+                              {getRateBandDetails(rate.rateTimeBandId) ? (
                                 <div className="text-xs text-gray-500 mt-1">
                                   {getRateBandDetails(rate.rateTimeBandId)
                                     ?.startTime &&
@@ -603,6 +667,10 @@ export default function OrganizationDetailsPage() {
                                         )}
                                       </span>
                                     )}
+                                </div>
+                              ) : (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  ID: {String(rate.rateTimeBandId).slice(-8)}
                                 </div>
                               )}
                             </div>
@@ -688,26 +756,35 @@ export default function OrganizationDetailsPage() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-4">
                           <Avatar className="w-16 h-16">
-                            <AvatarImage src={invite.workerId.profileImage} />
+                            <AvatarImage
+                              src={getWorkerProfileImage(invite.workerId)}
+                            />
                             <AvatarFallback className="text-lg">
-                              {invite.workerId.firstName[0]}
-                              {invite.workerId.lastName[0]}
+                              {getWorkerInitials(invite.workerId)}
                             </AvatarFallback>
                           </Avatar>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900">
-                              {invite.workerId.firstName}{" "}
-                              {invite.workerId.lastName}
+                              {getWorkerDisplayName(invite.workerId)}
                             </h3>
                             <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                              <span className="flex items-center gap-1">
-                                <Mail className="w-4 h-4" />
-                                {invite.workerId.email}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Phone className="w-4 h-4" />
-                                {invite.workerId.phone}
-                              </span>
+                              {typeof invite.workerId === "string" ? (
+                                <span className="flex items-center gap-1">
+                                  <User className="w-4 h-4" />
+                                  Worker ID: {invite.workerId}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className="flex items-center gap-1">
+                                    <Mail className="w-4 h-4" />
+                                    {getWorkerEmail(invite.workerId)}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="w-4 h-4" />
+                                    {getWorkerPhone(invite.workerId)}
+                                  </span>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -786,17 +863,21 @@ export default function OrganizationDetailsPage() {
                                     ${rate.hourlyRate}/hr
                                   </span>
                                 </div>
-                                {rateBand &&
-                                  rateBand.startTime &&
-                                  rateBand.endTime && (
+                                {rateBand ? (
+                                  <>
+                                    {rateBand.startTime && rateBand.endTime && (
+                                      <div className="text-xs text-gray-500 mt-1">
+                                        {formatTime(rateBand.startTime)} -{" "}
+                                        {formatTime(rateBand.endTime)}
+                                      </div>
+                                    )}
                                     <div className="text-xs text-gray-500 mt-1">
-                                      {formatTime(rateBand.startTime)} -{" "}
-                                      {formatTime(rateBand.endTime)}
+                                      Code: {rateBand.code}
                                     </div>
-                                  )}
-                                {rateBand && (
+                                  </>
+                                ) : (
                                   <div className="text-xs text-gray-500 mt-1">
-                                    Code: {rateBand.code}
+                                    ID: {String(rate.rateTimeBandId).slice(-8)}
                                   </div>
                                 )}
                               </div>
