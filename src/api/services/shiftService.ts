@@ -56,10 +56,9 @@ const shiftService = {
   
   // Get shift by shiftId reference
   getShiftByShiftId: async (shiftIdRef: string): Promise<Shift> => {
-    // return await get<Shift>(`/shifts/byShiftId/${shiftIdRef}`);
-
-    const response =  await get<ShiftResponse>(`/shifts/byShiftId/${shiftIdRef}`);
-    return response.shift
+    // Use the correct API endpoint /shifts/:shiftId
+    const response = await get<ShiftResponse>(`/shifts/${shiftIdRef}`);
+    return response.shift;
   }
 };
 
