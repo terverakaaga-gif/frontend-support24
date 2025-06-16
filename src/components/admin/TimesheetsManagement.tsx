@@ -638,9 +638,9 @@ const TimesheetsManagement: React.FC = () => {
                           <div className="font-medium text-green-700">
                             {formatCurrency(timesheet.totalAmount)}
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          {/* <div className="text-xs text-muted-foreground">
                             {formatCurrency(timesheet.subtotal)} + expenses
-                          </div>
+                          </div> */}
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(timesheet.status, timesheet.isPaid)}
