@@ -522,19 +522,19 @@ const TimesheetDetail: React.FC = () => {
                             <span className="text-sm font-medium">{formatCurrency(timesheet.distanceTravelAmount)}</span>
                           </div>
                         )}
-                        <div className="flex justify-between items-center">
+                        {/* <div className="flex justify-between items-center">
                           <span className="text-sm">Expenses:</span>
                           <span className="text-sm font-medium">{formatCurrency(timesheet.totalExpenses)}</span>
-                        </div>
+                        </div> */}
                         <Separator className="my-2" />
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">Total Amount:</span>
                           <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
                         </div>
-                        <div className="flex justify-between items-center">
+                        {/* <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">Grand Total:</span>
                           <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -549,7 +549,7 @@ const TimesheetDetail: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-3">
-                {timesheet.status === 'pending' && !timesheet.isPaid && (
+                {/* {timesheet.status === 'pending' && !timesheet.isPaid && (
                   <>
                     <Button 
                       onClick={handleApproveTimesheet}
@@ -578,9 +578,9 @@ const TimesheetDetail: React.FC = () => {
                       Reject Timesheet
                     </Button>
                   </>
-                )}
+                )} */}
                 
-                {timesheet.status === 'approved' && !timesheet.isPaid && (
+                {/* {timesheet.status === 'approved' && !timesheet.isPaid && (
                   <Button 
                     onClick={handleProcessPayment}
                     disabled={processingPayment}
@@ -598,7 +598,7 @@ const TimesheetDetail: React.FC = () => {
                       </>
                     )}
                   </Button>
-                )}
+                )} */}
                 
                 {timesheet.isPaid && (
                   <Button variant="outline">
@@ -730,10 +730,10 @@ const TimesheetDetail: React.FC = () => {
                   </div>
                 )}
                 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Expenses:</span>
                   <span className="text-sm font-medium">{formatCurrency(timesheet.totalExpenses)}</span>
-                </div>
+                </div> */}
                 
                 <Separator />
                 
@@ -742,12 +742,12 @@ const TimesheetDetail: React.FC = () => {
                   <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
                 </div>
                 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-sm font-medium">Grand Total:</span>
                   <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
-                </div>
+                </div> */}
                 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Status:</span>
                   <span className="text-sm font-medium">
                     {timesheet.isPaid ? (
@@ -756,14 +756,14 @@ const TimesheetDetail: React.FC = () => {
                       <span className="text-yellow-600">Unpaid</span>
                     )}
                   </span>
-                </div>
+                </div> */}
                 
-                {timesheet.isPaid && (
+                {/* {timesheet.isPaid && (
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Payment Date:</span>
                     <span className="text-sm">{formatDate(timesheet.updatedAt)}</span>
                   </div>
-                )}
+                )} */}
 
                 {timesheet.approvedAt && (
                   <div className="flex justify-between">
@@ -773,7 +773,7 @@ const TimesheetDetail: React.FC = () => {
                 )}
               </div>
               
-              {timesheet.status === 'approved' && !timesheet.isPaid && (
+              {/* {timesheet.status === 'approved' && !timesheet.isPaid && (
                 <div className="mt-4">
                   <Button 
                     className="w-full bg-green-600 hover:bg-green-700"
@@ -793,7 +793,7 @@ const TimesheetDetail: React.FC = () => {
                     )}
                   </Button>
                 </div>
-              )}
+              )} */}
             </CardContent>
           </Card>
           
@@ -804,10 +804,10 @@ const TimesheetDetail: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-muted-foreground">Timesheet ID:</span>
                   <span className="font-mono text-xs">{timesheet._id}</span>
-                </div>
+                </div> */}
                 
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Created:</span>
@@ -821,7 +821,7 @@ const TimesheetDetail: React.FC = () => {
                 
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shift Reference:</span>
-                  <span className="font-mono text-xs truncate max-w-[150px]">{timesheet.shiftId._id}</span>
+                  <span className="font-mono text-xs truncate max-w-[150px]">{timesheet.shiftId.shiftId}</span>
                 </div>
 
                 {timesheet.approvedBy && (
