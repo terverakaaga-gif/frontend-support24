@@ -46,6 +46,10 @@ import AdminsManagementPage from "./pages/AdminsManagementPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
 import ParticipantOrganizationsPage from "./pages/ParticipantOrganizationsPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import ParticipantTimesheets from "./pages/ParticipantTimesheets";
+import ParticipantTimesheetDetails from "./pages/ParticipantTimesheetDetails";
+import SupportWorkerTimesheets from "./pages/SupportWorkerTimesheets";
+import SupportWorkerTimesheetDetails from "./pages/SupportWorkerTimesheetDetails";
 
 const queryClient = new QueryClient();
 
@@ -208,6 +212,11 @@ const AppRoutes = () => {
                   path="/organizations/:id"
                   element={<OrganizationDetailsPage />}
                 />
+                <Route path="/timesheets" element={<ParticipantTimesheets />} />
+                <Route
+                  path="/timesheets/:id"
+                  element={<ParticipantTimesheetDetails />}
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -229,6 +238,14 @@ const AppRoutes = () => {
                   element={<OrganizationDetailsPage />}
                 />
                 <Route path="/profile" element={<SupportWorkerProfile />} />
+                <Route
+                  path="/timesheets"
+                  element={<SupportWorkerTimesheets />}
+                />
+                <Route
+                  path="/timesheets/:id"
+                  element={<SupportWorkerTimesheetDetails />}
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>

@@ -36,7 +36,10 @@ const applyClientFilters = (
     const searchTerm = filters.search.toLowerCase().trim();
     filtered = filtered.filter(timesheet => {
       const participantName = `${timesheet.participantId.firstName} ${timesheet.participantId.lastName}`.toLowerCase();
-      const workerName = `${timesheet.workerId.firstName} ${timesheet.workerId.lastName}`.toLowerCase();
+      // Handle both string workerId and object workerId cases
+      const workerName = typeof timesheet.workerId === 'string' 
+        ? timesheet.workerId.toLowerCase()
+        : `${timesheet.workerId.firstName} ${timesheet.workerId.lastName}`.toLowerCase();
       const shiftId = timesheet.shiftIdRef.toLowerCase();
       
       return participantName.includes(searchTerm) || 
