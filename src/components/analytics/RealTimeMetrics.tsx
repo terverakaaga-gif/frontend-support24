@@ -72,21 +72,40 @@ export function RealTimeMetrics({
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Active Users"
-            value={isLoading ? "Loading..." : metrics?.activeUsers.toString() || "0"}
+            // value={isLoading ? "Loading..." : metrics?.activeUsers.toString() || "0"}
+            value={
+                isLoading
+                    ? "Loading..."
+                    : metrics?.activeUsers != null
+                    ? metrics.activeUsers.toString()
+                    : "0"
+                }
             icon={<Users className="h-4 w-4 text-guardian" />}
             additionalText="Currently online"
             trend="none"
           />
           <StatCard
             title="Today's Shifts"
-            value={isLoading ? "Loading..." : metrics?.shiftsToday.toString() || "0"}
+            value={
+                isLoading 
+                ? "Loading..." 
+                : metrics?.shiftsToday != null
+                ? metrics.shiftsToday.toString()
+                : "0"}
             icon={<Calendar className="h-4 w-4 text-guardian" />}
             additionalText={`${metrics?.completedShiftsToday || 0} completed`}
             trend="none"
           />
           <StatCard
             title="Platform Activity"
-            value={isLoading ? "Loading..." : (metrics?.platformUsage[0]?.value || 0).toString()}
+            // value={isLoading ? "Loading..." : (metrics?.platformUsage[0]?.value || 0).toString()}
+            value={
+            isLoading
+                ? "Loading..."
+                : Array.isArray(metrics?.platformUsage) && metrics.platformUsage[0]?.value != null
+                ? metrics.platformUsage[0].value.toString()
+                : "0"
+            }
             icon={<Clock className="h-4 w-4 text-guardian" />}
             additionalText="Active sessions"
             trend="none"

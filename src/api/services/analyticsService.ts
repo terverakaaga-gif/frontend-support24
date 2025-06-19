@@ -4,7 +4,8 @@ import {
   DateRange, 
   DateRangeType, 
   TrendDataPoint, 
-  ComparisonData 
+  ComparisonData, 
+  AnalyticsResponse
 } from '../../entities/Analytics';
 
 // Analytics overview interfaces
@@ -203,7 +204,9 @@ const analyticsService = {
       params.append('endDate', dateRange.endDate.toISOString());
     }
     
-    return await get<AdminOverviewAnalytics>(`/analytics/overview?${params}`);
+    // return await get<AdminOverviewAnalytics>(`/analytics/overview?${params}`);
+    const response = await get<AnalyticsResponse<AdminOverviewAnalytics>>(`/analytics/overview?${params}`)
+    return response.analytics;
   },
   
   // Get user analytics
@@ -217,7 +220,9 @@ const analyticsService = {
       params.append('endDate', dateRange.endDate.toISOString());
     }
     
-    return await get<AdminUserAnalytics>(`/analytics/admin/users?${params}`);
+    // return await get<AdminUserAnalytics>(`/analytics/admin/users?${params}`);
+    const response = await get<AnalyticsResponse<AdminUserAnalytics>>(`/analytics/admin/users?${params}`);
+    return response.analytics;
   },
   
   // Get financial analytics
@@ -231,7 +236,9 @@ const analyticsService = {
       params.append('endDate', dateRange.endDate.toISOString());
     }
     
-    return await get<AdminFinancialAnalytics>(`/analytics/admin/financial?${params}`);
+    // return await get<AdminFinancialAnalytics>(`/analytics/admin/financial?${params}`);
+    const response = await get<AnalyticsResponse<AdminFinancialAnalytics>>(`/analytics/admin/financial?${params}`);
+    return response.analytics
   },
   
   // Get filtered analytics
@@ -250,12 +257,16 @@ const analyticsService = {
       params.append('endDate', dateRange.endDate.toISOString());
     }
     
-    return await get<PlatformSummary>(`/analytics/platform/summary?${params}`);
+    // return await get<PlatformSummary>(`/analytics/platform/summary?${params}`);
+    const response = await get<AnalyticsResponse<PlatformSummary>>(`/analytics/platform/summary?${params}`);
+    return response.analytics;
   },
   
   // Get real-time metrics
   getRealTimeMetrics: async (): Promise<RealTimeMetrics> => {
-    return await get<RealTimeMetrics>('/analytics/realtime');
+    // return await get<RealTimeMetrics>('/analytics/realtime');
+    const response = await get<AnalyticsResponse<RealTimeMetrics>>('/analytics/realtime');
+    return response.analytics
   },
   
   // Export analytics data

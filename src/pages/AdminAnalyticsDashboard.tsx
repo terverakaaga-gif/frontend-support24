@@ -66,43 +66,63 @@ export default function AdminAnalyticsDashboard() {
     isLoading: isLoadingPlatform,
   } = useGetPlatformSummary(dateRange, activeTab === 'platform');
 
+  console.log('***************User TOtal Users*****************')
+  console.log(overviewData?.userMetrics?.totalUsers);
+  console.log(overviewData)
+
   // Generate metrics for overview tab
   const generateOverviewMetrics = () => {
     if (!overviewData) return [];
 
     return [
-      {
+    //   {
+    //     id: 'total-users',
+    //     title: 'Total Users',
+    //     value: formatNumber(overviewData.userMetrics.totalUsers),
+    //     icon: <Users className="h-4 w-4 text-guardian" />,
+    //     change: {
+    //       value: formatPercent(overviewData.userMetrics.growthRate.percentageChange),
+    //       positive: overviewData.userMetrics.growthRate.trend === 'up'
+    //     },
+    //     comparisonData: overviewData.userMetrics.growthRate
+    //   },
+     {
         id: 'total-users',
         title: 'Total Users',
-        value: formatNumber(overviewData.userMetrics.totalUsers),
+        value: formatNumber(overviewData?.userMetrics?.totalUsers),
         icon: <Users className="h-4 w-4 text-guardian" />,
         change: {
-          value: formatPercent(overviewData.userMetrics.growthRate.percentageChange),
-          positive: overviewData.userMetrics.growthRate.trend === 'up'
+            value: formatPercent(overviewData?.userMetrics?.growthRate?.percentageChange ?? 0),
+            positive: overviewData?.userMetrics?.growthRate?.trend === 'up'
         },
-        comparisonData: overviewData.userMetrics.growthRate
+        comparisonData: overviewData?.userMetrics?.growthRate ?? {
+            current: 0,
+            previous: 0,
+            percentageChange: 0,
+            trend: 'stable'
+        }
       },
       {
         id: 'active-organizations',
         title: 'Active Organizations',
-        value: formatNumber(overviewData.platformActivity.activeOrganizations),
+        value: formatNumber(overviewData?.platformActivity?.activeOrganizations ?? 0),
         icon: <Building2 className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'total-revenue',
         title: 'Total Revenue',
-        value: formatCurrency(overviewData.financialSummary.totalRevenue.current),
+        value: formatCurrency(overviewData?.financialSummary?.totalRevenue.current ?? 0),
         icon: <DollarSign className="h-4 w-4 text-guardian" />,
         change: {
-          value: formatPercent(overviewData.financialSummary.totalRevenue.percentageChange),
-          positive: overviewData.financialSummary.totalRevenue.trend === 'up'
+          value: formatPercent(overviewData?.financialSummary?.totalRevenue?.percentageChange),
+          positive: overviewData?.financialSummary?.totalRevenue.trend === 'up'
         },
-        comparisonData: overviewData.financialSummary.totalRevenue
+        comparisonData: overviewData?.financialSummary?.totalRevenue
       },
       {
         id: 'pending-invites',
         title: 'Pending Invitations',
-        value: formatNumber(overviewData.operationalMetrics.pendingInvites),
+        value: formatNumber(overviewData?.operationalMetrics?.pendingInvites ?? 0),
         icon: <BellRing className="h-4 w-4 text-guardian" />,
       }
     ];
@@ -116,29 +136,29 @@ export default function AdminAnalyticsDashboard() {
       {
         id: 'email-verified',
         title: 'Email Verified',
-        value: formatNumber(userData.verificationStats.emailVerified),
+        value: formatNumber(userData?.verificationStats?.emailVerified),
         icon: <CheckCircle className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'profile-complete',
         title: 'Profile Complete',
-        value: formatNumber(userData.verificationStats.profileComplete),
+        value: formatNumber(userData?.verificationStats?.profileComplete),
         icon: <UserCheck className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'monthly-active',
         title: 'Monthly Active Users',
-        value: formatNumber(userData.retentionMetrics.monthlyActiveUsers),
+        value: formatNumber(userData?.retentionMetrics?.monthlyActiveUsers),
         icon: <Activity className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'churn-rate',
         title: 'Churn Rate',
-        value: formatPercent(userData.retentionMetrics.churnRate),
+        value: formatPercent(userData?.retentionMetrics?.churnRate),
         icon: <Repeat className="h-4 w-4 text-guardian" />,
         change: {
-          value: userData.retentionMetrics.churnRate < 5 ? 'Good' : 'High',
-          positive: userData.retentionMetrics.churnRate < 5
+          value: userData?.retentionMetrics?.churnRate < 5 ? 'Good' : 'High',
+          positive: userData?.retentionMetrics?.churnRate < 5
         }
       }
     ];
@@ -152,29 +172,29 @@ export default function AdminAnalyticsDashboard() {
       {
         id: 'total-revenue',
         title: 'Total Revenue',
-        value: formatCurrency(financialData.revenue.total),
+        value: formatCurrency(financialData?.revenue?.total),
         icon: <DollarSign className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'processed-payments',
         title: 'Processed Payments',
-        value: formatNumber(financialData.payments.processed),
+        value: formatNumber(financialData?.payments?.processed),
         icon: <CheckCircle className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'pending-payments',
         title: 'Pending Payments',
-        value: formatNumber(financialData.payments.pending),
+        value: formatNumber(financialData?.payments?.pending),
         icon: <Clock className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'monthly-projection',
         title: 'Monthly Projection',
-        value: formatCurrency(financialData.projections.monthlyProjected),
+        value: formatCurrency(financialData?.projections?.monthlyProjected),
         icon: <TrendingUp className="h-4 w-4 text-guardian" />,
         change: {
-          value: formatPercent(financialData.projections.growthRate),
-          positive: financialData.projections.growthRate > 0
+          value: formatPercent(financialData?.projections?.growthRate),
+          positive: financialData?.projections?.growthRate > 0
         }
       }
     ];
@@ -188,30 +208,30 @@ export default function AdminAnalyticsDashboard() {
       {
         id: 'total-users',
         title: 'Total Users',
-        value: formatNumber(platformData.userGrowth.total),
+        value: formatNumber(platformData?.userGrowth?.total),
         icon: <Users className="h-4 w-4 text-guardian" />,
         change: {
-          value: formatPercent(platformData.userGrowth.growthRate.percentageChange),
-          positive: platformData.userGrowth.growthRate.trend === 'up'
+          value: formatPercent(platformData?.userGrowth?.growthRate?.percentageChange),
+          positive: platformData?.userGrowth?.growthRate?.trend === 'up'
         },
-        comparisonData: platformData.userGrowth.growthRate
+        comparisonData: platformData?.userGrowth?.growthRate
       },
       {
         id: 'total-shifts',
         title: 'Total Shifts',
-        value: formatNumber(platformData.shiftMetrics.total),
+        value: formatNumber(platformData?.shiftMetrics?.total),
         icon: <Calendar className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'completion-rate',
         title: 'Completion Rate',
-        value: formatPercent(platformData.shiftMetrics.completionRate),
+        value: formatPercent(platformData?.shiftMetrics?.completionRate),
         icon: <CheckCircle className="h-4 w-4 text-guardian" />,
       },
       {
         id: 'average-shift-value',
         title: 'Avg. Shift Value',
-        value: formatCurrency(platformData.financialMetrics.averageShiftValue),
+        value: formatCurrency(platformData?.financialMetrics?.averageShiftValue),
         icon: <DollarSign className="h-4 w-4 text-guardian" />,
       }
     ];
@@ -233,7 +253,7 @@ export default function AdminAnalyticsDashboard() {
     if (!financialData) return { data: [], dataKeys: ['revenue'], xAxisKey: 'date' };
 
     return {
-      data: financialData.revenue.trend,
+      data: financialData?.revenue?.trend,
       dataKeys: ['value'],
       xAxisKey: 'date',
     };
@@ -244,7 +264,7 @@ export default function AdminAnalyticsDashboard() {
     if (!overviewData) return { data: [], dataKeys: ['users'], xAxisKey: 'date' };
 
     return {
-      data: overviewData.platformActivity.platformUsageTrend,
+      data: overviewData?.platformActivity?.platformUsageTrend,
       dataKeys: ['value'],
       xAxisKey: 'date',
     };
@@ -255,10 +275,17 @@ export default function AdminAnalyticsDashboard() {
     if (!userData) return { data: [], dataKeys: ['count'], xAxisKey: 'state' };
 
     // Transform state distribution into array for pie chart
-    const stateData = Object.entries(userData.userDistribution.byState).map(([state, count]) => ({
-      state,
-      count,
-    }));
+    // const stateData = Object.entries(userData?.userDistribution?.byState).map(([state, count]) => ({
+    //   state,
+    //   count,
+    // }));
+
+    const stateData = Object.entries(userData?.userDistribution?.byState ?? {}).map(
+        ([state, count]) => ({
+            state,
+            count,
+        })
+    );
 
     return {
       data: stateData,
@@ -272,7 +299,7 @@ export default function AdminAnalyticsDashboard() {
     if (!financialData) return { data: [], dataKeys: ['revenue'], xAxisKey: 'service' };
 
     // Transform service type revenue into array for bar chart
-    const serviceData = Object.entries(financialData.revenue.byServiceType).map(
+    const serviceData = Object.entries(financialData?.revenue?.byServiceType ?? {}).map(
       ([service, revenue]) => ({
         service,
         revenue,
@@ -291,7 +318,7 @@ export default function AdminAnalyticsDashboard() {
     if (!financialData) return { data: [], dataKeys: ['revenue'], xAxisKey: 'name' };
 
     return {
-      data: financialData.revenue.byOrganization.slice(0, 5),
+      data: financialData?.revenue?.byOrganization.slice(0, 5),
       dataKeys: ['revenue'],
       xAxisKey: 'name',
     };
@@ -339,6 +366,16 @@ export default function AdminAnalyticsDashboard() {
             columns={4}
           />
 
+          {/* {isLoadingOverview ? (
+            <p>Loading...</p> // Or a loading skeleton
+            ) : (
+            <MetricsGrid
+                metrics={generateOverviewMetrics()}
+                showComparison={showComparison}
+                columns={4}
+            />
+          )} */}
+
           <div className="grid gap-6 md:grid-cols-2">
             <ChartCard
               title="Platform Usage"
@@ -368,7 +405,7 @@ export default function AdminAnalyticsDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {isLoadingOverview ? "Loading..." : formatPercent(overviewData?.operationalMetrics.shiftCompletionRate || 0)}
+                        {isLoadingOverview ? "Loading..." : formatPercent(overviewData?.operationalMetrics?.shiftCompletionRate || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -378,7 +415,7 @@ export default function AdminAnalyticsDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {isLoadingOverview ? "Loading..." : `${overviewData?.operationalMetrics.averageResponseTime || 0} hrs`}
+                        {isLoadingOverview ? "Loading..." : `${overviewData?.operationalMetrics?.averageResponseTime || 0} hrs`}
                       </div>
                     </CardContent>
                   </Card>
@@ -391,16 +428,16 @@ export default function AdminAnalyticsDashboard() {
                   <CardContent>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold">
-                        {isLoadingOverview ? "Loading..." : formatPercent(overviewData?.operationalMetrics.cancellationRate.current || 0)}
+                        {isLoadingOverview ? "Loading..." : formatPercent(overviewData?.operationalMetrics?.cancellationRate.current || 0)}
                       </div>
-                      {overviewData?.operationalMetrics.cancellationRate && (
+                      {overviewData?.operationalMetrics?.cancellationRate && (
                         <div className={`text-sm ${
-                          overviewData.operationalMetrics.cancellationRate.trend === 'down' 
+                          overviewData?.operationalMetrics?.cancellationRate?.trend === 'down' 
                             ? 'text-emerald-600' 
                             : 'text-red-500'
                         }`}>
-                          {formatPercent(overviewData.operationalMetrics.cancellationRate.percentageChange)}
-                          {overviewData.operationalMetrics.cancellationRate.trend === 'down' ? ' ↓' : ' ↑'}
+                          {formatPercent(overviewData?.operationalMetrics?.cancellationRate?.percentageChange)}
+                          {overviewData?.operationalMetrics?.cancellationRate?.trend === 'down' ? ' ↓' : ' ↑'}
                         </div>
                       )}
                     </div>
@@ -421,7 +458,7 @@ export default function AdminAnalyticsDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {isLoadingOverview ? "Loading..." : formatCurrency(overviewData?.financialSummary.pendingPayments || 0)}
+                        {isLoadingOverview ? "Loading..." : formatCurrency(overviewData?.financialSummary?.pendingPayments || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -431,7 +468,7 @@ export default function AdminAnalyticsDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {isLoadingOverview ? "Loading..." : formatCurrency(overviewData?.financialSummary.processedToday || 0)}
+                        {isLoadingOverview ? "Loading..." : formatCurrency(overviewData?.financialSummary?.processedToday || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -443,7 +480,7 @@ export default function AdminAnalyticsDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {isLoadingOverview ? "Loading..." : formatCurrency(overviewData?.financialSummary.averageShiftValue || 0)}
+                      {isLoadingOverview ? "Loading..." : formatCurrency(overviewData?.financialSummary?.averageShiftValue || 0)}
                     </div>
                   </CardContent>
                 </Card>
@@ -496,7 +533,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats.emailVerified || 0)}
+                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats?.emailVerified || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -506,7 +543,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats.profileComplete || 0)}
+                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats?.profileComplete || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -516,7 +553,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats.documentsVerified || 0)}
+                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats?.documentsVerified || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -526,7 +563,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats.fullyOnboarded || 0)}
+                    {isLoadingUsers ? "Loading..." : formatNumber(userData?.verificationStats?.fullyOnboarded || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -591,7 +628,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingFinancial ? "Loading..." : formatCurrency(financialData?.projections.monthlyProjected || 0)}
+                    {isLoadingFinancial ? "Loading..." : formatCurrency(financialData?.projections?.monthlyProjected || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -601,7 +638,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingFinancial ? "Loading..." : formatCurrency(financialData?.projections.quarterlyProjected || 0)}
+                    {isLoadingFinancial ? "Loading..." : formatCurrency(financialData?.projections?.quarterlyProjected || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -611,7 +648,7 @@ export default function AdminAnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {isLoadingFinancial ? "Loading..." : formatPercent(financialData?.projections.growthRate || 0)}
+                    {isLoadingFinancial ? "Loading..." : formatPercent(financialData?.projections?.growthRate || 0)}
                   </div>
                 </CardContent>
               </Card>
@@ -643,7 +680,7 @@ export default function AdminAnalyticsDashboard() {
                     <CardContent>
                       <div className="text-2xl font-bold">
                         {isLoadingPlatform ? "Loading..." : 
-                          formatNumber(platformData?.shiftMetrics.byStatus?.completed || 0)}
+                          formatNumber(platformData?.shiftMetrics?.byStatus?.completed || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -654,7 +691,7 @@ export default function AdminAnalyticsDashboard() {
                     <CardContent>
                       <div className="text-2xl font-bold">
                         {isLoadingPlatform ? "Loading..." : 
-                          formatNumber(platformData?.shiftMetrics.byStatus?.cancelled || 0)}
+                          formatNumber(platformData?.shiftMetrics?.byStatus?.cancelled || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -667,7 +704,7 @@ export default function AdminAnalyticsDashboard() {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {isLoadingPlatform ? "Loading..." : 
-                        formatPercent(platformData?.shiftMetrics.completionRate || 0)}
+                        formatPercent(platformData?.shiftMetrics?.completionRate || 0)}
                     </div>
                   </CardContent>
                 </Card>
@@ -687,7 +724,7 @@ export default function AdminAnalyticsDashboard() {
                     <CardContent>
                       <div className="text-2xl font-bold">
                         {isLoadingPlatform ? "Loading..." : 
-                          formatNumber(platformData?.organizationMetrics.total || 0)}
+                          formatNumber(platformData?.organizationMetrics?.total || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -698,7 +735,7 @@ export default function AdminAnalyticsDashboard() {
                     <CardContent>
                       <div className="text-2xl font-bold">
                         {isLoadingPlatform ? "Loading..." : 
-                          formatNumber(platformData?.organizationMetrics.active || 0)}
+                          formatNumber(platformData?.organizationMetrics?.active || 0)}
                       </div>
                     </CardContent>
                   </Card>
@@ -711,7 +748,7 @@ export default function AdminAnalyticsDashboard() {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {isLoadingPlatform ? "Loading..." : 
-                        platformData?.organizationMetrics.averageWorkersPerOrg.toFixed(1) || "0.0"}
+                        platformData?.organizationMetrics?.averageWorkersPerOrg.toFixed(1) || "0.0"}
                     </div>
                   </CardContent>
                 </Card>

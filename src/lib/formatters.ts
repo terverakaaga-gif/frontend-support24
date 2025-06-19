@@ -3,7 +3,12 @@
 /**
  * Format a number with thousands separators
  */
-export function formatNumber(value: number): string {
+export function formatNumber(value: number | undefined | null): string {
+//   return new Intl.NumberFormat().format(value);
+
+    if (value === undefined || value === null || isNaN(value)) {
+        return '0'; // Or '—' or 'N/A' or whatever default you prefer
+    }
   return new Intl.NumberFormat().format(value);
 }
 
@@ -22,8 +27,11 @@ export function formatCurrency(value: number, currency = 'USD'): string {
 /**
  * Format a number as a percentage
  */
-export function formatPercent(value: number, decimals = 1): string {
-  return `${value.toFixed(decimals)}%`;
+// export function formatPercent(value: number, decimals = 1): string {
+//   return `${value.toFixed(decimals)}%`;
+// }
+export function formatPercent(value: number | undefined, decimals = 1): string {
+  return `${(value ?? 0).toFixed(decimals)}%`;
 }
 
 /**
