@@ -1,3 +1,4 @@
+// src/components/layouts/DashboardLayout.tsx
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ import {
   ChevronRight,
   Building2,
   FileText,
+  BarChart3,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -98,6 +100,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 Management
               </h2>
               <div className="space-y-1">
+                {/* <NavItem
+                  to="/admin/analytics"
+                  icon={<BarChart3 size={20} />}
+                  label="Analytics"
+                  active={isActive("/admin/analytics")}
+                /> */}
                 <NavItem
                   to="/admin/all-admin"
                   icon={<Users size={20} />}
@@ -121,6 +129,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   icon={<BellRing size={20} />}
                   label="Invitations"
                   active={isActive("/admin/invites")}
+                />
+                <NavItem
+                  to="/admin/analytics"
+                  icon={<BarChart3 size={20} />}
+                  label="Analytics"
+                  active={isActive("/admin/analytics")}
                 />
               </div>
             </div>
