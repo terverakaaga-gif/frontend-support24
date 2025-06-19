@@ -46,6 +46,7 @@ import AdminsManagementPage from "./pages/AdminsManagementPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
 import ParticipantOrganizationsPage from "./pages/ParticipantOrganizationsPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -128,7 +129,9 @@ const AppRoutes = () => {
           <ProtectedRoute allowedRoles={["admin"]}>
             <DashboardLayout>
               <Routes>
-                <Route path="/" element={<AdminDashboard />} />
+                {/* <Route path="/" element={<AdminDashboard />} /> */}
+                <Route path="/" element={<AdminAnalyticsDashboard />} />
+                {/* <Route path="/analytics" element={<AdminAnalyticsDashboard />} /> */}
                 <Route path="/invites" element={<InviteManagementPage />} />
                 <Route
                   path="/invites/:inviteId/details"
