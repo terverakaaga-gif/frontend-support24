@@ -25,6 +25,7 @@ import {
   LogOut,
   ChevronRight,
   Building2,
+  FileText,
   BarChart3,
 } from "lucide-react";
 import {
@@ -229,6 +230,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Organizations"
               active={isActive("/participant/organizations")}
             />
+            <NavItem
+              to="/participant/timesheets"
+              icon={<FileText size={20} />}
+              label="My Timesheets"
+              active={isActive("/participant/timesheets")}
+            />
             {/* <NavItem
               to="/bookings"
               icon={<Calendar size={20} />}
@@ -257,6 +264,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Building2 size={20} />}
               label="Organizations"
               active={isActive("/support-worker/organizations")}
+            />
+            <NavItem
+              to="/support-worker/timesheets"
+              icon={<FileText size={20} />}
+              label="My Timesheets"
+              active={isActive("/support-worker/timesheets")}
             />
           </>
         );

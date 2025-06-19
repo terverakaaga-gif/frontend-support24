@@ -1,5 +1,4 @@
-// pages/admin/TimesheetsManagement.tsx
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import {
@@ -50,8 +49,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Import our types and hooks
-import { useGetTimesheets } from "@/hooks/useTimesheetHooks";
+// Import our types, hooks, and auth context
+import { useAuth } from "@/contexts/AuthContext";
+import { useGetWorkerTimesheets } from "@/hooks/useTimesheetHooks";
 import {
   TimesheetClientFilters,
   Timesheet,
@@ -59,11 +59,14 @@ import {
   TIMESHEET_STATUS_CONFIG,
 } from "@/entities/Timesheet";
 
-const TimesheetsManagement: React.FC = () => {
+const SupportWorkerTimesheets: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // Filter states
-  const [filters, setFilters] = useState<TimesheetClientFilters>({
+  // Filter states (simplified for support worker view)
+  const [filters, setFilters] = useState<
+    Omit<TimesheetClientFilters, "workerId">
+  >({
     page: 1,
     limit: 20,
     sortField: "createdAt",
@@ -73,8 +76,12 @@ const TimesheetsManagement: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  // API call
-  const { data: timesheetData, isLoading, error } = useGetTimesheets(filters);
+  // API call - using worker-specific hook
+  const {
+    data: timesheetData,
+    isLoading,
+    error,
+  } = useGetWorkerTimesheets(user?._id || "", filters, !!user?._id);
 
   // Helper functions
   const formatTime = (dateString: string) =>
@@ -85,14 +92,6 @@ const TimesheetsManagement: React.FC = () => {
     format(new Date(dateString), "d MMM yyyy");
   const getFullName = (user: { firstName: string; lastName: string }) =>
     `${user.firstName} ${user.lastName}`;
-
-  console.log("=== DEBUG INFO ===");
-  console.log("Filters:", filters);
-  console.log("Raw timesheetData:", timesheetData);
-  console.log("Is Loading:", isLoading);
-  console.log("Error:", error);
-  console.log("timesheetData?.timesheets:", timesheetData?.timesheets);
-  console.log("=================");
 
   const formatDuration = (startTime: string, endTime: string) => {
     const start = new Date(startTime);
@@ -115,7 +114,7 @@ const TimesheetsManagement: React.FC = () => {
 
   // Filter change handlers
   const handleFilterChange = (
-    key: keyof TimesheetClientFilters,
+    key: keyof Omit<TimesheetClientFilters, "workerId">,
     value: string | undefined
   ) => {
     setFilters((prev) => ({
@@ -159,7 +158,7 @@ const TimesheetsManagement: React.FC = () => {
   };
 
   const handleViewTimesheet = (id: string) => {
-    navigate(`/admin/timesheets/${id}`);
+    navigate(`/support-worker/timesheets/${id}`);
   };
 
   const handleResetFilters = () => {
@@ -175,26 +174,7 @@ const TimesheetsManagement: React.FC = () => {
 
   // Check if any filters are active
   const hasActiveFilters =
-    filters.status ||
-    filters.participantId ||
-    filters.search ||
-    filters.startDate ||
-    filters.endDate;
-
-  // Get unique participants for filter dropdown
-  const participants = useMemo(() => {
-    if (!timesheetData?.timesheets) return [];
-    const uniqueParticipants = new Map();
-    timesheetData.timesheets.forEach((t) => {
-      if (!uniqueParticipants.has(t.participantId._id)) {
-        uniqueParticipants.set(t.participantId._id, {
-          id: t.participantId._id,
-          name: getFullName(t.participantId),
-        });
-      }
-    });
-    return Array.from(uniqueParticipants.values());
-  }, [timesheetData?.timesheets]);
+    filters.status || filters.search || filters.startDate || filters.endDate;
 
   // Status badge component
   const getStatusBadge = (status: string, isPaid: boolean) => {
@@ -298,11 +278,9 @@ const TimesheetsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Timesheet Management
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">My Timesheets</h1>
           <p className="text-muted-foreground">
-            View and manage worker timesheets and payments
+            View your completed shifts and payment details
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -330,60 +308,139 @@ const TimesheetsManagement: React.FC = () => {
 
       {/* Summary Cards */}
       {timesheetData?.summary && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-4 w-4 text-blue-500" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    {timesheetData.summary.totalTimesheets}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Total Timesheets
-                  </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Total Timesheets Card */}
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-start justify-between">
+                <div className="space-y-3">
+                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      {timesheetData.summary.totalTimesheets}
+                    </p>
+                    <p className="text-sm font-medium text-slate-600">
+                      Total Timesheets
+                    </p>
+                  </div>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-lg font-bold text-blue-600">
+                    {timesheetData.summary.totalTimesheets > 999
+                      ? "999+"
+                      : timesheetData.summary.totalTimesheets}
+                  </span>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4 text-green-500" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    {Math.round(timesheetData.summary.totalHours)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Total Hours</p>
+
+          {/* Total Hours Card */}
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 hover:shadow-xl hover:shadow-emerald-100/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-green-500/5"></div>
+            <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-emerald-200/20 to-transparent rounded-full -translate-y-12 -translate-x-12"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-start justify-between">
+                <div className="space-y-3">
+                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/25">
+                    <Clock className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                      {Math.round(timesheetData.summary.totalHours)}
+                    </p>
+                    <p className="text-sm font-medium text-slate-600">
+                      Total Hours
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center space-y-1">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                    <div className="h-3 w-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 animate-pulse"></div>
+                  </div>
+                  <span className="text-xs font-medium text-emerald-600">
+                    Working
+                  </span>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-yellow-500" />
+
+          {/* Total Earned Card */}
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 hover:shadow-xl hover:shadow-yellow-100/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-amber-500/5 to-orange-500/5"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-yellow-200/20 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
+            <CardContent className="relative p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 shadow-lg shadow-yellow-500/25">
+                    <DollarSign className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-100 to-amber-100">
+                    <div className="h-2 w-2 rounded-full bg-yellow-500 animate-bounce"></div>
+                    <span className="text-xs font-medium text-yellow-700">
+                      Earned
+                    </span>
+                  </div>
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
                     {formatCurrency(timesheetData.summary.totalAmount)}
                   </p>
-                  <p className="text-xs text-muted-foreground">Total Amount</p>
+                  <p className="text-sm font-medium text-slate-600">
+                    Total Earned
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4 text-purple-500" />
+
+          {/* Pending Review Card */}
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 hover:shadow-xl hover:shadow-violet-100/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-purple-500/5 to-fuchsia-500/5"></div>
+            <CardContent className="relative p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 shadow-lg shadow-violet-500/25">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  {timesheetData.summary.pendingCount > 0 && (
+                    <div className="relative">
+                      <div className="h-3 w-3 rounded-full bg-violet-500 animate-ping absolute"></div>
+                      <div className="h-3 w-3 rounded-full bg-violet-500"></div>
+                    </div>
+                  )}
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">
-                    {timesheetData.summary.pendingCount}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
+                  <div className="flex items-baseline space-x-2">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                      {timesheetData.summary.pendingCount}
+                    </p>
+                    <span className="text-sm font-medium text-slate-500">
+                      / {timesheetData.summary.totalTimesheets}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium text-slate-600">
                     Pending Review
                   </p>
                 </div>
+                {timesheetData.summary.pendingCount > 0 && (
+                  <div className="w-full bg-violet-100 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-violet-500 to-purple-500 h-2 rounded-full transition-all duration-1000 ease-out"
+                      style={{
+                        width: `${
+                          (timesheetData.summary.pendingCount /
+                            timesheetData.summary.totalTimesheets) *
+                          100
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -396,7 +453,7 @@ const TimesheetsManagement: React.FC = () => {
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by participant, worker, or shift ID..."
+              placeholder="Search by participant or shift ID..."
               value={filters.search || ""}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10"
@@ -411,11 +468,11 @@ const TimesheetsManagement: React.FC = () => {
           <CardHeader>
             <CardTitle className="text-lg">Filters</CardTitle>
             <CardDescription>
-              Filter timesheets by various criteria
+              Filter your timesheets by various criteria
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Status filter */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Status</label>
@@ -433,29 +490,6 @@ const TimesheetsManagement: React.FC = () => {
                     <SelectItem value="rejected">Rejected</SelectItem>
                     <SelectItem value="revised">Revised</SelectItem>
                     <SelectItem value="processed">Processed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Participant filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Participant</label>
-                <Select
-                  value={filters.participantId || "all"}
-                  onValueChange={(value) =>
-                    handleFilterChange("participantId", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All participants" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Participants</SelectItem>
-                    {participants.map((participant) => (
-                      <SelectItem key={participant.id} value={participant.id}>
-                        {participant.name}
-                      </SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -573,7 +607,6 @@ const TimesheetsManagement: React.FC = () => {
                         )}
                       </div>
                     </TableHead>
-                    <TableHead>Worker</TableHead>
                     <TableHead>Participant</TableHead>
                     <TableHead>Expenses</TableHead>
                     <TableHead
@@ -600,7 +633,7 @@ const TimesheetsManagement: React.FC = () => {
                 <TableBody>
                   {timesheetData?.timesheets?.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="h-24 text-center">
+                      <TableCell colSpan={7} className="h-24 text-center">
                         <div className="flex flex-col items-center space-y-2">
                           <FileText className="h-12 w-12 text-muted-foreground" />
                           <h3 className="text-lg font-medium">
@@ -609,7 +642,7 @@ const TimesheetsManagement: React.FC = () => {
                           <p className="text-muted-foreground">
                             {hasActiveFilters
                               ? "Try adjusting your filters to see more results."
-                              : "No timesheets have been submitted yet."}
+                              : "No timesheets have been submitted for your shifts yet."}
                           </p>
                         </div>
                       </TableCell>
@@ -661,49 +694,12 @@ const TimesheetsManagement: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-3">
-                            {typeof timesheet.workerId === "object" &&
-                            timesheet.workerId.profileImage ? (
-                              <div className="w-8 h-8 rounded-full overflow-hidden">
-                                <img
-                                  src={timesheet.workerId.profileImage}
-                                  alt={
-                                    typeof timesheet.workerId === "object"
-                                      ? getFullName(timesheet.workerId)
-                                      : "Worker"
-                                  }
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-sm">
-                                {typeof timesheet.workerId === "object"
-                                  ? timesheet.workerId.firstName.charAt(0) +
-                                    timesheet.workerId.lastName.charAt(0)
-                                  : "W"}
-                              </div>
-                            )}
-                            <div className="flex flex-col">
-                              <span className="font-medium">
-                                {typeof timesheet.workerId === "object"
-                                  ? getFullName(timesheet.workerId)
-                                  : timesheet.workerId}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {typeof timesheet.workerId === "object"
-                                  ? timesheet.workerId.email
-                                  : "Email not available"}
-                              </span>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
                           <div className="flex flex-col">
                             <span className="font-medium">
                               {getFullName(timesheet.participantId)}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {timesheet.participantId.email}
+                              {timesheet.participantId.firstName}
                             </span>
                           </div>
                         </TableCell>
@@ -723,9 +719,6 @@ const TimesheetsManagement: React.FC = () => {
                           <div className="font-medium text-green-700">
                             {formatCurrency(timesheet.totalAmount)}
                           </div>
-                          {/* <div className="text-xs text-muted-foreground">
-                            {formatCurrency(timesheet.subtotal)} + expenses
-                          </div> */}
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(timesheet.status, timesheet.isPaid)}
@@ -761,4 +754,4 @@ const TimesheetsManagement: React.FC = () => {
   );
 };
 
-export default TimesheetsManagement;
+export default SupportWorkerTimesheets;

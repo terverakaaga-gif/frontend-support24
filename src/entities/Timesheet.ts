@@ -20,7 +20,7 @@ export interface Timesheet {
     lastName: string;
     phone: string;
   };
-  workerId: {
+  workerId: string | {
     _id: string;
     email: string;
     firstName: string;

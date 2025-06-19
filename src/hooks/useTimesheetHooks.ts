@@ -136,8 +136,14 @@ export const useGetWorkerTimesheets = (
       }
 
       // Filter by worker ID on the client side
+      // Handle both string workerId and object workerId cases
       const workerTimesheets = allTimesheetsQuery.data.filter(
-        timesheet => timesheet.workerId._id === workerId
+        timesheet => {
+          const timesheetWorkerId = typeof timesheet.workerId === 'string' 
+            ? timesheet.workerId 
+            : timesheet.workerId._id;
+          return timesheetWorkerId === workerId;
+        }
       );
 
       return timesheetService.processTimesheets(workerTimesheets, additionalFilters || {});
