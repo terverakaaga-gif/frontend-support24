@@ -13,6 +13,9 @@ import {
   CheckCircle,
   XCircle,
   FileText,
+  Activity,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
@@ -26,92 +29,23 @@ import { useAuth } from "@/contexts/AuthContext";
 import ShiftManagement from "@/components/ShiftManagement";
 import { ConnectionsList } from "@/components/participant/ConnectionsList";
 import { cn } from "@/lib/utils";
+import { useGetParticipantOverview, useGetParticipantServices } from "@/hooks/useAnalyticsHooks";
 
-// Mock data for charts
-const activityData = [
-  { day: "Mon", hours: 4 },
-  { day: "Tue", hours: 3 },
-  { day: "Wed", hours: 5 },
-  { day: "Thu", hours: 2 },
-  { day: "Fri", hours: 4 },
-  { day: "Sat", hours: 3 },
-  { day: "Sun", hours: 1 },
-];
+// Service type labels for display
+const SERVICE_TYPE_LABELS: Record<string, string> = {
+  personalCare: 'Personal Care',
+  socialSupport: 'Social Support',
+  transport: 'Transport',
+  householdTasks: 'Household Tasks',
+  mealPreparation: 'Meal Preparation',
+  medicationSupport: 'Medication Support',
+  mobilityAssistance: 'Mobility Assistance',
+  therapySupport: 'Therapy Support',
+  behaviorSupport: 'Behavior Support',
+  communityAccess: 'Community Access'
+};
 
-const satisfactionData = [
-  { week: "Week 1", score: 4.2 },
-  { week: "Week 2", score: 4.5 },
-  { week: "Week 3", score: 4.3 },
-  { week: "Week 4", score: 4.8 },
-];
-
-// Mock data for upcoming shifts
-const upcomingShifts = [
-  {
-    id: 1,
-    worker: {
-      name: "Sarah Johnson",
-      avatar: "/avatars/sarah.jpg",
-    },
-    date: "2024-03-15",
-    time: "09:00 AM - 12:00 PM",
-    status: "confirmed",
-  },
-  {
-    id: 2,
-    worker: {
-      name: "Michael Chen",
-      avatar: "/avatars/michael.jpg",
-    },
-    date: "2024-03-16",
-    time: "02:00 PM - 05:00 PM",
-    status: "pending",
-  },
-];
-
-// Mock data for support workers
-const supportWorkers = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    avatar: "/avatars/sarah.jpg",
-    rating: 4.8,
-    specialties: ["Physical Therapy", "Elderly Care"],
-    nextAvailable: "Tomorrow, 9 AM",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    avatar: "/avatars/michael.jpg",
-    rating: 4.9,
-    specialties: ["Disability Support", "Mental Health"],
-    nextAvailable: "Today, 2 PM",
-  },
-];
-
-// Mock recent updates
-const recentUpdates = [
-  {
-    id: "1",
-    worker: "Sarah Johnson",
-    type: "Progress Note",
-    time: "2 hours ago",
-    content:
-      "Great progress with physical therapy exercises. Completed all sets with improved form.",
-    rating: 5,
-  },
-  {
-    id: "2",
-    worker: "Michael Smith",
-    type: "Activity Log",
-    time: "5 hours ago",
-    content:
-      "Enjoyed community garden visit. Participated in planting new herbs.",
-    rating: 4,
-  },
-];
-
-// Mock notifications - fixed type values to match the allowed types
+// Mock notifications - these could come from a notifications API later
 const notifications = [
   {
     id: "1",
@@ -136,25 +70,10 @@ const notifications = [
   },
 ];
 
-// Render star rating (filled stars based on rating)
-const renderRating = (rating: number) => {
-  return (
-    <div className="flex">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          className={cn("w-3 h-3", {
-            "fill-yellow-400 text-yellow-400": i < rating,
-            "text-gray-300": i >= rating,
-          })}
-        />
-      ))}
-    </div>
-  );
-};
+
 
 // Shift Management Component
-const ShiftManagementComponent = () => {
+const ShiftManagementComponent = ({ upcomingShifts }: { upcomingShifts: any[] }) => {
   return (
     <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
       <CardHeader className="pb-2">
@@ -171,57 +90,56 @@ const ShiftManagementComponent = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {upcomingShifts.map((shift) => (
-            <div
-              key={shift.id}
-              className="flex items-center justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Avatar className="border-2 border-[#1e3b93]/10">
-                  <AvatarImage src={shift.worker.avatar} />
-                  <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
-                    {shift.worker.name[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h4 className="font-medium text-gray-900">
-                    {shift.worker.name}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    {shift.date} • {shift.time}
-                  </p>
+        {upcomingShifts.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <Calendar className="mx-auto h-12 w-12 mb-4 text-[#1e3b93]/30" />
+            <p>No upcoming shifts scheduled</p>
+            <Button className="mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90">
+              Schedule a Shift
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {upcomingShifts.map((shift, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <Avatar className="border-2 border-[#1e3b93]/10">
+                    <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                      {shift.workerName ? shift.workerName[0] : 'W'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      {shift.workerName || 'Worker'}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(shift.startTime).toLocaleDateString()} • {new Date(shift.startTime).toLocaleTimeString()} - {new Date(shift.endTime).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="default"
+                    className="bg-[#1e3b93] text-white"
+                  >
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Confirmed
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hover:bg-[#1e3b93]/10"
+                  >
+                    <ChevronRight className="h-4 w-4 text-[#1e3b93]" />
+                  </Button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant={
-                    shift.status === "confirmed" ? "default" : "secondary"
-                  }
-                  className={cn("capitalize", {
-                    "bg-[#1e3b93] text-white": shift.status === "confirmed",
-                    "bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20":
-                      shift.status === "pending",
-                  })}
-                >
-                  {shift.status === "confirmed" ? (
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                  ) : (
-                    <Clock className="w-3 h-3 mr-1" />
-                  )}
-                  {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-[#1e3b93]/10"
-                >
-                  <ChevronRight className="h-4 w-4 text-[#1e3b93]" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -229,6 +147,46 @@ const ShiftManagementComponent = () => {
 
 export default function ParticipantDashboard() {
   const { user } = useAuth();
+  
+  // Fetch analytics data
+  const { data: overviewData, isLoading: overviewLoading, error: overviewError } = useGetParticipantOverview('month', true);
+  const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useGetParticipantServices('month');
+
+  // Format data for charts
+  const spendingTrendData = overviewData?.financialSummary?.spendingTrend || [];
+  const serviceTrendData = serviceData?.servicetrends || [];
+
+  if (overviewLoading || serviceLoading) {
+    return (
+      <div className="container py-6 space-y-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Activity className="mx-auto h-12 w-12 animate-spin text-[#1e3b93]" />
+            <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (overviewError || serviceError) {
+    return (
+      <div className="container py-6 space-y-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <XCircle className="mx-auto h-12 w-12 text-red-500" />
+            <p className="mt-4 text-muted-foreground">Failed to load dashboard data</p>
+            <Button 
+              className="mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-6 space-y-8">
@@ -260,24 +218,27 @@ export default function ParticipantDashboard() {
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
-          title="Weekly Goals Met"
-          value="21/25"
-          icon={<Target size={24} className="text-[#1e3b93]" />}
-          additionalText="84% completion rate"
+          title="Active Workers"
+          value={overviewData?.careOverview?.activeWorkers?.toString() || "0"}
+          icon={<Users size={24} className="text-[#1e3b93]" />}
+          additionalText="Supporting your care"
           className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
-          title="Support Hours"
-          value="28h"
+          title="Care Hours This Month"
+          value={`${overviewData?.careOverview?.totalCareHours?.current || 0}h`}
           icon={<Clock size={24} className="text-[#1e3b93]" />}
-          additionalText="This week"
+          change={{
+            value: `${overviewData?.careOverview?.totalCareHours?.percentageChange || 0}% from last month`,
+            positive: (overviewData?.careOverview?.totalCareHours?.trend === 'up')
+          }}
           className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
-          title="Well-being Score"
-          value="4.8/5"
+          title="Monthly Expenses"
+          value={`$${overviewData?.financialSummary?.currentMonthExpenses?.toFixed(2) || "0.00"}`}
           icon={<Heart size={24} className="text-[#1e3b93]" />}
-          change={{ value: "+0.3 from last week", positive: true }}
+          additionalText={`${overviewData?.financialSummary?.budgetUtilization || 0}% of budget used`}
           className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
         />
       </div>
@@ -285,130 +246,98 @@ export default function ParticipantDashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartSection
-          title="Weekly Activity Overview"
-          data={activityData}
-          type="bar"
-          dataKey="hours"
-          xAxisKey="day"
+          title="Monthly Spending Trend"
+          data={spendingTrendData}
+          type="line"
+          dataKey="value"
+          xAxisKey="label"
           className="border-[#1e3b93]/10"
         />
         <ChartSection
-          title="Satisfaction Trend"
-          data={satisfactionData}
-          type="line"
-          dataKey="score"
-          xAxisKey="week"
+          title="Service Activity Trend"
+          data={serviceTrendData}
+          type="bar"
+          dataKey="value"
+          xAxisKey="label"
           className="border-[#1e3b93]/10"
         />
       </div>
 
-      {/* Shift Management */}
-      <ShiftManagementComponent />
-
-      {/* Support Workers Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {supportWorkers.map((worker) => (
-          <Card
-            key={worker.id}
-            className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg"
-          >
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-12 w-12 border-2 border-[#1e3b93]/10">
-                    <AvatarImage src={worker.avatar} />
-                    <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
-                      {worker.name[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h4 className="font-medium text-gray-900">{worker.name}</h4>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium text-[#1e3b93]">
-                        {worker.rating}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {worker.specialties.map((specialty, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="text-xs bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20"
-                        >
-                          {specialty}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">
-                    Next Available
-                  </p>
-                  <p className="font-medium text-[#1e3b93]">
-                    {worker.nextAvailable}
-                  </p>
-                  <Button
-                    className="mt-2 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
-                    size="sm"
-                  >
-                    Book Session
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Updates & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Service Distribution */}
+      {serviceData?.serviceDistribution && serviceData.serviceDistribution.length > 0 && (
         <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-lg font-medium text-[#1e3b93]">
-                Recent Updates
-              </CardTitle>
-              <Button
-                variant="link"
-                className="text-sm p-0 text-[#1e3b93] hover:text-[#1e3b93]/80"
-              >
-                View All
-              </Button>
-            </div>
+          <CardHeader>
+            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              Service Distribution This Month
+            </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-4">
-              {recentUpdates.map((update) => (
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {serviceData.serviceDistribution.map((service, index) => (
+                <div key={index} className="p-4 rounded-lg border border-[#1e3b93]/10">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-medium text-gray-900">
+                      {SERVICE_TYPE_LABELS[service.serviceType] || service.serviceType}
+                    </h4>
+                    <Badge variant="secondary" className="bg-[#1e3b93]/10 text-[#1e3b93]">
+                      {service.percentage}%
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{service.hours} hours</p>
+                  <Progress 
+                    value={service.percentage} 
+                    className="mt-2 h-2"
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Shift Management */}
+      <ShiftManagementComponent upcomingShifts={overviewData?.careOverview?.upcomingShifts || []} />
+
+      {/* Top Support Workers */}
+      {overviewData?.workerMetrics?.topWorkers && overviewData.workerMetrics.topWorkers.length > 0 && (
+        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              Your Support Workers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {overviewData.workerMetrics.topWorkers.map((worker, index) => (
                 <div
-                  key={update.id}
-                  className="border-b last:border-0 pb-4 last:pb-0 border-[#1e3b93]/10"
+                  key={worker.workerId}
+                  className="flex items-start justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
                 >
-                  <div className="flex justify-between mb-1">
-                    <div className="font-medium text-gray-900">
-                      {update.worker}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {renderRating(update.rating)}
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-12 w-12 border-2 border-[#1e3b93]/10">
+                      <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                        {worker.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-medium text-gray-900">{worker.name}</h4>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium text-[#1e3b93]">
+                          {worker.rating > 0 ? worker.rating.toFixed(1) : 'New'}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {worker.hours} hours this month
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-                    <FileText className="h-3 w-3" />
-                    <span>{update.type}</span>
-                    <span>•</span>
-                    <span>{update.time}</span>
-                  </div>
-                  {update.content && (
-                    <p className="text-sm text-gray-700">{update.content}</p>
-                  )}
-                  <div className="flex gap-3 mt-2">
+                  <div className="text-right">
                     <Button
-                      variant="ghost"
+                      className="bg-[#1e3b93] hover:bg-[#1e3b93]/90"
                       size="sm"
-                      className="text-[#1e3b93] hover:bg-[#1e3b93]/10"
                     >
-                      Reply
+                      Message
                     </Button>
                   </div>
                 </div>
@@ -416,18 +345,19 @@ export default function ParticipantDashboard() {
             </div>
           </CardContent>
         </Card>
+      )}
 
-        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-lg font-medium text-[#1e3b93]">
-              Notifications
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <NotificationsList notifications={notifications} />
-          </CardContent>
-        </Card>
-      </div>
+      {/* Notifications */}
+      <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-lg font-medium text-[#1e3b93]">
+            Recent Notifications
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <NotificationsList notifications={notifications} />
+        </CardContent>
+      </Card>
 
       {/* Connections List */}
       <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
@@ -444,22 +374,4 @@ export default function ParticipantDashboard() {
   );
 }
 
-function Bell(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
-  );
-}
+

@@ -144,6 +144,149 @@ export interface ExportOptions {
   format: 'pdf' | 'csv' | 'excel' | 'json';
 }
 
+// Participant analytics interfaces
+export interface ParticipantOverviewAnalytics {
+  careOverview: {
+    activeWorkers: number;
+    upcomingShifts: any[];
+    completedShiftsThisMonth: number;
+    totalCareHours: {
+      current: number;
+      previous: number;
+      percentageChange: number;
+      trend: 'up' | 'down' | 'stable';
+    };
+    pendingTimesheets: number;
+  };
+  financialSummary: {
+    currentMonthExpenses: number;
+    expensesByCategory: {
+      serviceFees: number;
+      travelCosts: number;
+      additionalExpenses: number;
+    };
+    budgetUtilization: number;
+    spendingTrend: TrendDataPoint[];
+  };
+  workerMetrics: {
+    totalWorkers: number;
+    averageRating: number;
+    topWorkers: Array<{
+      workerId: string;
+      name: string;
+      hours: number;
+      rating: number;
+    }>;
+  };
+}
+
+export interface ParticipantServiceAnalytics {
+  serviceDistribution: Array<{
+    serviceType: string;
+    hours: number;
+    percentage: number;
+  }>;
+  peakServiceTimes: Array<{
+    dayOfWeek: string;
+    hour: number;
+    frequency: number;
+  }>;
+  servicetrends: TrendDataPoint[];
+  preferredWorkers: Array<{
+    workerId: string;
+    name: string;
+    serviceCount: number;
+  }>;
+}
+
+// Support Worker analytics interfaces
+export interface SupportWorkerOverviewAnalytics {
+  workSummary: {
+    activeClients: number;
+    upcomingShifts: any[];
+    completedThisPeriod: number;
+    hoursWorked: {
+      current: number;
+      previous: number;
+      percentageChange: number;
+      trend: 'up' | 'down' | 'stable';
+    };
+    earnings: {
+      current: number;
+      previous: number;
+      percentageChange: number;
+      trend: 'up' | 'down' | 'stable';
+    };
+  };
+  performanceMetrics: {
+    acceptanceRate: number;
+    completionRate: number;
+    onTimeRate: number;
+    averageRating: number;
+    totalReviews: number;
+  };
+  availability: {
+    utilizationRate: number;
+    peakWorkDays: string[];
+    averageShiftLength: number;
+  };
+}
+
+export interface SupportWorkerFinancialAnalytics {
+  earnings: {
+    currentPeriod: number;
+    pending: number;
+    paid: number;
+    trend: TrendDataPoint[];
+    byOrganization: Array<{
+      organizationId: string;
+      name: string;
+      amount: number;
+    }>;
+  };
+  expenses: {
+    travelReimbursements: number;
+    expenseClaims: number;
+    totalExpenses: number;
+  };
+  projections: {
+    monthlyProjected: number;
+    averageHourlyRate: number;
+    highestPayingService: string;
+  };
+}
+
+export interface SupportWorkerScheduleAnalytics {
+  weeklyHours: TrendDataPoint[];
+  shiftDistribution: {
+    byServiceType: Record<string, number>;
+    byDayOfWeek: Array<{
+      day: string;
+      hours: number;
+    }>;
+    byTimeOfDay: Array<{
+      hour: number;
+      frequency: number;
+    }>;
+  };
+  travelAnalysis: {
+    totalDistance: number;
+    averageDistancePerShift: number;
+    travelReimbursements: number;
+  };
+}
+
+export interface SupportWorkerPerformanceAnalytics {
+  skillUtilization: any[];
+  availabilityComparison: {
+    availableHours: number;
+    bookedHours: number;
+    utilizationPercentage: number;
+    unutilizedHours: number;
+  };
+  documentAlerts: any[];
+}
+
 // Helper function to create date range
 export const createDateRange = (
   type: DateRangeType,
@@ -275,6 +418,82 @@ const analyticsService = {
       responseType: 'blob'
     });
     
+    return response;
+  },
+
+  // Get participant overview analytics
+  getParticipantOverview: async (
+    dateRange: string = 'month',
+    comparison: boolean = true
+  ): Promise<ParticipantOverviewAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange,
+      comparison: comparison.toString()
+    });
+
+    const response = await get<AnalyticsResponse<ParticipantOverviewAnalytics>>(`/analytics/overview?${params}`);
+    return response.analytics;
+  },
+
+  // Get participant service analytics
+  getParticipantServices: async (
+    dateRange: string = 'month'
+  ): Promise<ParticipantServiceAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange
+    });
+
+    const response = await get<AnalyticsResponse<ParticipantServiceAnalytics>>(`/analytics/participant/services?${params}`);
+    return response.analytics;
+  },
+
+  // Get support worker overview analytics
+  getSupportWorkerOverview: async (
+    dateRange: string = 'month',
+    comparison: boolean = true
+  ): Promise<SupportWorkerOverviewAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange,
+      comparison: comparison.toString()
+    });
+
+    const response = await get<AnalyticsResponse<SupportWorkerOverviewAnalytics>>(`/analytics/overview?${params}`);
+    return response.analytics;
+  },
+
+  // Get support worker financial analytics
+  getSupportWorkerFinancial: async (
+    dateRange: string = 'month'
+  ): Promise<SupportWorkerFinancialAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange
+    });
+
+    const response = await get<AnalyticsResponse<SupportWorkerFinancialAnalytics>>(`/analytics/worker/financial?${params}`);
+    return response.analytics;
+  },
+
+  // Get support worker schedule analytics
+  getSupportWorkerSchedule: async (
+    dateRange: string = 'month'
+  ): Promise<SupportWorkerScheduleAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange
+    });
+
+    const response = await get<AnalyticsResponse<SupportWorkerScheduleAnalytics>>(`/analytics/worker/schedule?${params}`);
+    return response.analytics;
+  },
+
+  // Get support worker performance analytics
+  getSupportWorkerPerformance: async (
+    dateRange: string = 'month'
+  ): Promise<SupportWorkerPerformanceAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange
+    });
+
+    const response = await get<{ skillUtilization: any[]; availabilityComparison: any; documentAlerts: any[] }>(`/analytics/worker/performance?${params}`);
     return response;
   }
 };
