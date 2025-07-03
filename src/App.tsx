@@ -52,6 +52,7 @@ import ParticipantTimesheetDetails from "./pages/ParticipantTimesheetDetails";
 import SupportWorkerTimesheets from "./pages/SupportWorkerTimesheets";
 import SupportWorkerTimesheetDetails from "./pages/SupportWorkerTimesheetDetails";
 import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
+import LandingPage from "./pages/LandingPage";
 
 
 const queryClient = new QueryClient();
@@ -80,6 +81,12 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      {/* Landing Page - root route */}
+      <Route
+        path="/"
+        element={user ? <Navigate to={getDefaultRoute()} replace /> : <LandingPage />}
+      />
+
       {/* Public routes */}
       <Route
         path="/login"
@@ -256,9 +263,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
-      {/* Default route */}
-      <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
 
       {/* 404 route */}
       <Route path="*" element={<NotFound />} />
