@@ -99,46 +99,46 @@ const ShiftManagementComponent = ({ upcomingShifts }: { upcomingShifts: any[] })
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+        <div className="space-y-4">
             {upcomingShifts.map((shift, index) => (
-              <div
+            <div
                 key={index}
-                className="flex items-center justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <Avatar className="border-2 border-[#1e3b93]/10">
-                    <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+              className="flex items-center justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Avatar className="border-2 border-[#1e3b93]/10">
+                  <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
                       {shift.workerName ? shift.workerName[0] : 'W'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h4 className="font-medium text-gray-900">
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="font-medium text-gray-900">
                       {shift.workerName || 'Worker'}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
                       {new Date(shift.startTime).toLocaleDateString()} • {new Date(shift.startTime).toLocaleTimeString()} - {new Date(shift.endTime).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="default"
-                    className="bg-[#1e3b93] text-white"
-                  >
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Confirmed
-                  </Badge>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-[#1e3b93]/10"
-                  >
-                    <ChevronRight className="h-4 w-4 text-[#1e3b93]" />
-                  </Button>
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-2">
+                <Badge
+                    variant="default"
+                    className="bg-[#1e3b93] text-white"
+                >
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Confirmed
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-[#1e3b93]/10"
+                >
+                  <ChevronRight className="h-4 w-4 text-[#1e3b93]" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
         )}
       </CardContent>
     </Card>
@@ -307,32 +307,32 @@ export default function ParticipantDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {overviewData.workerMetrics.topWorkers.map((worker, index) => (
                 <div
                   key={worker.workerId}
                   className="flex items-start justify-between p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
                 >
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12 border-2 border-[#1e3b93]/10">
-                      <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
-                        {worker.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-medium text-gray-900">{worker.name}</h4>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium text-[#1e3b93]">
+                <div className="flex items-start gap-4">
+                  <Avatar className="h-12 w-12 border-2 border-[#1e3b93]/10">
+                    <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                      {worker.name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{worker.name}</h4>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium text-[#1e3b93]">
                           {worker.rating > 0 ? worker.rating.toFixed(1) : 'New'}
-                        </span>
-                      </div>
+                      </span>
+                    </div>
                       <p className="text-sm text-muted-foreground mt-1">
                         {worker.hours} hours this month
                       </p>
-                    </div>
                   </div>
-                  <div className="text-right">
+                </div>
+                <div className="text-right">
                     <Button
                       className="bg-[#1e3b93] hover:bg-[#1e3b93]/90"
                       size="sm"
@@ -348,16 +348,16 @@ export default function ParticipantDashboard() {
       )}
 
       {/* Notifications */}
-      <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-lg font-medium text-[#1e3b93]">
+        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium text-[#1e3b93]">
             Recent Notifications
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <NotificationsList notifications={notifications} />
-        </CardContent>
-      </Card>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <NotificationsList notifications={notifications} />
+          </CardContent>
+        </Card>
 
       {/* Connections List */}
       <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">

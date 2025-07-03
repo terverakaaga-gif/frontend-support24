@@ -52,9 +52,14 @@ import ParticipantTimesheetDetails from "./pages/ParticipantTimesheetDetails";
 import SupportWorkerTimesheets from "./pages/SupportWorkerTimesheets";
 import SupportWorkerTimesheetDetails from "./pages/SupportWorkerTimesheetDetails";
 import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
+
+import LandingPage from "./pages/LandingPage";
+
+
 import ChatsList from "./pages/ChatsList";
 import { ChatProvider } from "./contexts/ChatContext";
 import IncidentAdminDashboard from "./pages/IncidentsPage";
+
 
 const queryClient = new QueryClient();
 
@@ -80,13 +85,21 @@ const AppRoutes = () => {
 		}
 	};
 
-	return (
-		<Routes>
-			{/* Public routes */}
-			<Route
-				path="/login"
-				element={user ? <Navigate to={getDefaultRoute()} replace /> : <Login />}
-			/>
+
+  return (
+    <Routes>
+      {/* Landing Page - root route */}
+      <Route
+        path="/"
+        element={user ? <Navigate to={getDefaultRoute()} replace /> : <LandingPage />}
+      />
+
+      {/* Public routes */}
+      <Route
+        path="/login"
+        element={user ? <Navigate to={getDefaultRoute()} replace /> : <Login />}
+      />
+
 
 			<Route
 				path="/register"
@@ -270,13 +283,12 @@ const AppRoutes = () => {
 				}
 			/>
 
-			{/* Default route */}
-			<Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
 
-			{/* 404 route */}
-			<Route path="*" element={<NotFound />} />
-		</Routes>
-	);
+      {/* 404 route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+
 };
 
 export default function App() {
