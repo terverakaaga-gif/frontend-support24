@@ -3,14 +3,8 @@ import { UserRole } from "@/types/user.types";
 export type TConversationType = "direct" | "group";
 
 export interface IMessagesResponse {
-	success: boolean;
-	code: number;
-	message: string;
-	data: {
-		messages: IMessage[];
-		pagination: IPagination;
-	};
-	error: any;
+	messages: IMessage[];
+	pagination: IPagination;
 }
 
 export interface IMessage {
@@ -110,16 +104,15 @@ export interface IChatState {
 	setOnlineUsers: (users: IUser[]) => void;
 	setLoading: (loading: boolean) => void;
 	setError: (error: string | null) => void;
+	updateConversationLastMessage: (
+		conversationId: string,
+		message: ILastMessage
+	) => void;
+	updateMessageStatus: (messageId: string, status: TMessageStatus) => void;
 }
 
 export interface ICreateConversationResponse {
-	success: boolean;
-	code: number;
-	message: string;
-	data: {
-		conversation: IConversation;
-	};
-	error: any;
+	conversation: IConversation;
 }
 
 export interface ICreator {
@@ -129,14 +122,8 @@ export interface ICreator {
 }
 
 export interface IGetConversationsResponse {
-	success: boolean;
-	code: number;
-	message: string;
-	data: {
-		conversations: IConversation[];
-		pagination: IPagination;
-	};
-	error: any;
+	conversations: IConversation[];
+	pagination: IPagination;
 }
 
 export interface ILastMessage {
@@ -152,13 +139,7 @@ export interface ILastMessage {
 }
 
 export interface ISendMessageResponse {
-	success: boolean;
-	code: number;
-	message: string;
-	data: {
-		message: IMessage;
-	};
-	error: any;
+	message: IMessage;
 }
 
 export interface IMarkMessageAsReadResponse {
@@ -170,4 +151,15 @@ export interface IMarkMessageAsReadResponse {
 		readBy: IUser[];
 	};
 	error: any;
+}
+
+export interface ISupportWorkers {
+	firstName: string;
+	lastName: string;
+	joinedDate: string;
+	_id: string;
+}
+
+export interface IMySupportWorkersResponse {
+	supportWorkers: ISupportWorkers[];
 }

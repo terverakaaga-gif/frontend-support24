@@ -1,11 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { initializeSocket, getSocket, disconnectSocket } from "../lib/socket";
-import {
-	createConversation,
-	getConversations,
-	getMessages,
-	sendMessage as apiSendMessage,
-} from "../api/services/chatService";
 import { useChatStore } from "@/store/chatStore";
 import { tokenStorage } from "@/api/apiClient";
 import {
@@ -13,10 +7,11 @@ import {
 	TConversationType,
 	TMessageType,
 } from "@/types/chat.types";
+import chatServices from "@/api/services/chatService";
 
 interface ChatContextType {
-	// connect: (token: string) => void;  // No need to used this elsewhere as it has be managed in the provider
-	// disconnect: () => void; // same here
+	connect: (token: string) => void; // No need to used this elsewhere as it has be managed in the provider
+	disconnect: () => void; // same here
 	loadConversations: (token: string) => Promise<void>;
 	selectConversation: (conversationId: string, token: string) => Promise<void>;
 	sendMessage: (
@@ -32,6 +27,8 @@ interface ChatContextType {
 		description?: string,
 		organizationId?: string
 	) => Promise<IConversation>;
+	cleanupSocketListeners: () => void;
+	loadMessages: (conversationId: string, token: string) => Promise<void>;
 }
 
 export const ChatContext = createContext<ChatContextType | null>(null);
@@ -48,6 +45,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 		setError,
 		currentConversation,
 		conversations,
+		updateConversationLastMessage,
+		updateMessageStatus,
 	} = useChatStore();
 
 	const [socketInitialized, setSocketInitialized] = useState(false);
@@ -71,6 +70,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 					message.conversationId === currentConversation._id
 				) {
 					addMessage(message);
+					// Update the conversation's last message
+					updateConversationLastMessage(message.conversationId, message);
 				}
 
 				// Update conversation list with new last message
@@ -85,6 +86,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 					return conv;
 				});
 				setConversations(updatedConversations);
+			});
+
+			// Listen for message status updates
+			socket.on("messageStatusUpdate", (data) => {
+				updateMessageStatus(data.messageId, data.status);
 			});
 
 			socket.on("messageRead", ({ messageId, userId }) => {
@@ -152,7 +158,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 		setError(null);
 		try {
 			console.log("Loading conversations...");
-			const response = await getConversations(token);
+			const response = await chatServices.getConversations(token);
 			console.log("Conversations loaded:", response);
 
 			if (response.conversations && Array.isArray(response.conversations)) {
@@ -175,7 +181,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 		setError(null);
 		try {
 			console.log("Loading messages for conversation:", conversationId);
-			const response = await getMessages(token, conversationId);
+			const response = await chatServices.getMessages(token, conversationId);
 			console.log("Messages loaded for conversation:", response);
 
 			const conversation = conversations.find((c) => c._id === conversationId);
@@ -200,11 +206,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	const sendMessage = async (
-		content: string,
-		type: TMessageType = "text",
-		attachments: string[] = []
-	) => {
+	const sendMessage = async (content: string, type: TMessageType = "text") => {
 		if (!currentConversation) {
 			console.error("No current conversation selected");
 			return;
@@ -220,13 +222,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 
 		try {
-			console.log("Sending message:", { content, type, attachments });
-			const response = await apiSendMessage(
+			console.log("Sending message:", { content, type });
+			const response = await chatServices.sendMessage(
 				token,
 				currentConversation._id,
 				content,
-				type,
-				attachments
+				type
 			);
 
 			console.log("Message sent successfully:", response);
@@ -241,12 +242,33 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 			}
 
 			// Add message to local state
-			if (response.message) {
+			if (response) {
 				addMessage(response.message);
 			}
 		} catch (err) {
 			console.error("Failed to send message:", err);
 			setError("Failed to send message");
+		}
+	};
+
+	const loadMessages = async (conversationId: string, token: string) => {
+		setLoading(true);
+		setError(null);
+		try {
+			console.log("Messages loading...");
+			const response = await chatServices.getMessages(token, conversationId);
+			if (response.messages && Array.isArray(response.messages)) {
+				setMessages(response.messages);
+			} else {
+				console.warn("Invalid messages response:", response);
+				setConversations([]);
+			}
+		} catch (err) {
+			console.error("Failed to load messages:", err);
+			setError("Failed to load messages");
+			setConversations([]);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -266,7 +288,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 				description,
 				organizationId,
 			});
-			const response = await createConversation(
+			const response = await chatServices.createConversation(
 				token,
 				type,
 				memberIds,
@@ -277,14 +299,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
 			console.log("New conversation created:", response);
 
-			if (response.conversation) {
+			if (response) {
 				// Add to local state
 				setConversations([...conversations, response.conversation]);
 
 				// Emit through socket
 				if (socketInitialized) {
 					const socket = getSocket();
-					socket.emit("conversationCreated", response.conversation);
+					socket.emit("conversationCreated", response);
 				}
 
 				return response.conversation;
@@ -298,26 +320,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	// useEffect(() => {
-	// 	const tokens = tokenStorage.getTokens();
-	// 	if (tokens?.access?.token) {
-	// 		connect(tokens.access.token);
-	// 	}
-
-	// 	// connect socket listeners
-	// 	connect(tokens?.access?.token || "");
-
-	// 	return () => {
-	// 		// Don't disconnect here - keep connection alive
-	// 		// Just clean up event listeners
-	// 		cleanupSocketListeners();
-	// 	};
-	// }, []);
-
 	const cleanupSocketListeners = () => {
 		const socket = getSocket();
 		if (socket) {
 			socket.off("newMessage");
+			socket.off("messageStatusUpdate");
+			socket.off("conversationUpdate");
 			socket.off("messageRead");
 			socket.off("userOnline");
 			socket.off("userOffline");
@@ -329,12 +337,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<ChatContext.Provider
 			value={{
-				// connect,
-				// disconnect,
+				connect,
+				disconnect,
 				loadConversations,
 				selectConversation,
 				sendMessage,
+				loadMessages,
 				createNewConversation,
+				cleanupSocketListeners,
 			}}
 		>
 			{children}

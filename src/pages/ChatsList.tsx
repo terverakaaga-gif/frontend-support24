@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	Card,
 	CardContent,
@@ -15,12 +15,6 @@ import {
 	Users,
 	MessageCircle,
 	MoreVertical,
-	Pin,
-	Archive,
-	Star,
-	Circle,
-	Filter,
-	SortDesc,
 	Phone,
 	Video,
 	Bell,
@@ -32,138 +26,185 @@ import useChat from "@/hooks/useChat";
 import { tokenStorage } from "@/api/apiClient";
 import { useQuery } from "@tanstack/react-query";
 import { organizationService } from "./OrganizationsPage";
-
-// Mock data for conversations
-const mockConversations = [
-	{
-		id: "1",
-		type: "individual",
-		participant: {
-			name: "Olivia Thompson",
-			email: "olivia.thompson@example.com.au",
-			avatar: "https://i.pravatar.cc/150?img=5",
-			role: "Support Worker",
-			isOnline: true,
-		},
-		lastMessage: {
-			content: "Thanks for the update! I'll check it out right away.",
-			timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-			sender: "participant",
-			unread: true,
-		},
-		isPinned: true,
-		unreadCount: 2,
-	},
-	{
-		id: "2",
-		type: "individual",
-		participant: {
-			name: "Marcus Chen",
-			email: "marcus.chen@example.com.au",
-			avatar: "https://i.pravatar.cc/150?img=8",
-			role: "Support Worker",
-			isOnline: false,
-			lastSeen: "2 hours ago",
-		},
-		lastMessage: {
-			content: "I've completed the assessment report for the new client.",
-			timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-			sender: "participant",
-			unread: false,
-		},
-		isPinned: false,
-		unreadCount: 0,
-	},
-	{
-		id: "3",
-		type: "group",
-		groupName: "Support Team Alpha",
-		participants: [
-			{ name: "Sarah Williams", avatar: "https://i.pravatar.cc/150?img=9" },
-			{ name: "David Brown", avatar: "https://i.pravatar.cc/150?img=7" },
-			{ name: "Emily Davis", avatar: "https://i.pravatar.cc/150?img=6" },
-		],
-		lastMessage: {
-			content: "Meeting scheduled for tomorrow at 2 PM",
-			timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-			sender: "Sarah Williams",
-			unread: true,
-		},
-		isPinned: false,
-		unreadCount: 5,
-	},
-	{
-		id: "4",
-		type: "individual",
-		participant: {
-			name: "Jessica Rodriguez",
-			email: "jessica.rodriguez@example.com.au",
-			avatar: "https://i.pravatar.cc/150?img=10",
-			role: "Care Coordinator",
-			isOnline: true,
-		},
-		lastMessage: {
-			content:
-				"The new care plan has been approved and is ready for implementation.",
-			timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-			sender: "admin",
-			unread: false,
-		},
-		isPinned: false,
-		unreadCount: 0,
-	},
-	{
-		id: "5",
-		type: "group",
-		groupName: "Emergency Response Team",
-		participants: [
-			{ name: "Michael Johnson", avatar: "https://i.pravatar.cc/150?img=11" },
-			{ name: "Lisa Anderson", avatar: "https://i.pravatar.cc/150?img=12" },
-			{ name: "Robert Wilson", avatar: "https://i.pravatar.cc/150?img=13" },
-			{ name: "Amanda Taylor", avatar: "https://i.pravatar.cc/150?img=14" },
-		],
-		lastMessage: {
-			content: "All clear on the emergency response protocol review",
-			timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-			sender: "Michael Johnson",
-			unread: false,
-		},
-		isPinned: true,
-		unreadCount: 0,
-	},
-];
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useChatStore } from "@/store/chatStore";
+import { adminUserService } from "@/api/services/adminUserService";
+import { useNavigate } from "react-router-dom";
+import chatServices from "@/api/services/chatService";
+import Loader from "@/components/Loader";
+import { ChatCreationModal } from "@/components/ChatCreationModal";
 
 export default function ChatsList() {
-	const { user } = useAuth();
 	const [searchQuery, setSearchQuery] = useState("");
+	const [chatType, setChatType] = useState<"direct" | "group" | null>();
 	const [selectedFilter, setSelectedFilter] = useState("all");
-	const [conversations, setConversations] = useState(mockConversations);
+	const [isCreatingChat, setIsCreatingChat] = useState(false);
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const [groupName, setGroupName] = useState("");
+
+	const { user } = useAuth();
+	const navigate = useNavigate();
 	const {
-		data: organizations = [],
-		isLoading: loadingOrgs,
-		error: orgsError,
-		refetch,
+		data: all_users = [],
+		isLoading: loadingUsers,
+		error: usersError,
 	} = useQuery({
 		queryKey: ["support-worker-organizations"],
-		queryFn: () => organizationService.getOrganizations(),
+		queryFn: async () => {
+			if (user.role === "participant") {
+				const workers = await chatServices.getMySupportWorkers();
+
+				console.log("supportworkers: ", workers);
+
+				return workers;
+			}
+			if (user.role === "admin") {
+				const workers = await adminUserService.getWorkers();
+				const partcipants = await adminUserService.getParticipants();
+
+				const users = [...workers.users, ...partcipants.users];
+				return users;
+			}
+		},
 	});
 
-	console.log("Organizations:", organizations);
+	const {
+		data: organizations = [],
+		isLoading: loadingOrganizations,
+		error: organizationsError,
+	} = useQuery({
+		queryKey: ["organizations"],
+		queryFn: async () => {
+			return await organizationService.getOrganizations();
+		},
+	});
+
+	const {
+		loadConversations,
+		connect,
+		loading,
+		setLoading,
+		cleanupSocketListeners,
+		conversations: chatConversations,
+		createNewConversation,
+	} = useChat();
+
+	const { setCurrentConversation } = useChatStore();
+
+	useEffect(() => {
+		const tokens = tokenStorage.getTokens();
+		if (tokens?.access?.token) {
+			connect(tokens.access.token);
+			loadConversations(tokens.access.token);
+		}
+
+		return () => {
+			cleanupSocketListeners();
+		};
+	}, []);
 
 	const handleChatClick = (chatId: string) => {
-		// In a real app, this would navigate to /admin/chat/:id
-		console.log(`Navigate to chat: ${chatId}`);
+		const tokens = tokenStorage.getTokens();
+		const conv = chatConversations.find((conv) => conv._id === chatId) || null;
+		if (tokens?.access?.token) {
+			setCurrentConversation(conv);
+			if (user.role === "supportWorker") {
+				navigate(`/support-worker/chat/${conv._id}`);
+			} else if (user.role === "participant") {
+				navigate(`/participant/chat/${conv._id}`);
+			} else {
+				navigate(`/admin/chat/${conv._id}`);
+			}
+		}
 	};
 
-	const handleNewChat = () => {
-		console.log("Create new individual chat");
+	const handleNewDirectChat = async (userId: string) => {
+		const tokens = tokenStorage.getTokens();
+		if (!tokens?.access?.token) return;
+
+		try {
+			setLoading(true);
+			setIsCreatingChat(true);
+			const newConversation = await createNewConversation(
+				"direct",
+				[userId],
+				tokens.access.token,
+				"Direct Chat",
+				"Testing Direct Chat",
+				organizations[0]?._id // Using first organization for demo
+			);
+
+			if (newConversation) {
+				setCurrentConversation(newConversation);
+				if (user.role === "supportWorker") {
+					navigate(`/support-worker/chat/${newConversation._id}`);
+				} else if (user.role === "participant") {
+					navigate(`/participant/chat/${newConversation._id}`);
+				} else {
+					navigate(`/admin/chat/${newConversation._id}`);
+				}
+			}
+		} catch (error) {
+			console.error("Failed to create direct chat:", error);
+		} finally {
+			setLoading(false);
+			setIsCreatingChat(false);
+		}
 	};
 
-	const handleNewGroupChat = () => {
-		console.log("Create new group chat");
+	const handleNewGroupChat = async () => {
+		const tokens = tokenStorage.getTokens();
+		if (!tokens?.access?.token || selectedUsers.length < 2) return;
+
+		try {
+			setIsCreatingChat(true);
+			setLoading(true);
+			const newConversation = await createNewConversation(
+				"group",
+				selectedUsers,
+				tokens.access.token,
+				groupName,
+				"Group messagings",
+				organizations[0]?._id // Using first organization for demo
+			);
+
+			if (newConversation) {
+				setCurrentConversation(newConversation);
+			}
+		} catch (error) {
+			console.error("Failed to create group chat:", error);
+		} finally {
+			setIsCreatingChat(false);
+			setLoading(false);
+			setSelectedUsers([]);
+			setGroupName("");
+		}
 	};
 
-	const { loadConversations } = useChat();
+	const handleCreateChat = async () => {
+		if (chatType === "direct") {
+			handleNewDirectChat(selectedUsers[0]);
+			return;
+		}
+		handleNewGroupChat();
+	};
+
+	const toggleUserSelection = (userId: string) => {
+		if (chatType === "direct") {
+			setSelectedUsers([userId]);
+			return;
+		}
+		setSelectedUsers((prev) =>
+			prev.includes(userId)
+				? prev.filter((id) => id !== userId)
+				: [...prev, userId]
+		);
+	};
 
 	const formatMessageTime = (timestamp: string) => {
 		const date = new Date(timestamp);
@@ -179,64 +220,54 @@ export default function ChatsList() {
 		return date.toLocaleDateString();
 	};
 
-	const filteredConversations = conversations
-		.filter((conv) => {
-			const matchesSearch =
-				searchQuery === "" ||
-				(conv.type === "individual" &&
-					conv.participant.name
-						.toLowerCase()
-						.includes(searchQuery.toLowerCase())) ||
-				(conv.type === "group" &&
-					conv.groupName.toLowerCase().includes(searchQuery.toLowerCase()));
+	const filteredConversations = chatConversations.filter((conv) => {
+		const matchesSearch =
+			searchQuery === "" ||
+			(conv.type === "direct" &&
+				conv.members
+					.map((m) => m.userId.firstName)
+					.join(" ")
+					.toLowerCase()
+					.includes(searchQuery.toLowerCase())) ||
+			(conv.type === "group" &&
+				conv.name?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-			const matchesFilter =
-				selectedFilter === "all" ||
-				(selectedFilter === "unread" && conv.unreadCount > 0) ||
-				(selectedFilter === "pinned" && conv.isPinned) ||
-				(selectedFilter === "individual" && conv.type === "individual") ||
-				(selectedFilter === "group" && conv.type === "group");
+		const matchesFilter =
+			selectedFilter === "all" ||
+			(selectedFilter === "direct" && conv.type === "direct") ||
+			(selectedFilter === "group" && conv.type === "group");
 
-			return matchesSearch && matchesFilter;
-		})
-		.sort((a, b) => {
-			// Pinned conversations first
-			if (a.isPinned && !b.isPinned) return -1;
-			if (!a.isPinned && b.isPinned) return 1;
+		return matchesSearch && matchesFilter;
+	});
 
-			// Then by timestamp
-			return (
-				new Date(b.lastMessage.timestamp).getTime() -
-				new Date(a.lastMessage.timestamp).getTime()
-			);
-		});
+	// const totalUnreadCount = chatConversations.reduce(
+	//   (sum, conv) => sum + (conv.unreadCount || 0),
+	//   0
+	// );
 
-	const totalUnreadCount = conversations.reduce(
-		(sum, conv) => sum + conv.unreadCount,
-		0
-	);
+	if (loadingUsers || loadingOrganizations) {
+		return <Loader />;
+	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+		<div className="min-h-screen bg-[#f8fafc]">
 			<div className="container mx-auto p-4 max-w-7xl">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-6">
 					<div className="flex items-center gap-4">
 						<div className="relative">
-							<MessageCircle className="h-8 w-8 text-blue-600" />
-							{totalUnreadCount > 0 && (
-								<div className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
-									<span className="text-xs text-white font-bold">
-										{totalUnreadCount}
-									</span>
-								</div>
-							)}
+							<MessageCircle className="h-8 w-8 text-[#008CFF]" />
+							{/* {totalUnreadCount > 0 && (
+                <div className="absolute -top-2 -right-2 h-5 w-5 bg-[#FF2D55] rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">
+                    {totalUnreadCount}
+                  </span>
+                </div>
+              )} */}
 						</div>
 						<div>
-							<h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-								Messages
-							</h1>
-							<p className="text-slate-600">Manage your conversations</p>
+							<h1 className="text-3xl font-bold text-slate-900">Messages</h1>
+							<p className="text-[#9395A2]">Manage your conversations</p>
 						</div>
 					</div>
 
@@ -254,69 +285,83 @@ export default function ChatsList() {
 					{/* Chat List Sidebar */}
 					<div className="lg:col-span-1 space-y-4">
 						{/* Search and New Chat */}
-						<Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+						<Card className="shadow-lg border-0 bg-white">
 							<CardHeader className="pb-4">
-								<div className="flex items-center justify-between">
-									<CardTitle className="text-lg">Quick Actions</CardTitle>
-									<Button
-										variant="outline"
-										size="icon"
-										onClick={handleNewChat}
-										className="hover:bg-blue-50"
-									>
-										<UserPlus className="h-4 w-4" />
-									</Button>
-								</div>
+								{user.role !== "supportWorker" && (
+									<div className="flex items-center justify-between">
+										<CardTitle className="text-lg">Quick Actions</CardTitle>
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<Button
+													variant="outline"
+													size="icon"
+													className="hover:bg-blue-50"
+												>
+													<UserPlus className="h-4 w-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent>
+												<DropdownMenuItem
+													onClick={() => {
+														setIsCreatingChat(true);
+														setChatType("direct");
+													}}
+												>
+													New Chat
+												</DropdownMenuItem>
+												<DropdownMenuItem
+													onClick={() => {
+														setIsCreatingChat(true);
+														setChatType("group");
+													}}
+												>
+													Group Chat
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
+								)}
 							</CardHeader>
 							<CardContent className="space-y-3">
 								<div className="relative">
-									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9395A2]" />
 									<Input
 										placeholder="Search conversations..."
 										value={searchQuery}
 										onChange={(e) => setSearchQuery(e.target.value)}
-										className="pl-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+										className="pl-10 border-[#9395A2] focus:border-[#008CFF]"
 									/>
 								</div>
 							</CardContent>
 						</Card>
 
 						{/* Filters */}
-						<Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+						<Card className="shadow-lg border-0 bg-white">
 							<CardHeader className="pb-4">
-								<CardTitle className="text-lg flex items-center gap-2">
-									<Filter className="h-4 w-4" />
-									Filters
-								</CardTitle>
+								<CardTitle className="text-lg">Filters</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-2">
 								{[
 									{
 										key: "all",
 										label: "All Chats",
-										count: conversations.length,
+										count: chatConversations.length,
 									},
+									// {
+									//   key: "unread",
+									//   label: "Unread",
+									//   count: chatConversations.filter((c) => (c.unreadCount || 0) > 0).length,
+									// },
 									{
-										key: "unread",
-										label: "Unread",
-										count: conversations.filter((c) => c.unreadCount > 0)
-											.length,
-									},
-									{
-										key: "pinned",
-										label: "Pinned",
-										count: conversations.filter((c) => c.isPinned).length,
-									},
-									{
-										key: "individual",
+										key: "direct",
 										label: "Individual",
-										count: conversations.filter((c) => c.type === "individual")
+										count: chatConversations.filter((c) => c.type === "direct")
 											.length,
 									},
 									{
 										key: "group",
 										label: "Groups",
-										count: conversations.filter((c) => c.type === "group")
+										count: chatConversations.filter((c) => c.type === "group")
 											.length,
 									},
 								].map((filter) => (
@@ -327,7 +372,7 @@ export default function ChatsList() {
 										}
 										className={`w-full justify-between ${
 											selectedFilter === filter.key
-												? "bg-gradient-to-r from-blue-600 to-indigo-600"
+												? "bg-[#008CFF] text-white"
 												: "hover:bg-blue-50"
 										}`}
 										onClick={() => setSelectedFilter(filter.key)}
@@ -337,7 +382,7 @@ export default function ChatsList() {
 											className={`text-xs px-2 py-1 rounded-full ${
 												selectedFilter === filter.key
 													? "bg-white/20 text-white"
-													: "bg-slate-200 text-slate-600"
+													: "bg-[#9395A2]/20 text-[#9395A2]"
 											}`}
 										>
 											{filter.count}
@@ -348,30 +393,44 @@ export default function ChatsList() {
 						</Card>
 					</div>
 
-					{/* Conversations List */}
+					{/* Main Content Area */}
 					<div className="lg:col-span-3">
-						<Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-							<CardHeader className="border-b border-slate-200/60 bg-gradient-to-r from-blue-500/5 to-indigo-500/5">
+						{/* New Chat Creation Modal */}
+						{isCreatingChat && (
+							<ChatCreationModal
+								isOpen={isCreatingChat}
+								onClose={() => {
+									setIsCreatingChat(false);
+									setSelectedUsers([]);
+									setGroupName("");
+								}}
+								chatType={chatType!}
+								users={all_users}
+								selectedUsers={selectedUsers}
+								onUserSelect={toggleUserSelection}
+								groupName={groupName}
+								onGroupNameChange={setGroupName}
+								onCreate={handleCreateChat}
+								isLoading={loading}
+							/>
+						)}
+
+						{/* Conversations List */}
+						<Card className="shadow-xl border-0 bg-white">
+							<CardHeader className="border-b border-[#9395A2]/20">
 								<div className="flex items-center justify-between">
 									<div>
 										<CardTitle className="text-xl">Conversations</CardTitle>
 										<CardDescription>
 											{filteredConversations.length} conversation
 											{filteredConversations.length !== 1 ? "s" : ""}
-											{totalUnreadCount > 0 && (
-												<span className="ml-2 text-blue-600 font-medium">
-													• {totalUnreadCount} unread
-												</span>
-											)}
+											{/* {totalUnreadCount > 0 && (
+                        <span className="ml-2 text-[#008CFF] font-medium">
+                          • {totalUnreadCount} unread
+                        </span>
+                      )} */}
 										</CardDescription>
 									</div>
-									<Button
-										variant="outline"
-										size="icon"
-										className="hover:bg-blue-50"
-									>
-										<SortDesc className="h-4 w-4" />
-									</Button>
 								</div>
 							</CardHeader>
 
@@ -379,70 +438,61 @@ export default function ChatsList() {
 								<div className="max-h-[600px] overflow-y-auto">
 									{filteredConversations.length === 0 ? (
 										<div className="p-8 text-center">
-											<MessageCircle className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-											<h3 className="text-lg font-medium text-slate-600 mb-2">
+											<MessageCircle className="h-12 w-12 text-[#9395A2] mx-auto mb-4" />
+											<h3 className="text-lg font-medium text-[#9395A2] mb-2">
 												No conversations found
 											</h3>
-											<p className="text-slate-500 mb-4">
+											<p className="text-[#9395A2] mb-4">
 												Try adjusting your search or filters
 											</p>
 											<Button
-												onClick={handleNewChat}
-												className="bg-gradient-to-r from-blue-600 to-indigo-600"
+												onClick={() => setIsCreatingChat(true)}
+												className="bg-[#008CFF] hover:bg-[#008CFF]/90"
 											>
 												<Plus className="h-4 w-4 mr-2" />
-												Start New Chat
+												Start Chat
 											</Button>
 										</div>
 									) : (
-										<div className="divide-y divide-slate-100">
+										<div className="divide-y divide-[#9395A2]/10">
 											{filteredConversations.map((conversation) => (
 												<div
-													key={conversation.id}
-													onClick={() => handleChatClick(conversation.id)}
-													className="p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 cursor-pointer transition-all duration-200 group"
+													key={conversation._id}
+													onClick={() => handleChatClick(conversation._id)}
+													className="p-4 hover:bg-[#66C2EB20] cursor-pointer transition-all duration-200"
 												>
 													<div className="flex items-center gap-4">
 														{/* Avatar Section */}
 														<div className="relative flex-shrink-0">
-															{conversation.type === "individual" ? (
+															{conversation.type === "direct" ? (
 																<div className="relative">
-																	<Avatar className="h-12 w-12 ring-2 ring-white shadow-md">
+																	<Avatar className="h-8 w-8 overflow flex items-center justify-center rounded-full ring-2 ring-white shadow-md">
 																		<AvatarImage
-																			src={conversation.participant.avatar}
+																			className="h-8 w-8 rounded-full object-cover"
+																			src={
+																				conversation.members.find(
+																					(member) =>
+																						member.userId._id !== user._id
+																				)?.userId.profileImage
+																			}
 																		/>
-																		<AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
-																			{conversation.participant.name
-																				.split(" ")
-																				.map((n) => n[0])
-																				.join("")}
+																		<AvatarFallback className="bg-[#008CFF] text-white font-semibold">
+																			{
+																				conversation.members.find(
+																					(member) =>
+																						member.userId._id !== user._id
+																				)?.userId.firstName[0]
+																			}
 																		</AvatarFallback>
 																	</Avatar>
-																	{conversation.participant.isOnline && (
-																		<div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full ring-2 ring-white"></div>
+																	{conversation.isActive && (
+																		<div className="absolute -bottom-1 -right-1 h-4 w-4 bg-[#197879] rounded-full ring-2 ring-white"></div>
 																	)}
 																</div>
 															) : (
 																<div className="relative">
-																	<div className="h-12 w-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-md">
+																	<div className="h-12 w-12 bg-[#008CFF] rounded-full flex items-center justify-center shadow-md">
 																		<Users className="h-6 w-6 text-white" />
-																	</div>
-																	<div className="absolute -top-1 -right-1 flex -space-x-1">
-																		{conversation.participants
-																			.slice(0, 2)
-																			.map((participant, index) => (
-																				<Avatar
-																					key={index}
-																					className="h-5 w-5 ring-1 ring-white"
-																				>
-																					<AvatarImage
-																						src={participant.avatar}
-																					/>
-																					<AvatarFallback className="text-xs bg-slate-300">
-																						{participant.name[0]}
-																					</AvatarFallback>
-																				</Avatar>
-																			))}
 																	</div>
 																</div>
 															)}
@@ -453,91 +503,82 @@ export default function ChatsList() {
 															<div className="flex items-center justify-between mb-1">
 																<div className="flex items-center gap-2">
 																	<h3 className="font-semibold text-slate-900 truncate">
-																		{conversation.type === "individual"
-																			? conversation.participant.name
-																			: conversation.groupName}
+																		{conversation.type === "direct"
+																			? conversation.members.find(
+																					(member) =>
+																						member.userId._id !== user._id
+																			  )?.userId.firstName
+																			: conversation.name}
 																	</h3>
-																	{conversation.isPinned && (
-																		<Pin className="h-3 w-3 text-blue-500 fill-current" />
-																	)}
 																</div>
 																<div className="flex items-center gap-2">
-																	<span className="text-xs text-slate-500">
-																		{formatMessageTime(
-																			conversation.lastMessage.timestamp
-																		)}
-																	</span>
-																	{conversation.unreadCount > 0 && (
-																		<div className="h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center">
-																			<span className="text-xs text-white font-bold">
-																				{conversation.unreadCount > 9
-																					? "9+"
-																					: conversation.unreadCount}
-																			</span>
-																		</div>
+																	{conversation.lastMessage?.timestamp && (
+																		<span className="text-xs text-[#9395A2]">
+																			{formatMessageTime(
+																				conversation.lastMessage.timestamp
+																			)}
+																		</span>
 																	)}
+																	{/* {(conversation.unreadCount || 0) > 0 && (
+                                    <div className="h-5 w-5 bg-[#008CFF] rounded-full flex items-center justify-center">
+                                      <span className="text-xs text-white font-bold">
+                                        {conversation.unreadCount > 9
+                                          ? "9+"
+                                          : conversation.unreadCount}
+                                      </span>
+                                    </div>
+                                  )} */}
 																</div>
 															</div>
 
 															<div className="flex items-center justify-between">
 																<div className="flex-1">
-																	{conversation.type === "individual" && (
-																		<p className="text-xs text-slate-500 mb-1">
-																			{conversation.participant.role} •
-																			{conversation.participant.isOnline ? (
-																				<span className="text-green-600 ml-1">
+																	{conversation.type === "direct" && (
+																		<p className="text-xs text-[#9395A2] mb-1">
+																			{
+																				conversation.members.find(
+																					(member) =>
+																						member.userId._id !== user._id
+																				)?.userId.role
+																			}{" "}
+																			•
+																			{conversation.isActive ? (
+																				<span className="text-[#197879] ml-1">
 																					Online
 																				</span>
 																			) : (
 																				<span className="ml-1">
-																					{conversation.participant.lastSeen}
+																					{conversation.lastMessage
+																						?.timestamp &&
+																						formatMessageTime(
+																							conversation.lastMessage.timestamp
+																						)}
 																				</span>
 																			)}
 																		</p>
 																	)}
-																	<p
-																		className={`text-sm truncate ${
-																			conversation.lastMessage.unread
-																				? "font-medium text-slate-900"
-																				: "text-slate-600"
-																		}`}
-																	>
-																		{conversation.type === "group" &&
-																			conversation.lastMessage.sender !==
-																				"admin" && (
-																				<span className="text-blue-600 font-medium mr-1">
-																					{conversation.lastMessage.sender}:
-																				</span>
-																			)}
-																		{conversation.lastMessage.content}
+																	<p className={`text-sm truncate `}>
+																		{conversation.lastMessage ? (
+																			<>
+																				{conversation.type === "group" &&
+																					conversation.lastMessage.sender
+																						._id !== user._id && (
+																						<span className="text-[#008CFF] font-medium mr-1">
+																							{
+																								conversation.lastMessage.sender
+																									.firstName
+																							}
+																							:
+																						</span>
+																					)}
+																				{conversation.lastMessage.content}
+																			</>
+																		) : (
+																			"No messages yet"
+																		)}
 																	</p>
 																</div>
 															</div>
-														</div>
-
-														{/* Actions */}
-														<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-															<Button
-																variant="ghost"
-																size="icon"
-																className="h-8 w-8 hover:bg-blue-50"
-															>
-																<Phone className="h-3 w-3" />
-															</Button>
-															<Button
-																variant="ghost"
-																size="icon"
-																className="h-8 w-8 hover:bg-blue-50"
-															>
-																<Video className="h-3 w-3" />
-															</Button>
-															<Button
-																variant="ghost"
-																size="icon"
-																className="h-8 w-8 hover:bg-blue-50"
-															>
-																<MoreVertical className="h-3 w-3" />
-															</Button>
 														</div>
 													</div>
 												</div>
@@ -549,70 +590,6 @@ export default function ChatsList() {
 						</Card>
 					</div>
 				</div>
-
-				{/* Floating Action Button for Mobile */}
-				<div className="fixed bottom-6 right-6 lg:hidden">
-					<Button
-						onClick={handleNewChat}
-						size="icon"
-						className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-2xl"
-					>
-						<Plus className="h-6 w-6" />
-					</Button>
-				</div>
-
-				{/* Quick Stats Cards */}
-				{user.role === "admin" && (
-					<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-						{[
-							{
-								label: "Total Chats",
-								value: conversations.length,
-								icon: MessageCircle,
-								color: "blue",
-							},
-							{
-								label: "Unread",
-								value: totalUnreadCount,
-								icon: Circle,
-								color: "red",
-							},
-							{
-								label: "Groups",
-								value: conversations.filter((c) => c.type === "group").length,
-								icon: Users,
-								color: "purple",
-							},
-							{
-								label: "Online Now",
-								value: conversations.filter(
-									(c) => c.type === "individual" && c.participant.isOnline
-								).length,
-								icon: Circle,
-								color: "green",
-							},
-						].map((stat, index) => (
-							<Card
-								key={index}
-								className="shadow-md border-0 bg-white/80 backdrop-blur-sm"
-							>
-								<CardContent className="p-4">
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="text-sm text-slate-600">{stat.label}</p>
-											<p className="text-2xl font-bold text-slate-900">
-												{stat.value}
-											</p>
-										</div>
-										<div className={`p-2 rounded-lg bg-${stat.color}-100`}>
-											<stat.icon className={`h-5 w-5 text-${stat.color}-600`} />
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				)}
 			</div>
 		</div>
 	);

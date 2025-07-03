@@ -28,4 +28,20 @@ export const useChatStore = create<IChatState>((set) => ({
 	setOnlineUsers: (onlineUsers) => set({ onlineUsers }),
 	setLoading: (loading) => set({ loading }),
 	setError: (error) => set({ error }),
+	updateConversationLastMessage: (conversationId, message) => {
+		set((state) => ({
+			conversations: state.conversations.map((conv) =>
+				conv._id === conversationId
+					? { ...conv, lastMessage: message, updatedAt: message.timestamp }
+					: conv
+			),
+		}));
+	},
+	updateMessageStatus: (messageId, status) => {
+		set((state) => ({
+			messages: state.messages.map((msg) =>
+				msg._id === messageId ? { ...msg, status } : msg
+			),
+		}));
+	},
 }));
