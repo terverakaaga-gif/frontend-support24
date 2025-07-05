@@ -26,6 +26,7 @@ import {
   ChevronRight,
   Building2,
   BarChart3,
+  FileStack,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -154,6 +155,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   icon={<ReceiptText size={20} />}
                   label="Timesheets"
                   active={isActive("/admin/timesheets")}
+                />
+                <NavItem
+                  to="/admin/batch-invoices"
+                  icon={<FileStack size={20} />}
+                  label="Batch Invoices"
+                  active={isActive("/admin/batch-invoices")}
                 />
                 <NavItem
                   to="/admin/rate-time-band"

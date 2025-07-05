@@ -252,5 +252,14 @@ export const del = async <T>(url: string, config?: AxiosRequestConfig): Promise<
   return response.data.data as T;
 };
 
+// Specific method for downloading blobs (PDFs, images, etc.)
+export const downloadBlob = async (url: string, config?: AxiosRequestConfig): Promise<Blob> => {
+  const response = await apiClient.get(url, {
+    ...config,
+    responseType: 'blob',
+  });
+  return response.data;
+};
+
 // Export the axios instance for direct usage if needed
 export default apiClient;

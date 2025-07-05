@@ -1,4 +1,4 @@
-import { get, post, put } from '../apiClient';
+import { get, post, put, downloadBlob } from '../apiClient';
 import { 
   BatchInvoice,
   BatchInvoicesResponse,
@@ -34,7 +34,7 @@ export const batchInvoiceService = {
   // Get all batch invoices with optional filters
   getBatchInvoices: async (filters: BatchInvoiceFilters = {}): Promise<BatchInvoicesResponse> => {
     const queryString = buildQueryString(filters);
-    const url = queryString ? `/batch-invoice?${queryString}` : '/batch-invoice';
+    const url = queryString ? `/batch-invoices?${queryString}` : '/batch-invoices';
     
     const response = await get<BatchInvoicesResponse>(url);
     return response;
@@ -72,10 +72,7 @@ export const batchInvoiceService = {
 
   // Download batch invoice (returns blob for PDF)
   downloadBatchInvoice: async (batchInvoiceId: string): Promise<Blob> => {
-    const response = await get<Blob>(`/batch-invoices/${batchInvoiceId}/download`, {
-      responseType: 'blob',
-    });
-    return response;
+    return await downloadBlob(`/batch-invoices/${batchInvoiceId}/download`);
   },
 
   // Trigger batch invoice generation manually
@@ -101,17 +98,51 @@ export const batchInvoiceService = {
   // Helper function to download and trigger file download in browser
   downloadBatchInvoiceFile: async (batchInvoiceId: string, fileName?: string): Promise<void> => {
     try {
+      console.log('Starting download for batch invoice:', batchInvoiceId);
       const blob = await batchInvoiceService.downloadBatchInvoice(batchInvoiceId);
+      
+      console.log('Received blob:', { size: blob.size, type: blob.type });
+      
+      // Verify that we received a valid blob
+      if (!blob || blob.size === 0) {
+        throw new Error('Invalid or empty file received from server');
+      }
+      
+      // Check if the blob is actually a PDF (or at least not an error response)
+      if (blob.type && !blob.type.includes('pdf') && !blob.type.includes('application/octet-stream') && blob.type !== '') {
+        console.warn('Unexpected blob type:', blob.type);
+        // If it's not a PDF, it might be an error response
+        const text = await blob.text();
+        try {
+          const errorResponse = JSON.parse(text);
+          throw new Error(errorResponse.message || 'Failed to download invoice');
+        } catch (parseError) {
+          throw new Error('Failed to download invoice: Invalid response format');
+        }
+      }
+      
+      // Generate filename if not provided
+      const downloadFileName = fileName || `batch-invoice-${batchInvoiceId}.pdf`;
+      console.log('Downloading as:', downloadFileName);
       
       // Create blob URL and trigger download
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = fileName || `batch-invoice-${batchInvoiceId}.pdf`;
+      link.download = downloadFileName;
+      link.style.display = 'none';
+      
+      // Append to body, click, and remove
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      
+      // Clean up the object URL after a short delay
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      console.log('Download triggered successfully');
     } catch (error) {
       console.error('Error downloading batch invoice:', error);
       throw error;

@@ -42,6 +42,8 @@ import { ShiftDetailView } from "./components/admin/ShiftDetails";
 import { ShiftsManagement } from "./components/admin/ShiftsManagement";
 import TimesheetsManagement from "./components/admin/TimesheetsManagement";
 import TimesheetDetail from "./components/admin/TimesheetDetail";
+import BatchInvoicesPage from "./pages/BatchInvoicesPage";
+import BatchInvoiceDetailPage from "./pages/BatchInvoiceDetailPage";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
 import ParticipantOrganizationsPage from "./pages/ParticipantOrganizationsPage";
@@ -170,6 +172,8 @@ const AppRoutes = () => {
                 <Route path="/shifts/:id" element={<ShiftDetailView />} />
                 <Route path="/timesheets" element={<TimesheetsManagement />} />
                 <Route path="/timesheets/:id" element={<TimesheetDetail />} />
+                <Route path="/batch-invoices" element={<BatchInvoicesPage />} />
+                <Route path="/batch-invoices/:id" element={<BatchInvoiceDetailPage />} />
                 <Route path="/chat/:workerId" element={<AdminChat />} />
               </Routes>
             </DashboardLayout>
