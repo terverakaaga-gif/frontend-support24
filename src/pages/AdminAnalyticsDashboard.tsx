@@ -383,7 +383,7 @@ export default function AdminAnalyticsDashboard() {
               data={getPlatformUsageChart().data}
               dataKeys={getPlatformUsageChart().dataKeys}
               xAxisKey={getPlatformUsageChart().xAxisKey}
-              colors={['#1e3b93']}
+              colors={['#2195F2']}
               loading={isLoadingOverview}
               icon={<Activity className="h-5 w-5 text-guardian" />}
               description="Daily active users on the platform"
@@ -504,7 +504,7 @@ export default function AdminAnalyticsDashboard() {
               data={getRegistrationTrendsChart().data}
               dataKeys={getRegistrationTrendsChart().dataKeys}
               xAxisKey={getRegistrationTrendsChart().xAxisKey}
-              colors={['#1e3b93']}
+              colors={['#2195F2']}
               loading={isLoadingUsers}
               icon={<UserPlus className="h-5 w-5 text-guardian" />}
               description="New user registrations over time"
@@ -586,7 +586,7 @@ export default function AdminAnalyticsDashboard() {
               data={getRevenueTrendsChart().data}
               dataKeys={getRevenueTrendsChart().dataKeys}
               xAxisKey={getRevenueTrendsChart().xAxisKey}
-              colors={['#1e3b93']}
+              colors={['#2195F2']}
               loading={isLoadingFinancial}
               icon={<TrendingUp className="h-5 w-5 text-guardian" />}
               description="Revenue trends over time"
@@ -598,7 +598,7 @@ export default function AdminAnalyticsDashboard() {
               data={getTopOrganizationsChart().data}
               dataKeys={getTopOrganizationsChart().dataKeys}
               xAxisKey={getTopOrganizationsChart().xAxisKey}
-              colors={['#1e3b93']}
+              colors={['#2195F2']}
               loading={isLoadingFinancial}
               icon={<Building2 className="h-5 w-5 text-guardian" />}
               description="Highest revenue generating organizations"
@@ -611,7 +611,7 @@ export default function AdminAnalyticsDashboard() {
             data={getServiceRevenueChart().data}
             dataKeys={getServiceRevenueChart().dataKeys}
             xAxisKey={getServiceRevenueChart().xAxisKey}
-            colors={['#1e3b93']}
+            colors={['#2195F2']}
             loading={isLoadingFinancial}
             icon={<Layers className="h-5 w-5 text-guardian" />}
             description="Revenue breakdown by service type"

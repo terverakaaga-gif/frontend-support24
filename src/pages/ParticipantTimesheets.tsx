@@ -278,7 +278,7 @@ const ParticipantTimesheets: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">
+          <h1 className="text-3xl font-bold tracking-tight text-guardian">
             My Timesheets
           </h1>
           <p className="text-muted-foreground">
@@ -290,14 +290,14 @@ const ParticipantTimesheets: React.FC = () => {
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40",
-              showFilters && "bg-[#1e3b93]/10 border-[#1e3b93]/40"
+              "border-guardian/20 hover:bg-guardian/10 hover:border-guardian/40",
+              showFilters && "bg-guardian/10 border-guardian/40"
             )}
           >
-            <Filter className="h-4 w-4 mr-2 text-[#1e3b93]" />
-            <span className="text-[#1e3b93]">Filters</span>
+            <Filter className="h-4 w-4 mr-2 text-guardian" />
+            <span className="text-guardian">Filters</span>
             <ChevronDown
-              className={`h-4 w-4 ml-2 transition-transform text-[#1e3b93] ${
+              className={`h-4 w-4 ml-2 transition-transform text-guardian ${
                 showFilters ? "rotate-180" : ""
               }`}
             />
@@ -307,7 +307,7 @@ const ParticipantTimesheets: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={handleResetFilters}
-              className="text-[#1e3b93] hover:bg-[#1e3b93]/10"
+              className="text-guardian hover:bg-guardian/10"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Reset
@@ -321,15 +321,15 @@ const ParticipantTimesheets: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Total Timesheets Card */}
           <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1e3b93]/5 via-indigo-500/5 to-purple-500/5"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-guardian/5 via-indigo-500/5 to-purple-500/5"></div>
             <CardContent className="relative p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-3">
-                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-[#1e3b93] to-indigo-600 shadow-lg shadow-blue-500/25">
+                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-guardian to-indigo-600 shadow-lg shadow-blue-500/25">
                     <FileText className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-[#1e3b93] to-indigo-600 bg-clip-text text-transparent">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-guardian to-indigo-600 bg-clip-text text-transparent">
                       {timesheetData.summary.totalTimesheets}
                     </p>
                     <p className="text-sm font-medium text-slate-600">
@@ -337,8 +337,8 @@ const ParticipantTimesheets: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-[#1e3b93]/10 to-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-lg font-bold text-[#1e3b93]">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-r from-guardian/10 to-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-lg font-bold text-guardian">
                     {timesheetData.summary.totalTimesheets > 999
                       ? "999+"
                       : timesheetData.summary.totalTimesheets}
@@ -465,7 +465,7 @@ const ParticipantTimesheets: React.FC = () => {
               placeholder="Search by worker or shift ID..."
               value={filters.search || ""}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 border-[#1e3b93]/20 focus:border-[#1e3b93]/40"
+              className="pl-10 border-guardian/20 focus:border-guardian/40"
             />
           </div>
         </div>
@@ -473,9 +473,9 @@ const ParticipantTimesheets: React.FC = () => {
 
       {/* Filters */}
       {showFilters && (
-        <Card className="border-[#1e3b93]/10">
+        <Card className="border-guardian/10">
           <CardHeader>
-            <CardTitle className="text-lg text-[#1e3b93]">Filters</CardTitle>
+            <CardTitle className="text-lg text-guardian">Filters</CardTitle>
             <CardDescription>
               Filter your timesheets by various criteria
             </CardDescription>
@@ -489,7 +489,7 @@ const ParticipantTimesheets: React.FC = () => {
                   value={filters.status || "all"}
                   onValueChange={(value) => handleFilterChange("status", value)}
                 >
-                  <SelectTrigger className="border-[#1e3b93]/20 focus:border-[#1e3b93]/40">
+                  <SelectTrigger className="border-guardian/20 focus:border-guardian/40">
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
@@ -511,7 +511,7 @@ const ParticipantTimesheets: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40",
+                        "w-full justify-start text-left font-normal border-guardian/20 hover:bg-guardian/10 hover:border-guardian/40",
                         !startDate && "text-muted-foreground"
                       )}
                     >
@@ -540,7 +540,7 @@ const ParticipantTimesheets: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40",
+                        "w-full justify-start text-left font-normal border-guardian/20 hover:bg-guardian/10 hover:border-guardian/40",
                         !endDate && "text-muted-foreground"
                       )}
                     >
@@ -564,14 +564,14 @@ const ParticipantTimesheets: React.FC = () => {
             </div>
 
             {/* Filter Actions */}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#1e3b93]/10">
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-guardian/10">
               <div className="text-sm text-muted-foreground">
                 {hasActiveFilters && <span>Filters applied</span>}
               </div>
               <Button
                 variant="outline"
                 onClick={handleResetFilters}
-                className="border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40 text-[#1e3b93]"
+                className="border-guardian/20 hover:bg-guardian/10 hover:border-guardian/40 text-guardian"
               >
                 Clear All Filters
               </Button>
@@ -581,7 +581,7 @@ const ParticipantTimesheets: React.FC = () => {
       )}
 
       {/* Table */}
-      <Card className="border-[#1e3b93]/10">
+      <Card className="border-guardian/10">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-6">
@@ -664,11 +664,11 @@ const ParticipantTimesheets: React.FC = () => {
                     timesheetData?.timesheets?.map((timesheet: Timesheet) => (
                       <TableRow
                         key={timesheet._id}
-                        className="hover:bg-[#1e3b93]/5"
+                        className="hover:bg-guardian/5"
                       >
                         <TableCell className="font-medium">
                           <div className="flex flex-col">
-                            <span className="font-mono text-[#1e3b93]">
+                            <span className="font-mono text-guardian">
                               {timesheet.shiftIdRef}
                             </span>
                             <span className="text-xs text-muted-foreground capitalize">
@@ -702,7 +702,7 @@ const ParticipantTimesheets: React.FC = () => {
                                 )}
                               </span>
                               {timesheet.extraTime > 0 && (
-                                <span className="text-[#1e3b93] ml-1">
+                                <span className="text-guardian ml-1">
                                   (+{timesheet.extraTime}m extra)
                                 </span>
                               )}
@@ -725,7 +725,7 @@ const ParticipantTimesheets: React.FC = () => {
                                 />
                               </div>
                             ) : (
-                              <div className="w-8 h-8 rounded-full bg-[#1e3b93]/10 flex items-center justify-center text-[#1e3b93] text-sm font-medium">
+                              <div className="w-8 h-8 rounded-full bg-guardian/10 flex items-center justify-center text-guardian text-sm font-medium">
                                 {typeof timesheet.workerId === "object"
                                   ? timesheet.workerId.firstName.charAt(0) +
                                     timesheet.workerId.lastName.charAt(0)
@@ -749,7 +749,7 @@ const ParticipantTimesheets: React.FC = () => {
                         <TableCell>
                           <div className="flex flex-col">
                             <div className="font-medium flex items-center">
-                              <Receipt className="h-3 w-3 mr-1 text-[#1e3b93]" />
+                              <Receipt className="h-3 w-3 mr-1 text-guardian" />
                               {formatCurrency(timesheet.totalExpenses)}
                             </div>
                             <span className="text-xs text-muted-foreground">
@@ -771,7 +771,7 @@ const ParticipantTimesheets: React.FC = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleViewTimesheet(timesheet._id)}
-                            className="text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                            className="text-guardian hover:bg-guardian/10"
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View
@@ -786,7 +786,7 @@ const ParticipantTimesheets: React.FC = () => {
               {/* Pagination */}
               {timesheetData?.timesheets &&
                 timesheetData.timesheets.length > 0 && (
-                  <div className="border-t border-[#1e3b93]/10 p-4">
+                  <div className="border-t border-guardian/10 p-4">
                     <PaginationControls />
                   </div>
                 )}

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MessageSquare, Bell, Info } from "lucide-react";
 
@@ -25,7 +24,7 @@ export function NotificationsList({ notifications, showViewAll = true }: Notific
       case 'update':
         return <Info className="h-5 w-5 text-yellow-500" />;
       case 'reminder':
-        return <Bell className="h-5 w-5 text-purple-500" />;
+        return <Bell className="h-5 w-5 text-guardian" />;
       default:
         return <Bell className="h-5 w-5" />;
     }
@@ -40,7 +39,7 @@ export function NotificationsList({ notifications, showViewAll = true }: Notific
       case 'update':
         return 'bg-yellow-100';
       case 'reminder':
-        return 'bg-purple-100';
+        return 'bg-guardian';
       default:
         return 'bg-gray-100';
     }

@@ -82,9 +82,10 @@ export default function Login() {
           className="z-10 mb-auto"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" />
+            {/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
+            <img src="/favicon.svg" alt="Guardian Care Pro" className="h-10 w-10" />
             <span className="text-2xl font-bold text-white drop-shadow-sm">
-              Guardian Care Pro
+              GuardianCare+
             </span>
           </div>
         </motion.div>

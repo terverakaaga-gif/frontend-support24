@@ -490,20 +490,20 @@ export function InviteManagement() {
       {/* Header Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">Connection Invitations</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-guardian">Connection Invitations</h1>
           <p className="text-muted-foreground mt-2">
             Manage participant-to-support worker connection requests and monitor invitation status
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className="text-[#1e3b93] border-[#1e3b93]/20 bg-[#1e3b93]/5">
+          <Badge variant="outline" className="text-guardian border-guardian/20 bg-guardian/5">
             Total: {flattenedInvites.length} invitations
           </Badge>
         </div>
       </div>
 
       {/* Filters and Search */}
-      <Card className="border-[#1e3b93]/10 shadow-sm">
+      <Card className="border-guardian/10 shadow-sm">
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
@@ -512,14 +512,14 @@ export function InviteManagement() {
                 <Input
                   type="search"
                   placeholder="Search by participant, worker, or organization..."
-                  className="w-[300px] pl-10 border-[#1e3b93]/20 focus:border-[#1e3b93]"
+                  className="w-[300px] pl-10 border-guardian/20 focus:border-guardian"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="border-[#1e3b93]/20 hover:bg-[#1e3b93]/5">
+                  <Button variant="outline" className="border-guardian/20 hover:bg-guardian/5">
                     <Filter className="h-4 w-4 mr-2" />
                     {statusFilter ? `Status: ${statusFilter}` : "All statuses"}
                     <ChevronDown className="h-4 w-4 ml-2" />
@@ -544,7 +544,7 @@ export function InviteManagement() {
             <Button
               variant="outline"
               onClick={() => setApiData(mockApiResponse)}
-              className="border-[#1e3b93]/20 hover:bg-[#1e3b93]/5"
+              className="border-guardian/20 hover:bg-guardian/5"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh Data
@@ -554,36 +554,36 @@ export function InviteManagement() {
       </Card>
 
       {/* Main Table */}
-      <Card className="border-[#1e3b93]/10 shadow-sm overflow-hidden">
+      <Card className="border-guardian/10 shadow-sm overflow-hidden">
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-[#1e3b93]/5">
-              <TableRow className="border-[#1e3b93]/10">
-                <TableHead className="font-semibold text-[#1e3b93]">
+            <TableHeader className="bg-guardian/5">
+              <TableRow className="border-guardian/10">
+                <TableHead className="font-semibold text-guardian">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
                     Participant
                   </div>
                 </TableHead>
-                <TableHead className="font-semibold text-[#1e3b93]">
+                <TableHead className="font-semibold text-guardian">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
                     Support Worker
                   </div>
                 </TableHead>
-                <TableHead className="font-semibold text-[#1e3b93]">
+                <TableHead className="font-semibold text-guardian">
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Status
                   </div>
                 </TableHead>
-                <TableHead className="font-semibold text-[#1e3b93]">
+                <TableHead className="font-semibold text-guardian">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Date
                   </div>
                 </TableHead>
-                <TableHead className="text-right font-semibold text-[#1e3b93]">Actions</TableHead>
+                <TableHead className="text-right font-semibold text-guardian">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -604,14 +604,14 @@ export function InviteManagement() {
                 filteredInvitations.map((invitation, index) => (
                   <TableRow 
                     key={invitation.inviteId} 
-                    className={`hover:bg-[#1e3b93]/5 transition-colors ${
+                    className={`hover:bg-guardian/5 transition-colors ${
                       index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'
                     }`}
                   >
                     <TableCell className="py-4">
                       <div className="flex items-center gap-3">
-                        <Avatar className="border-2 border-[#1e3b93]/10">
-                          <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                        <Avatar className="border-2 border-guardian/10">
+                          <AvatarFallback className="bg-guardian/10 text-guardian font-medium">
                             {getAvatarPlaceholder(invitation.participantName)}
                           </AvatarFallback>
                         </Avatar>
@@ -628,8 +628,8 @@ export function InviteManagement() {
                     </TableCell>
                     <TableCell className="py-4">
                       <div className="flex items-center gap-3">
-                        <Avatar className="border-2 border-[#1e3b93]/10">
-                          <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                        <Avatar className="border-2 border-guardian/10">
+                          <AvatarFallback className="bg-guardian/10 text-guardian font-medium">
                             {getAvatarPlaceholder(invitation.workerName)}
                           </AvatarFallback>
                         </Avatar>
@@ -670,7 +670,7 @@ export function InviteManagement() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-8 border-[#1e3b93]/20 hover:bg-[#1e3b93]/5 hover:border-[#1e3b93]/40"
+                            className="h-8 border-guardian/20 hover:bg-guardian/5 hover:border-guardian/40"
                           >
                             <Info className="h-3 w-3 mr-1" />
                             Details
@@ -681,7 +681,7 @@ export function InviteManagement() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-8 border-[#1e3b93]/20 hover:bg-[#1e3b93]/5 hover:border-[#1e3b93]/40"
+                            className="h-8 border-guardian/20 hover:bg-guardian/5 hover:border-guardian/40"
                           >
                             <MessageCircle className="h-3 w-3 mr-1" />
                             Chat
@@ -691,7 +691,7 @@ export function InviteManagement() {
                         {invitation.status === "pending" && (
                           <Button
                             size="sm"
-                            className="h-8 bg-[#1e3b93] hover:bg-[#1e3b93]/90 text-white"
+                            className="h-8 bg-guardian hover:bg-guardian/90 text-white"
                             onClick={() => handleMakeInvitationAvailable(invitation.inviteId)}
                           >
                             <Send className="h-3 w-3 mr-1" />

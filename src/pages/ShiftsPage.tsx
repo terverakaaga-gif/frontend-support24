@@ -89,7 +89,8 @@ export default function ShiftsPage() {
   };
 
   // Format service type for display
-  const formatServiceType = (serviceType: ServiceType) => {
+  const formatServiceType = (serviceType?: ServiceType) => {
+    if (!serviceType) return "Unknown";
     return serviceType
       .replace(/([A-Z])/g, " $1")
       .replace(/^./, (str) => str.toUpperCase())
