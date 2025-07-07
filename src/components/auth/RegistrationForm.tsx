@@ -107,7 +107,7 @@ export function RegistrationForm({
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
-                        placeholder="John"
+                        placeholder="Dylan"
                         className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
@@ -127,7 +127,7 @@ export function RegistrationForm({
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
-                        placeholder="Doe"
+                        placeholder="Smith"
                         className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
@@ -151,7 +151,7 @@ export function RegistrationForm({
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
                         type="email"
-                        placeholder="john.doe@example.com"
+                        placeholder="dylan.smith@gmail.com"
                         className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
@@ -173,7 +173,7 @@ export function RegistrationForm({
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
                         type="tel"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+61 405 000 000"
                         className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
