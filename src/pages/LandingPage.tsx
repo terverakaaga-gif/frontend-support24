@@ -524,47 +524,58 @@ const LandingPage = () => {
             {/* Problems Column */}
             <div className="space-y-8">
               <div className="text-center lg:text-left animate-slide-in-left-scroll" data-animation="slide-left">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">The Problems We Solve</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Core Pain Points you're addressing:</h3>
                 <p className="text-lg text-gray-600">The daily struggles that drain your time and energy</p>
               </div>
-              
               <div className="space-y-6">
                 {/* Problem 1 */}
-                <div className="problem-card flex items-start space-x-4 p-6 bg-red-50 border border-red-100 rounded-xl transition-all duration-300 hover:border-red-200 hover:shadow-lg animate-slide-in-left-scroll" 
-                     data-animation="slide-left" 
-                     style={{transitionDelay: '0.1s'}}>
+                <div className="problem-card flex items-start space-x-4 p-6 bg-red-50 border border-red-100 rounded-xl transition-all duration-300 hover:border-red-200 hover:shadow-lg animate-slide-in-left-scroll" data-animation="slide-left" style={{transitionDelay: '0.1s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                     <Clock className="h-5 w-5 text-red-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Hours Wasted searching</h4>
-                    <p className="text-gray-600">Traditional methods take weeks to find available workers</p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Complexity & Time Drain</h4>
+                    <p className="text-gray-600">Manually finding and scheduling supports is time-consuming, frustrating, and often leads to gaps in care.</p>
                   </div>
                 </div>
-
                 {/* Problem 2 */}
-                <div className="problem-card flex items-start space-x-4 p-6 bg-orange-50 border border-orange-100 rounded-xl transition-all duration-300 hover:border-orange-200 hover:shadow-lg animate-slide-in-left-scroll" 
-                     data-animation="slide-left" 
-                     style={{transitionDelay: '0.3s'}}>
+                <div className="problem-card flex items-start space-x-4 p-6 bg-orange-50 border border-orange-100 rounded-xl transition-all duration-300 hover:border-orange-200 hover:shadow-lg animate-slide-in-left-scroll" data-animation="slide-left" style={{transitionDelay: '0.2s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-orange-600" />
+                    <Users className="h-5 w-5 text-orange-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Complex paperwork</h4>
-                    <p className="text-gray-600">Overwhelming compliance and administrative burdens</p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Lack of Control & Choice</h4>
+                    <p className="text-gray-600">Guardians/participants often feel they have limited options or control over who provides care and when.</p>
                   </div>
                 </div>
-
                 {/* Problem 3 */}
-                <div className="problem-card flex items-start space-x-4 p-6 bg-yellow-50 border border-yellow-100 rounded-xl transition-all duration-300 hover:border-yellow-200 hover:shadow-lg animate-slide-in-left-scroll" 
-                     data-animation="slide-left" 
-                     style={{transitionDelay: '0.5s'}}>
+                <div className="problem-card flex items-start space-x-4 p-6 bg-yellow-50 border border-yellow-100 rounded-xl transition-all duration-300 hover:border-yellow-200 hover:shadow-lg animate-slide-in-left-scroll" data-animation="slide-left" style={{transitionDelay: '0.3s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <MessageSquare className="h-5 w-5 text-yellow-600" />
+                    <CheckCircle className="h-5 w-5 text-yellow-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Poor communication</h4>
-                    <p className="text-gray-600">Missed shifts and lack of real-time updates</p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Trust & Reliability</h4>
+                    <p className="text-gray-600">Finding trustworthy and reliable support workers can be difficult.</p>
+                  </div>
+                </div>
+                {/* Problem 4 */}
+                <div className="problem-card flex items-start space-x-4 p-6 bg-blue-50 border border-blue-100 rounded-xl transition-all duration-300 hover:border-blue-200 hover:shadow-lg animate-slide-in-left-scroll" data-animation="slide-left" style={{transitionDelay: '0.4s'}}>
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Communication Gaps</h4>
+                    <p className="text-gray-600">Difficulty coordinating between multiple carers and staying updated on care delivery.</p>
+                  </div>
+                </div>
+                {/* Problem 5 */}
+                <div className="problem-card flex items-start space-x-4 p-6 bg-green-50 border border-green-100 rounded-xl transition-all duration-300 hover:border-green-200 hover:shadow-lg animate-slide-in-left-scroll" data-animation="slide-left" style={{transitionDelay: '0.5s'}}>
+                  <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Administrative Burden</h4>
+                    <p className="text-gray-600">Managing timesheets, invoices, and compliance.</p>
                   </div>
                 </div>
               </div>
@@ -573,47 +584,58 @@ const LandingPage = () => {
             {/* Solutions Column */}
             <div className="space-y-8">
               <div className="text-center lg:text-left animate-slide-in-right-scroll" data-animation="slide-right">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Smart Solutions</h3>
-                <p className="text-lg text-gray-600">Technology that works for you, not against you</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Why this works:</h3>
+                <p className="text-lg text-gray-600">How our approach solves these pain points</p>
               </div>
-              
               <div className="space-y-6">
                 {/* Solution 1 */}
-                <div className="solution-card flex items-start space-x-4 p-6 bg-blue-50 border border-blue-100 rounded-xl transition-all duration-300 hover:border-blue-200 hover:shadow-xl animate-slide-in-right-scroll" 
-                     data-animation="slide-right" 
-                     style={{transitionDelay: '0.2s'}}>
+                <div className="solution-card flex items-start space-x-4 p-6 bg-blue-50 border border-blue-100 rounded-xl transition-all duration-300 hover:border-blue-200 hover:shadow-xl animate-slide-in-right-scroll" data-animation="slide-right" style={{transitionDelay: '0.2s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Users className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Instant AI matching</h4>
-                    <p className="text-gray-600">Smart algorithms find compatible workers in seconds</p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Empowers... take full control</h4>
+                    <p className="text-gray-600">Addresses the desire for autonomy and agency.</p>
                   </div>
                 </div>
-
                 {/* Solution 2 */}
-                <div className="solution-card flex items-start space-x-4 p-6 bg-green-50 border border-green-100 rounded-xl transition-all duration-300 hover:border-green-200 hover:shadow-xl animate-slide-in-right-scroll" 
-                     data-animation="slide-right" 
-                     style={{transitionDelay: '0.4s'}}>
+                <div className="solution-card flex items-start space-x-4 p-6 bg-green-50 border border-green-100 rounded-xl transition-all duration-300 hover:border-green-200 hover:shadow-xl animate-slide-in-right-scroll" data-animation="slide-right" style={{transitionDelay: '0.3s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <Users className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Automated claiming</h4>
-                    <p className="text-gray-600">Seamless invoicing and logdment. </p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Connecting them directly</h4>
+                    <p className="text-gray-600">Highlights the benefit of disintermediation, potentially leading to better choice and cost-effectiveness.</p>
                   </div>
                 </div>
-
                 {/* Solution 3 */}
-                <div className="solution-card flex items-start space-x-4 p-6 bg-purple-50 border border-purple-100 rounded-xl transition-all duration-300 hover:border-purple-200 hover:shadow-xl animate-slide-in-right-scroll" 
-                     data-animation="slide-right" 
-                     style={{transitionDelay: '0.6s'}}>
+                <div className="solution-card flex items-start space-x-4 p-6 bg-purple-50 border border-purple-100 rounded-xl transition-all duration-300 hover:border-purple-200 hover:shadow-xl animate-slide-in-right-scroll" data-animation="slide-right" style={{transitionDelay: '0.4s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Bell className="h-5 w-5 text-purple-600" />
+                    <CheckCircle className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Real-time updates</h4>
-                    <p className="text-gray-600">In-app messaging and shift notifications</p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Trusted, vetted support workers</h4>
+                    <p className="text-gray-600">Addresses the crucial need for reliability and safety.</p>
+                  </div>
+                </div>
+                {/* Solution 4 */}
+                <div className="solution-card flex items-start space-x-4 p-6 bg-yellow-50 border border-yellow-100 rounded-xl transition-all duration-300 hover:border-yellow-200 hover:shadow-xl animate-slide-in-right-scroll" data-animation="slide-right" style={{transitionDelay: '0.5s'}}>
+                  <div className="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Flexible scheduling</h4>
+                    <p className="text-gray-600">Speaks to the need for adaptability in care.</p>
+                  </div>
+                </div>
+                {/* Solution 5 */}
+                <div className="solution-card flex items-start space-x-4 p-6 bg-pink-50 border border-pink-100 rounded-xl transition-all duration-300 hover:border-pink-200 hover:shadow-xl animate-slide-in-right-scroll" data-animation="slide-right" style={{transitionDelay: '0.6s'}}>
+                  <div className="flex-shrink-0 w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-pink-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Seamless care management, all in one intuitive app</h4>
+                    <p className="text-gray-600">Promises ease of use and comprehensive functionality, hitting administrative pain points.</p>
                   </div>
                 </div>
               </div>
