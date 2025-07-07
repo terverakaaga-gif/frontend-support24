@@ -32,7 +32,7 @@ export function ChartSection({
   type,
   dataKey,
   xAxisKey,
-  color = "#1e3b93",
+  color = "#2195f2",
   className,
   height = 300,
 }: ChartSectionProps) {
@@ -43,7 +43,7 @@ export function ChartSection({
       className={cn("transition-all duration-200 hover:shadow-lg", className)}
     >
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-[#1e3b93]">
+        <CardTitle className="text-lg font-medium text-guardian">
           {title}
         </CardTitle>
       </CardHeader>
@@ -86,7 +86,7 @@ export function ChartSection({
                   padding: "8px 12px",
                 }}
                 labelStyle={{
-                  color: "#1e3b93",
+                  color: "guardian",
                   fontWeight: 600,
                   marginBottom: 4,
                 }}

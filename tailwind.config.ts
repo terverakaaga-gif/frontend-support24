@@ -63,9 +63,9 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				guardian: {
-					DEFAULT: '#1e40af', // Changed from #9b87f5 to blue-800
-					light: '#dbeafe', // Updated to a light blue shade
-					dark: '#1e3a8a', // Updated to a darker blue shade
+					DEFAULT: '#2195F2',
+					light: '#E3F2FD',
+					dark: '#1976D2',
 				},
 				status: {
 					confirmed: '#10b981',

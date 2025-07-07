@@ -93,7 +93,78 @@ const LandingPage = () => {
       }
       
       .animate-float {
-        animation: bounceSubtle 4s ease-in-out infinite;
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+      
+      @keyframes gradientText {
+        0%, 100% {
+          background-size: 200% 200%;
+          background-position: left center;
+        }
+        50% {
+          background-size: 200% 200%;
+          background-position: right center;
+        }
+      }
+      
+      .animate-gradient-text {
+        background: linear-gradient(-45deg, #2195F2, #1976D2, #42A5F5, #2195F2);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientText 3s ease infinite;
+      }
+      
+      @keyframes expandWidth {
+        from {
+          width: 0%;
+        }
+        to {
+          width: 100%;
+        }
+      }
+      
+      .animate-expand-width {
+        animation: expandWidth 1.5s ease-out 0.8s forwards;
+        width: 0%;
+      }
+      
+      @keyframes pulseButton {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(33, 149, 242, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(33, 149, 242, 0);
+        }
+      }
+      
+      .animate-pulse-button {
+        animation: pulseButton 2s infinite;
+      }
+      
+      @keyframes twinkle {
+        0%, 100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.2);
+        }
+      }
+      
+      .animate-twinkle {
+        animation: twinkle 2s ease-in-out infinite;
       }
       
       @keyframes slideInfinite {
@@ -235,24 +306,23 @@ const LandingPage = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-6">
-              <Badge className="bg-yellow-100 text-orange-700 hover:bg-yellow-200 border-yellow-300">
-                🏆 #1 Rated NDIS Support Platform
+              <Badge className="bg-yellow-100 text-orange-700 hover:bg-yellow-200 border-yellow-300 animate-fade-in-up">
+                🏆 #1 Rated 
               </Badge>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Find Trusted Support Workers{" "}
+              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                Find & Schedule Support.{" "}
                 <br />
-                in{" "}
-                <span style={{color: '#2195F2'}}>Minutes, Not Months</span>
+                {" "}
+                <span style={{color: '#2195F2'}}>Zero Admin Hassle.</span>
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-gray-600 leading-relaxed animate-fade-in-up" style={{animationDelay: '0.4s'}}>
                 AI-powered matching connects you with verified support workers who 
-                understand your needs. Join 10,000+ participants already using Guardian 
-                Care Plus.
+                understand your needs. Join 5,000+ participants already using GuardianCare+
               </p>
             </div>
             
             <div className="space-y-6">
-              <div className="flex flex-wrap items-center gap-6">
+              <div className="flex flex-wrap items-center gap-6 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <span className="text-sm text-gray-600">NDIS Registered</span>
@@ -267,13 +337,13 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up" style={{animationDelay: '0.8s'}}>
                 <Link to="/register">
-                  <Button size="lg" className="w-full sm:w-auto text-white" style={{backgroundColor: '#2195F2'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1976D2'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2195F2'}>
+                  <Button size="lg" className="w-full sm:w-auto text-white hover:scale-105 transition-transform duration-200" style={{backgroundColor: '#2195F2'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1976D2'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2195F2'}>
                     Start Your Free Account
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" className="w-full sm:w-auto" style={{borderColor: '#2195F2', color: '#2195F2'}} onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = '#E3F2FD'}} onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = 'transparent'}}>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto hover:scale-105 transition-transform duration-200" style={{borderColor: '#2195F2', color: '#2195F2'}} onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = '#E3F2FD'}} onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = 'transparent'}}>
                   <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                   </svg>
@@ -281,7 +351,7 @@ const LandingPage = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 animate-fade-in-up" style={{animationDelay: '1s'}}>
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
@@ -315,8 +385,8 @@ const LandingPage = () => {
                     SJ
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Sarah Johnson</div>
-                    <div className="text-sm text-gray-600">Personal Care, Mobility • 2.3km away</div>
+                    <div className="text-base font-bold text-gray-900">Antony Walters</div>
+                    <div className="text-sm text-gray-600">Community Access  • 2.3km away</div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Star className="h-4 w-4 text-yellow-400 fill-current animate-pulse" />
@@ -332,8 +402,8 @@ const LandingPage = () => {
                     MC
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Michael Chen</div>
-                    <div className="text-sm text-gray-600">Life Skills, Transport • 3.1km away</div>
+                    <div className="text-base font-bold text-gray-900">Lee Min Tsu</div>
+                    <div className="text-sm text-gray-600">Daily Personal Activities • 3.1km away</div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Star className="h-4 w-4 text-yellow-400 fill-current animate-pulse" />
@@ -530,7 +600,7 @@ const LandingPage = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-bold text-gray-900 mb-2">Automated claiming</h4>
-                    <p className="text-gray-600">Seamless NDIS invoicing and payment processing</p>
+                    <p className="text-gray-600">Seamless invoicing and logdment. </p>
                   </div>
                 </div>
 
@@ -632,9 +702,9 @@ const LandingPage = () => {
               <div className="text-center">
                 <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Book & Manage</h3>
-                  <p className="text-lg text-gray-700 mb-4">Schedule, communicate, and pay seamlessly</p>
+                  <p className="text-lg text-gray-700 mb-4">Schedule, communicate, and enjoy seamless support</p>
                   <p className="text-sm text-gray-500">
-                    Everything in one place - from booking to NDIS claiming
+                    Everything in one place - from booking to invoicing
                   </p>
                 </div>
               </div>
@@ -702,7 +772,7 @@ const LandingPage = () => {
             </div>
 
             {/* Shift Management - Wide Card */}
-            <div className="md:col-span-2 lg:col-span-4">
+            <div className="md:col-span-2 lg:col-span-2">
               <Card className="h-full border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader className="relative">
                   <div className="absolute top-4 right-4">
@@ -729,7 +799,7 @@ const LandingPage = () => {
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                     <FileText className="h-6 w-6 text-green-600" />
                   </div>
-                  <CardTitle className="text-xl font-bold">NDIS Claiming</CardTitle>
+                  <CardTitle className="text-xl font-bold">Invoice Management</CardTitle>
                   <CardDescription className="text-gray-600">
                     Automated invoicing and claiming process that saves you hours of paperwork
                   </CardDescription>
@@ -755,7 +825,7 @@ const LandingPage = () => {
               </Card>
             </div>
 
-            {/* Secure Messaging - Medium Card */}
+            {/* Secure Messaging - Wide Card */}
             <div className="md:col-span-2 lg:col-span-2">
               <Card className="h-full border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader className="relative">
@@ -767,25 +837,7 @@ const LandingPage = () => {
                   </div>
                   <CardTitle className="text-xl font-bold">Secure Messaging</CardTitle>
                   <CardDescription className="text-gray-600">
-                    HIPAA-compliant communication platform for participants and support workers
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
-
-            {/* Care Reports - Medium Card */}
-            <div className="md:col-span-2 lg:col-span-4">
-              <Card className="h-full border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader className="relative">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-purple-100 text-purple-700 border-purple-200">Insights</Badge>
-                  </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                    <UserCheck className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <CardTitle className="text-xl font-bold">Care Reports</CardTitle>
-                  <CardDescription className="text-gray-600">
-                    Comprehensive progress tracking and detailed care reports for participants and families
+                    Compliant communication platform for participants and support workers with end-to-end encryption
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -873,20 +925,29 @@ const LandingPage = () => {
                 <div className="mx-auto h-16 w-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
                   <Shield className="h-8 w-8 text-orange-600" />
                 </div>
-                <CardTitle className="text-orange-600">Administrators</CardTitle>
+                <CardTitle className="text-orange-600">Coordinators</CardTitle>
                 <CardDescription>
                   Manage your organization, oversee operations, and ensure quality service delivery.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link to="/register?role=admin">
+                {/* <Link to="/register?role=admin"> */}
                   <Button variant="outline" className="w-full">
-                    Join as Admin
+                    Join as Coordinator
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                {/* </Link> */}
               </CardContent>
             </Card>
+
+            {/* add a plan management card here */}
+            {/* <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="mx-auto h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                  <Users className="h-8 w-8 text-purple-600" />
+                </div>
+            </Card> */}
+            
           </div>
         </div>
       </section>
@@ -934,7 +995,7 @@ const LandingPage = () => {
                 </div> */}
                 <img src="/logo.svg" alt="Guardian Pro" className="h-10" />
               <p className="text-gray-400">
-                Empowering quality care through technology and human connection.
+                Your Comprehensive Caregiving Assistant
               </p>
             </div>
 

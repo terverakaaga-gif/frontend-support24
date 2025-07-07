@@ -142,7 +142,7 @@ export default function SupportWorkerDashboard() {
       {/* Header Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">
+          <h1 className="text-3xl font-bold tracking-tight text-guardian">
             Support Worker Dashboard
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -152,20 +152,20 @@ export default function SupportWorkerDashboard() {
         <div className="flex flex-wrap items-center gap-3">
           <Button
             variant="outline"
-            className="flex items-center gap-2 border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
+            className="flex items-center gap-2 border-guardian/20 hover:bg-guardian/10 hover:border-guardian/40"
           >
-            <MessageSquare className="h-4 w-4 text-[#1e3b93]" />
-            <span className="text-[#1e3b93]">Contact Admin</span>
+            <MessageSquare className="h-4 w-4 text-guardian" />
+            <span className="text-guardian">Contact Admin</span>
           </Button>
           <Button
             variant="outline"
-            className="flex items-center gap-2 border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
+            className="flex items-center gap-2 border-guardian/20 hover:bg-guardian/10 hover:border-guardian/40"
             onClick={() => navigate("/support-worker/shifts")}
           >
-            <CalendarIcon className="h-4 w-4 text-[#1e3b93]" />
-            <span className="text-[#1e3b93]">View Schedule</span>
+            <CalendarIcon className="h-4 w-4 text-guardian" />
+            <span className="text-guardian">View Schedule</span>
           </Button>
-          <Button className="flex items-center gap-2 bg-[#1e3b93] hover:bg-[#1e3b93]/90">
+          <Button className="flex items-center gap-2 bg-guardian hover:bg-guardian/90">
             <Download className="h-4 w-4" />
             Export Report
           </Button>
@@ -181,36 +181,36 @@ export default function SupportWorkerDashboard() {
         <StatCard
           title="Hours Worked"
           value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
-          icon={<Clock size={24} className="text-[#1e3b93]" />}
+          icon={<Clock size={24} className="text-guardian" />}
           change={{
             value: `${overviewData?.workSummary?.hoursWorked?.percentageChange || 0}% from last month`,
             positive: (overviewData?.workSummary?.hoursWorked?.trend === 'up')
           }}
-          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
+          className="border-guardian/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Active Clients"
           value={overviewData?.workSummary?.activeClients?.toString() || "0"}
-          icon={<Users size={24} className="text-[#1e3b93]" />}
+          icon={<Users size={24} className="text-guardian" />}
           additionalText="Currently supporting"
-          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
+          className="border-guardian/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Earnings"
           value={`$${overviewData?.workSummary?.earnings?.current?.toFixed(2) || "0.00"}`}
-          icon={<DollarSign size={24} className="text-[#1e3b93]" />}
+          icon={<DollarSign size={24} className="text-guardian" />}
           change={{
             value: `${overviewData?.workSummary?.earnings?.percentageChange || 0}% from last month`,
             positive: (overviewData?.workSummary?.earnings?.trend === 'up')
           }}
-          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
+          className="border-guardian/10 hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Performance Rating"
           value={overviewData?.performanceMetrics?.averageRating > 0 ? `${overviewData.performanceMetrics.averageRating.toFixed(1)}/5` : "Not rated"}
-          icon={<Star size={24} className="text-[#1e3b93]" />}
+          icon={<Star size={24} className="text-guardian" />}
           additionalText={`${overviewData?.performanceMetrics?.onTimeRate || 0}% on-time rate`}
-          className="border-[#1e3b93]/10 hover:shadow-lg transition-shadow"
+          className="border-guardian/10 hover:shadow-lg transition-shadow"
         />
       </div>
 
@@ -218,15 +218,15 @@ export default function SupportWorkerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Upcoming Shifts */}
         <div className="lg:col-span-2">
-          <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-            <CardHeader className="pb-4 border-b border-[#1e3b93]/10">
+          <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+            <CardHeader className="pb-4 border-b border-guardian/10">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium text-[#1e3b93]">
+                <CardTitle className="text-lg font-medium text-guardian">
                   Upcoming Shifts
                 </CardTitle>
                 <Button
                   variant="link"
-                  className="text-sm p-0 text-[#1e3b93] hover:text-[#1e3b93]/80"
+                  className="text-sm p-0 text-guardian hover:text-guardian/80"
                 >
                   View All
                 </Button>
@@ -237,7 +237,7 @@ export default function SupportWorkerDashboard() {
                 {overviewData?.workSummary?.upcomingShifts && overviewData.workSummary.upcomingShifts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {overviewData.workSummary.upcomingShifts.slice(0, 2).map((shift: any, index: number) => (
-                      <Card key={index} className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-md hover:border-[#1e3b93]/20">
+                      <Card key={index} className="border-guardian/10 transition-all duration-200 hover:shadow-md hover:border-guardian/20">
                         <CardContent className="p-5">
                           <div className="flex justify-between items-start mb-4">
                             <div>
@@ -251,7 +251,7 @@ export default function SupportWorkerDashboard() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+                              className="border-guardian/20 text-guardian hover:bg-guardian/10"
                               onClick={() => handleViewShiftDetails(shift._id)}
                             >
                               View Details
@@ -259,8 +259,8 @@ export default function SupportWorkerDashboard() {
                           </div>
                           <div className="space-y-3">
                             <div className="flex items-center gap-2 text-sm">
-                              <div className="w-6 h-6 rounded-full bg-[#1e3b93]/10 flex items-center justify-center">
-                                <Calendar className="h-3 w-3 text-[#1e3b93]" />
+                              <div className="w-6 h-6 rounded-full bg-guardian/10 flex items-center justify-center">
+                                <Calendar className="h-3 w-3 text-guardian" />
                               </div>
                               <span className="text-gray-700">
                                 {new Date(shift.startTime).toLocaleDateString()} • {new Date(shift.startTime).toLocaleTimeString()} - {new Date(shift.endTime).toLocaleTimeString()}
@@ -292,7 +292,7 @@ export default function SupportWorkerDashboard() {
                     <Calendar className="mx-auto h-12 w-12 mb-4 text-[#1e3b93]/30" />
                     <p>No upcoming shifts scheduled</p>
                     <Button 
-                      className="mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
+                      className="mt-4 bg-guardian hover:bg-guardian/90"
                       onClick={() => navigate("/support-worker/shifts")}
                     >
                       View Schedule
@@ -336,9 +336,9 @@ export default function SupportWorkerDashboard() {
 
         {/* Notifications */}
         <div>
-          <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-            <CardHeader className="border-b border-[#1e3b93]/10">
-              <CardTitle className="text-lg font-medium text-[#1e3b93]">
+          <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+            <CardHeader className="border-b border-guardian/10">
+              <CardTitle className="text-lg font-medium text-guardian">
                 Notifications
               </CardTitle>
             </CardHeader>
@@ -358,7 +358,7 @@ export default function SupportWorkerDashboard() {
           type="line"
           dataKey="value"
           xAxisKey="label"
-          className="border-[#1e3b93]/10"
+          className="border-guardian/10"
         />
         
         {/* Weekly Hours */}
@@ -368,27 +368,27 @@ export default function SupportWorkerDashboard() {
           type="bar"
           dataKey="value"
           xAxisKey="label"
-          className="border-[#1e3b93]/10"
+          className="border-guardian/10"
         />
       </div>
 
       {/* Service Distribution */}
       {Object.keys(shiftsByServiceType).length > 0 && (
-        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+        <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
           <CardHeader>
-            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+            <CardTitle className="text-lg font-medium text-guardian">
               Service Type Distribution This Month
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.entries(shiftsByServiceType).map(([serviceType, count]) => (
-                <div key={serviceType} className="p-4 rounded-lg border border-[#1e3b93]/10">
+                <div key={serviceType} className="p-4 rounded-lg border border-guardian/10">
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="font-medium text-gray-900">
                       {SERVICE_TYPE_LABELS[serviceType] || serviceType}
                     </h4>
-                    <Badge variant="secondary" className="bg-[#1e3b93]/10 text-[#1e3b93]">
+                    <Badge variant="secondary" className="bg-guardian/10 text-guardian">
                       {count} shifts
                     </Badge>
                   </div>
@@ -406,9 +406,9 @@ export default function SupportWorkerDashboard() {
       {/* Financial Summary */}
       {financialData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+          <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              <CardTitle className="text-lg font-medium text-guardian">
                 Financial Summary
               </CardTitle>
             </CardHeader>
@@ -435,9 +435,9 @@ export default function SupportWorkerDashboard() {
           </Card>
 
           {/* Performance Metrics */}
-          <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+          <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              <CardTitle className="text-lg font-medium text-guardian">
                 Performance Overview
               </CardTitle>
             </CardHeader>
@@ -446,8 +446,8 @@ export default function SupportWorkerDashboard() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-900">Completion Rate</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[#1e3b93]">{overviewData?.performanceMetrics?.completionRate || 0}%</span>
-                    <Target className="h-4 w-4 text-[#1e3b93]" />
+                    <span className="font-semibold text-guardian">{overviewData?.performanceMetrics?.completionRate || 0}%</span>
+                    <Target className="h-4 w-4 text-guardian" />
                   </div>
                 </div>
                 <Progress value={overviewData?.performanceMetrics?.completionRate || 0} className="h-2" />
@@ -466,7 +466,7 @@ export default function SupportWorkerDashboard() {
                     <div className="pt-2 border-t">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-medium text-gray-900">Availability Utilization</span>
-                        <span className="font-semibold text-[#1e3b93]">{performanceData.availabilityComparison.utilizationPercentage.toFixed(1)}%</span>
+                        <span className="font-semibold text-guardian">{performanceData.availabilityComparison.utilizationPercentage.toFixed(1)}%</span>
                       </div>
                       <div className="text-xs text-muted-foreground space-y-1">
                         <div className="flex justify-between">
@@ -489,9 +489,9 @@ export default function SupportWorkerDashboard() {
 
       {/* Participant Invitations */}
       <div>
-        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-          <CardHeader className="border-b border-[#1e3b93]/10">
-            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+        <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+          <CardHeader className="border-b border-guardian/10">
+            <CardTitle className="text-lg font-medium text-guardian">
               Participant Invitations
             </CardTitle>
           </CardHeader>

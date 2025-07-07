@@ -184,7 +184,7 @@ export default function OrganizationsPage() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div className="space-y-1">
-					<h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-[#1e3b93] to-blue-600 bg-clip-text text-transparent">
+					<h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-guardian to-blue-600 bg-clip-text text-transparent">
 						Organizations
 					</h1>
 					<p className="text-lg text-gray-600">
@@ -203,14 +203,14 @@ export default function OrganizationsPage() {
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				{/* Total Organizations */}
 				<Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-					<div className="absolute inset-0 bg-gradient-to-br from-[#1e3b93]/5 to-blue-600/10" />
+					<div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-blue-600/10" />
 					<CardContent className="p-6 relative">
 						<div className="flex items-center justify-between">
 							<div className="space-y-1">
-								<p className="text-sm font-medium text-[#1e3b93]">
+								<p className="text-sm font-medium text-guardian">
 									Total Organizations
 								</p>
-								<p className="text-3xl font-bold text-gray-900 group-hover:text-[#1e3b93] transition-colors">
+								<p className="text-3xl font-bold text-gray-900 group-hover:text-guardian transition-colors">
 									{stats.totalOrganizations}
 								</p>
 								<p className="text-xs text-gray-500">Connected</p>
@@ -224,7 +224,7 @@ export default function OrganizationsPage() {
 
 				{/* Total Workers */}
 				<Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-					<div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" />
+					<div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-purple-600/10" />
 					<CardContent className="p-6 relative">
 						<div className="flex items-center justify-between">
 							<div className="space-y-1">
@@ -245,7 +245,7 @@ export default function OrganizationsPage() {
 
 				{/* Average Base Rate */}
 				<Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-					<div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" />
+					<div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-green-600/10" />
 					<CardContent className="p-6 relative">
 						<div className="flex items-center justify-between">
 							<div className="space-y-1">
@@ -266,7 +266,7 @@ export default function OrganizationsPage() {
 
 				{/* Pending Invites */}
 				<Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-					<div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" />
+					<div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-orange-600/10" />
 					<CardContent className="p-6 relative">
 						<div className="flex items-center justify-between">
 							<div className="space-y-1">
@@ -360,11 +360,11 @@ export default function OrganizationsPage() {
 							<CardHeader className="pb-4">
 								<div className="flex items-start justify-between">
 									<div className="flex items-center gap-3">
-										<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1e3b93] to-blue-600 flex items-center justify-center">
+										<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-guardian to-blue-600 flex items-center justify-center">
 											<Building className="w-6 h-6 text-white" />
 										</div>
 										<div>
-											<CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-[#1e3b93] transition-colors">
+											<CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-guardian transition-colors">
 												{organization.name}
 											</CardTitle>
 											<p className="text-sm text-gray-600">
@@ -439,7 +439,7 @@ export default function OrganizationsPage() {
 											{organization.workers.map((worker) => (
 												<div
 													key={worker._id}
-													className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-[#1e3b93]/20 transition-colors"
+													className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-guardian/20 transition-colors"
 												>
 													<div className="flex items-center gap-3">
 														<Avatar className="w-8 h-8">
@@ -529,7 +529,7 @@ export default function OrganizationsPage() {
 									<Button
 										variant="outline"
 										size="sm"
-										className="flex-1 border-[#1e3b93]/20 text-[#1e3b93] hover:bg-[#1e3b93]/10"
+										className="flex-1 border-guardian/20 text-guardian hover:bg-guardian/10"
 										onClick={() =>
 											navigate(
 												`/support-worker/organizations/${organization._id}`
@@ -541,7 +541,7 @@ export default function OrganizationsPage() {
 									</Button>
 									<Button
 										size="sm"
-										className="flex-1 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
+										className="flex-1 bg-guardian hover:bg-guardian/90"
 									>
 										<Mail className="w-4 h-4 mr-2" />
 										Contact

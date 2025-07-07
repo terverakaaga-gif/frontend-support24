@@ -318,13 +318,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 	const Sidebar = () => (
 		<div className="flex flex-col h-full">
 			<div className="flex-1">
-				<div className="px-6 py-6 mb-4">
+				<div className="px-6 py-6 ">
 					<Link to="/" className="flex items-center space-x-2">
 						{/* <Heart className="h-6 w-6 text-guardian" />
 						<span className="text-xl font-bold bg-gradient-to-r from-guardian to-guardian-dark bg-clip-text text-transparent">
 							Guardian Care Pro
 						</span> */}
-						<img src={"/images/logo.png"} alt={"logo"} />
+						<img src={"/logo.svg"} alt={"logo"} className="" />
 					</Link>
 				</div>
 				<ScrollArea className="flex-1 px-3">
