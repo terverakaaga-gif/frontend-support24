@@ -54,7 +54,8 @@ import SupportWorkerTimesheetDetails from "./pages/SupportWorkerTimesheetDetails
 import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 
 import LandingPage from "./pages/LandingPage";
-
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 import ChatsList from "./pages/ChatsList";
 import { ChatProvider } from "./contexts/ChatContext";
@@ -109,6 +110,20 @@ const AppRoutes = () => {
 					) : (
 						<Register />
 					)
+				}
+			/>
+
+			{/* Password reset routes */}
+			<Route
+				path="/forgot-password"
+				element={
+					user ? <Navigate to={getDefaultRoute()} replace /> : <ForgotPassword />
+				}
+			/>
+			<Route
+				path="/reset-password"
+				element={
+					user ? <Navigate to={getDefaultRoute()} replace /> : <ResetPassword />
 				}
 			/>
 

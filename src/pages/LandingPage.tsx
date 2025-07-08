@@ -622,7 +622,7 @@ const LandingPage = () => {
                 <div className="solution-card flex items-start space-x-4 p-6 bg-yellow-50 border border-yellow-100 rounded-xl transition-all duration-300 hover:border-yellow-200 hover:shadow-xl animate-slide-in-right-scroll" data-animation="slide-right" style={{transitionDelay: '0.5s'}}>
                   <div className="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <Calendar className="h-5 w-5 text-yellow-600" />
-                  </div>
+              </div>
                   <div>
                     <h4 className="text-lg font-bold text-gray-900 mb-2">Flexible scheduling</h4>
                     <p className="text-gray-600">Speaks to the need for adaptability in care.</p>
