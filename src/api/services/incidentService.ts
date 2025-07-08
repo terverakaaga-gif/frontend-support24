@@ -1,4 +1,4 @@
-import { get, patch, post, tokenStorage } from "@/api/apiClient";
+import { del, get, patch, post, put, tokenStorage } from "@/api/apiClient";
 import {
 	CreateIncidentDTO,
 	ICreateIncidentResponse,
@@ -66,6 +66,16 @@ const incidentService = {
 		}
 	},
 
+	updateIncident: async (id: string, data: any) => {
+		try {
+			const token = tokenStorage.getAccessToken();
+			const headers = { Authorization: `Bearer ${token}` };
+			const response = await put(`/incidents/${id}/update`, data, { headers });
+		} catch (error) {
+			throw error;
+		}
+	},
+
 	updateIncidentStatus: async (
 		id: string,
 		payload: UpdateIncidentStatusDTO
@@ -95,6 +105,16 @@ const incidentService = {
 			);
 
 			return response.data;
+		} catch (error) {
+			throw error;
+		}
+	},
+	deleteIncident: async (id: string) => {
+		try {
+			const token = tokenStorage.getAccessToken();
+			const headers = { Authorization: `Bearer ${token}` };
+			const response = await del(`incidents/${id}/delete`, { headers });
+			return response;
 		} catch (error) {
 			throw error;
 		}
