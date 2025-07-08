@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Search, Upload, FileText } from "lucide-react";
+import { X, Search, Upload, FileText, ChevronLeft, Check } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import shiftService from "@/api/services/shiftService";
 import { useQuery } from "@tanstack/react-query";
@@ -18,25 +18,52 @@ interface Shift {
 	status: string;
 }
 
+interface IncidentFormData {
+	title: string;
+	description: string;
+	severity: string;
+	shiftId: string;
+	urlLinks: string[];
+}
+
+type FormStep = "form" | "preview" | "confirmation";
+
 const CreateIncidentModal = ({
-	onClose,
 	onSubmit,
+	isEditing = false,
+	incident,
+	onClose,
 }: {
 	onSubmit: (data: any) => void;
+	isEditing?: boolean;
+	incident?: any;
 	onClose: () => void;
 }) => {
-	const [formData, setFormData] = useState({
+	const [currentStep, setCurrentStep] = useState<FormStep>("form");
+	const [formData, setFormData] = useState<IncidentFormData>({
 		title: "",
 		description: "",
 		severity: "",
 		shiftId: "",
-		urlLinks: [] as string[],
+		urlLinks: [],
 	});
 	const [showShiftModal, setShowShiftModal] = useState(false);
 	const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	// Fetch shifts
+	// Initialize form data based on editing mode
+	useEffect(() => {
+		if (isEditing && incident) {
+			setFormData({
+				title: incident.title || "",
+				description: incident.description || "",
+				severity: incident.severity || "",
+				shiftId: incident.shift?.shiftId || "",
+				urlLinks: incident.urlLinks || [],
+			});
+		}
+	}, [isEditing, incident]);
+
 	const {
 		data: shifts,
 		isLoading: isShiftsLoading,
@@ -59,12 +86,10 @@ const CreateIncidentModal = ({
 		if (e.target.files) {
 			const files = Array.from(e.target.files);
 			setSelectedFiles(files);
-
-			// Here you would typically upload the files to your server
-			// and get back the URLs to store in formData.urlLinks
-			// For now, we'll just store the file names
-			const fileNames = files.map((file) => file.name);
-			setFormData((prev) => ({ ...prev, urlLinks: fileNames }));
+			setFormData((prev) => ({
+				...prev,
+				urlLinks: [...prev.urlLinks, ...files.map((file) => file.name)],
+			}));
 		}
 	};
 
@@ -75,30 +100,48 @@ const CreateIncidentModal = ({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		setCurrentStep("preview");
+	};
 
+	const handleConfirmSubmit = async () => {
 		if (!formData.shiftId) {
 			toast.error("Please select a shift");
 			return;
 		}
 
-		onSubmit(formData);
-		onClose();
+		try {
+			if (isEditing) {
+				await onSubmit({
+					description: formData.description,
+					severity: formData.severity,
+					title: formData.title,
+					urlLinks: formData.urlLinks,
+					// ...(isEditing && incident && { _id: incident._id }),
+				});
+			} else {
+				await onSubmit({
+					...formData,
+				});
+			}
+
+			onClose(); // close after successful submit
+		} catch (err) {
+			toast.error("Failed to submit incident");
+		}
 	};
 
-	// Filter shifts based on search term
 	const filteredShifts = shifts?.filter((shift) => {
 		const searchLower = searchTerm.toLowerCase();
 		const participant = shift.participantId;
 		const hasFirstName =
 			typeof participant === "object" &&
 			participant !== null &&
-			"firstName" in participant &&
-			typeof participant.firstName === "string";
+			"firstName" in participant;
 		const hasLastName =
 			typeof participant === "object" &&
 			participant !== null &&
-			"lastName" in participant &&
-			typeof participant.lastName === "string";
+			"lastName" in participant;
+
 		return (
 			shift.shiftId.toLowerCase().includes(searchLower) ||
 			(hasFirstName &&
@@ -109,163 +152,329 @@ const CreateIncidentModal = ({
 		);
 	});
 
-	return (
-		<>
-			{/* Main Create Incident Modal */}
-			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
-				<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-					<div className="flex items-center justify-between p-6 border-b border-gray-200">
-						<Dialog.Title className="text-xl font-semibold text-gray-900">
-							Create New Incident
-						</Dialog.Title>
-						<Dialog.Close asChild>
-							<button className="text-gray-400 hover:text-gray-600">
-								<X className="h-6 w-6" />
-							</button>
-						</Dialog.Close>
+	const getSelectedShift = () => {
+		return shifts?.find((shift) => shift.shiftId === formData.shiftId);
+	};
+
+	const renderFormStep = () => (
+		<form onSubmit={handleSubmit}>
+			<div className="p-6 space-y-4">
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Title *
+					</label>
+					<input
+						type="text"
+						name="title"
+						required
+						className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
+						placeholder="Brief description of the incident"
+						value={formData.title}
+						onChange={handleChange}
+					/>
+				</div>
+
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Description *
+					</label>
+					<textarea
+						name="description"
+						required
+						rows={4}
+						className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
+						placeholder="Detailed description of what happened..."
+						value={formData.description}
+						onChange={handleChange}
+					/>
+				</div>
+
+				<div className="grid grid-cols-2 gap-4">
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-2">
+							Severity *
+						</label>
+						<select
+							name="severity"
+							required
+							className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
+							value={formData.severity}
+							onChange={handleChange}
+						>
+							<option value="">Select severity</option>
+							<option value="LOW">Low</option>
+							<option value="MEDIUM">Medium</option>
+							<option value="HIGH">High</option>
+						</select>
 					</div>
 
-					<form onSubmit={handleSubmit}>
-						<div className="p-6 space-y-4">
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-2">
-									Title *
-								</label>
-								<input
-									type="text"
-									name="title"
-									required
-									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
-									placeholder="Brief description of the incident"
-									value={formData.title}
-									onChange={handleChange}
-								/>
-							</div>
-
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-2">
-									Description *
-								</label>
-								<textarea
-									name="description"
-									required
-									rows={4}
-									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
-									placeholder="Detailed description of what happened..."
-									value={formData.description}
-									onChange={handleChange}
-								/>
-							</div>
-
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-2">
-										Severity *
-									</label>
-									<select
-										name="severity"
-										required
-										className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
-										value={formData.severity}
-										onChange={handleChange}
-									>
-										<option value="">Select severity</option>
-										<option value="LOW">Low</option>
-										<option value="MEDIUM">Medium</option>
-										<option value="HIGH">High</option>
-									</select>
-								</div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-2">
-										Shift *
-									</label>
-									<div className="flex gap-2">
-										<input
-											type="text"
-											className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
-											placeholder="Select a shift"
-											value={formData.shiftId}
-											readOnly
-										/>
-										<button
-											type="button"
-											onClick={() => setShowShiftModal(true)}
-											className="bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors"
-										>
-											Select
-										</button>
-									</div>
-								</div>
-							</div>
-
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-2">
-									Evidence (Optional)
-								</label>
-								<div className="flex items-center gap-4">
-									<label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-										<Upload className="h-4 w-4" />
-										Upload Files
-										<input
-											type="file"
-											className="hidden"
-											onChange={handleFileChange}
-											multiple
-										/>
-									</label>
-									{selectedFiles.length > 0 && (
-										<span className="text-sm text-gray-600">
-											{selectedFiles.length} file(s) selected
-										</span>
-									)}
-								</div>
-								{selectedFiles.length > 0 && (
-									<div className="mt-2 space-y-2">
-										{selectedFiles.map((file, index) => (
-											<div
-												key={index}
-												className="flex items-center gap-2 text-sm"
-											>
-												<FileText className="h-4 w-4 text-gray-500" />
-												<span>{file.name}</span>
-												<span className="text-xs text-gray-400">
-													{(file.size / 1024).toFixed(1)} KB
-												</span>
-											</div>
-										))}
-									</div>
-								)}
-							</div>
-						</div>
-
-						<div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
-							<Dialog.Close asChild>
-								<button
-									type="button"
-									className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-								>
-									Cancel
-								</button>
-							</Dialog.Close>
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-2">
+							Shift *
+						</label>
+						<div className="flex gap-2">
+							<input
+								type="text"
+								className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent ${
+									isEditing && "cursor-not-allowed"
+								}`}
+								placeholder="Select a shift"
+								value={formData.shiftId}
+								readOnly
+								disabled={isEditing}
+							/>
 							<button
-								type="submit"
-								className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors"
+								disabled={isEditing}
+								type="button"
+								onClick={() => setShowShiftModal(true)}
+								className={`bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors ${
+									isEditing && "cursor-not-allowed"
+								}`}
 							>
-								Create Incident
+								Select
 							</button>
 						</div>
-					</form>
-				</Dialog.Content>
-			</Dialog.Portal>
+					</div>
+				</div>
+
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Evidence (Optional)
+					</label>
+					<div className="flex items-center gap-4">
+						<label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+							<Upload className="h-4 w-4" />
+							Upload Files
+							<input
+								type="file"
+								className="hidden"
+								onChange={handleFileChange}
+								multiple
+							/>
+						</label>
+						{(selectedFiles.length > 0 || formData.urlLinks.length > 0) && (
+							<span className="text-sm text-gray-600">
+								{selectedFiles.length + formData.urlLinks.length} file(s)
+								selected
+							</span>
+						)}
+					</div>
+					{(selectedFiles.length > 0 || formData.urlLinks.length > 0) && (
+						<div className="mt-2 space-y-2">
+							{selectedFiles.map((file, index) => (
+								<div
+									key={`new-${index}`}
+									className="flex items-center gap-2 text-sm"
+								>
+									<FileText className="h-4 w-4 text-gray-500" />
+									<span>{file.name}</span>
+									<span className="text-xs text-gray-400">
+										{(file.size / 1024).toFixed(1)} KB
+									</span>
+								</div>
+							))}
+							{isEditing &&
+								formData.urlLinks.map((link, index) => (
+									<div
+										key={`existing-${index}`}
+										className="flex items-center gap-2 text-sm"
+									>
+										<FileText className="h-4 w-4 text-gray-500" />
+										<span>{link}</span>
+									</div>
+								))}
+						</div>
+					)}
+				</div>
+			</div>
+
+			<div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+				<Dialog.Close>
+					<button
+						type="button"
+						onClick={onClose}
+						className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+					>
+						Cancel
+					</button>
+				</Dialog.Close>
+				<button
+					type="submit"
+					className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors"
+				>
+					{isEditing ? "Review Update" : "Create Incident"}
+				</button>
+			</div>
+		</form>
+	);
+
+	const renderPreviewStep = () => {
+		const selectedShift = getSelectedShift();
+
+		return (
+			<div className="p-6">
+				<div className="flex items-center justify-between mb-6">
+					<h2 className="text-xl font-semibold text-gray-900">
+						{isEditing ? "Review Incident Update" : "Review Incident Details"}
+					</h2>
+					<button
+						onClick={() => setCurrentStep("form")}
+						className="text-[#17AAEC] hover:text-[#1599D3] flex items-center gap-1"
+					>
+						<ChevronLeft className="h-4 w-4" />
+						Edit
+					</button>
+				</div>
+
+				<div className="space-y-6">
+					<div className="bg-gray-50 rounded-lg p-4">
+						<h3 className="font-medium text-gray-900">{formData.title}</h3>
+						<p className="text-gray-600 mt-2">{formData.description}</p>
+					</div>
+
+					<div className="grid grid-cols-2 gap-4">
+						<div>
+							<label className="block text-sm font-medium text-gray-500 mb-1">
+								Severity
+							</label>
+							<span
+								className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+									formData.severity === "LOW"
+										? "bg-blue-100 text-blue-800"
+										: formData.severity === "MEDIUM"
+										? "bg-orange-100 text-orange-800"
+										: "bg-red-100 text-red-800"
+								}`}
+							>
+								{formData.severity}
+							</span>
+						</div>
+
+						<div>
+							<label className="block text-sm font-medium text-gray-500 mb-1">
+								Shift ID
+							</label>
+							<p className="text-gray-900">{formData.shiftId}</p>
+						</div>
+					</div>
+
+					{selectedShift && (
+						<div>
+							<label className="block text-sm font-medium text-gray-500 mb-1">
+								Shift Details
+							</label>
+							<div className="bg-gray-50 rounded-lg p-3">
+								<p className="text-sm font-medium text-gray-900">
+									{typeof selectedShift.participantId === "object" &&
+									selectedShift.participantId !== null
+										? `${selectedShift.participantId.firstName} ${selectedShift.participantId.lastName}`
+										: String(selectedShift.participantId)}
+								</p>
+								<p className="text-xs text-gray-500 mt-1">
+									{new Date(selectedShift.startTime).toLocaleString()} -{" "}
+									{new Date(selectedShift.endTime).toLocaleString()}
+								</p>
+							</div>
+						</div>
+					)}
+
+					{(selectedFiles.length > 0 || formData.urlLinks.length > 0) && (
+						<div>
+							<label className="block text-sm font-medium text-gray-500 mb-1">
+								Evidence Files
+							</label>
+							<div className="space-y-2">
+								{selectedFiles.map((file, index) => (
+									<div
+										key={`preview-new-${index}`}
+										className="flex items-center gap-2 text-sm"
+									>
+										<FileText className="h-4 w-4 text-gray-500" />
+										<span>{file.name}</span>
+									</div>
+								))}
+								{isEditing &&
+									formData.urlLinks.map((link, index) => (
+										<div
+											key={`preview-existing-${index}`}
+											className="flex items-center gap-2 text-sm"
+										>
+											<FileText className="h-4 w-4 text-gray-500" />
+											<span>{link}</span>
+										</div>
+									))}
+							</div>
+						</div>
+					)}
+				</div>
+
+				<div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+					<Dialog.Close>
+						<button
+							type="button"
+							onClick={onClose}
+							className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+						>
+							Cancel
+						</button>
+					</Dialog.Close>
+					<button
+						type="button"
+						onClick={handleConfirmSubmit}
+						className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors flex items-center gap-2"
+					>
+						<Check className="h-4 w-4" />
+						{isEditing ? "Confirm Update" : "Confirm Incident"}
+					</button>
+				</div>
+			</div>
+		);
+	};
+
+	const renderConfirmationStep = () => (
+		<div className="p-6 text-center">
+			<div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+				<Check className="h-6 w-6 text-green-600" />
+			</div>
+			<h3 className="text-lg font-medium text-gray-900 mb-2">
+				{isEditing
+					? "Incident Updated Successfully"
+					: "Incident Created Successfully"}
+			</h3>
+			<p className="text-sm text-gray-500 mb-6">
+				{isEditing
+					? "Your incident has been updated."
+					: "Your incident has been submitted for review."}
+			</p>
+			<button
+				onClick={onClose}
+				className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors"
+			>
+				Close
+			</button>
+		</div>
+	);
+
+	return (
+		<Dialog.Portal>
+			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[100]" />
+			<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto z-[101]">
+				<div className="flex items-center justify-between p-6 border-b border-gray-200">
+					<Dialog.Title className="text-xl font-semibold text-gray-900">
+						{isEditing ? "Review" : "Create"} Incident
+					</Dialog.Title>
+				</div>
+				{currentStep === "form" && renderFormStep()}
+				{currentStep === "preview" && renderPreviewStep()}
+				{/* {currentStep === "confirmation" && renderConfirmationStep()} */}
+			</Dialog.Content>
 
 			{/* Shift Selection Modal */}
 			{showShiftModal && (
 				<Dialog.Root open={showShiftModal} onOpenChange={setShowShiftModal}>
 					<Dialog.Portal>
-						<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
-						<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+						<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[102]" />
+						<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto z-[103]">
 							<div className="flex items-center justify-between p-6 border-b border-gray-200">
 								<Dialog.Title className="text-xl font-semibold text-gray-900">
 									Select Shift
@@ -361,7 +570,7 @@ const CreateIncidentModal = ({
 					</Dialog.Portal>
 				</Dialog.Root>
 			)}
-		</>
+		</Dialog.Portal>
 	);
 };
 
