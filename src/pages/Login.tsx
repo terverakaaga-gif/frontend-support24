@@ -229,12 +229,12 @@ export default function Login() {
                 />
 
                 <div className="flex justify-end">
-                  <a
-                    href="#"
+                  <Link
+                    to="/forgot-password"
                     className="text-sm text-guardian hover:text-guardian/80 hover:underline transition-colors"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
 
