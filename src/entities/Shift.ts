@@ -53,17 +53,24 @@ export enum ShiftType {
    * Service type enumeration
    * Types of services that can be requested in a shift
    */
-  export enum ServiceType {
-    PERSONAL_CARE = 'personalCare',
-    HOUSEHOLD_TASKS = 'householdTasks',
-    SOCIAL_SUPPORT = 'socialSupport',
-    TRANSPORT = 'transport',
-    MEAL_PREPARATION = 'mealPreparation',
-    MEDICATION_SUPPORT = 'medicationSupport',
-    MOBILITY_ASSISTANCE = 'mobilityAssistance',
-    THERAPY_SUPPORT = 'therapySupport',
-    BEHAVIOR_SUPPORT = 'behaviorSupport',
-    COMMUNITY_ACCESS = 'communityAccess'
+  // export enum ServiceType {
+  //   PERSONAL_CARE = 'personalCare',
+  //   HOUSEHOLD_TASKS = 'householdTasks',
+  //   SOCIAL_SUPPORT = 'socialSupport',
+  //   TRANSPORT = 'transport',
+  //   MEAL_PREPARATION = 'mealPreparation',
+  //   MEDICATION_SUPPORT = 'medicationSupport',
+  //   MOBILITY_ASSISTANCE = 'mobilityAssistance',
+  //   THERAPY_SUPPORT = 'therapySupport',
+  //   BEHAVIOR_SUPPORT = 'behaviorSupport',
+  //   COMMUNITY_ACCESS = 'communityAccess'
+  // }
+
+  export interface ServiceTypeId {
+    _id: string;
+    name: string;
+    code: string;
+    status: string;
   }
 
   /**
@@ -105,7 +112,7 @@ export interface Shift {
   isMultiWorkerShift: boolean;              // Whether shift requires multiple workers
   workerId?: string | UserSummary;               // Support worker assigned (single-worker mode)
   workerAssignments?: WorkerAssignment[];   // Support workers assigned (multi-worker mode)
-  serviceType: ServiceType;                 // Type of service requested
+  serviceTypeId: ServiceTypeId;                 // Type of service requested
   startTime: string;                          // Scheduled start time
   endTime: string;                            // Scheduled end time
 

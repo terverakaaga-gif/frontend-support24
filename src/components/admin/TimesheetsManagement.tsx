@@ -623,9 +623,7 @@ const TimesheetsManagement: React.FC = () => {
                               {timesheet.shiftIdRef}
                             </span>
                             <span className="text-xs text-muted-foreground capitalize">
-                              {SERVICE_TYPE_LABELS[
-                                timesheet.shiftId.serviceType
-                              ] || timesheet.shiftId.serviceType}
+                              {timesheet.shiftId.serviceTypeId?.name || 'N/A'}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               <Building className="h-3 w-3 inline mr-1" />
