@@ -70,6 +70,7 @@ export interface ProcessInviteRequest {
   status: 'accepted' | 'declined';
   adminNotes?: string;
   serviceAgreement?: ServiceAgreement;
+  declineReason?: string; // For decline requests
 }
 
 // Legacy interface - keeping for backward compatibility

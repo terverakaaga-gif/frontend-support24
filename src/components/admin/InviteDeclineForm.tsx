@@ -25,16 +25,28 @@ interface InviteDeclineFormProps {
 
 export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: InviteDeclineFormProps) {
   const [adminNotes, setAdminNotes] = useState("");
+  const [declineReason, setDeclineReason] = useState("");
 
   const processInviteMutation = useProcessInvite();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate required fields
+    if (!declineReason.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please provide a decline reason.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Prepare the request body for decline
     const requestData: ProcessInviteRequest = {
       status: 'declined',
       adminNotes: adminNotes.trim() || undefined,
+      declineReason: declineReason.trim() || undefined,
       // No service agreement needed for decline
     };
 
@@ -76,7 +88,7 @@ export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: Invite
             Decline Invitation
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to decline the invitation for {invite.workerName}?
+            Please provide a reason for declining the invitation for {invite.workerName}.
           </DialogDescription>
         </DialogHeader>
 
@@ -92,15 +104,29 @@ export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: Invite
             </div>
           </div>
 
+          {/* Decline Reason */}
+          <div className="space-y-2">
+            <Label htmlFor="declineReason">Decline Reason *</Label>
+            <Textarea
+              id="declineReason"
+              value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)}
+              placeholder="e.g., Support worker is unable to agree with the proposed rates"
+              className="min-h-[100px]"
+              disabled={processInviteMutation.isPending}
+              required
+            />
+          </div>
+
           {/* Admin Notes */}
           <div className="space-y-2">
-            <Label htmlFor="adminNotes">Reason for Decline (Optional)</Label>
+            <Label htmlFor="adminNotes">Admin Notes (Optional)</Label>
             <Textarea
               id="adminNotes"
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              placeholder="Please provide a reason for declining this invitation..."
-              className="min-h-[100px]"
+              placeholder="e.g., Support worker is currently unavailable"
+              className="min-h-[80px]"
               disabled={processInviteMutation.isPending}
             />
           </div>
@@ -116,7 +142,7 @@ export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: Invite
             </Button>
             <Button
               type="submit"
-              disabled={processInviteMutation.isPending}
+              disabled={processInviteMutation.isPending || !declineReason.trim()}
               variant="destructive"
             >
               {processInviteMutation.isPending && (
