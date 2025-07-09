@@ -1,5 +1,5 @@
-import { get } from '../apiClient';
-import { OrganizationInvites, OrganizationsInvitesResponse, Invite, FlattenedInvite } from '../../entities/Invitation';
+import { get, post } from '../apiClient';
+import { OrganizationInvites, OrganizationsInvitesResponse, Invite, FlattenedInvite, ProcessInviteRequest } from '../../entities/Invitation';
 
 // Service for invite operations
 const inviteService = {
@@ -53,6 +53,16 @@ const inviteService = {
     });
 
     return result;
+  },
+
+  // Process invite acceptance or decline
+  processInvite: async (
+    organizationId: string, 
+    inviteId: string, 
+    data: ProcessInviteRequest
+  ): Promise<any> => {
+    const url = `/organizations/${organizationId}/invites/${inviteId}/process`;
+    return await post(url, data);
   }
 };
 

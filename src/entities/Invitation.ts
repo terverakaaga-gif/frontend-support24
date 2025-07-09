@@ -51,6 +51,27 @@ export interface FlattenedInvite extends Invite {
   status: 'pending' | 'accepted' | 'declined'; // Client-side status
 }
 
+// Service agreement for invite acceptance
+export interface ServiceAgreementShiftRate {
+  rateTimeBandId: string;
+  hourlyRate: number;
+}
+
+export interface ServiceAgreement {
+  baseHourlyRate: number;
+  shiftRates: ServiceAgreementShiftRate[];
+  distanceTravelRate: number;
+  startDate: string;
+  termsAccepted: boolean;
+}
+
+// Request body for processing invite acceptance
+export interface ProcessInviteRequest {
+  status: 'accepted' | 'declined';
+  adminNotes?: string;
+  serviceAgreement?: ServiceAgreement;
+}
+
 // Legacy interface - keeping for backward compatibility
 export type InvitationStatus = 'pending' | 'accepted' | 'declined';
 

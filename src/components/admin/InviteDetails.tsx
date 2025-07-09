@@ -35,6 +35,8 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { useGetInviteById } from "@/hooks/useInviteHooks";
+import { InviteAcceptanceForm } from "./InviteAcceptanceForm";
+import { InviteDeclineForm } from "./InviteDeclineForm";
 
 // Remove all mock data - using real API data now
 
@@ -68,36 +70,51 @@ export function InviteDetails() {
   const { inviteId } = useParams<{ inviteId: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const [isAcceptanceFormOpen, setIsAcceptanceFormOpen] = useState(false);
+  const [isDeclineFormOpen, setIsDeclineFormOpen] = useState(false);
 
   // Fetch invite details using the hook
-  const { data: inviteDetails, isLoading, error } = useGetInviteById(inviteId || "");
+  const { data: inviteDetails, isLoading, error, refetch } = useGetInviteById(inviteId || "");
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
   const handleMakeAvailable = () => {
-    // toast({
-    //   title: "Invitation Made Available",
-    //   description: `Invitation is now available to ${inviteDetails.workerName}`,
-    // });
-    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=make-available`);
+    toast({
+      title: "Invitation Made Available",
+      description: `Invitation is now available to ${inviteDetails?.workerName}`,
+    });
+    // Note: This action doesn't require API call based on original implementation
+    // navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=make-available`);
   };
 
   const handleAccept = () => {
-    // toast({
-    //   title: "Invitation Accepted",
-    //   description: `You've accepted the invitation from ${inviteDetails.participantName}`,
-    // });
-    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=accept`);
+    setIsAcceptanceFormOpen(true);
+  };
+
+  const handleAcceptanceSuccess = () => {
+    toast({
+      title: "Invitation Accepted",
+      description: `Successfully accepted invitation for ${inviteDetails?.workerName}`,
+    });
+    
+    // Navigate back to invite management page
+    navigate("/admin/invites");
   };
 
   const handleDecline = () => {
-    // toast({
-    //   title: "Invitation Declined",
-    //   description: `You've declined the invitation from ${inviteDetails.participantName}`,
-    // });
-    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=decline`);
+    setIsDeclineFormOpen(true);
+  };
+
+  const handleDeclineSuccess = () => {
+    toast({
+      title: "Invitation Declined",
+      description: `Successfully declined invitation for ${inviteDetails?.workerName}`,
+    });
+    
+    // Navigate back to invite management page
+    navigate("/admin/invites");
   };
 
   if (isLoading) {
@@ -394,6 +411,26 @@ export function InviteDetails() {
           </Card>
         </div>
       </div>
+
+      {/* Invite Acceptance Form Modal */}
+      {inviteDetails && (
+        <InviteAcceptanceForm
+          invite={inviteDetails}
+          isOpen={isAcceptanceFormOpen}
+          onClose={() => setIsAcceptanceFormOpen(false)}
+          onSuccess={handleAcceptanceSuccess}
+        />
+      )}
+
+      {/* Invite Decline Form Modal */}
+      {inviteDetails && (
+        <InviteDeclineForm
+          invite={inviteDetails}
+          isOpen={isDeclineFormOpen}
+          onClose={() => setIsDeclineFormOpen(false)}
+          onSuccess={handleDeclineSuccess}
+        />
+      )}
     </div>
   );
 }
