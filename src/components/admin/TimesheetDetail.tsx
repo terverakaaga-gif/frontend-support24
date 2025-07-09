@@ -310,7 +310,7 @@ const TimesheetDetail: React.FC = () => {
                           <div>
                             <p className="text-sm font-medium mb-1">Service Type</p>
                             <p className="text-sm">
-                              {SERVICE_TYPE_LABELS[timesheet.shiftId.serviceType] || timesheet.shiftId.serviceType}
+                              {timesheet.shiftId.serviceTypeId?.name || 'N/A'}
                             </p>
                           </div>
                           
@@ -665,7 +665,7 @@ const TimesheetDetail: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4 mb-4">
-                {timesheet.workerId.profileImage ? (
+                {typeof timesheet.workerId === 'object' && timesheet.workerId.profileImage ? (
                   <Avatar className="h-12 w-12">
                     <AvatarImage 
                       src={timesheet.workerId.profileImage}
@@ -679,13 +679,13 @@ const TimesheetDetail: React.FC = () => {
                 ) : (
                   <Avatar className="h-12 w-12">
                     <AvatarFallback>
-                      {timesheet.workerId.firstName.charAt(0)}
-                      {timesheet.workerId.lastName.charAt(0)}
+                      {typeof timesheet.workerId === 'object' ? timesheet.workerId.firstName.charAt(0) : 'S'}
+                      {typeof timesheet.workerId === 'object' ? timesheet.workerId.lastName.charAt(0) : 'W'}
                     </AvatarFallback>
                   </Avatar>
                 )}
                 <div>
-                  <h3 className="font-medium">{getFullName(timesheet.workerId)}</h3>
+                  <h3 className="font-medium">{typeof timesheet.workerId === 'object' ? getFullName(timesheet.workerId) : timesheet.workerId}</h3>
                   <p className="text-sm text-muted-foreground">Support Worker</p>
                 </div>
               </div>
@@ -693,17 +693,21 @@ const TimesheetDetail: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <UserCircle className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{timesheet.workerId.email}</span>
+                  <span className="text-sm">{typeof timesheet.workerId === 'object' ? timesheet.workerId.email : 'N/A'}</span>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{timesheet.workerId.phone}</span>
+                  <span className="text-sm">{typeof timesheet.workerId === 'object' ? timesheet.workerId.phone : 'N/A'}</span>
                 </div>
               </div>
               
               <div className="mt-4 space-y-2">
-                <Button variant="outline" className="w-full" onClick={() => navigate(`/admin/support-workers/${timesheet.workerId._id}`)}>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => navigate(`/admin/support-workers/${typeof timesheet.workerId === 'object' ? timesheet.workerId._id : timesheet.workerId}`)}
+                >
                   <UserCircle className="h-4 w-4 mr-2" />
                   View Worker Profile
                 </Button>
