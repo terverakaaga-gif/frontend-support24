@@ -342,17 +342,17 @@ export function ShiftsManagement() {
                   shifts.map((shift) => (
                     <TableRow key={shift._id}>
                       <TableCell className="font-medium">
-                        <div className="flex flex-col">
-                          <span>{shift.shiftId}</span>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span className="text-xs text-muted-foreground">
-                              {shift.serviceType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                            </span>
-                            <div className="ml-auto">
-                              {getRecurrenceBadge(shift.recurrence)}
+                                                  <div className="flex flex-col">
+                            <span>{shift.shiftId}</span>
+                            <div className="flex items-center gap-1 mt-1">
+                              <span className="text-xs text-muted-foreground">
+                                {shift.serviceTypeId.name}
+                              </span>
+                              <div className="ml-auto">
+                                {getRecurrenceBadge(shift.recurrence)}
+                              </div>
                             </div>
                           </div>
-                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
@@ -366,8 +366,8 @@ export function ShiftsManagement() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">{getFullName(shift.participantId)}</span>
-                          <span className="text-xs text-muted-foreground">{shift.organizationId.name}</span>
+                          <span className="font-medium">{typeof shift.participantId === 'object' ? getFullName(shift.participantId) : shift.participantId}</span>
+                          <span className="text-xs text-muted-foreground">{typeof shift.organizationId === 'object' ? shift.organizationId.name : shift.organizationId}</span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -385,7 +385,7 @@ export function ShiftsManagement() {
                           </div>
                         ) : shift.workerId ? (
                           <div className="flex items-center gap-3">
-                            {shift.workerId.profileImage ? (
+                            {typeof shift.workerId === 'object' && shift.workerId.profileImage ? (
                               <div className="w-8 h-8 rounded-full overflow-hidden">
                                 <img
                                   src={shift.workerId.profileImage}
@@ -395,12 +395,12 @@ export function ShiftsManagement() {
                               </div>
                             ) : (
                               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                                {shift.workerId.firstName.charAt(0)}
-                                {shift.workerId.lastName.charAt(0)}
+                                {typeof shift.workerId === 'object' ? shift.workerId.firstName.charAt(0) : 'S'}
+                                {typeof shift.workerId === 'object' ? shift.workerId.lastName.charAt(0) : 'W'}
                               </div>
                             )}
                             <div className="flex flex-col">
-                              <span className="font-medium">{getFullName(shift.workerId)}</span>
+                              <span className="font-medium">{typeof shift.workerId === 'object' ? getFullName(shift.workerId) : shift.workerId}</span>
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <MapPin className="h-3 w-3" />
                                 <span className="truncate max-w-[150px]">{shift.locationType}</span>

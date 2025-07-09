@@ -376,7 +376,7 @@ export function ShiftDetailView() {
                 </div>
                 <CardDescription className="flex items-center">
                   <Building className="h-4 w-4 mr-2" />
-                  {shift.organizationId.name}
+                  {typeof shift.organizationId === 'object' ? shift.organizationId.name : shift.organizationId}
                 </CardDescription>
               </div>
             </CardHeader>
@@ -397,7 +397,7 @@ export function ShiftDetailView() {
                         <div className="bg-muted/30 p-4 rounded-lg space-y-4">
                           <div>
                             <p className="text-sm font-medium mb-1">Service Type</p>
-                            {getServiceTypeBadge(shift.serviceType)}
+                            {getServiceTypeBadge(shift.serviceTypeId.name)}
                           </div>
                           
                           <div>
@@ -663,25 +663,25 @@ export function ShiftDetailView() {
               <div className="flex items-center gap-4 mb-4">
                 <Avatar className="h-12 w-12">
                   <AvatarFallback>
-                    {shift.participantId.firstName.charAt(0)}
-                    {shift.participantId.lastName.charAt(0)}
+                    {typeof shift.participantId === 'object' ? shift.participantId.firstName.charAt(0) : 'P'}
+                    {typeof shift.participantId === 'object' ? shift.participantId.lastName.charAt(0) : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-medium">{getFullName(shift.participantId)}</h3>
-                  <p className="text-sm text-muted-foreground">{shift.organizationId.name}</p>
+                  <h3 className="font-medium">{typeof shift.participantId === 'object' ? getFullName(shift.participantId) : shift.participantId}</h3>
+                  <p className="text-sm text-muted-foreground">{typeof shift.organizationId === 'object' ? shift.organizationId.name : shift.organizationId}</p>
                 </div>
               </div>
               
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                 <span className="text-sm">{shift.participantId.email}</span>
+                 <span className="text-sm">{typeof shift.participantId === 'object' ? shift.participantId.email : 'N/A'}</span>
                </li>
                
                <li className="flex items-center gap-3">
                  <Phone className="h-4 w-4 text-muted-foreground" />
-                 <span className="text-sm">{shift.participantId.phone}</span>
+                 <span className="text-sm">{typeof shift.participantId === 'object' ? shift.participantId.phone : 'N/A'}</span>
                </li>
              </ul>
              
@@ -703,19 +703,19 @@ export function ShiftDetailView() {
              <CardContent>
                <div className="flex items-center gap-4 mb-4">
                  <Avatar className="h-12 w-12">
-                   {shift.workerId.profileImage ? (
+                   {typeof shift.workerId === 'object' && shift.workerId.profileImage ? (
                      <AvatarImage 
                        src={shift.workerId.profileImage}
                        alt={getFullName(shift.workerId)}
                      />
                    ) : null}
                    <AvatarFallback>
-                     {shift.workerId.firstName.charAt(0)}
-                     {shift.workerId.lastName.charAt(0)}
+                     {typeof shift.workerId === 'object' ? shift.workerId.firstName.charAt(0) : 'S'}
+                     {typeof shift.workerId === 'object' ? shift.workerId.lastName.charAt(0) : 'W'}
                    </AvatarFallback>
                  </Avatar>
                  <div>
-                   <h3 className="font-medium">{getFullName(shift.workerId)}</h3>
+                   <h3 className="font-medium">{typeof shift.workerId === 'object' ? getFullName(shift.workerId) : shift.workerId}</h3>
                    <p className="text-sm text-muted-foreground">Support Worker</p>
                  </div>
                </div>
@@ -723,12 +723,12 @@ export function ShiftDetailView() {
                <ul className="space-y-3">
                  <li className="flex items-center gap-3">
                    <Mail className="h-4 w-4 text-muted-foreground" />
-                   <span className="text-sm">{shift.workerId.email}</span>
+                   <span className="text-sm">{typeof shift.workerId === 'object' ? shift.workerId.email : 'N/A'}</span>
                  </li>
                  
                  <li className="flex items-center gap-3">
                    <Phone className="h-4 w-4 text-muted-foreground" />
-                   <span className="text-sm">{shift.workerId.phone}</span>
+                   <span className="text-sm">{typeof shift.workerId === 'object' ? shift.workerId.phone : 'N/A'}</span>
                  </li>
                </ul>
                
