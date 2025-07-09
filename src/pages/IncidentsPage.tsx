@@ -28,6 +28,8 @@ import * as Select from "@radix-ui/react-select";
 import { toast } from "sonner";
 import CreateIncidentModal from "@/components/CreateIncidentModal";
 import IncidentDetailsModal from "@/components/IncidentDetailsModal";
+import ResolveIncidentModal from "@/components/ResolveIncidentModal";
+import { set } from "date-fns";
 
 const IncidentAdminDashboard = () => {
 	const { user } = useAuth();
@@ -53,50 +55,113 @@ const IncidentAdminDashboard = () => {
 	const [severityFilter, setSeverityFilter] = useState("ALL");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage] = useState(10);
-	const [showDetailsModal, setShowDetailsModal] = useState(false);
-	const [showResolveModal, setShowResolveModal] = useState(false);
 
-	// Calculate stats from real data
-	const stats = {
-		totalIncidents: incidentsData?.incidents.length || 0,
-		byStatus: {
-			OPEN:
-				incidentsData?.incidents.filter(
-					(incident) => incident.status === "OPEN"
-				).length || 0,
-			IN_REVIEW:
-				incidentsData?.incidents.filter(
-					(incident) => incident.status === "IN_REVIEW"
-				).length || 0,
-			RESOLVED:
-				incidentsData?.incidents.filter(
-					(incident) => incident.status === "RESOLVED"
-				).length || 0,
-			REJECTED:
-				incidentsData?.incidents.filter(
-					(incident) => incident.status === "REJECTED"
-				).length || 0,
-		},
-		bySeverity: {
-			LOW:
-				incidentsData?.incidents.filter(
-					(incident) => incident.severity === "LOW"
-				).length || 0,
-			MEDIUM:
-				incidentsData?.incidents.filter(
-					(incident) => incident.severity === "MEDIUM"
-				).length || 0,
-			HIGH:
-				incidentsData?.incidents.filter(
-					(incident) => incident.severity === "HIGH"
-				).length || 0,
-		},
-		resolvedIncidents:
-			incidentsData?.incidents.filter(
-				(incident) => incident.status === "RESOLVED"
-			).length || 0,
-		averageResolutionTime: 24, // This would need to be calculated from your data
+	// Separate modal states
+	const [modals, setModals] = useState({
+		create: false,
+		details: false,
+		resolve: false,
+		delete: false,
+	});
+
+	const [incidentToDelete, setIncidentToDelete] = useState<IIncident | null>(
+		null
+	);
+
+	// Helper function to open modal - FIXED: Close all other modals first
+	const openModal = (modalType: keyof typeof modals, incident?: IIncident) => {
+		// Close all modals first and wait for state to update
+		setModals({
+			create: false,
+			details: false,
+			resolve: false,
+			delete: false,
+		});
+
+		// Set the selected incident if provided
+		if (incident) {
+			setSelectedIncident(incident);
+		}
+
+		// Use setTimeout to ensure state updates before opening new modal
+		setTimeout(() => {
+			setModals((prev) => ({ ...prev, [modalType]: true }));
+		}, 100);
 	};
+
+	// Helper function to close modal - FIXED: Clear selected incident properly
+	const closeModal = (modalType: keyof typeof modals) => {
+		setModals((prev) => ({ ...prev, [modalType]: false }));
+
+		// Use setTimeout to ensure modal closes before clearing state
+		setTimeout(() => {
+			// Clear selected incident when closing any modal except create
+			if (modalType !== "create") {
+				setSelectedIncident(null);
+			}
+
+			// Clear incident to delete when closing delete modal
+			if (modalType === "delete") {
+				setIncidentToDelete(null);
+			}
+		}, 100);
+	};
+
+	const handleResolveFromDetails = (incident: IIncident) => {
+		// Close details modal first
+		closeModal("details");
+
+		// Wait for details modal to close, then open resolve modal
+		setTimeout(() => {
+			setSelectedIncident(incident);
+			setModals((prev) => ({ ...prev, resolve: true }));
+		}, 150);
+	};
+
+	// Calculate stats from real data - ONLY FOR ADMIN
+	const stats =
+		user?.role === "admin"
+			? {
+					totalIncidents: incidentsData?.incidents.length || 0,
+					byStatus: {
+						OPEN:
+							incidentsData?.incidents.filter(
+								(incident) => incident.status === "OPEN"
+							).length || 0,
+						IN_REVIEW:
+							incidentsData?.incidents.filter(
+								(incident) => incident.status === "IN_REVIEW"
+							).length || 0,
+						RESOLVED:
+							incidentsData?.incidents.filter(
+								(incident) => incident.status === "RESOLVED"
+							).length || 0,
+						REJECTED:
+							incidentsData?.incidents.filter(
+								(incident) => incident.status === "REJECTED"
+							).length || 0,
+					},
+					bySeverity: {
+						LOW:
+							incidentsData?.incidents.filter(
+								(incident) => incident.severity === "LOW"
+							).length || 0,
+						MEDIUM:
+							incidentsData?.incidents.filter(
+								(incident) => incident.severity === "MEDIUM"
+							).length || 0,
+						HIGH:
+							incidentsData?.incidents.filter(
+								(incident) => incident.severity === "HIGH"
+							).length || 0,
+					},
+					resolvedIncidents:
+						incidentsData?.incidents.filter(
+							(incident) => incident.status === "RESOLVED"
+						).length || 0,
+					averageResolutionTime: 24, // This would need to be calculated from your data
+			  }
+			: null;
 
 	// Filter incidents based on search and filters
 	useEffect(() => {
@@ -165,16 +230,12 @@ const IncidentAdminDashboard = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["incidents"] });
 			toast.success("Incident resolved successfully");
-			//close create modal
-			setShowDetailsModal(false);
-			setShowResolveModal(false);
+			closeModal("resolve");
 		},
 		onError: (error) => {
 			toast.error("Failed to resolve incident");
 			console.error("Error resolving incident:", error);
-			//close create modal
-			setShowDetailsModal(false);
-			setShowResolveModal(false);
+			closeModal("resolve");
 		},
 	});
 
@@ -184,15 +245,26 @@ const IncidentAdminDashboard = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["incidents"] });
 			toast.success("Incident created successfully");
-			//close create modal
-			setShowDetailsModal(false);
-			setShowResolveModal(false);
+			closeModal("create");
 		},
 		onError: (error) => {
 			toast.error("Failed to create incident");
-			//close create modal
-			setShowDetailsModal(false);
-			setShowResolveModal(false);
+			console.error("Error creating incident:", error);
+		},
+	});
+
+	// Mutation for deleting incidents
+	const deleteIncidentMutation = useMutation({
+		mutationFn: (id: string) => incidentService.deleteIncident(id),
+		onSuccess: () => {
+			// Reload incidents
+			queryClient.invalidateQueries({ queryKey: ["incidents"] });
+			toast.success("Incident deleted successfully");
+			closeModal("delete");
+		},
+		onError: (error) => {
+			toast.error("Failed to delete incident");
+			console.error("Error deleting incident:", error);
 		},
 	});
 
@@ -253,6 +325,23 @@ const IncidentAdminDashboard = () => {
 		createIncidentMutation.mutate(data);
 	};
 
+	const handleDeleteIncident = () => {
+		if (incidentToDelete) {
+			deleteIncidentMutation.mutate(incidentToDelete._id);
+		}
+	};
+
+	// Check if user can delete incident
+	const canDeleteIncident = (incident: IIncident) => {
+		if (user?.role === "admin") return true;
+		return false;
+	};
+
+	// Check if user can resolve incident - ONLY ADMIN
+	const canResolveIncident = (incident: IIncident) => {
+		return user?.role === "admin" && incident.status !== "RESOLVED";
+	};
+
 	// Pagination
 	const indexOfLastItem = currentPage * itemsPerPage;
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -291,62 +380,64 @@ const IncidentAdminDashboard = () => {
 					</p>
 				</div>
 
-				{/* Statistics Cards */}
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-					<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">
-									Total Incidents
-								</p>
-								<p className="text-2xl font-bold text-gray-900">
-									{stats.totalIncidents}
-								</p>
+				{/* Statistics Cards - ONLY FOR ADMIN */}
+				{user?.role === "admin" && stats && (
+					<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-sm font-medium text-gray-600">
+										Total Incidents
+									</p>
+									<p className="text-2xl font-bold text-gray-900">
+										{stats.totalIncidents}
+									</p>
+								</div>
+								<FileText className="h-8 w-8 text-[#17AAEC]" />
 							</div>
-							<FileText className="h-8 w-8 text-[#17AAEC]" />
 						</div>
-					</div>
 
-					<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">
-									Open Incidents
-								</p>
-								<p className="text-2xl font-bold text-red-600">
-									{stats.byStatus.OPEN}
-								</p>
+						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-sm font-medium text-gray-600">
+										Open Incidents
+									</p>
+									<p className="text-2xl font-bold text-red-600">
+										{stats.byStatus.OPEN}
+									</p>
+								</div>
+								<AlertTriangle className="h-8 w-8 text-red-500" />
 							</div>
-							<AlertTriangle className="h-8 w-8 text-red-500" />
 						</div>
-					</div>
 
-					<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">Resolved</p>
-								<p className="text-2xl font-bold text-green-600">
-									{stats.resolvedIncidents}
-								</p>
+						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-sm font-medium text-gray-600">Resolved</p>
+									<p className="text-2xl font-bold text-green-600">
+										{stats.resolvedIncidents}
+									</p>
+								</div>
+								<CheckCircle className="h-8 w-8 text-green-500" />
 							</div>
-							<CheckCircle className="h-8 w-8 text-green-500" />
 						</div>
-					</div>
 
-					<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">
-									Avg. Resolution
-								</p>
-								<p className="text-2xl font-bold text-blue-600">
-									{stats.averageResolutionTime}h
-								</p>
+						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-sm font-medium text-gray-600">
+										Avg. Resolution
+									</p>
+									<p className="text-2xl font-bold text-blue-600">
+										{stats.averageResolutionTime}h
+									</p>
+								</div>
+								<Clock className="h-8 w-8 text-blue-500" />
 							</div>
-							<Clock className="h-8 w-8 text-blue-500" />
 						</div>
 					</div>
-				</div>
+				)}
 
 				{/* Filters and Search */}
 				<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -403,15 +494,21 @@ const IncidentAdminDashboard = () => {
 						</div>
 
 						{user?.role === "supportWorker" && (
-							<Dialog.Root>
+							<Dialog.Root
+								open={modals.create}
+								onOpenChange={(open) => !open && closeModal("create")}
+							>
 								<Dialog.Trigger asChild>
-									<button className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors flex items-center gap-2">
+									<button
+										onClick={() => openModal("create")}
+										className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors flex items-center gap-2"
+									>
 										<Plus className="h-4 w-4" />
 										Create Incident
 									</button>
 								</Dialog.Trigger>
 								<CreateIncidentModal
-									onClose={() => setShowDetailsModal(false)}
+									onClose={() => closeModal("create")}
 									onSubmit={handleCreateIncident}
 								/>
 							</Dialog.Root>
@@ -487,48 +584,39 @@ const IncidentAdminDashboard = () => {
 										</td>
 										<td className="px-6 py-4">
 											<div className="flex items-center gap-2">
-												<Dialog.Root>
-													<Dialog.Trigger asChild>
-														<button
-															onClick={() => setSelectedIncident(incident)}
-															className="text-[#17AAEC] hover:text-[#1599D3] p-1"
-														>
-															<Eye className="h-4 w-4" />
-														</button>
-													</Dialog.Trigger>
-													{selectedIncident && (
-														<IncidentDetailsModal
-															incident={selectedIncident}
-															onStatusUpdate={handleStatusUpdate}
-															onResolve={() => {
-																setShowDetailsModal(false);
-																setShowResolveModal(true);
-															}}
-															onClose={() => setSelectedIncident(null)}
-														/>
-													)}
-												</Dialog.Root>
+												{/* View Button - Available for all roles */}
+												<button
+													onClick={() => openModal("details", incident)}
+													className="text-[#17AAEC] hover:text-[#1599D3] p-1"
+													title="View Details"
+												>
+													<Eye className="h-4 w-4" />
+												</button>
 
-												{user.role === "admin" &&
-													incident.status !== "RESOLVED" && (
-														<Dialog.Root>
-															<Dialog.Trigger asChild>
-																<button
-																	onClick={() => setSelectedIncident(incident)}
-																	className="text-green-600 hover:text-green-800 p-1"
-																>
-																	<CheckCircle className="h-4 w-4" />
-																</button>
-															</Dialog.Trigger>
-															{selectedIncident && (
-																<ResolveIncidentModal
-																	incidentId={selectedIncident._id}
-																	onResolve={handleResolveIncident}
-																	onClose={() => setSelectedIncident(null)}
-																/>
-															)}
-														</Dialog.Root>
-													)}
+												{/* Resolve Button - Only for admin on non-resolved incidents */}
+												{canResolveIncident(incident) && (
+													<button
+														onClick={() => openModal("resolve", incident)}
+														className="text-green-600 hover:text-green-800 p-1"
+														title="Resolve Incident"
+													>
+														<CheckCircle className="h-4 w-4" />
+													</button>
+												)}
+
+												{/* Delete Button - Available based on role permissions */}
+												{canDeleteIncident(incident) && (
+													<button
+														onClick={() => {
+															setIncidentToDelete(incident);
+															openModal("delete");
+														}}
+														className="text-red-600 hover:text-red-800 p-1"
+														title="Delete Incident"
+													>
+														<Trash2 className="h-4 w-4" />
+													</button>
+												)}
 											</div>
 										</td>
 									</tr>
@@ -586,83 +674,72 @@ const IncidentAdminDashboard = () => {
 					)}
 				</div>
 			</div>
-		</div>
-	);
-};
 
-const ResolveIncidentModal = ({
-	incidentId,
-	onResolve,
-	onClose,
-}: {
-	incidentId: string;
-	onResolve: (id: string, resolutionNote: string, resolvedBy: string) => void;
-	onClose: () => void;
-}) => {
-	const [resolutionNote, setResolutionNote] = useState("");
-	const { user } = useAuth();
+			{/* Modal Components */}
+			{selectedIncident && (
+				<>
+					{/* Details Modal */}
+					<Dialog.Root
+						open={modals.details}
+						onOpenChange={(open) => !open && closeModal("details")}
+					>
+						<IncidentDetailsModal
+							incident={selectedIncident}
+							onStatusUpdate={handleStatusUpdate}
+							onResolve={() => handleResolveFromDetails(selectedIncident)}
+							onClose={() => closeModal("details")}
+						/>
+					</Dialog.Root>
 
-	return (
-		<Dialog.Portal>
-			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
-			<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-md w-full">
-				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<Dialog.Title className="text-xl font-semibold text-gray-900">
-						Resolve Incident
-					</Dialog.Title>
-					<Dialog.Close asChild>
-						<button
-							onClick={onClose}
-							className="text-gray-400 hover:text-gray-600"
+					{/* Resolve Modal */}
+					{selectedIncident && canResolveIncident(selectedIncident) && (
+						<Dialog.Root
+							open={modals.resolve}
+							onOpenChange={(open) => !open && closeModal("resolve")}
 						>
-							<X className="h-6 w-6" />
-						</button>
-					</Dialog.Close>
-				</div>
-
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						onResolve(incidentId, resolutionNote, user?._id);
-					}}
-				>
-					<div className="p-6">
-						<div className="mb-4">
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Resolution Notes *
-							</label>
-							<textarea
-								name="resolutionNote"
-								required
-								rows={4}
-								className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent"
-								placeholder="Describe how this incident was resolved..."
-								value={resolutionNote}
-								onChange={(e) => setResolutionNote(e.target.value)}
+							<ResolveIncidentModal
+								incidentId={selectedIncident._id}
+								onResolve={handleResolveIncident}
+								onClose={() => closeModal("resolve")}
 							/>
-						</div>
-					</div>
+						</Dialog.Root>
+					)}
+				</>
+			)}
 
-					<div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
-						<Dialog.Close asChild>
+			{/* Delete Confirmation Modal */}
+			<Dialog.Root
+				open={modals.delete}
+				onOpenChange={(open) => !open && closeModal("delete")}
+			>
+				<Dialog.Portal>
+					<Dialog.Overlay className="fixed inset-0 bg-black/50" />
+					<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+						<Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+							Confirm Delete
+						</Dialog.Title>
+						<p className="text-gray-600 mb-6">
+							Are you sure you want to delete this incident? This action cannot
+							be undone.
+						</p>
+						<div className="flex justify-end gap-3">
 							<button
-								type="button"
-								onClick={onClose}
+								onClick={() => closeModal("delete")}
 								className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
 							>
 								Cancel
 							</button>
-						</Dialog.Close>
-						<button
-							type="submit"
-							className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-						>
-							Resolve Incident
-						</button>
-					</div>
-				</form>
-			</Dialog.Content>
-		</Dialog.Portal>
+							<button
+								onClick={handleDeleteIncident}
+								className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+							>
+								Delete
+							</button>
+						</div>
+					</Dialog.Content>
+				</Dialog.Portal>
+			</Dialog.Root>
+		</div>
 	);
 };
 

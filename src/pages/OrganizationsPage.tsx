@@ -173,7 +173,9 @@ export default function OrganizationsPage() {
 					<p className="text-gray-600 mb-4">
 						There was an error loading your organizations. Please try again.
 					</p>
-					<Button onClick={() => refetch()}>Try Again</Button>
+					<Button color="#008CFF" onClick={() => refetch()}>
+						Try Again
+					</Button>
 				</div>
 			</div>
 		);
