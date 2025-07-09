@@ -346,7 +346,7 @@ export function InviteManagement() {
                           </Button>
                         </Link>
 
-                        <Link to={`/admin/chat/${invitation.workerId}`}>
+                        {/* <Link to={`/admin/chat/${invitation.workerId}`}>
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -355,9 +355,9 @@ export function InviteManagement() {
                             <MessageCircle className="h-3 w-3 mr-1" />
                             Chat
                           </Button>
-                        </Link>
+                        </Link> */}
 
-                        {invitation.status === "pending" && (
+                        {/* {invitation.status === "pending" && (
                           <Button
                             size="sm"
                             className="h-8 bg-guardian hover:bg-guardian/90 text-white"
@@ -366,7 +366,7 @@ export function InviteManagement() {
                             <Send className="h-3 w-3 mr-1" />
                             Make Available
                           </Button>
-                        )}
+                        )} */}
                       </div>
                     </TableCell>
                   </TableRow>

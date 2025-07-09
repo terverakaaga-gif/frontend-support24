@@ -215,7 +215,7 @@ const BatchInvoicesManagement: React.FC = () => {
     const endItem = Math.min(page * (filters.limit || 20), totalResults);
 
     return (
-      <div className="flex items-center justify-between space-x-2 py-4">
+      <div className="flex items-center justify-between space-x-2 py-4 m-4">
         <div className="text-sm text-gray-500">
           Showing {startItem} to {endItem} of {totalResults} results
         </div>
@@ -328,7 +328,7 @@ const BatchInvoicesManagement: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -521,14 +521,14 @@ const BatchInvoicesManagement: React.FC = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Batch Number</TableHead>
-                    <TableHead>Invoice Number</TableHead>
+                    {/* <TableHead>Invoice Number</TableHead> */}
                     <TableHead>Worker</TableHead>
                     <TableHead>Participant</TableHead>
                     <TableHead>Period</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Email Status</TableHead>
                     <TableHead>Total Amount</TableHead>
-                    <TableHead>Generated</TableHead>
+                    {/* <TableHead>Generated</TableHead> */}
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -538,9 +538,9 @@ const BatchInvoicesManagement: React.FC = () => {
                       <TableCell className="font-medium">
                         {invoice.batchNumber}
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         {invoice.invoiceNumber}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
@@ -575,12 +575,12 @@ const BatchInvoicesManagement: React.FC = () => {
                       <TableCell className="font-medium">
                         {formatCurrency(invoice.invoiceTotal)}
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <div className="text-sm">
                           <p>{formatDate(invoice.generatedAt)}</p>
                           <p className="text-gray-600">{format(new Date(invoice.generatedAt), "h:mm a")}</p>
                         </div>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <Button
