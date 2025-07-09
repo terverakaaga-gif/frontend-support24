@@ -71,7 +71,7 @@ export default function Login() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-guardian/90 via-guardian to-guardian/90 p-12 flex-col justify-between relative overflow-hidden"
+        className="hidden lg:flex lg:w-1/2 bg-[#2195F2] p-12 flex-col justify-between relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0)_60%)]"></div>
 
@@ -82,9 +82,10 @@ export default function Login() {
           className="z-10 mb-auto"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" />
+            {/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
+            <img src="/favicon.svg" alt="Guardian Care Pro" className="h-10 w-10" />
             <span className="text-2xl font-bold text-white drop-shadow-sm">
-              Guardian Care Pro
+              GuardianCare+
             </span>
           </div>
         </motion.div>
@@ -177,7 +178,7 @@ export default function Login() {
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                           <Input
-                            placeholder="your@email.com"
+                            placeholder="dylan.smith@gmail.com"
                             type="email"
                             className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                             {...field}
@@ -228,12 +229,12 @@ export default function Login() {
                 />
 
                 <div className="flex justify-end">
-                  <a
-                    href="#"
+                  <Link
+                    to="/forgot-password"
                     className="text-sm text-guardian hover:text-guardian/80 hover:underline transition-colors"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
 

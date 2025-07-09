@@ -45,23 +45,23 @@ export function StatCard({
         {/* Content */}
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-muted-foreground group-hover:text-[#1e3b93] transition-colors">
+            <h3 className="text-sm font-medium text-muted-foreground group-hover:text-guardian transition-colors">
               {title}
             </h3>
             <div
               className={cn(
                 "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200",
-                "bg-[#1e3b93]/10 group-hover:bg-[#1e3b93]/20",
+                "bg-guardian/10 group-hover:bg-guardian/20",
                 iconClassName
               )}
             >
-              <div className="text-[#1e3b93]">{icon}</div>
+              <div className="text-guardian">{icon}</div>
             </div>
           </div>
 
           <div className="space-y-1">
             <div className="flex items-baseline gap-2">
-              <div className="text-2xl font-bold tracking-tight transition-transform group-hover:scale-105 text-[#1e3b93]">
+              <div className="text-2xl font-bold tracking-tight transition-transform group-hover:scale-105 text-guardian">
                 {value}
               </div>
               {change && (
@@ -84,7 +84,7 @@ export function StatCard({
             </div>
 
             {additionalText && (
-              <div className="text-sm text-muted-foreground group-hover:text-[#1e3b93]/60">
+              <div className="text-sm text-muted-foreground group-hover:text-guardian/60">
                 {additionalText}
               </div>
             )}
@@ -99,7 +99,7 @@ export function StatCard({
                   ? "bg-emerald-500"
                   : change
                   ? "bg-red-500"
-                  : "bg-[#1e3b93]"
+                  : "bg-guardian"
               )}
             />
           </div>

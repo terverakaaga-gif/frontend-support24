@@ -2,6 +2,7 @@
 
 import { post } from '../apiClient';
 import { tokenStorage } from '../apiClient';
+import apiClient from '../apiClient';
 import { 
   User, 
   UserRegistrationInput, 
@@ -47,13 +48,23 @@ interface ResendVerificationResponse {
 }
 
 interface ForgotPasswordResponse {
-  userId: string;
+  success: boolean;
+  code: number;
+  message: string;
+  data: {
+    userId: string;
+  };
+  error: null;
 }
 
 interface ResetPasswordData {
   userId: string;
   otpCode: string;
   password: string;
+}
+
+interface ForgotPasswordInput {
+  email: string;
 }
 
 // Helper function to determine user type and cast accordingly
@@ -113,8 +124,10 @@ const authService = {
   },
   
   // Forgot password - send OTP to email
-  forgotPassword: async (email: string): Promise<ForgotPasswordResponse> => {
-    return await post<ForgotPasswordResponse>('/auth/forgot-password', { email });
+  forgotPassword: async (data: ForgotPasswordInput): Promise<ForgotPasswordResponse> => {
+    // Use apiClient directly to get the full response, not just the data property
+    const response = await apiClient.post('/auth/forgot-password', data);
+    return response.data as ForgotPasswordResponse;
   },
   
   // Reset password with OTP

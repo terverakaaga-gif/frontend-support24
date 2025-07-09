@@ -7,7 +7,13 @@ import analyticsService, {
   PlatformSummary,
   RealTimeMetrics,
   AnalyticsFilters,
-  ExportOptions
+  ExportOptions,
+  ParticipantOverviewAnalytics,
+  ParticipantServiceAnalytics,
+  SupportWorkerOverviewAnalytics,
+  SupportWorkerFinancialAnalytics,
+  SupportWorkerScheduleAnalytics,
+  SupportWorkerPerformanceAnalytics
 } from '../api/services/analyticsService';
 import { DateRange } from '../entities/Analytics';
 import { toast } from 'sonner';
@@ -27,6 +33,18 @@ export const analyticsKeys = {
     [...analyticsKeys.all, 'platform-summary', dateRange] as const,
   realTimeMetrics: () => 
     [...analyticsKeys.all, 'real-time'] as const,
+  participantOverview: (dateRange?: string, comparison?: boolean) => 
+    [...analyticsKeys.all, 'participant-overview', dateRange, comparison] as const,
+  participantServices: (dateRange?: string) => 
+    [...analyticsKeys.all, 'participant-services', dateRange] as const,
+  supportWorkerOverview: (dateRange?: string, comparison?: boolean) => 
+    [...analyticsKeys.all, 'support-worker-overview', dateRange, comparison] as const,
+  supportWorkerFinancial: (dateRange?: string) => 
+    [...analyticsKeys.all, 'support-worker-financial', dateRange] as const,
+  supportWorkerSchedule: (dateRange?: string) => 
+    [...analyticsKeys.all, 'support-worker-schedule', dateRange] as const,
+  supportWorkerPerformance: (dateRange?: string) => 
+    [...analyticsKeys.all, 'support-worker-performance', dateRange] as const,
 };
 
 // Hook to get dashboard overview analytics
@@ -141,5 +159,85 @@ export const useExportAnalyticsData = (): UseMutationResult<
       console.error('Export failed:', error);
       toast.error('Failed to export analytics data. Please try again.');
     }
+  });
+};
+
+// Hook to get participant overview analytics
+export const useGetParticipantOverview = (
+  dateRange: string = 'month',
+  comparison: boolean = true,
+  enabled: boolean = true
+): UseQueryResult<ParticipantOverviewAnalytics> => {
+  return useQuery({
+    queryKey: analyticsKeys.participantOverview(dateRange, comparison),
+    queryFn: () => analyticsService.getParticipantOverview(dateRange, comparison),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled
+  });
+};
+
+// Hook to get participant service analytics
+export const useGetParticipantServices = (
+  dateRange: string = 'month',
+  enabled: boolean = true
+): UseQueryResult<ParticipantServiceAnalytics> => {
+  return useQuery({
+    queryKey: analyticsKeys.participantServices(dateRange),
+    queryFn: () => analyticsService.getParticipantServices(dateRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled
+  });
+};
+
+// Hook to get support worker overview analytics
+export const useGetSupportWorkerOverview = (
+  dateRange: string = 'month',
+  comparison: boolean = true,
+  enabled: boolean = true
+): UseQueryResult<SupportWorkerOverviewAnalytics> => {
+  return useQuery({
+    queryKey: analyticsKeys.supportWorkerOverview(dateRange, comparison),
+    queryFn: () => analyticsService.getSupportWorkerOverview(dateRange, comparison),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled
+  });
+};
+
+// Hook to get support worker financial analytics
+export const useGetSupportWorkerFinancial = (
+  dateRange: string = 'month',
+  enabled: boolean = true
+): UseQueryResult<SupportWorkerFinancialAnalytics> => {
+  return useQuery({
+    queryKey: analyticsKeys.supportWorkerFinancial(dateRange),
+    queryFn: () => analyticsService.getSupportWorkerFinancial(dateRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled
+  });
+};
+
+// Hook to get support worker schedule analytics
+export const useGetSupportWorkerSchedule = (
+  dateRange: string = 'month',
+  enabled: boolean = true
+): UseQueryResult<SupportWorkerScheduleAnalytics> => {
+  return useQuery({
+    queryKey: analyticsKeys.supportWorkerSchedule(dateRange),
+    queryFn: () => analyticsService.getSupportWorkerSchedule(dateRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled
+  });
+};
+
+// Hook to get support worker performance analytics
+export const useGetSupportWorkerPerformance = (
+  dateRange: string = 'month',
+  enabled: boolean = true
+): UseQueryResult<SupportWorkerPerformanceAnalytics> => {
+  return useQuery({
+    queryKey: analyticsKeys.supportWorkerPerformance(dateRange),
+    queryFn: () => analyticsService.getSupportWorkerPerformance(dateRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled
   });
 };
