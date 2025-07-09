@@ -28,6 +28,7 @@ import {
 	FileText,
 	BarChart3,
 	MessageCircle,
+	FileStack
 } from "lucide-react";
 import {
 	DropdownMenu,
