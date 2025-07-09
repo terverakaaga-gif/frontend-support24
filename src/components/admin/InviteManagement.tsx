@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   MessageCircle,
   ChevronDown,
@@ -42,340 +43,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { useGetFlattenedInvites } from "@/hooks/useInviteHooks";
+import { FlattenedInvite } from "@/entities/Invitation";
 
-// Define interfaces based on API response
-interface RateTimeBand {
-  _id: string;
-  name: string;
-  code: string;
-  startTime?: string;
-  endTime?: string;
-  isActive: boolean;
-}
-
-interface ShiftRate {
-  rateTimeBandId: RateTimeBand;
-  hourlyRate: number;
-  _id: string;
-}
-
-interface ProposedRates {
-  baseHourlyRate: number;
-  shiftRates: ShiftRate[];
-}
-
-interface Invite {
-  inviteId: string;
-  workerId: string;
-  workerName: string;
-  inviteDate: string;
-  proposedRates: ProposedRates;
-  notes: string;
-}
-
-interface OrganizationInvites {
-  organizationId: string;
-  organizationName: string;
-  participantId: string;
-  participantName: string;
-  invites: Invite[];
-}
-
-// Mock data with real API structure
-const mockApiResponse: OrganizationInvites[] = [
-  {
-    organizationId: "681cbad118cb004b3456b169",
-    organizationName: "Michael's Organization",
-    participantId: "681cbad018cb004b3456b166",
-    participantName: "Michael Hishen",
-    invites: [
-      {
-        inviteId: "681cbff42481ff70cf87ae9a",
-        workerId: "6813df5a4d13ec4234a33960",
-        workerName: "Priscilla Friday",
-        inviteDate: "2025-05-08T14:30:12.827Z",
-        proposedRates: {
-          baseHourlyRate: 35,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true,
-              },
-              hourlyRate: 35,
-              _id: "681cbff42481ff70cf87ae9b",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true,
-              },
-              hourlyRate: 40,
-              _id: "681cbff42481ff70cf87ae9c",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true,
-              },
-              hourlyRate: 45,
-              _id: "681cbff42481ff70cf87ae9d",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true,
-              },
-              hourlyRate: 50,
-              _id: "681cbff42481ff70cf87ae9e",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true,
-              },
-              hourlyRate: 65,
-              _id: "681cbff42481ff70cf87ae9f",
-            },
-          ],
-        },
-        notes:
-          "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help.",
-      },
-    ],
-  },
-  {
-    organizationId: "681cc78768061d1d6cb4b670",
-    organizationName: "Adams's Organization",
-    participantId: "681cc78668061d1d6cb4b66d",
-    participantName: "Adams Ben",
-    invites: [
-      {
-        inviteId: "681cc85968061d1d6cb4b67c",
-        workerId: "68148b23f8b7c8445a42a932",
-        workerName: "John Doe",
-        inviteDate: "2025-05-08T15:06:01.095Z",
-        proposedRates: {
-          baseHourlyRate: 30,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true,
-              },
-              hourlyRate: 30,
-              _id: "681cc85968061d1d6cb4b67d",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true,
-              },
-              hourlyRate: 35,
-              _id: "681cc85968061d1d6cb4b67e",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true,
-              },
-              hourlyRate: 40,
-              _id: "681cc85968061d1d6cb4b67f",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true,
-              },
-              hourlyRate: 45,
-              _id: "681cc85968061d1d6cb4b680",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true,
-              },
-              hourlyRate: 60,
-              _id: "681cc85968061d1d6cb4b681",
-            },
-          ],
-        },
-        notes:
-          "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help.",
-      },
-      {
-        inviteId: "681d8f0c68061d1d6cb4b6d0",
-        workerId: "6813df5a4d13ec4234a33960",
-        workerName: "Priscilla Friday",
-        inviteDate: "2025-05-09T05:13:48.065Z",
-        proposedRates: {
-          baseHourlyRate: 30,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true,
-              },
-              hourlyRate: 30,
-              _id: "681d8f0c68061d1d6cb4b6d1",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true,
-              },
-              hourlyRate: 35,
-              _id: "681d8f0c68061d1d6cb4b6d2",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true,
-              },
-              hourlyRate: 40,
-              _id: "681d8f0c68061d1d6cb4b6d3",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true,
-              },
-              hourlyRate: 45,
-              _id: "681d8f0c68061d1d6cb4b6d4",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true,
-              },
-              hourlyRate: 60,
-              _id: "681d8f0c68061d1d6cb4b6d5",
-            },
-          ],
-        },
-        notes:
-          "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help.",
-      },
-      {
-        inviteId: "681d916268061d1d6cb4b712",
-        workerId: "68147c5fc76eca4fd2ec3efa",
-        workerName: "Samson Adaramola",
-        inviteDate: "2025-05-09T05:23:46.302Z",
-        proposedRates: {
-          baseHourlyRate: 30,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true,
-              },
-              hourlyRate: 30,
-              _id: "681d916268061d1d6cb4b713",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true,
-              },
-              hourlyRate: 35,
-              _id: "681d916268061d1d6cb4b714",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true,
-              },
-              hourlyRate: 40,
-              _id: "681d916268061d1d6cb4b715",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true,
-              },
-              hourlyRate: 45,
-              _id: "681d916268061d1d6cb4b716",
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true,
-              },
-              hourlyRate: 60,
-              _id: "681d916268061d1d6cb4b717",
-            },
-          ],
-        },
-        notes:
-          "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help.",
-      },
-    ],
-  },
-];
+// Remove all mock data - using real API data now
 
 // Helper function to generate an avatar placeholder
 const getAvatarPlaceholder = (name: string): string => {
@@ -386,56 +57,19 @@ const getAvatarPlaceholder = (name: string): string => {
   return name.substring(0, 2).toUpperCase();
 };
 
-// Flatten invites for table display
-const flattenInvites = (orgs: OrganizationInvites[]) => {
-  const result: {
-    inviteId: string;
-    workerId: string;
-    workerName: string;
-    organizationName: string;
-    organizationId: string;
-    participantId: string;
-    participantName: string;
-    inviteDate: string;
-    proposedRates: ProposedRates;
-    notes: string;
-    status: string;
-  }[] = [];
-
-  orgs.forEach((org) => {
-    org.invites.forEach((invite) => {
-      result.push({
-        ...invite,
-        organizationName: org.organizationName,
-        organizationId: org.organizationId,
-        participantId: org.participantId,
-        participantName: org.participantName,
-        status: "pending",
-      });
-    });
-  });
-
-  return result;
-};
-
 // Format currency
 const formatCurrency = (amount: number) => {
   return `$${amount}`;
 };
 
 export function InviteManagement() {
-  const [apiData, setApiData] = useState<OrganizationInvites[]>(mockApiResponse);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [flattenedInvites, setFlattenedInvites] = useState<any[]>([]);
 
   const navigate = useNavigate();
 
-  // Process and flatten the invites when apiData changes
-  useEffect(() => {
-    const flattened = flattenInvites(apiData);
-    setFlattenedInvites(flattened);
-  }, [apiData]);
+  // Fetch data using the hook
+  const { data: flattenedInvites = [], isLoading, error, refetch } = useGetFlattenedInvites();
 
   // Filter invitations based on search query and status filter
   const filteredInvitations = flattenedInvites.filter((invite) => {
@@ -543,7 +177,7 @@ export function InviteManagement() {
             </div>
             <Button
               variant="outline"
-              onClick={() => setApiData(mockApiResponse)}
+              onClick={() => refetch()}
               className="border-guardian/20 hover:bg-guardian/5"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -556,37 +190,72 @@ export function InviteManagement() {
       {/* Main Table */}
       <Card className="border-guardian/10 shadow-sm overflow-hidden">
         <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-guardian/5">
-              <TableRow className="border-guardian/10">
-                <TableHead className="font-semibold text-guardian">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Participant
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="p-6">
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                    <Skeleton className="h-8 w-24" />
                   </div>
-                </TableHead>
-                <TableHead className="font-semibold text-guardian">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Support Worker
-                  </div>
-                </TableHead>
-                <TableHead className="font-semibold text-guardian">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    Status
-                  </div>
-                </TableHead>
-                <TableHead className="font-semibold text-guardian">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Date
-                  </div>
-                </TableHead>
-                <TableHead className="text-right font-semibold text-guardian">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+                ))}
+              </div>
+            </div>
+          ) : error ? (
+            <div className="p-6 text-center">
+              <div className="text-red-600">
+                <p>Error loading invitations. Please try again.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => refetch()} 
+                  className="mt-4"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Retry
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-guardian/5">
+                <TableRow className="border-guardian/10">
+                  <TableHead className="font-semibold text-guardian">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      Participant
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-semibold text-guardian">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      Support Worker
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-semibold text-guardian">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      Status
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-semibold text-guardian">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Date
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right font-semibold text-guardian">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
               {filteredInvitations.length === 0 ? (
                 <TableRow>
                   <TableCell
@@ -705,6 +374,7 @@ export function InviteManagement() {
               )}
             </TableBody>
           </Table>
+          )}
         </CardContent>
       </Card>
     </div>
