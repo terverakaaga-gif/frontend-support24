@@ -28,6 +28,7 @@ import {
 	FileText,
 	BarChart3,
 	MessageCircle,
+	FileStack
 } from "lucide-react";
 import {
 	DropdownMenu,
@@ -140,31 +141,37 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 							</div>
 						</div>
 
-						<div className="px-3 py-2">
-							<h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-								Bookings
-							</h2>
-							<div className="space-y-1">
-								<NavItem
-									to="/admin/shifts"
-									icon={<Calendar size={20} />}
-									label="Shifts"
-									active={isActive("/admin/shifts")}
-								/>
-								<NavItem
-									to="/admin/timesheets"
-									icon={<ReceiptText size={20} />}
-									label="Timesheets"
-									active={isActive("/admin/timesheets")}
-								/>
-								<NavItem
-									to="/admin/rate-time-band"
-									icon={<CalendarSync size={20} />}
-									label="Rate-Time-Band"
-									active={isActive("/admin/rate-time-band")}
-								/>
-							</div>
-						</div>
+            <div className="px-3 py-2">
+              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+                Bookings
+              </h2>
+              <div className="space-y-1">
+                <NavItem
+                  to="/admin/shifts"
+                  icon={<Calendar size={20} />}
+                  label="Shifts"
+                  active={isActive("/admin/shifts")}
+                />
+                <NavItem
+                  to="/admin/timesheets"
+                  icon={<ReceiptText size={20} />}
+                  label="Timesheets"
+                  active={isActive("/admin/timesheets")}
+                />
+                <NavItem
+                  to="/admin/batch-invoices"
+                  icon={<FileStack size={20} />}
+                  label="Batch Invoices"
+                  active={isActive("/admin/batch-invoices")}
+                />
+                <NavItem
+                  to="/admin/rate-time-band"
+                  icon={<CalendarSync size={20} />}
+                  label="Rate-Time-Band"
+                  active={isActive("/admin/rate-time-band")}
+                />
+              </div>
+            </div>
 
 						<div className="px-3 py-2">
 							<h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
