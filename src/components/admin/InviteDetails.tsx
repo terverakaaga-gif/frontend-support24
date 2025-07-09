@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, 
@@ -32,337 +32,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
+import { useGetInviteById } from "@/hooks/useInviteHooks";
+import { InviteAcceptanceForm } from "./InviteAcceptanceForm";
+import { InviteDeclineForm } from "./InviteDeclineForm";
 
-// Define interfaces based on API response (same as in InviteManagement)
-interface RateTimeBand {
-  _id: string;
-  name: string;
-  code: string;
-  startTime?: string;
-  endTime?: string;
-  isActive: boolean;
-}
-
-interface ShiftRate {
-  rateTimeBandId: RateTimeBand;
-  hourlyRate: number;
-  _id: string;
-}
-
-interface ProposedRates {
-  baseHourlyRate: number;
-  shiftRates: ShiftRate[];
-}
-
-interface Invite {
-  inviteId: string;
-  workerId: string;
-  workerName: string;
-  inviteDate: string;
-  proposedRates: ProposedRates;
-  notes: string;
-}
-
-interface OrganizationInvites {
-  organizationId: string;
-  organizationName: string;
-  participantId: string;
-  participantName: string;
-  invites: Invite[];
-}
-
-// Mock API response (same as in InviteManagement)
-const mockApiResponse: OrganizationInvites[] = [
-  {
-    organizationId: "681cbad118cb004b3456b169",
-    organizationName: "Michael's Organization",
-    participantId: "681cbad018cb004b3456b166",
-    participantName: "Michael Hishen",
-    invites: [
-      {
-        inviteId: "681cbff42481ff70cf87ae9a",
-        workerId: "6813df5a4d13ec4234a33960",
-        workerName: "Priscilla Friday",
-        inviteDate: "2025-05-08T14:30:12.827Z",
-        proposedRates: {
-          baseHourlyRate: 35,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true
-              },
-              hourlyRate: 35,
-              _id: "681cbff42481ff70cf87ae9b"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true
-              },
-              hourlyRate: 40,
-              _id: "681cbff42481ff70cf87ae9c"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true
-              },
-              hourlyRate: 45,
-              _id: "681cbff42481ff70cf87ae9d"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true
-              },
-              hourlyRate: 50,
-              _id: "681cbff42481ff70cf87ae9e"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true
-              },
-              hourlyRate: 65,
-              _id: "681cbff42481ff70cf87ae9f"
-            }
-          ]
-        },
-        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
-      }
-    ]
-  },
-  {
-    organizationId: "681cc78768061d1d6cb4b670",
-    organizationName: "Adams's Organization",
-    participantId: "681cc78668061d1d6cb4b66d",
-    participantName: "Adams Ben",
-    invites: [
-      {
-        inviteId: "681cc85968061d1d6cb4b67c",
-        workerId: "68148b23f8b7c8445a42a932",
-        workerName: "John Doe",
-        inviteDate: "2025-05-08T15:06:01.095Z",
-        proposedRates: {
-          baseHourlyRate: 30,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true
-              },
-              hourlyRate: 30,
-              _id: "681cc85968061d1d6cb4b67d"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true
-              },
-              hourlyRate: 35,
-              _id: "681cc85968061d1d6cb4b67e"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true
-              },
-              hourlyRate: 40,
-              _id: "681cc85968061d1d6cb4b67f"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true
-              },
-              hourlyRate: 45,
-              _id: "681cc85968061d1d6cb4b680"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true
-              },
-              hourlyRate: 60,
-              _id: "681cc85968061d1d6cb4b681"
-            }
-          ]
-        },
-        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
-      },
-      {
-        inviteId: "681d8f0c68061d1d6cb4b6d0",
-        workerId: "6813df5a4d13ec4234a33960",
-        workerName: "Priscilla Friday",
-        inviteDate: "2025-05-09T05:13:48.065Z",
-        proposedRates: {
-          baseHourlyRate: 30,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true
-              },
-              hourlyRate: 30,
-              _id: "681d8f0c68061d1d6cb4b6d1"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true
-              },
-              hourlyRate: 35,
-              _id: "681d8f0c68061d1d6cb4b6d2"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true
-              },
-              hourlyRate: 40,
-              _id: "681d8f0c68061d1d6cb4b6d3"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true
-              },
-              hourlyRate: 45,
-              _id: "681d8f0c68061d1d6cb4b6d4"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true
-              },
-              hourlyRate: 60,
-              _id: "681d8f0c68061d1d6cb4b6d5"
-            }
-          ]
-        },
-        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
-      },
-      {
-        inviteId: "681d916268061d1d6cb4b712",
-        workerId: "68147c5fc76eca4fd2ec3efa",
-        workerName: "Samson Adaramola",
-        inviteDate: "2025-05-09T05:23:46.302Z",
-        proposedRates: {
-          baseHourlyRate: 30,
-          shiftRates: [
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05c",
-                name: "Morning Shift",
-                code: "MORNING",
-                startTime: "06:00",
-                endTime: "14:00",
-                isActive: true
-              },
-              hourlyRate: 30,
-              _id: "681d916268061d1d6cb4b713"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05d",
-                name: "Afternoon Shift",
-                code: "AFTERNOON",
-                startTime: "14:00",
-                endTime: "22:00",
-                isActive: true
-              },
-              hourlyRate: 35,
-              _id: "681d916268061d1d6cb4b714"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05e",
-                name: "Night Shift",
-                code: "NIGHT",
-                startTime: "22:00",
-                endTime: "06:00",
-                isActive: true
-              },
-              hourlyRate: 40,
-              _id: "681d916268061d1d6cb4b715"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d05f",
-                name: "Weekend Shift",
-                code: "WEEKEND",
-                isActive: true
-              },
-              hourlyRate: 45,
-              _id: "681d916268061d1d6cb4b716"
-            },
-            {
-              rateTimeBandId: {
-                _id: "681c6f750ab224ca6685d060",
-                name: "Public Holiday Shift",
-                code: "HOLIDAY",
-                isActive: true
-              },
-              hourlyRate: 60,
-              _id: "681d916268061d1d6cb4b717"
-            }
-          ]
-        },
-        notes: "Looking for regular support 3 days per week, primarily morning shifts with occasional weekend help."
-      }
-    ]
-  }
-];
+// Remove all mock data - using real API data now
 
 // Helper function to generate an avatar placeholder
 const getAvatarPlaceholder = (name: string): string => {
@@ -393,67 +69,55 @@ const formatDate = (dateString: string) => {
 export function InviteDetails() {
   const { inviteId } = useParams<{ inviteId: string }>();
   const navigate = useNavigate();
-  const [inviteDetails, setInviteDetails] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+  const [isAcceptanceFormOpen, setIsAcceptanceFormOpen] = useState(false);
+  const [isDeclineFormOpen, setIsDeclineFormOpen] = useState(false);
 
-  useEffect(() => {
-    // Simulate API call to fetch invite details
-    const fetchInviteDetails = () => {
-      setLoading(true);
-      setTimeout(() => {
-        // Find the invite in the mock data
-        for (const org of mockApiResponse) {
-          for (const invite of org.invites) {
-            if (invite.inviteId === inviteId) {
-              setInviteDetails({
-                ...invite,
-                organizationId: org.organizationId,
-                organizationName: org.organizationName,
-                participantId: org.participantId,
-                participantName: org.participantName,
-                status: "pending" // All invites set to pending as requested
-              });
-              break;
-            }
-          }
-        }
-        setLoading(false);
-      }, 500); // Simulate network delay
-    };
-
-    fetchInviteDetails();
-  }, [inviteId]);
+  // Fetch invite details using the hook
+  const { data: inviteDetails, isLoading, error, refetch } = useGetInviteById(inviteId || "");
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
   const handleMakeAvailable = () => {
-    // toast({
-    //   title: "Invitation Made Available",
-    //   description: `Invitation is now available to ${inviteDetails.workerName}`,
-    // });
-    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=make-available`);
+    toast({
+      title: "Invitation Made Available",
+      description: `Invitation is now available to ${inviteDetails?.workerName}`,
+    });
+    // Note: This action doesn't require API call based on original implementation
+    // navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=make-available`);
   };
 
   const handleAccept = () => {
-    // toast({
-    //   title: "Invitation Accepted",
-    //   description: `You've accepted the invitation from ${inviteDetails.participantName}`,
-    // });
-    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=accept`);
+    setIsAcceptanceFormOpen(true);
+  };
+
+  const handleAcceptanceSuccess = () => {
+    toast({
+      title: "Invitation Accepted",
+      description: `Successfully accepted invitation for ${inviteDetails?.workerName}`,
+    });
+    
+    // Navigate back to invite management page
+    navigate("/admin/invites");
   };
 
   const handleDecline = () => {
-    // toast({
-    //   title: "Invitation Declined",
-    //   description: `You've declined the invitation from ${inviteDetails.participantName}`,
-    // });
-    navigate(`/admin/invites/${inviteDetails.inviteId}/confirm?action=decline`);
+    setIsDeclineFormOpen(true);
   };
 
-  if (loading) {
+  const handleDeclineSuccess = () => {
+    toast({
+      title: "Invitation Declined",
+      description: `Successfully declined invitation for ${inviteDetails?.workerName}`,
+    });
+    
+    // Navigate back to invite management page
+    navigate("/admin/invites");
+  };
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -575,7 +239,7 @@ export function InviteDetails() {
                       <Separator className="my-4" />
                       <h3 className="font-medium mb-4">Shift Rate Breakdown</h3>
                       <div className="space-y-4">
-                        {inviteDetails.proposedRates.shiftRates.map((rate: ShiftRate) => (
+                        {inviteDetails.proposedRates.shiftRates.map((rate: any) => (
                           <div key={rate._id} className="flex items-center justify-between p-3 border border-border rounded-md">
                             <div>
                               <p className="font-medium">{rate.rateTimeBandId.name}</p>
@@ -747,6 +411,26 @@ export function InviteDetails() {
           </Card>
         </div>
       </div>
+
+      {/* Invite Acceptance Form Modal */}
+      {inviteDetails && (
+        <InviteAcceptanceForm
+          invite={inviteDetails}
+          isOpen={isAcceptanceFormOpen}
+          onClose={() => setIsAcceptanceFormOpen(false)}
+          onSuccess={handleAcceptanceSuccess}
+        />
+      )}
+
+      {/* Invite Decline Form Modal */}
+      {inviteDetails && (
+        <InviteDeclineForm
+          invite={inviteDetails}
+          isOpen={isDeclineFormOpen}
+          onClose={() => setIsDeclineFormOpen(false)}
+          onSuccess={handleDeclineSuccess}
+        />
+      )}
     </div>
   );
 }
