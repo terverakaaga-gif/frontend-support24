@@ -361,7 +361,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 	return (
 		<div className="flex min-h-screen">
 			{/* Desktop Sidebar */}
-			<aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-72 border-r bg-gradient-to-b from-background to-muted/20">
+			<aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-72 border-r bg-gradient-to-b from-background to-muted/20 overflow-y-auto">
 				<Sidebar />
 			</aside>
 
@@ -382,9 +382,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 			</Sheet>
 
 			{/* Main Content */}
-			<main className="flex-1 min-h-screen lg:pl-72">
+			<main className="flex-1 min-h-screen lg:pl-72 flex flex-col overflow-hidden">
 				{/* Top Bar */}
-				<div className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6">
+				<div className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6 flex-shrink-0">
 					<div className="flex flex-1 items-center justify-end space-x-4">
 						{user.role === "participant" && (
 							<Button
@@ -438,7 +438,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 				</div>
 
 				{/* Page Content */}
-				<div className="flex-1">{children}</div>
+				<div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
 			</main>
 
 			{/* Support Worker Search Dialog */}
