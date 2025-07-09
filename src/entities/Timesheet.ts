@@ -1,11 +1,13 @@
 // types/timesheet.ts
 
+import { ServiceTypeId } from "./Shift";
+
 export interface Timesheet {
   _id: string;
   shiftId: {
     _id: string;
     isMultiWorkerShift: boolean;
-    serviceType: ServiceType;
+    serviceTypeId: ServiceTypeId;
     shiftId: string;
   };
   shiftIdRef: string;
