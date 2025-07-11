@@ -45,6 +45,8 @@ import TimesheetDetail from "./components/admin/TimesheetDetail";
 import BatchInvoicesPage from "./pages/BatchInvoicesPage";
 import BatchInvoiceDetailPage from "./pages/BatchInvoiceDetailPage";
 import AdminsManagementPage from "./pages/AdminsManagementPage";
+import ServiceTypesManagementPage from "./pages/ServiceTypesManagementPage";
+import ServiceTypeDetailPage from "./pages/ServiceTypeDetailPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
 import ParticipantOrganizationsPage from "./pages/ParticipantOrganizationsPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
@@ -210,6 +212,8 @@ const AppRoutes = () => {
 								<Route path="/timesheets/:id" element={<TimesheetDetail />} />
                 <Route path="/batch-invoices" element={<BatchInvoicesPage />} />
                 <Route path="/batch-invoices/:id" element={<BatchInvoiceDetailPage />} />
+								<Route path="/service-types" element={<ServiceTypesManagementPage />} />
+								<Route path="/service-types/:id" element={<ServiceTypeDetailPage />} />
 								<Route path="/incidents" element={<IncidentAdminDashboard />} />
 								<Route path="/chats" element={<ChatsList />} />
 								<Route path="/chat/:workerId" element={<AdminChat />} />

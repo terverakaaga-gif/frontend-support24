@@ -138,6 +138,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 									label="Analytics"
 									active={isActive("/admin/analytics")}
 								/>
+								<NavItem
+									to="/admin/service-types"
+									icon={<Settings size={20} />}
+									label="Service Types"
+									active={isActive("/admin/service-types")}
+								/>
 							</div>
 						</div>
 
