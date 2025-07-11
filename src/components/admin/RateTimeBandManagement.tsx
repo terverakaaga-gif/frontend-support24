@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Table, 
@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Search, 
   Plus, 
@@ -41,131 +42,55 @@ import {
   Moon,
   Bed,
   Calendar as CalendarIcon,
-  DollarSign
+  DollarSign,
+  RefreshCw
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-
-// Define the interface for the time band data
-interface RateTimeBand {
-  _id: string;
-  name: string;
-  code: string;
-  startTime?: string;
-  endTime?: string;
-  description: string;
-  isWeekend: boolean;
-  isPublicHoliday: boolean;
-  isSleepover: boolean;
-  isActive: boolean;
-  baseRateMultiplier: number;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Mock data
-const mockTimeBands: RateTimeBand[] = [
-  {
-    "_id": "681c6f750ab224ca6685d05d",
-    "name": "Afternoon Shift",
-    "code": "AFTERNOON",
-    "startTime": "14:00",
-    "endTime": "22:00",
-    "description": "Early afternoon to late evening shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.660Z",
-    "updatedAt": "2025-05-08T08:46:45.660Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05c",
-    "name": "Morning Shift",
-    "code": "MORNING",
-    "startTime": "06:00",
-    "endTime": "14:00",
-    "description": "Early morning to early afternoon shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.659Z",
-    "updatedAt": "2025-05-08T08:46:45.659Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05e",
-    "name": "Night Shift",
-    "code": "NIGHT",
-    "startTime": "22:00",
-    "endTime": "06:00",
-    "description": "Overnight shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": true,
-    "isActive": true,
-    "baseRateMultiplier": 1.25,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.660Z",
-    "updatedAt": "2025-05-08T08:46:45.660Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d060",
-    "name": "Public Holiday Shift",
-    "code": "HOLIDAY",
-    "description": "Any shift during a public holiday",
-    "isWeekend": false,
-    "isPublicHoliday": true,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 2,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.662Z",
-    "updatedAt": "2025-05-08T08:46:45.662Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05f",
-    "name": "Weekend Shift",
-    "code": "WEEKEND",
-    "description": "Any shift during the weekend",
-    "isWeekend": true,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1.5,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.661Z",
-    "updatedAt": "2025-05-08T08:46:45.661Z"
-  }
-];
+import { toast } from "sonner";
+import { 
+  useGetRateTimeBands, 
+  useDeleteRateTimeBand 
+} from "@/hooks/useRateTimeBandHooks";
+import { RateTimeBand, RateTimeBandFilters } from "@/entities/RateTimeBand";
 
 export function RateTimeBandsManagement() {
   const navigate = useNavigate();
-  const [timeBands, setTimeBands] = useState<RateTimeBand[]>(mockTimeBands);
   const [searchQuery, setSearchQuery] = useState("");
   const [showInactive, setShowInactive] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // Filter time bands based on search query and active status
-  const filteredTimeBands = timeBands.filter(band => {
-    const matchesSearch = 
-      band.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      band.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      band.description.toLowerCase().includes(searchQuery.toLowerCase());
+  
+  // Create filters for API call
+  const filters: RateTimeBandFilters = useMemo(() => {
+    const filterObj: RateTimeBandFilters = {};
     
-    const matchesStatus = showInactive ? true : band.isActive;
+    if (!showInactive) {
+      filterObj.isActive = true;
+    }
     
-    return matchesSearch && matchesStatus;
-  });
+    if (searchQuery.trim()) {
+      filterObj.search = searchQuery.trim();
+    }
+    
+    // Sort by name by default
+    filterObj.sortField = 'name';
+    filterObj.sortDirection = 'asc';
+    
+    return filterObj;
+  }, [searchQuery, showInactive]);
 
-  // Sort time bands by name
-  const sortedTimeBands = [...filteredTimeBands].sort((a, b) => 
-    a.name.localeCompare(b.name)
-  );
+  // API calls
+  const { data: rateTimeBands = [], isLoading, error } = useGetRateTimeBands(filters);
+  const deleteRateTimeBandMutation = useDeleteRateTimeBand();
+
+  // Client-side filtering for search (in case API doesn't support search)
+  const filteredRateTimeBands = useMemo(() => {
+    if (!searchQuery.trim()) return rateTimeBands;
+    
+    const searchTermLower = searchQuery.toLowerCase();
+    return rateTimeBands.filter(band => 
+      band.name.toLowerCase().includes(searchTermLower) ||
+      band.code.toLowerCase().includes(searchTermLower) ||
+      band.description.toLowerCase().includes(searchTermLower)
+    );
+  }, [rateTimeBands, searchQuery]);
 
   const handleViewTimeBand = (id: string) => {
     navigate(`/admin/rate-time-band/${id}/view`);
@@ -175,17 +100,12 @@ export function RateTimeBandsManagement() {
     navigate(`/admin/rate-time-band/${id}/edit`);
   };
 
-  const handleDeactivateTimeBand = (id: string) => {
-    setTimeBands(prevBands => 
-      prevBands.map(band => 
-        band._id === id ? { ...band, isActive: false } : band
-      )
-    );
-    
-    toast({
-      title: "Rate Time Band Deactivated",
-      description: "The rate time band has been deactivated successfully.",
-    });
+  const handleDeleteTimeBand = async (id: string) => {
+    try {
+      await deleteRateTimeBandMutation.mutateAsync(id);
+    } catch (error) {
+      // Error is handled by the hook
+    }
   };
 
   const handleAddTimeBand = () => {
@@ -217,6 +137,98 @@ export function RateTimeBandsManagement() {
   const formatMultiplier = (multiplier: number) => {
     return `${multiplier}x`;
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <CardTitle>Rate Time Bands</CardTitle>
+              <CardDescription>
+                Manage shift time bands and their rate multipliers
+              </CardDescription>
+            </div>
+            <Skeleton className="h-10 w-40" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <Skeleton className="h-10 w-full sm:w-[300px]" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[250px]">Name</TableHead>
+                    <TableHead className="w-[150px]">Code</TableHead>
+                    <TableHead className="w-[200px]">Time</TableHead>
+                    <TableHead className="w-[100px]">Multiplier</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <CardTitle>Rate Time Bands</CardTitle>
+              <CardDescription>
+                Manage shift time bands and their rate multipliers
+              </CardDescription>
+            </div>
+            <Button onClick={handleAddTimeBand}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Time Band
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center text-red-600">
+              <RefreshCw className="h-8 w-8 mx-auto mb-4" />
+              <p className="font-medium">Error loading rate time bands</p>
+              <p className="text-sm text-gray-600 mt-1">Please try again later</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-4"
+                onClick={() => window.location.reload()}
+              >
+                Retry
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
@@ -271,14 +283,16 @@ export function RateTimeBandsManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedTimeBands.length === 0 ? (
+              {filteredRateTimeBands.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
-                    No time bands found.
+                    {searchQuery.trim() 
+                      ? "No rate time bands match your search." 
+                      : "No rate time bands found."}
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedTimeBands.map((band) => (
+                filteredRateTimeBands.map((band) => (
                   <TableRow key={band._id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
@@ -335,25 +349,27 @@ export function RateTimeBandsManagement() {
                                 variant="outline" 
                                 size="sm" 
                                 className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                disabled={deleteRateTimeBandMutation.isPending}
                               >
                                 <XCircle className="h-4 w-4 mr-2" />
-                                Deactivate
+                                {deleteRateTimeBandMutation.isPending ? "Deleting..." : "Delete"}
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Deactivate Rate Time Band</AlertDialogTitle>
+                                <AlertDialogTitle>Delete Rate Time Band</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to deactivate this rate time band? This will affect any rates that use this time band.
+                                  Are you sure you want to delete this rate time band? This action cannot be undone and will affect any rates that use this time band.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction 
-                                  onClick={() => handleDeactivateTimeBand(band._id)}
+                                  onClick={() => handleDeleteTimeBand(band._id)}
                                   className="bg-red-600 hover:bg-red-700"
+                                  disabled={deleteRateTimeBandMutation.isPending}
                                 >
-                                  Deactivate
+                                  {deleteRateTimeBandMutation.isPending ? "Deleting..." : "Delete"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -366,6 +382,11 @@ export function RateTimeBandsManagement() {
               )}
             </TableBody>
           </Table>
+        </div>
+        
+        {/* Results info */}
+        <div className="text-sm text-muted-foreground mt-4">
+          Showing {filteredRateTimeBands.length} rate time band{filteredRateTimeBands.length !== 1 ? 's' : ''}
         </div>
       </CardContent>
     </Card>

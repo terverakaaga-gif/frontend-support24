@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, 
@@ -11,7 +11,8 @@ import {
   Bed,
   Calendar as CalendarIcon,
   CheckCircle,
-  XCircle
+  XCircle,
+  RefreshCw
 } from "lucide-react";
 import { 
   Card,
@@ -23,126 +24,18 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
-
-// Define the interface for the time band data
-interface RateTimeBand {
-  _id: string;
-  name: string;
-  code: string;
-  startTime?: string;
-  endTime?: string;
-  description: string;
-  isWeekend: boolean;
-  isPublicHoliday: boolean;
-  isSleepover: boolean;
-  isActive: boolean;
-  baseRateMultiplier: number;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Mock data
-const mockTimeBands: RateTimeBand[] = [
-  {
-    "_id": "681c6f750ab224ca6685d05d",
-    "name": "Afternoon Shift",
-    "code": "AFTERNOON",
-    "startTime": "14:00",
-    "endTime": "22:00",
-    "description": "Early afternoon to late evening shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.660Z",
-    "updatedAt": "2025-05-08T08:46:45.660Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05c",
-    "name": "Morning Shift",
-    "code": "MORNING",
-    "startTime": "06:00",
-    "endTime": "14:00",
-    "description": "Early morning to early afternoon shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.659Z",
-    "updatedAt": "2025-05-08T08:46:45.659Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05e",
-    "name": "Night Shift",
-    "code": "NIGHT",
-    "startTime": "22:00",
-    "endTime": "06:00",
-    "description": "Overnight shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": true,
-    "isActive": true,
-    "baseRateMultiplier": 1.25,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.660Z",
-    "updatedAt": "2025-05-08T08:46:45.660Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d060",
-    "name": "Public Holiday Shift",
-    "code": "HOLIDAY",
-    "description": "Any shift during a public holiday",
-    "isWeekend": false,
-    "isPublicHoliday": true,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 2,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.662Z",
-    "updatedAt": "2025-05-08T08:46:45.662Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05f",
-    "name": "Weekend Shift",
-    "code": "WEEKEND",
-    "description": "Any shift during the weekend",
-    "isWeekend": true,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1.5,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.661Z",
-    "updatedAt": "2025-05-08T08:46:45.661Z"
-  }
-];
+import { useGetRateTimeBandById } from "@/hooks/useRateTimeBandHooks";
+import { RateTimeBand } from "@/entities/RateTimeBand";
 
 export function RateTimeBandDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [timeBand, setTimeBand] = useState<RateTimeBand | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate API call to fetch time band details
-    const fetchTimeBandDetails = () => {
-      setLoading(true);
-      setTimeout(() => {
-        const foundBand = mockTimeBands.find(band => band._id === id) || null;
-        setTimeBand(foundBand);
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchTimeBandDetails();
-  }, [id]);
+  // API call to get rate time band details
+  const { data: timeBand, isLoading, error } = useGetRateTimeBandById(id);
 
   const handleGoBack = () => {
     navigate('/admin/rate-time-band');
@@ -156,14 +49,108 @@ export function RateTimeBandDetailsPage() {
     return format(new Date(dateString), 'PPP p');
   };
 
-  if (loading) {
+  // Icon based on shift type
+  const getShiftTypeIcon = (timeBand: RateTimeBand) => {
+    if (timeBand.isPublicHoliday) return <CalendarIcon className="h-6 w-6 text-red-500" />;
+    if (timeBand.isWeekend) return <Sun className="h-6 w-6 text-orange-500" />;
+    if (timeBand.isSleepover) return <Bed className="h-6 w-6 text-blue-500" />;
+    
+    // For regular day shifts based on time
+    if (timeBand.startTime && timeBand.endTime) {
+      const startHour = parseInt(timeBand.startTime.split(':')[0]);
+      if (startHour >= 6 && startHour < 12) return <Sun className="h-6 w-6 text-yellow-500" />;
+      if (startHour >= 12 && startHour < 18) return <Sun className="h-6 w-6 text-orange-400" />;
+      return <Moon className="h-6 w-6 text-indigo-500" />;
+    }
+    
+    return <Clock className="h-6 w-6 text-gray-500" />;
+  };
+
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="container mx-auto py-6 max-w-3xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Time Bands
+          </Button>
+          <Skeleton className="h-8 w-48" />
+        </div>
+        
+        <Card>
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-6 w-6 rounded-full" />
+              <div>
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            <div>
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+              <div className="space-y-4">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+            </div>
+          </CardContent>
+          
+          <CardFooter className="border-t pt-6">
+            <Skeleton className="h-10 w-32" />
+          </CardFooter>
+        </Card>
       </div>
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto py-6 max-w-3xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Time Bands
+          </Button>
+          <h1 className="text-2xl font-bold">Error Loading Rate Time Band</h1>
+        </div>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center text-red-600">
+                <RefreshCw className="h-8 w-8 mx-auto mb-4" />
+                <p className="font-medium">Error loading rate time band details</p>
+                <p className="text-sm text-gray-600 mt-1">Please try again later</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Not found state
   if (!timeBand) {
     return (
       <Card className="max-w-3xl mx-auto mt-8">
@@ -186,23 +173,6 @@ export function RateTimeBandDetailsPage() {
     );
   }
 
-  // Icon based on shift type
-  const getShiftTypeIcon = () => {
-    if (timeBand.isPublicHoliday) return <CalendarIcon className="h-6 w-6 text-red-500" />;
-    if (timeBand.isWeekend) return <Sun className="h-6 w-6 text-orange-500" />;
-    if (timeBand.isSleepover) return <Bed className="h-6 w-6 text-blue-500" />;
-    
-    // For regular day shifts based on time
-    if (timeBand.startTime && timeBand.endTime) {
-      const startHour = parseInt(timeBand.startTime.split(':')[0]);
-      if (startHour >= 6 && startHour < 12) return <Sun className="h-6 w-6 text-yellow-500" />;
-      if (startHour >= 12 && startHour < 18) return <Sun className="h-6 w-6 text-orange-400" />;
-      return <Moon className="h-6 w-6 text-indigo-500" />;
-    }
-    
-    return <Clock className="h-6 w-6 text-gray-500" />;
-  };
-
   return (
     <div className="container mx-auto py-6 max-w-3xl">
       <div className="flex items-center mb-6">
@@ -217,7 +187,7 @@ export function RateTimeBandDetailsPage() {
         <CardHeader className="pb-4 flex flex-row items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
-              {getShiftTypeIcon()}
+              {getShiftTypeIcon(timeBand)}
               <div>
                 <CardTitle className="text-xl">{timeBand.name}</CardTitle>
                 <CardDescription>{timeBand.code}</CardDescription>
@@ -354,6 +324,7 @@ export function RateTimeBandDetailsPage() {
             Back to Time Bands
           </Button>
         </CardFooter>
-    </Card>
-</div>
-  )}
+      </Card>
+    </div>
+  );
+}
