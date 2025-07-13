@@ -67,6 +67,47 @@ interface ForgotPasswordInput {
   email: string;
 }
 
+// Support Worker Onboarding interfaces
+interface ExperienceInput {
+  title: string;
+  organization: string;
+  startDate: string;
+  endDate?: string;
+  description: string;
+}
+
+interface ShiftRateInput {
+  rateTimeBandId: string;
+  hourlyRate: string;
+}
+
+interface AvailabilitySlot {
+  start: string;
+  end: string;
+}
+
+interface WeekdayAvailability {
+  day: string;
+  available: boolean;
+  slots: AvailabilitySlot[];
+}
+
+interface SupportWorkerOnboardingInput {
+  bio: string;
+  skills: string[]; // Array of Service Type IDs
+  experience: ExperienceInput[];
+  languages: string[];
+  shiftRates: ShiftRateInput[];
+  availability: {
+    weekdays: WeekdayAvailability[];
+  };
+}
+
+interface SupportWorkerOnboardingResponse {
+  success: boolean;
+  message: string;
+}
+
 // Helper function to determine user type and cast accordingly
 const castUser = (user: any): User => {
   if (user.role === 'supportWorker') {
@@ -186,7 +227,12 @@ const authService = {
   needsRefresh: (): boolean => {
     const accessToken = tokenStorage.getAccessToken();
     return accessToken !== null && tokenStorage.isTokenExpired(accessToken);
-  }
+  },
+
+  // Complete Support Worker Onboarding
+  completeSupportWorkerOnboarding: async (data: SupportWorkerOnboardingInput): Promise<SupportWorkerOnboardingResponse> => {
+    return await post<SupportWorkerOnboardingResponse>('/users/workers/onboarding', data);
+  },
 };
 
 export default authService;
