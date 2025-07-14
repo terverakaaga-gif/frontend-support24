@@ -6,7 +6,8 @@ import {
   Clock,
   Calendar,
   Bed,
-  Info
+  Info,
+  RefreshCw
 } from "lucide-react";
 import { 
   Card,
@@ -40,11 +41,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { toast } from "sonner";
+import { 
+  useGetRateTimeBandById, 
+  useCreateRateTimeBand, 
+  useUpdateRateTimeBand 
+} from "@/hooks/useRateTimeBandHooks";
+import { CreateRateTimeBandRequest, UpdateRateTimeBandRequest } from "@/entities/RateTimeBand";
 
 // Define the schema for time band validation
 const timeBandSchema = z.object({
@@ -72,111 +80,18 @@ const timeBandSchema = z.object({
   }),
 });
 
-// Define the interface for the time band data
-interface RateTimeBand {
-  _id: string;
-  name: string;
-  code: string;
-  startTime?: string;
-  endTime?: string;
-  description: string;
-  isWeekend: boolean;
-  isPublicHoliday: boolean;
-  isSleepover: boolean;
-  isActive: boolean;
-  baseRateMultiplier: number;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Mock data
-const mockTimeBands: RateTimeBand[] = [
-  {
-    "_id": "681c6f750ab224ca6685d05d",
-    "name": "Afternoon Shift",
-    "code": "AFTERNOON",
-    "startTime": "14:00",
-    "endTime": "22:00",
-    "description": "Early afternoon to late evening shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.660Z",
-    "updatedAt": "2025-05-08T08:46:45.660Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05c",
-    "name": "Morning Shift",
-    "code": "MORNING",
-    "startTime": "06:00",
-    "endTime": "14:00",
-    "description": "Early morning to early afternoon shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.659Z",
-    "updatedAt": "2025-05-08T08:46:45.659Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05e",
-    "name": "Night Shift",
-    "code": "NIGHT",
-    "startTime": "22:00",
-    "endTime": "06:00",
-    "description": "Overnight shift",
-    "isWeekend": false,
-    "isPublicHoliday": false,
-    "isSleepover": true,
-    "isActive": true,
-    "baseRateMultiplier": 1.25,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.660Z",
-    "updatedAt": "2025-05-08T08:46:45.660Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d060",
-    "name": "Public Holiday Shift",
-    "code": "HOLIDAY",
-    "description": "Any shift during a public holiday",
-    "isWeekend": false,
-    "isPublicHoliday": true,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 2,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.662Z",
-    "updatedAt": "2025-05-08T08:46:45.662Z"
-  },
-  {
-    "_id": "681c6f750ab224ca6685d05f",
-    "name": "Weekend Shift",
-    "code": "WEEKEND",
-    "description": "Any shift during the weekend",
-    "isWeekend": true,
-    "isPublicHoliday": false,
-    "isSleepover": false,
-    "isActive": true,
-    "baseRateMultiplier": 1.5,
-    "__v": 0,
-    "createdAt": "2025-05-08T08:46:45.661Z",
-    "updatedAt": "2025-05-08T08:46:45.661Z"
-  }
-];
-
 export function RateTimeBandForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const isEditMode = id !== 'create';
+
+  // API hooks
+  const { data: timeBand, isLoading: isLoadingTimeBand, error: loadError } = useGetRateTimeBandById(
+    isEditMode ? id : undefined
+  );
+  const createMutation = useCreateRateTimeBand();
+  const updateMutation = useUpdateRateTimeBand();
 
   // Initialize form with React Hook Form
   const form = useForm<z.infer<typeof timeBandSchema>>({
@@ -198,74 +113,53 @@ export function RateTimeBandForm() {
   
   const { formState } = form;
   const isDirty = formState.isDirty;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
   useEffect(() => {
-    // If editing, fetch the time band data
-    if (isEditMode) {
-      setLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        const timeBand = mockTimeBands.find(band => band._id === id);
-        if (timeBand) {
-          // Reset form with fetched data
-          form.reset({
-            name: timeBand.name,
-            code: timeBand.code,
-            description: timeBand.description || "",
-            startTime: timeBand.startTime || "",
-            endTime: timeBand.endTime || "",
-            isWeekend: timeBand.isWeekend,
-            isPublicHoliday: timeBand.isPublicHoliday,
-            isSleepover: timeBand.isSleepover,
-            isActive: timeBand.isActive,
-            baseRateMultiplier: timeBand.baseRateMultiplier,
-          });
-        } else {
-          // Time band not found, redirect back
-          toast({
-            title: "Error",
-            description: "Rate time band not found.",
-            variant: "destructive",
-          });
-          navigate("/admin/rate-time-band");
-        }
-        setLoading(false);
-      }, 500);
-    } else {
-      // For create mode, just set loading to false
-      setLoading(false);
+    // If editing and we have data, populate the form
+    if (isEditMode && timeBand) {
+      form.reset({
+        name: timeBand.name,
+        code: timeBand.code,
+        description: timeBand.description || "",
+        startTime: timeBand.startTime || "",
+        endTime: timeBand.endTime || "",
+        isWeekend: timeBand.isWeekend,
+        isPublicHoliday: timeBand.isPublicHoliday,
+        isSleepover: timeBand.isSleepover,
+        isActive: timeBand.isActive,
+        baseRateMultiplier: timeBand.baseRateMultiplier,
+      });
     }
-  }, [id, isEditMode, form, navigate]);
+  }, [timeBand, isEditMode, form]);
 
   const onSubmit = async (values: z.infer<typeof timeBandSchema>) => {
-    setSaving(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     try {
-      // Log form values for debugging
-      console.log("Form values:", values);
+      // Prepare the data object
+      const dataToSubmit = {
+        ...values,
+        // Convert empty strings to undefined for optional fields
+        startTime: values.startTime || undefined,
+        endTime: values.endTime || undefined,
+        description: values.description || undefined,
+      };
+
+      if (isEditMode) {
+        // Update existing rate time band
+        await updateMutation.mutateAsync({ 
+          id: id!, 
+          data: dataToSubmit as UpdateRateTimeBandRequest 
+        });
+      } else {
+        // Create new rate time band
+        await createMutation.mutateAsync(dataToSubmit as CreateRateTimeBandRequest);
+      }
       
-      // Show success toast
-      toast({
-        title: isEditMode ? "Rate Time Band Updated" : "Rate Time Band Created",
-        description: isEditMode
-          ? `The rate time band "${values.name}" has been updated successfully.`
-          : `The rate time band "${values.name}" has been created successfully.`,
-      });
-      
-      // Navigate back to the list
+      // Navigate back to the list on success
       navigate("/admin/rate-time-band");
     } catch (error) {
-      console.error("Error saving time band:", error);
-      toast({
-        title: "Error",
-        description: "An error occurred while saving the rate time band.",
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
+      // Error handling is done in the hooks
+      console.error("Error saving rate time band:", error);
     }
   };
 
@@ -282,10 +176,107 @@ export function RateTimeBandForm() {
     navigate("/admin/rate-time-band");
   };
 
-  if (loading) {
+  // Loading state
+  if (isEditMode && isLoadingTimeBand) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="container mx-auto py-6 max-w-3xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Time Bands
+          </Button>
+          <Skeleton className="h-8 w-48" />
+        </div>
+        
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+              <Skeleton className="h-24 w-full" />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-32 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isEditMode && loadError) {
+    return (
+      <div className="container mx-auto py-6 max-w-3xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Time Bands
+          </Button>
+          <h1 className="text-2xl font-bold">Error Loading Rate Time Band</h1>
+        </div>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center text-red-600">
+                <RefreshCw className="h-8 w-8 mx-auto mb-4" />
+                <p className="font-medium">Error loading rate time band details</p>
+                <p className="text-sm text-gray-600 mt-1">Please try again later</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // If editing but no data found
+  if (isEditMode && !timeBand && !isLoadingTimeBand) {
+    return (
+      <div className="container mx-auto py-6 max-w-3xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Time Bands
+          </Button>
+          <h1 className="text-2xl font-bold">Rate Time Band Not Found</h1>
+        </div>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <p className="text-lg font-medium mb-2">Rate Time Band Not Found</p>
+              <p className="text-gray-600 mb-4">
+                The rate time band you're trying to edit could not be found.
+              </p>
+              <Button onClick={() => navigate("/admin/rate-time-band")}>
+                Return to Rate Time Bands
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -572,11 +563,11 @@ export function RateTimeBandForm() {
           </Card>
           
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={handleCancel}>
+            <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving}>
               Cancel
             </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? (
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? (
                 <>
                   <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
                   Saving...

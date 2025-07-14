@@ -197,10 +197,10 @@ const BatchInvoicesManagement: React.FC = () => {
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600">{title}</p>
-            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-xs text-gray-600">{title}</p>
+            <p className="text-xl font-bold">{value}</p>
           </div>
-          <Icon className={cn("h-6 w-6", color)} />
+          <Icon className={cn("h-5 w-5", color)} />
         </div>
       </CardContent>
     </Card>
@@ -216,7 +216,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
     return (
       <div className="flex items-center justify-between space-x-2 py-4 m-4">
-        <div className="text-sm text-gray-500">
+        <div className="text-xs text-gray-500">
           Showing {startItem} to {endItem} of {totalResults} results
         </div>
         <div className="flex items-center space-x-2">
@@ -333,7 +333,7 @@ const BatchInvoicesManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Batch Invoices</h1>
-          <p className="text-gray-600 mt-1">Manage and monitor batch invoice generation</p>
+          <p className="text-sm text-gray-600 mt-1">Manage and monitor batch invoice generation</p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -385,13 +385,13 @@ const BatchInvoicesManagement: React.FC = () => {
       {showFilters && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Filters</CardTitle>
+            <CardTitle className="text-base">Filters</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Search</label>
+                <label className="text-xs font-medium">Search</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
@@ -405,7 +405,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
               {/* Status Filter */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-xs font-medium">Status</label>
                 <Select
                   value={filters.status || 'all'}
                   onValueChange={(value) => handleFilterChange('status', value)}
@@ -425,7 +425,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
               {/* Start Date */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Start Date</label>
+                <label className="text-xs font-medium">Start Date</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -449,7 +449,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
               {/* End Date */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">End Date</label>
+                <label className="text-xs font-medium">End Date</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -493,7 +493,7 @@ const BatchInvoicesManagement: React.FC = () => {
       {/* Batch Invoices Table */}
       <Card>
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="text-base">
             Batch Invoices ({batchInvoicesData?.totalResults || 0})
           </CardTitle>
           <CardDescription>
@@ -507,8 +507,8 @@ const BatchInvoicesManagement: React.FC = () => {
           {filteredBatchInvoices.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No batch invoices found</h3>
-              <p className="text-gray-600">
+              <h3 className="text-base font-semibold mb-2">No batch invoices found</h3>
+              <p className="text-sm text-gray-600">
                 {hasActiveFilters 
                   ? "No batch invoices match your current filters." 
                   : "No batch invoices have been generated yet."
@@ -520,22 +520,22 @@ const BatchInvoicesManagement: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Batch Number</TableHead>
+                    <TableHead className="text-xs">Batch Number</TableHead>
                     {/* <TableHead>Invoice Number</TableHead> */}
-                    <TableHead>Worker</TableHead>
-                    <TableHead>Participant</TableHead>
-                    <TableHead>Period</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Email Status</TableHead>
-                    <TableHead>Total Amount</TableHead>
+                    <TableHead className="text-xs">Worker</TableHead>
+                    <TableHead className="text-xs">Participant</TableHead>
+                    <TableHead className="text-xs">Period</TableHead>
+                    <TableHead className="text-xs">Status</TableHead>
+                    <TableHead className="text-xs">Email Status</TableHead>
+                    <TableHead className="text-xs">Total Amount</TableHead>
                     {/* <TableHead>Generated</TableHead> */}
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-xs">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredBatchInvoices.map((invoice) => (
                     <TableRow key={invoice._id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-sm">
                         {invoice.batchNumber}
                       </TableCell>
                       {/* <TableCell>
@@ -544,23 +544,23 @@ const BatchInvoicesManagement: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
-                            <p className="font-medium">{getFullName(invoice.workerId)}</p>
-                            <p className="text-sm text-gray-600">{invoice.workerId.email}</p>
+                            <p className="font-medium text-sm">{getFullName(invoice.workerId)}</p>
+                            <p className="text-xs text-gray-600">{invoice.workerId.email}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
-                            <p className="font-medium">{getFullName(invoice.participantId)}</p>
-                            <p className="text-sm text-gray-600">{invoice.participantId.email}</p>
+                            <p className="font-medium text-sm">{getFullName(invoice.participantId)}</p>
+                            <p className="text-xs text-gray-600">{invoice.participantId.email}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p>{formatDate(invoice.startDate)}</p>
-                          <p className="text-gray-600">to {formatDate(invoice.endDate)}</p>
+                          <p className="text-sm">{formatDate(invoice.startDate)}</p>
+                          <p className="text-xs text-gray-600">to {formatDate(invoice.endDate)}</p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -572,7 +572,7 @@ const BatchInvoicesManagement: React.FC = () => {
                           {getEmailStatusBadge(invoice.sentToWorker, 'worker')}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-sm">
                         {formatCurrency(invoice.invoiceTotal)}
                       </TableCell>
                       {/* <TableCell>

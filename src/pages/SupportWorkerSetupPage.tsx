@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCompleteProfileSetup } from "@/hooks/useSupportWorkerHooks";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -12,7 +11,6 @@ export default function SupportWorkerSetupPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const supportWorker = user as SupportWorker | null;
-  const completeProfileSetup = useCompleteProfileSetup();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,17 +40,9 @@ export default function SupportWorkerSetupPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
-  const handleSetupComplete = async () => {
-    if (!user || user.role !== 'supportWorker') return;
-    
-    try {
-      await completeProfileSetup.mutateAsync();
-      toast.success('Profile setup completed successfully!');
-      navigate('/support-worker');
-    } catch (error) {
-      // Error handled by API client
-      console.error('Failed to complete profile setup:', error);
-    }
+  const handleSetupComplete = () => {
+    // Navigate to dashboard after successful onboarding
+    navigate('/support-worker');
   };
 
   const handleSkipSetup = () => {
@@ -110,7 +100,6 @@ export default function SupportWorkerSetupPage() {
       </div>
       <SupportWorkerSetup 
         onComplete={handleSetupComplete} 
-        isSubmitting={completeProfileSetup.isPending}
       />
     </div>
   );

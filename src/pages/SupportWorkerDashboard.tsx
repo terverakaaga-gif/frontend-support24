@@ -130,6 +130,8 @@ export default function SupportWorkerDashboard() {
     );
   }
 
+  console.log(user);
+
   return (
     <div className="container py-6 space-y-8">
       {/* Show alert if support worker hasn't completed onboarding */}
