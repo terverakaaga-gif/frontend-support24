@@ -50,6 +50,7 @@ import authService from "@/api/services/authService";
 import { useGetServiceTypes } from "@/hooks/useServiceTypeHooks";
 import { useGetRateTimeBands } from "@/hooks/useRateTimeBandHooks";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
 
 const bioSchema = z.object({
   bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
@@ -161,6 +162,9 @@ export function SupportWorkerSetup({
   const [step, setStep] = useState(1);
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [languageInput, setLanguageInput] = useState("");
+
+  // Auth context
+  const { completeOnboarding } = useAuth();
 
   // API queries
   const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } = useGetServiceTypes();
@@ -280,6 +284,10 @@ export function SupportWorkerSetup({
     
     try {
       await authService.completeSupportWorkerOnboarding(data);
+      
+      // Update local user context to reflect completed onboarding
+      completeOnboarding();
+      
       toast.success('Profile setup completed successfully!');
       onComplete();
     } catch (error) {
