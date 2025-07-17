@@ -367,10 +367,10 @@ export function SupportWorkerSetup({
 
   const stepComponents = [
     // Step 1: Bio and Languages
-    <Card key="bio" className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg">
-      <CardHeader className="border-b border-[#1e3b93]/10">
-        <CardTitle className="flex items-center text-[#1e3b93]">
-          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+    <Card key="bio" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+      <CardHeader className="border-b border-guardian/10">
+        <CardTitle className="flex items-center text-guardian">
+          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
             1
           </span>
           About You
@@ -477,7 +477,7 @@ export function SupportWorkerSetup({
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="w-full mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md"
+                className="w-full mt-4 bg-guardian hover:bg-guardian/90 shadow-md"
                 disabled={formData.languages.length === 0}
               >
                 Next
@@ -490,10 +490,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 2: Skills
-    <Card key="skills" className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg">
-      <CardHeader className="border-b border-[#1e3b93]/10">
-        <CardTitle className="flex items-center text-[#1e3b93]">
-          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+    <Card key="skills" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+      <CardHeader className="border-b border-guardian/10">
+        <CardTitle className="flex items-center text-guardian">
+          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
             2
           </span>
           Skills & Services
@@ -519,7 +519,7 @@ export function SupportWorkerSetup({
                   
                   {isLoadingServiceTypes ? (
                     <div className="flex justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3b93]"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guardian"></div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -539,8 +539,8 @@ export function SupportWorkerSetup({
                             className={cn(
                               "cursor-pointer p-3 rounded-lg border transition-all hover:shadow-md",
                               isSelected
-                                ? "border-[#1e3b93] bg-[#1e3b93]/10 shadow-sm"
-                                : "border-gray-200 hover:border-[#1e3b93]/50 hover:bg-[#1e3b93]/5"
+                                ? "border-guardian bg-guardian/10 shadow-sm"
+                                : "border-gray-200 hover:border-guardian/50 hover:bg-guardian/5"
                             )}
                           >
                             <div className="flex flex-col items-center text-center">
@@ -548,7 +548,7 @@ export function SupportWorkerSetup({
                                 className={cn(
                                   "p-2 rounded-full mb-2 transition-colors",
                                   isSelected
-                                    ? "bg-[#1e3b93] text-white"
+                                    ? "bg-guardian text-white"
                                     : "bg-gray-100 text-gray-600"
                                 )}
                               >
@@ -584,10 +584,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 3: Experience
-    <Card key="experience" className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg">
-      <CardHeader className="border-b border-[#1e3b93]/10">
-        <CardTitle className="flex items-center text-[#1e3b93]">
-          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+    <Card key="experience" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+      <CardHeader className="border-b border-guardian/10">
+        <CardTitle className="flex items-center text-guardian">
+          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
             3
           </span>
           Work Experience
@@ -763,10 +763,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 4: Rates
-    <Card key="rates" className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg">
-      <CardHeader className="border-b border-[#1e3b93]/10">
-        <CardTitle className="flex items-center text-[#1e3b93]">
-          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+    <Card key="rates" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+      <CardHeader className="border-b border-guardian/10">
+        <CardTitle className="flex items-center text-guardian">
+          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
             4
           </span>
           Hourly Rates
@@ -780,7 +780,7 @@ export function SupportWorkerSetup({
           <form onSubmit={rateForm.handleSubmit(handleRateSubmit)} className="space-y-4">
             {isLoadingRateTimeBands ? (
               <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3b93]"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guardian"></div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -844,10 +844,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 5: Availability
-    <Card key="availability" className="w-full max-w-3xl mx-auto border-[#1e3b93]/10 shadow-lg">
-      <CardHeader className="border-b border-[#1e3b93]/10">
-        <CardTitle className="flex items-center text-[#1e3b93]">
-          <span className="bg-[#1e3b93] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
+    <Card key="availability" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+      <CardHeader className="border-b border-guardian/10">
+        <CardTitle className="flex items-center text-guardian">
+          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
             5
           </span>
           Availability
@@ -869,7 +869,7 @@ export function SupportWorkerSetup({
                         id={`day-${day.day}`}
                         checked={day.available}
                         onChange={() => toggleDayAvailability(dayIndex)}
-                        className="h-4 w-4 rounded border-gray-300 text-[#1e3b93] focus:ring-[#1e3b93]"
+                        className="h-4 w-4 rounded border-gray-300 text-guardian focus:ring-guardian"
                       />
                       <label htmlFor={`day-${day.day}`} className="font-medium capitalize">
                         {day.day}
@@ -941,7 +941,7 @@ export function SupportWorkerSetup({
               <Button
                 type="submit"
                 disabled={isOnboarding || isSubmitting}
-                className="bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md"
+                className="bg-guardian hover:bg-guardian/90 shadow-md"
               >
                 {isOnboarding || isSubmitting ? (
                   "Completing Setup..."
@@ -969,7 +969,7 @@ export function SupportWorkerSetup({
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="bg-white shadow-sm py-4 sticky top-0 z-10 border-b border-[#1e3b93]/10">
+          <div className="bg-white shadow-sm py-4 sticky top-0 z-10 border-b border-guardian/10">
         <div className="container max-w-3xl mx-auto px-4">
           <div className="flex justify-between items-center overflow-x-auto pb-2">
             {steps.map((item, i) => (
@@ -978,9 +978,9 @@ export function SupportWorkerSetup({
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm",
                     i + 1 === step
-                      ? "bg-[#1e3b93] text-white"
+                      ? "bg-guardian text-white"
                       : i + 1 < step
-                      ? "bg-[#1e3b93]/10 text-[#1e3b93] border border-[#1e3b93]/20"
+                      ? "bg-guardian/10 text-guardian border border-guardian/20"
                       : "bg-gray-100 text-gray-400"
                   )}
                 >
@@ -994,7 +994,7 @@ export function SupportWorkerSetup({
                   className={cn(
                     "text-xs mt-1 transition-colors",
                     i + 1 === step
-                      ? "text-[#1e3b93] font-medium"
+                      ? "text-guardian font-medium"
                       : "text-gray-500"
                   )}
                 >

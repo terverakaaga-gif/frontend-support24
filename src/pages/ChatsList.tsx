@@ -256,7 +256,7 @@ export default function ChatsList() {
 				<div className="flex items-center justify-between mb-6">
 					<div className="flex items-center gap-4">
 						<div className="relative">
-							<MessageCircle className="h-8 w-8 text-[#008CFF]" />
+							<MessageCircle className="h-8 w-8 text-guardian" />
 							{/* {totalUnreadCount > 0 && (
                 <div className="absolute -top-2 -right-2 h-5 w-5 bg-[#FF2D55] rounded-full flex items-center justify-center">
                   <span className="text-xs text-white font-bold">
@@ -329,7 +329,7 @@ export default function ChatsList() {
 										placeholder="Search conversations..."
 										value={searchQuery}
 										onChange={(e) => setSearchQuery(e.target.value)}
-										className="pl-10 border-[#9395A2] focus:border-[#008CFF]"
+										className="pl-10 border-[#9395A2] focus:border-guardian"
 									/>
 								</div>
 							</CardContent>
@@ -372,7 +372,7 @@ export default function ChatsList() {
 										}
 										className={`w-full justify-between ${
 											selectedFilter === filter.key
-												? "bg-[#008CFF] text-white"
+												? "bg-guardian text-white"
 												: "hover:bg-blue-50"
 										}`}
 										onClick={() => setSelectedFilter(filter.key)}
@@ -447,7 +447,7 @@ export default function ChatsList() {
 											</p>
 											<Button
 												onClick={() => setIsCreatingChat(true)}
-												className="bg-[#008CFF] hover:bg-[#008CFF]/90"
+												className="bg-guardian hover:bg-guardian/90"
 											>
 												<Plus className="h-4 w-4 mr-2" />
 												Start Chat
@@ -476,7 +476,7 @@ export default function ChatsList() {
 																				)?.userId.profileImage
 																			}
 																		/>
-																		<AvatarFallback className="bg-[#008CFF] text-white font-semibold">
+																		<AvatarFallback className="bg-guardian text-white font-semibold">
 																			{
 																				conversation.members.find(
 																					(member) =>
@@ -491,7 +491,7 @@ export default function ChatsList() {
 																</div>
 															) : (
 																<div className="relative">
-																	<div className="h-12 w-12 bg-[#008CFF] rounded-full flex items-center justify-center shadow-md">
+																	<div className="h-12 w-12 bg-guardian rounded-full flex items-center justify-center shadow-md">
 																		<Users className="h-6 w-6 text-white" />
 																	</div>
 																</div>
@@ -563,7 +563,7 @@ export default function ChatsList() {
 																				{conversation.type === "group" &&
 																					conversation.lastMessage.sender
 																						._id !== user._id && (
-																						<span className="text-[#008CFF] font-medium mr-1">
+																						<span className="text-guardian font-medium mr-1">
 																							{
 																								conversation.lastMessage.sender
 																									.firstName
