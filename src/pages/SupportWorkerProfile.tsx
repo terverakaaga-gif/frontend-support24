@@ -208,14 +208,14 @@ export default function SupportWorkerProfile() {
       {/* Header Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">
+            <h1 className="text-3xl font-bold tracking-tight text-guardian">
             My Support Worker Profile
           </h1>
           <p className="text-muted-foreground mt-2">
             Manage your professional profile and availability
           </p>
         </div>
-        <Button className="bg-[#1e3b93] hover:bg-[#1e3b93]/90 shadow-md">
+        <Button className="bg-guardian hover:bg-guardian/90 shadow-md">
           <Edit className="mr-2 h-4 w-4" />
           Edit Profile
         </Button>
@@ -223,7 +223,7 @@ export default function SupportWorkerProfile() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Summary Card */}
-        <Card className="lg:col-span-1 border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+        <Card className="lg:col-span-1 border-guardian/10 transition-all duration-200 hover:shadow-lg">
           <CardHeader className="text-center pb-4">
             <div className="flex justify-center mb-6">
               <div className="relative">
@@ -233,29 +233,29 @@ export default function SupportWorkerProfile() {
             </div>
             <CardTitle className="text-2xl text-gray-900">{`${user?.firstName} ${user?.lastName}`}</CardTitle>
             <CardDescription className="mt-2">
-              <Badge className="bg-[#1e3b93] text-white hover:bg-[#1e3b93]/90 shadow-sm">
+              <Badge className="bg-guardian text-white hover:bg-guardian/90 shadow-sm">
                 Support Worker
               </Badge>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1e3b93]/5 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-[#1e3b93]/10 flex items-center justify-center">
-                  <Mail className="h-4 w-4 text-[#1e3b93]" />
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-guardian/5 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-guardian/10 flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-guardian" />
                 </div>
                 <span className="text-sm text-gray-700">{user?.email}</span>
               </div>
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1e3b93]/5 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-[#1e3b93]/10 flex items-center justify-center">
-                  <Phone className="h-4 w-4 text-[#1e3b93]" />
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-guardian/5 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-guardian/10 flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-guardian" />
                 </div>
                 <span className="text-sm text-gray-700">{user?.phone}</span>
               </div>
               {supportWorker.address && (
-                <div className="flex items-start gap-3 p-2 rounded-lg hover:bg-[#1e3b93]/5 transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-[#1e3b93]/10 flex items-center justify-center mt-0.5">
-                    <MapPin className="h-4 w-4 text-[#1e3b93]" />
+                <div className="flex items-start gap-3 p-2 rounded-lg hover:bg-guardian/5 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-guardian/10 flex items-center justify-center mt-0.5">
+                    <MapPin className="h-4 w-4 text-guardian" />
                   </div>
                   <div className="text-sm text-gray-700">
                     <div>{supportWorker.address.street}</div>
@@ -266,11 +266,11 @@ export default function SupportWorkerProfile() {
               )}
             </div>
 
-            <Separator className="bg-[#1e3b93]/10" />
+            <Separator className="bg-guardian/10" />
 
             {/* Languages */}
             <div className="pt-2">
-              <h3 className="text-sm font-semibold flex items-center gap-2 mb-3 text-[#1e3b93]">
+              <h3 className="text-sm font-semibold flex items-center gap-2 mb-3 text-guardian">
                 <Languages className="h-4 w-4" />
                 Languages
               </h3>
@@ -279,7 +279,7 @@ export default function SupportWorkerProfile() {
                   <Badge
                     key={index}
                     variant="outline"
-                    className="bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20 hover:bg-[#1e3b93]/20 transition-colors"
+                    className="bg-guardian/10 text-guardian border-guardian/20 hover:bg-guardian/20 transition-colors"
                   >
                     {language}
                   </Badge>
@@ -289,11 +289,11 @@ export default function SupportWorkerProfile() {
 
             {/* Hourly Rates */}
             <div className="pt-2">
-              <h3 className="text-sm font-semibold flex items-center gap-2 mb-3 text-[#1e3b93]">
+              <h3 className="text-sm font-semibold flex items-center gap-2 mb-3 text-guardian">
                 <DollarSign className="h-4 w-4" />
                 Hourly Rates
               </h3>
-              <div className="bg-[#1e3b93]/5 rounded-lg p-3 space-y-2 text-sm">
+              <div className="bg-guardian/5 rounded-lg p-3 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-600">Base Rate:</span>
                   <span className="text-gray-900 font-semibold">
@@ -335,28 +335,28 @@ export default function SupportWorkerProfile() {
         <div className="lg:col-span-2">
           {/* Content Tabs */}
           <Tabs defaultValue="about" className="w-full">
-            <TabsList className="mb-6 bg-[#1e3b93]/5 border border-[#1e3b93]/10">
+            <TabsList className="mb-6 bg-guardian/5 border border-guardian/10">
               <TabsTrigger
                 value="about"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
+                className="data-[state=active]:bg-guardian data-[state=active]:text-white"
               >
                 About & Skills
               </TabsTrigger>
               <TabsTrigger
                 value="schedule"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
+                className="data-[state=active]:bg-guardian data-[state=active]:text-white"
               >
                 Availability
               </TabsTrigger>
               <TabsTrigger
                 value="shifts"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
+                className="data-[state=active]:bg-guardian data-[state=active]:text-white"
               >
                 Upcoming Shifts
               </TabsTrigger>
               <TabsTrigger
                 value="ratings"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
+                className="data-[state=active]:bg-guardian data-[state=active]:text-white"
               >
                 Ratings & Reviews
               </TabsTrigger>
@@ -364,9 +364,9 @@ export default function SupportWorkerProfile() {
 
             {/* About & Skills Tab */}
             <TabsContent value="about">
-              <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93]">
+              <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+                <CardHeader className="border-b border-guardian/10">
+                  <CardTitle className="text-guardian">
                     Professional Profile
                   </CardTitle>
                 </CardHeader>
@@ -391,7 +391,7 @@ export default function SupportWorkerProfile() {
                         <Badge
                           key={index}
                           variant="outline"
-                          className="bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20 hover:bg-[#1e3b93]/20 transition-colors"
+                          className="bg-guardian/10 text-guardian border-guardian/20 hover:bg-guardian/20 transition-colors"
                         >
                           {formatSkill(skill)}
                         </Badge>
@@ -402,19 +402,19 @@ export default function SupportWorkerProfile() {
                   {/* Experience */}
                   <div>
                     <h3 className="text-lg font-medium mb-4 flex items-center text-gray-900">
-                      <Briefcase className="mr-2 h-5 w-5 text-[#1e3b93]" />
+                      <Briefcase className="mr-2 h-5 w-5 text-guardian" />
                       Professional Experience
                     </h3>
                     <div className="space-y-4">
                       {supportWorker.experience.map((exp, index) => (
                         <div
                           key={index}
-                          className="pl-4 border-l-4 border-[#1e3b93]/30 bg-[#1e3b93]/5 p-4 rounded-lg"
+                          className="pl-4 border-l-4 border-guardian/30 bg-guardian/5 p-4 rounded-lg"
                         >
                           <h4 className="font-semibold text-gray-900">
                             {exp.title}
                           </h4>
-                          <div className="text-sm text-[#1e3b93] font-medium mt-1">
+                          <div className="text-sm text-guardian font-medium mt-1">
                             {exp.organization} •{" "}
                             {formatDateRange(exp.startDate, exp.endDate)}
                           </div>
@@ -431,9 +431,9 @@ export default function SupportWorkerProfile() {
 
             {/* Availability Tab */}
             <TabsContent value="schedule">
-              <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93]">
+              <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+                <CardHeader className="border-b border-guardian/10">
+                  <CardTitle className="text-guardian">
                     My Availability
                   </CardTitle>
                 </CardHeader>
@@ -452,7 +452,7 @@ export default function SupportWorkerProfile() {
                               className={cn(
                                 "p-3 rounded-lg text-center border transition-colors",
                                 day.available
-                                  ? "bg-[#1e3b93]/10 border-[#1e3b93]/20 hover:bg-[#1e3b93]/20"
+                                  ? "bg-guardian/10 border-guardian/20 hover:bg-guardian/20"
                                   : "bg-gray-50 border-gray-200"
                               )}
                             >
@@ -461,11 +461,11 @@ export default function SupportWorkerProfile() {
                               </div>
                               {day.available ? (
                                 <div className="text-xs mt-2">
-                                  <CheckSquare className="h-4 w-4 mx-auto text-[#1e3b93] mb-1" />
+                                  <CheckSquare className="h-4 w-4 mx-auto text-guardian mb-1" />
                                   {day.slots?.map((slot, i) => (
                                     <div
                                       key={i}
-                                      className="text-[#1e3b93] font-medium"
+                                      className="text-guardian font-medium"
                                     >
                                       {slot.start} - {slot.end}
                                     </div>
@@ -513,9 +513,9 @@ export default function SupportWorkerProfile() {
 
             {/* Upcoming Shifts Tab */}
             <TabsContent value="shifts">
-              <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93]">
+              <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+                <CardHeader className="border-b border-guardian/10">
+                  <CardTitle className="text-guardian">
                     Upcoming Shifts
                   </CardTitle>
                 </CardHeader>
@@ -525,10 +525,10 @@ export default function SupportWorkerProfile() {
                       {upcomingShifts.map((shift) => (
                         <div
                           key={shift.id}
-                          className="flex items-start p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
+                          className="flex items-start p-4 rounded-lg border border-guardian/10 hover:bg-guardian/5 transition-colors"
                         >
-                          <div className="p-3 rounded-full bg-[#1e3b93]/10 mr-4">
-                            <Calendar className="h-5 w-5 text-[#1e3b93]" />
+                          <div className="p-3 rounded-full bg-guardian/10 mr-4">
+                            <Calendar className="h-5 w-5 text-guardian" />
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
@@ -544,7 +544,7 @@ export default function SupportWorkerProfile() {
                               </h3>
                               <Badge
                                 variant="outline"
-                                className="bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20"
+                                className="bg-guardian/10 text-guardian border-guardian/20"
                               >
                                 Scheduled
                               </Badge>
@@ -565,7 +565,7 @@ export default function SupportWorkerProfile() {
                               <span className="font-medium text-gray-600">
                                 Participant:
                               </span>
-                              <span className="text-[#1e3b93] ml-1">
+                              <span className="text-guardian ml-1">
                                 {shift.participant}
                               </span>
                             </div>
@@ -576,7 +576,7 @@ export default function SupportWorkerProfile() {
                           </div>
                           <Button
                             size="sm"
-                            className="bg-[#1e3b93] hover:bg-[#1e3b93]/90 ml-2"
+                            className="bg-guardian hover:bg-guardian/90 ml-2"
                           >
                             View Details
                           </Button>
@@ -585,8 +585,8 @@ export default function SupportWorkerProfile() {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <div className="mx-auto w-16 h-16 bg-[#1e3b93]/10 rounded-full flex items-center justify-center mb-4">
-                        <Calendar className="w-6 h-6 text-[#1e3b93]/60" />
+                      <div className="mx-auto w-16 h-16 bg-guardian/10 rounded-full flex items-center justify-center mb-4">
+                        <Calendar className="w-6 h-6 text-guardian/60" />
                       </div>
                       <p className="text-muted-foreground text-lg">
                         No upcoming shifts scheduled
@@ -602,9 +602,9 @@ export default function SupportWorkerProfile() {
 
             {/* Ratings & Reviews Tab */}
             <TabsContent value="ratings">
-              <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93]">
+              <Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
+                <CardHeader className="border-b border-guardian/10">
+                  <CardTitle className="text-guardian">
                     Participant Feedback
                   </CardTitle>
                 </CardHeader>
@@ -614,7 +614,7 @@ export default function SupportWorkerProfile() {
                       {ratings.map((review) => (
                         <div
                           key={review.id}
-                          className="p-4 rounded-lg border border-[#1e3b93]/10 hover:bg-[#1e3b93]/5 transition-colors"
+                          className="p-4 rounded-lg border border-guardian/10 hover:bg-guardian/5 transition-colors"
                         >
                           <div className="flex justify-between items-start mb-3">
                             <div>
@@ -644,8 +644,8 @@ export default function SupportWorkerProfile() {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <div className="mx-auto w-16 h-16 bg-[#1e3b93]/10 rounded-full flex items-center justify-center mb-4">
-                        <Star className="w-6 h-6 text-[#1e3b93]/60" />
+                        <div className="mx-auto w-16 h-16 bg-guardian/10 rounded-full flex items-center justify-center mb-4">
+                        <Star className="w-6 h-6 text-guardian/60" />
                       </div>
                       <p className="text-muted-foreground text-lg">
                         No reviews available yet
