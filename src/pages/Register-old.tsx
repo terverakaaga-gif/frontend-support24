@@ -18,7 +18,7 @@
 
 //   const handleRegistration = async (data: UserRegistrationInput) => {
 //     setRegistrationData(data);
-    
+
 //     try {
 //       await register(data);
 //       setCurrentStep('verification');
@@ -30,10 +30,10 @@
 
 //   const handleVerification = async () => {
 //     if (!registrationData) return;
-    
+
 //     try {
 //       await verifyEmail(registrationData.email);
-      
+
 //       // After verification, if user is a support worker, redirect to setup choice page
 //       if (registrationData.role === 'support-worker') {
 //         navigate('/setup-choice');
@@ -71,7 +71,7 @@
 
 //   return (
 //     <div className="flex h-screen w-full overflow-hidden">
-//       <motion.div 
+//       <motion.div
 //         initial={{ x: -50, opacity: 0 }}
 //         animate={{ x: 0, opacity: 1 }}
 //         transition={{ duration: 0.5 }}
@@ -92,11 +92,11 @@
 //             </div>
 //           </div>
 //         )}
-        
+
 //         {currentStep === 'verification' && registrationData && (
 //           <div className="w-full max-w-md">
-//             <OTPVerification 
-//               email={registrationData.email} 
+//             <OTPVerification
+//               email={registrationData.email}
 //               onVerified={handleVerification}
 //               onResend={handleResendOTP}
 //             />
@@ -104,7 +104,7 @@
 //         )}
 //       </motion.div>
 
-//       <motion.div 
+//       <motion.div
 //         initial={{ x: 50, opacity: 0 }}
 //         animate={{ x: 0, opacity: 1 }}
 //         transition={{ duration: 0.5 }}
@@ -113,16 +113,16 @@
 //         <div className="mb-auto">
 //           <div className="flex items-center gap-2 mb-2">
 //             <Heart className="h-8 w-8 text-white" />
-//             <span className="text-2xl font-bold text-white">Guardian Care Pro</span>
+//             <span className="text-2xl font-bold text-white">Support 24</span>
 //           </div>
 //         </div>
-        
+
 //         <div className="space-y-6 max-w-md">
 //           <h1 className="text-4xl font-bold text-white">Join our caring community</h1>
 //           <p className="text-white/90 text-lg">
-//             Guardian Care Pro connects participants, guardians, and support workers in a seamless care ecosystem.
+//             Support 24 connects participants, guardians, and support workers in a seamless care ecosystem.
 //           </p>
-          
+
 //           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //             <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
 //               <Users className="h-8 w-8 text-white mb-2" />
@@ -146,10 +146,10 @@
 //             </div>
 //           </div>
 //         </div>
-        
+
 //         <div className="mt-auto">
 //           <p className="text-white/70 text-sm">
-//             © 2025 Guardian Care Pro. All rights reserved.
+//             © 2025 Support 24. All rights reserved.
 //           </p>
 //         </div>
 //       </motion.div>

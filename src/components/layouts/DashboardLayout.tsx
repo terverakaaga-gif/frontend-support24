@@ -28,7 +28,7 @@ import {
 	FileText,
 	BarChart3,
 	MessageCircle,
-	FileStack
+	FileStack,
 } from "lucide-react";
 import {
 	DropdownMenu,
@@ -147,37 +147,37 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 							</div>
 						</div>
 
-            <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                Bookings
-              </h2>
-              <div className="space-y-1">
-                <NavItem
-                  to="/admin/shifts"
-                  icon={<Calendar size={20} />}
-                  label="Shifts"
-                  active={isActive("/admin/shifts")}
-                />
-                <NavItem
-                  to="/admin/timesheets"
-                  icon={<ReceiptText size={20} />}
-                  label="Timesheets"
-                  active={isActive("/admin/timesheets")}
-                />
-                <NavItem
-                  to="/admin/batch-invoices"
-                  icon={<FileStack size={20} />}
-                  label="Batch Invoices"
-                  active={isActive("/admin/batch-invoices")}
-                />
-                <NavItem
-                  to="/admin/rate-time-band"
-                  icon={<CalendarSync size={20} />}
-                  label="Rate-Time-Band"
-                  active={isActive("/admin/rate-time-band")}
-                />
-              </div>
-            </div>
+						<div className="px-3 py-2">
+							<h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+								Bookings
+							</h2>
+							<div className="space-y-1">
+								<NavItem
+									to="/admin/shifts"
+									icon={<Calendar size={20} />}
+									label="Shifts"
+									active={isActive("/admin/shifts")}
+								/>
+								<NavItem
+									to="/admin/timesheets"
+									icon={<ReceiptText size={20} />}
+									label="Timesheets"
+									active={isActive("/admin/timesheets")}
+								/>
+								<NavItem
+									to="/admin/batch-invoices"
+									icon={<FileStack size={20} />}
+									label="Batch Invoices"
+									active={isActive("/admin/batch-invoices")}
+								/>
+								<NavItem
+									to="/admin/rate-time-band"
+									icon={<CalendarSync size={20} />}
+									label="Rate-Time-Band"
+									active={isActive("/admin/rate-time-band")}
+								/>
+							</div>
+						</div>
 
 						<div className="px-3 py-2">
 							<h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
@@ -335,7 +335,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 					<Link to="/" className="flex items-center space-x-2">
 						{/* <Heart className="h-6 w-6 text-guardian" />
 						<span className="text-xl font-bold bg-gradient-to-r from-guardian to-guardian-dark bg-clip-text text-transparent">
-							Guardian Care Pro
+							Support 24
 						</span> */}
 						<img src={"/logo.svg"} alt={"logo"} className="" />
 					</Link>
@@ -444,7 +444,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 				</div>
 
 				{/* Page Content */}
-				<div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
+				<div className="flex-1 overflow-y-auto overflow-x-hidden">
+					{children}
+				</div>
 			</main>
 
 			{/* Support Worker Search Dialog */}
