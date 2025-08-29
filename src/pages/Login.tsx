@@ -83,10 +83,10 @@ export default function Login() {
 				>
 					<div className="flex items-center gap-2 mb-2">
 						{/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
-						<img src="/favicon.svg" alt="Support 24" className="h-10 w-10" />
-						<span className="text-2xl font-bold text-white drop-shadow-sm">
-							GuardianCare+
-						</span>
+						{/* <img src="/logo.svg" alt="Support 24" className="w-32" /> */}
+						{/* <span className="text-2xl font-bold text-white drop-shadow-sm">
+							Support 24
+						</span> */}
 					</div>
 				</motion.div>
 
@@ -138,8 +138,22 @@ export default function Login() {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 0.8 }}
-				className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 md:p-12"
+				className="w-full lg:w-1/2 ml-auto flex items-center justify-center p-4 sm:p-8 md:p-12"
 			>
+				<motion.div
+					initial={{ y: -20 }}
+					animate={{ y: 0 }}
+					transition={{ delay: 0.3, duration: 0.5 }}
+					className="z-10 mb-auto absolute top-20 left-auto right-auto"
+				>
+					<div className="flex items-center gap-2 mb-2">
+						{/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
+						<img src="/logo.svg" alt="Support 24" className="w-72" />
+						{/* <span className="text-2xl font-bold text-white drop-shadow-sm">
+							Support 24
+						</span> */}
+					</div>
+				</motion.div>
 				<motion.div
 					initial={{ y: 20, opacity: 0 }}
 					animate={{ y: 0, opacity: 1 }}

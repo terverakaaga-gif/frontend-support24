@@ -369,7 +369,7 @@ export default function OrganizationDetailsPage() {
 						</div>
 					</div>
 				</div>
-				<div className="flex items-center gap-2">
+				{/* <div className="flex items-center gap-2">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="outline" size="sm">
@@ -395,7 +395,7 @@ export default function OrganizationDetailsPage() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-				</div>
+				</div> */}
 			</div>
 
 			{/* Organization Info Bar */}

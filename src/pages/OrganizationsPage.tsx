@@ -41,62 +41,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { get } from "@/api/apiClient";
 import { format, parseISO } from "date-fns";
-
-// Types based on actual API response
-interface ShiftRate {
-	rateTimeBandId: string;
-	hourlyRate: number;
-	_id: string;
-}
-
-interface ServiceAgreement {
-	baseHourlyRate: number;
-	shiftRates: ShiftRate[];
-	distanceTravelRate: number;
-	startDate: string;
-	termsAccepted: boolean;
-}
-
-interface Worker {
-	serviceAgreement: ServiceAgreement;
-	workerId: string;
-	joinedDate: string;
-	_id: string;
-}
-
-interface PendingInvite {
-	inviteId: string;
-	workerId: string;
-	inviteDate: string;
-	proposedHourlyRate: number;
-	_id: string;
-}
-
-interface Organization {
-	_id: string;
-	name: string;
-	participantId: string;
-	workers: Worker[];
-	pendingInvites: PendingInvite[];
-	description: string;
-	createdAt: string;
-	updatedAt: string;
-	__v: number;
-}
-
-interface OrganizationsResponse {
-	organizations: Organization[];
-}
-
-// API service function
-export const organizationService = {
-	getOrganizations: async (): Promise<Organization[]> => {
-		const response = await get<OrganizationsResponse>("/organizations");
-		return response.organizations;
-	},
-};
+import { organizationService } from "@/api/services/organizationService";
 
 export default function OrganizationsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -111,8 +57,11 @@ export default function OrganizationsPage() {
 		refetch,
 	} = useQuery({
 		queryKey: ["support-worker-organizations"],
-		queryFn: () => organizationService.getOrganizations(),
+		queryFn: async () =>
+			(await organizationService.getOrganizations()).organizations,
 	});
+
+	console.log("organizations: ", organizations);
 
 	// Filter organizations based on search
 	const filteredOrganizations = organizations.filter((org) => {
@@ -121,7 +70,7 @@ export default function OrganizationsPage() {
 			org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			org.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			org.workers.some((worker) =>
-				worker.workerId.toLowerCase().includes(searchTerm.toLowerCase())
+				worker._id.toLowerCase().includes(searchTerm.toLowerCase())
 			) ||
 			org.pendingInvites.some((invite) =>
 				invite.workerId.toLowerCase().includes(searchTerm.toLowerCase())
@@ -446,12 +395,12 @@ export default function OrganizationsPage() {
 													<div className="flex items-center gap-3">
 														<Avatar className="w-8 h-8">
 															<AvatarFallback className="text-xs">
-																{worker.workerId.slice(-2).toUpperCase()}
+																{worker._id.slice(-2).toUpperCase()}
 															</AvatarFallback>
 														</Avatar>
 														<div>
 															<p className="text-sm font-medium text-gray-900">
-																Worker ID: {worker.workerId.slice(-8)}
+																Worker ID: {worker._id.slice(-8)}
 															</p>
 															<div className="flex items-center gap-3 text-xs text-gray-500">
 																<span className="flex items-center gap-1">

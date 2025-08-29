@@ -25,7 +25,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import useChat from "@/hooks/useChat";
 import { tokenStorage } from "@/api/apiClient";
 import { useQuery } from "@tanstack/react-query";
-import { organizationService } from "./OrganizationsPage";
+import { organizationService } from "@/api/services/organizationService";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

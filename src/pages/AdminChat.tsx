@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { IConversation } from "@/types/chat.types";
 import { ChatCreationModal } from "@/components/ChatCreationModal";
-import { organizationService } from "./OrganizationsPage";
+import { organizationService } from "@/api/services/organizationService";
 import { adminUserService } from "@/api/services/adminUserService";
 import chatServices from "@/api/services/chatService";
 import { useQuery } from "@tanstack/react-query";

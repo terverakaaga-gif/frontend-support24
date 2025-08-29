@@ -150,7 +150,7 @@ export interface IMarkMessageAsReadResponse {
 		messageId: string;
 		readBy: IUser[];
 	};
-	error: any;
+	error: unknown;
 }
 
 export interface ISupportWorkers {

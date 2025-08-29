@@ -450,7 +450,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 			</main>
 
 			{/* Support Worker Search Dialog */}
-			<SearchSupportWorkers open={searchOpen} onOpenChange={setSearchOpen} />
+			{user.role === "participant" && (
+				<SearchSupportWorkers open={searchOpen} onOpenChange={setSearchOpen} />
+			)}
 		</div>
 	);
 }
