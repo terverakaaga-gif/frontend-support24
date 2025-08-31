@@ -125,7 +125,7 @@ export default function SupportWorkerDashboard() {
 			{/* Show alert if support worker hasn't completed onboarding */}
 			{user &&
 				user.role === "supportWorker" &&
-				!(user as SupportWorker).verificationStatus?.profileSetupComplete && (
+				!(user as SupportWorker).verificationStatus?.onboardingComplete && (
 					<ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
 				)}
 

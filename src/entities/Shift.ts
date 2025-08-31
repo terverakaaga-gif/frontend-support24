@@ -108,6 +108,7 @@ interface WorkerAssignment {
 }
 
 export interface Shift {
+	serviceType: any;
 	_id: string; // Unique MongoDB ID
 	shiftId: string; // Unique shift identifier
 	organizationId: string | Organization; // Organization this shift belongs to

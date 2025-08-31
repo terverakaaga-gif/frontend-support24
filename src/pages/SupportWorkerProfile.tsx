@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
 	Card,
@@ -8,17 +8,13 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
 	Calendar,
-	Clock,
-	MapPin,
 	Phone,
 	Mail,
-	User,
 	Edit,
 	Briefcase,
 	Languages,
@@ -27,46 +23,14 @@ import {
 	CheckSquare,
 	X,
 	Calendar as CalendarIcon,
-	Loader2,
-	AlertCircle,
 } from "lucide-react";
 import EditableAvatar from "@/components/EditableAvatar";
 import { cn } from "@/lib/utils";
-import supportWorkerService from "@/api/services/supportWorkerService";
-import { SupportWorker } from "@/types/user.types";
-import { toast } from "@/hooks/use-toast";
+import { User as IUser } from "@/types/user.types";
 
 export default function SupportWorkerProfile() {
 	const { user } = useAuth();
-	const [supportWorker, setSupportWorker] = useState<SupportWorker | null>(
-		null
-	);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
-	// Load support worker profile on component mount
-	useEffect(() => {
-		loadProfile();
-	}, []);
-
-	const loadProfile = async () => {
-		try {
-			setIsLoading(true);
-			setError(null);
-			const profile = await supportWorkerService.getProfile();
-			setSupportWorker(profile);
-		} catch (error) {
-			console.error("Failed to load profile:", error);
-			setError("Failed to load profile. Please try again.");
-			toast({
-				title: "Error",
-				description: "Failed to load your profile. Please try again.",
-				variant: "destructive",
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const [supportWorker, setSupportWorker] = useState<IUser | null>(user);
 
 	const formatDate = (date: string | Date) => {
 		return new Date(date).toLocaleDateString("en-US", {
@@ -108,45 +72,6 @@ export default function SupportWorkerProfile() {
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(" ");
 	};
-
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className="container py-6">
-				<div className="flex items-center justify-center py-12">
-					<Loader2 className="h-8 w-8 animate-spin mr-3" />
-					<span className="text-lg">Loading your profile...</span>
-				</div>
-			</div>
-		);
-	}
-
-	// Error state
-	if (error || !supportWorker) {
-		return (
-			<div className="container py-6">
-				<Card className="max-w-md mx-auto">
-					<CardContent className="pt-6">
-						<div className="text-center">
-							<AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-							<h3 className="text-lg font-semibold text-gray-900 mb-2">
-								Unable to Load Profile
-							</h3>
-							<p className="text-gray-600 mb-4">
-								{error || "There was a problem loading your profile."}
-							</p>
-							<Button
-								onClick={loadProfile}
-								className="bg-guardian hover:bg-guardian/90"
-							>
-								Try Again
-							</Button>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
-		);
-	}
 
 	return (
 		<div className="container py-6 space-y-6">
@@ -202,18 +127,6 @@ export default function SupportWorkerProfile() {
 									<span className="text-sm text-gray-700">
 										{supportWorker.phone}
 									</span>
-								</div>
-							)}
-							{supportWorker.address && (
-								<div className="flex items-start gap-3 p-2 rounded-lg hover:bg-guardian/5 transition-colors">
-									<div className="w-8 h-8 rounded-lg bg-guardian/10 flex items-center justify-center mt-0.5">
-										<MapPin className="h-4 w-4 text-guardian" />
-									</div>
-									<div className="text-sm text-gray-700">
-										<div>{supportWorker.address.street}</div>
-										<div>{`${supportWorker.address.city}, ${supportWorker.address.state} ${supportWorker.address.postalCode}`}</div>
-										<div>{supportWorker.address.country}</div>
-									</div>
 								</div>
 							)}
 						</div>

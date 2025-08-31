@@ -1,37 +1,27 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	Search,
 	Filter,
 	Plus,
 	Eye,
-	Edit,
 	Trash2,
 	CheckCircle,
-	XCircle,
 	Clock,
 	AlertTriangle,
-	Calendar,
-	Users,
-	TrendingUp,
 	FileText,
-	X,
-	User,
-	ExternalLink,
 	FilterIcon,
+	ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import incidentService from "@/api/services/incidentService";
-import { IIncident, TIncidentStatus } from "@/types/incidents.types";
+import { IIncident } from "@/types/incidents.types";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
 import { toast } from "sonner";
-import CreateIncidentModal from "@/components/CreateIncidentModal";
-import IncidentDetailsModal from "@/components/IncidentDetailsModal";
-import ResolveIncidentModal from "@/components/ResolveIncidentModal";
-import { set } from "date-fns";
+import { Link } from "react-router-dom";
 
-const IncidentAdminDashboard = () => {
+const IncidentsPage = () => {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
 
@@ -47,76 +37,17 @@ const IncidentAdminDashboard = () => {
 
 	// State management
 	const [filteredIncidents, setFilteredIncidents] = useState<IIncident[]>([]);
-	const [selectedIncident, setSelectedIncident] = useState<IIncident | null>(
-		null
-	);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState("ALL");
 	const [severityFilter, setSeverityFilter] = useState("ALL");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage] = useState(10);
 
-	// Separate modal states
-	const [modals, setModals] = useState({
-		create: false,
-		details: false,
-		resolve: false,
-		delete: false,
-	});
-
+	// Delete modal state
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [incidentToDelete, setIncidentToDelete] = useState<IIncident | null>(
 		null
 	);
-
-	// Helper function to open modal - FIXED: Close all other modals first
-	const openModal = (modalType: keyof typeof modals, incident?: IIncident) => {
-		// Close all modals first and wait for state to update
-		setModals({
-			create: false,
-			details: false,
-			resolve: false,
-			delete: false,
-		});
-
-		// Set the selected incident if provided
-		if (incident) {
-			setSelectedIncident(incident);
-		}
-
-		// Use setTimeout to ensure state updates before opening new modal
-		setTimeout(() => {
-			setModals((prev) => ({ ...prev, [modalType]: true }));
-		}, 100);
-	};
-
-	// Helper function to close modal - FIXED: Clear selected incident properly
-	const closeModal = (modalType: keyof typeof modals) => {
-		setModals((prev) => ({ ...prev, [modalType]: false }));
-
-		// Use setTimeout to ensure modal closes before clearing state
-		setTimeout(() => {
-			// Clear selected incident when closing any modal except create
-			if (modalType !== "create") {
-				setSelectedIncident(null);
-			}
-
-			// Clear incident to delete when closing delete modal
-			if (modalType === "delete") {
-				setIncidentToDelete(null);
-			}
-		}, 100);
-	};
-
-	const handleResolveFromDetails = (incident: IIncident) => {
-		// Close details modal first
-		closeModal("details");
-
-		// Wait for details modal to close, then open resolve modal
-		setTimeout(() => {
-			setSelectedIncident(incident);
-			setModals((prev) => ({ ...prev, resolve: true }));
-		}, 150);
-	};
 
 	// Calculate stats from real data - ONLY FOR ADMIN
 	const stats =
@@ -195,64 +126,6 @@ const IncidentAdminDashboard = () => {
 		}
 	}, [searchTerm, statusFilter, severityFilter, incidentsData]);
 
-	// Mutation for updating incident status
-	const updateStatusMutation = useMutation({
-		mutationFn: ({
-			id,
-			status,
-			updatedBy,
-		}: {
-			id: string;
-			status: TIncidentStatus;
-			updatedBy: string;
-		}) => incidentService.updateIncidentStatus(id, { status, updatedBy }),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["incidents"] });
-			toast.success("Incident status updated successfully");
-		},
-		onError: (error) => {
-			toast.error("Failed to update incident status");
-			console.error("Error updating status:", error);
-		},
-	});
-
-	// Mutation for resolving incident
-	const resolveIncidentMutation = useMutation({
-		mutationFn: ({
-			id,
-			resolutionNote,
-			resolvedBy,
-		}: {
-			id: string;
-			resolutionNote: string;
-			resolvedBy: string;
-		}) => incidentService.resolveIncident(id, { resolutionNote, resolvedBy }),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["incidents"] });
-			toast.success("Incident resolved successfully");
-			closeModal("resolve");
-		},
-		onError: (error) => {
-			toast.error("Failed to resolve incident");
-			console.error("Error resolving incident:", error);
-			closeModal("resolve");
-		},
-	});
-
-	// Mutation for creating incident
-	const createIncidentMutation = useMutation({
-		mutationFn: (data: any) => incidentService.createIncident(data),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["incidents"] });
-			toast.success("Incident created successfully");
-			closeModal("create");
-		},
-		onError: (error) => {
-			toast.error("Failed to create incident");
-			console.error("Error creating incident:", error);
-		},
-	});
-
 	// Mutation for deleting incidents
 	const deleteIncidentMutation = useMutation({
 		mutationFn: (id: string) => incidentService.deleteIncident(id),
@@ -260,7 +133,7 @@ const IncidentAdminDashboard = () => {
 			// Reload incidents
 			queryClient.invalidateQueries({ queryKey: ["incidents"] });
 			toast.success("Incident deleted successfully");
-			closeModal("delete");
+			setDeleteModalOpen(false);
 		},
 		onError: (error) => {
 			toast.error("Failed to delete incident");
@@ -295,34 +168,6 @@ const IncidentAdminDashboard = () => {
 			hour: "2-digit",
 			minute: "2-digit",
 		});
-	};
-
-	const handleStatusUpdate = (
-		incidentId: string,
-		newStatus: TIncidentStatus,
-		updatedBy: string
-	) => {
-		updateStatusMutation.mutate({
-			id: incidentId,
-			status: newStatus,
-			updatedBy,
-		});
-	};
-
-	const handleResolveIncident = (
-		incidentId: string,
-		resolutionNote: string,
-		resolvedBy: string
-	) => {
-		resolveIncidentMutation.mutate({
-			id: incidentId,
-			resolutionNote,
-			resolvedBy,
-		});
-	};
-
-	const handleCreateIncident = (data: any) => {
-		createIncidentMutation.mutate(data);
 	};
 
 	const handleDeleteIncident = () => {
@@ -393,7 +238,7 @@ const IncidentAdminDashboard = () => {
 										{stats.totalIncidents}
 									</p>
 								</div>
-								<FileText className="h-8 w-8 text-[#17AAEC]" />
+								<FileText className="h-8 w-8 text-[#008CFF]" />
 							</div>
 						</div>
 
@@ -448,70 +293,130 @@ const IncidentAdminDashboard = () => {
 								<input
 									type="text"
 									placeholder="Search incidents..."
-									className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent w-full sm:w-64"
+									className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#008CFF] focus:border-transparent w-full sm:w-64"
 									value={searchTerm}
 									onChange={(e) => setSearchTerm(e.target.value)}
 								/>
 							</div>
+							<div className="flex items-center gap-4">
+								<Select.Root
+									value={statusFilter}
+									onValueChange={setStatusFilter}
+								>
+									<Select.Trigger className="min-w-[180px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#008CFF] focus:border-transparent flex items-center justify-between gap-2 bg-white hover:bg-gray-50 transition-colors">
+										<div className="flex items-center gap-2">
+											<Filter size={16} className="text-gray-500" />
+											<span className="text-sm text-gray-700">
+												<Select.Value placeholder="All Statuses" />
+											</span>
+										</div>
+										<Select.Icon className="ml-2">
+											<ChevronDown size={16} className="text-gray-500" />
+										</Select.Icon>
+									</Select.Trigger>
+									<Select.Portal>
+										<Select.Content
+											className="bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-[180px]"
+											position="popper"
+											sideOffset={4}
+										>
+											<Select.Viewport className="p-1">
+												<Select.Item
+													value="ALL"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>All Statuses</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="OPEN"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>Open</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="IN_REVIEW"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>In Review</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="RESOLVED"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>Resolved</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="REJECTED"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>Rejected</Select.ItemText>
+												</Select.Item>
+											</Select.Viewport>
+										</Select.Content>
+									</Select.Portal>
+								</Select.Root>
 
-							<Select.Root value={statusFilter} onValueChange={setStatusFilter}>
-								<Select.Trigger className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent text-left flex items-center gap-2">
-									<Select.Value
-										placeholder="All Statuses"
-										defaultValue={"ALL"}
-									/>
-									<Filter size={20} color="gray" />
-									<p className="text-sm">Filter by Status</p>
-								</Select.Trigger>
-								<Select.Content className="bg-white px-2 py-3 rounded-lg shadow-lg border border-gray-200">
-									<Select.Item value="ALL">All Statuses</Select.Item>
-									<Select.Item value="OPEN">Open</Select.Item>
-									<Select.Item value="IN_REVIEW">In Review</Select.Item>
-									<Select.Item value="RESOLVED">Resolved</Select.Item>
-									<Select.Item value="REJECTED">Rejected</Select.Item>
-								</Select.Content>
-							</Select.Root>
-
-							<Select.Root
-								value={severityFilter}
-								onValueChange={setSeverityFilter}
-							>
-								<Select.Trigger className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17AAEC] focus:border-transparent text-left flex items-center gap-2">
-									<Select.Value
-										placeholder="All Severities"
-										defaultValue={"ALL"}
-									/>
-									<FilterIcon size={20} color="gray" />
-									<p className="text-sm">Filter by Severity</p>
-								</Select.Trigger>
-								<Select.Content className="bg-white rounded-lg px-2 py-3 shadow-lg border border-gray-200">
-									<Select.Item value="ALL">All Severities</Select.Item>
-									<Select.Item value="LOW">Low</Select.Item>
-									<Select.Item value="MEDIUM">Medium</Select.Item>
-									<Select.Item value="HIGH">High</Select.Item>
-								</Select.Content>
-							</Select.Root>
+								<Select.Root
+									value={severityFilter}
+									onValueChange={setSeverityFilter}
+								>
+									<Select.Trigger className="min-w-[180px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#008CFF] focus:border-transparent flex items-center justify-between gap-2 bg-white hover:bg-gray-50 transition-colors">
+										<div className="flex items-center gap-2">
+											<Filter size={16} className="text-gray-500" />
+											<span className="text-sm text-gray-700">
+												<Select.Value placeholder="All Severities" />
+											</span>
+										</div>
+										<Select.Icon className="ml-2">
+											<ChevronDown size={16} className="text-gray-500" />
+										</Select.Icon>
+									</Select.Trigger>
+									<Select.Portal>
+										<Select.Content
+											className="bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-[180px]"
+											position="popper"
+											sideOffset={4}
+										>
+											<Select.Viewport className="p-1">
+												<Select.Item
+													value="ALL"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>All Severities</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="LOW"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>Low</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="MEDIUM"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>Medium</Select.ItemText>
+												</Select.Item>
+												<Select.Item
+													value="HIGH"
+													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
+												>
+													<Select.ItemText>High</Select.ItemText>
+												</Select.Item>
+											</Select.Viewport>
+										</Select.Content>
+									</Select.Portal>
+								</Select.Root>
+							</div>
 						</div>
 
 						{user?.role === "supportWorker" && (
-							<Dialog.Root
-								open={modals.create}
-								onOpenChange={(open) => !open && closeModal("create")}
+							<Link
+								to="/support-worker/incidents/create"
+								className="bg-[#008CFF] text-white px-4 py-2 rounded-lg hover:bg-[#008CFF]/90 transition-colors flex items-center gap-2"
 							>
-								<Dialog.Trigger asChild>
-									<button
-										onClick={() => openModal("create")}
-										className="bg-[#17AAEC] text-white px-4 py-2 rounded-lg hover:bg-[#1599D3] transition-colors flex items-center gap-2"
-									>
-										<Plus className="h-4 w-4" />
-										Create Incident
-									</button>
-								</Dialog.Trigger>
-								<CreateIncidentModal
-									onClose={() => closeModal("create")}
-									onSubmit={handleCreateIncident}
-								/>
-							</Dialog.Root>
+								<Plus className="h-4 w-4" />
+								Create Incident
+							</Link>
 						)}
 					</div>
 				</div>
@@ -551,7 +456,7 @@ const IncidentAdminDashboard = () => {
 													{incident.title}
 												</div>
 												<div className="text-sm text-gray-500 truncate max-w-xs">
-													{incident.description}
+													{incident.description.replace(/<[^>]*>/g, "")}
 												</div>
 											</div>
 										</td>
@@ -585,23 +490,30 @@ const IncidentAdminDashboard = () => {
 										<td className="px-6 py-4">
 											<div className="flex items-center gap-2">
 												{/* View Button - Available for all roles */}
-												<button
-													onClick={() => openModal("details", incident)}
-													className="text-[#17AAEC] hover:text-[#1599D3] p-1"
+												<Link
+													to={`${
+														user.role === "admin"
+															? "/admin"
+															: user.role === "supportWorker"
+															? "/support-worker"
+															: "/participant"
+													}/incidents/${incident._id}`}
+													className="text-[#008CFF] flex gap-3 items-center hover:text-[#1599D3] p-1"
 													title="View Details"
 												>
-													<Eye className="h-4 w-4" />
-												</button>
+													<Eye className="h-4 w-4" />{" "}
+													<span className="text-sm text-[#008CFF]">View</span>
+												</Link>
 
 												{/* Resolve Button - Only for admin on non-resolved incidents */}
 												{canResolveIncident(incident) && (
-													<button
-														onClick={() => openModal("resolve", incident)}
+													<Link
+														to={`/admin/incidents/${incident._id}/resolve`}
 														className="text-green-600 hover:text-green-800 p-1"
 														title="Resolve Incident"
 													>
 														<CheckCircle className="h-4 w-4" />
-													</button>
+													</Link>
 												)}
 
 												{/* Delete Button - Available based on role permissions */}
@@ -609,7 +521,7 @@ const IncidentAdminDashboard = () => {
 													<button
 														onClick={() => {
 															setIncidentToDelete(incident);
-															openModal("delete");
+															setDeleteModalOpen(true);
 														}}
 														className="text-red-600 hover:text-red-800 p-1"
 														title="Delete Incident"
@@ -651,7 +563,7 @@ const IncidentAdminDashboard = () => {
 												onClick={() => setCurrentPage(page)}
 												className={`px-3 py-1 text-sm rounded-md ${
 													currentPage === page
-														? "bg-[#17AAEC] text-white"
+														? "bg-[#008CFF] text-white"
 														: "bg-white border border-gray-300 hover:bg-gray-50"
 												}`}
 											>
@@ -675,43 +587,8 @@ const IncidentAdminDashboard = () => {
 				</div>
 			</div>
 
-			{/* Modal Components */}
-			{selectedIncident && (
-				<>
-					{/* Details Modal */}
-					<Dialog.Root
-						open={modals.details}
-						onOpenChange={(open) => !open && closeModal("details")}
-					>
-						<IncidentDetailsModal
-							incident={selectedIncident}
-							onStatusUpdate={handleStatusUpdate}
-							onResolve={() => handleResolveFromDetails(selectedIncident)}
-							onClose={() => closeModal("details")}
-						/>
-					</Dialog.Root>
-
-					{/* Resolve Modal */}
-					{selectedIncident && canResolveIncident(selectedIncident) && (
-						<Dialog.Root
-							open={modals.resolve}
-							onOpenChange={(open) => !open && closeModal("resolve")}
-						>
-							<ResolveIncidentModal
-								incidentId={selectedIncident._id}
-								onResolve={handleResolveIncident}
-								onClose={() => closeModal("resolve")}
-							/>
-						</Dialog.Root>
-					)}
-				</>
-			)}
-
 			{/* Delete Confirmation Modal */}
-			<Dialog.Root
-				open={modals.delete}
-				onOpenChange={(open) => !open && closeModal("delete")}
-			>
+			<Dialog.Root open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
 				<Dialog.Portal>
 					<Dialog.Overlay className="fixed inset-0 bg-black/50" />
 					<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -724,7 +601,7 @@ const IncidentAdminDashboard = () => {
 						</p>
 						<div className="flex justify-end gap-3">
 							<button
-								onClick={() => closeModal("delete")}
+								onClick={() => setDeleteModalOpen(false)}
 								className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
 							>
 								Cancel
@@ -743,4 +620,4 @@ const IncidentAdminDashboard = () => {
 	);
 };
 
-export default IncidentAdminDashboard;
+export default IncidentsPage;
