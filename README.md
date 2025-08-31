@@ -1,73 +1,37 @@
-# Welcome to your Lovable project
+# Support24 Webapp
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/2a11a15d-fcfe-49b3-af71-867b8dc85441
+The Support24 Webapp is a sophisticated, full-stack application designed to provide robust security and monitoring solutions. It offers a comprehensive suite of features for managing security devices, monitoring events, and ensuring the safety of your premises. Built with modern web technologies, it aims to deliver a responsive, intuitive, and powerful user experience.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Real-time Monitoring:** Keep an eye on your security devices and events as they happen.
+- **Device Management:** Easily add, configure, and manage all your Support24 security devices.
+- **Event Logging & History:** Access detailed logs of all security events for review and analysis.
+- **User Authentication & Authorization:** Secure access with robust user management and role-based permissions.
+- **Customizable Dashboards:** Tailor your view to prioritize the information most important to you.
+- **Alerts & Notifications:** Receive timely alerts for critical events.
+- **Responsive Design:** Access the webapp seamlessly from various devices (desktop, tablet, mobile).
 
-**Use Lovable**
+## Technologies Used
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2a11a15d-fcfe-49b3-af71-867b8dc85441) and start prompting.
+### Frontend
 
-Changes made via Lovable will be committed automatically to this repo.
+- **React:** A declarative, efficient, and flexible JavaScript library for building user interfaces.
+- **TypeScript:** A typed superset of JavaScript that compiles to plain JavaScript, enhancing code quality and maintainability.
+- **Redux Toolkit:** The official, opinionated, batteries-included toolset for efficient Redux development.
+- **React Router:** Declarative routing for React.
+- **Tailwind CSS:** A utility-first CSS framework for rapidly building custom designs.
+- **Material-UI (MUI):** A comprehensive suite of UI tools to help you ship new features faster.
+- **Axios:** Promise-based HTTP client for the browser and Node.js.
+- **React Hook Form:** Performant, flexible, and extensible forms with easy-to-use validation.
+- **Yup:** JavaScript schema builder for value parsing and validation.
 
-**Use your preferred IDE**
+### Backend
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/2a11a15d-fcfe-49b3-af71-867b8dc85441) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- **Node.js:** A JavaScript runtime built on Chrome's V8 JavaScript engine.
+- **Express.js:** A fast, unopinionated, minimalist web framework for Node.js.
+- **MongoDB:** A NoSQL document database for high performance, high availability, and easy scalability.
+- **Mongoose:** An elegant MongoDB object modeling for Node.js.
+- \*\*JWT
