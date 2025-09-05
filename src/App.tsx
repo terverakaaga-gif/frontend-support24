@@ -180,7 +180,10 @@ const AppRoutes = () => {
 							<Routes>
 								{/* <Route path="/" element={<AdminDashboard />} /> */}
 								<Route path="/" element={<AdminAnalyticsDashboard />} />
-								{/* <Route path="/analytics" element={<AdminAnalyticsDashboard />} /> */}
+								{/* <Route
+									path="/analytics"
+									element={<AdminAnalyticsDashboard />}
+								/> */}
 								<Route path="/invites" element={<InviteManagementPage />} />
 								<Route
 									path="/invites/:inviteId/details"

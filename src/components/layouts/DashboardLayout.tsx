@@ -133,12 +133,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 									active={isActive("/admin/invites")}
 								/>
 								<NavItem
-									to="/admin/analytics"
-									icon={<BarChart3 size={20} />}
-									label="Analytics"
-									active={isActive("/admin/analytics")}
-								/>
-								<NavItem
 									to="/admin/service-types"
 									icon={<Settings size={20} />}
 									label="Service Types"
@@ -184,7 +178,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 								Other
 							</h2>
 							<div className="space-y-1">
-								<NavItem
+								{/* <NavItem
 									to="/invoices"
 									icon={<ReceiptText size={20} />}
 									label="Invoices"
@@ -195,7 +189,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 									icon={<Calendar size={20} />}
 									label="Events"
 									active={isActive("/events")}
-								/>
+								/> */}
 								<NavItem
 									to="/admin/incidents"
 									icon={<ShieldCheck size={20} />}
