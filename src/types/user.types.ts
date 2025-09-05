@@ -1,5 +1,11 @@
 // User Role type
 export type UserRole = "admin" | "participant" | "supportWorker" | "guardian";
+export enum EUserRole {
+	Admin = "admin",
+	Participant = "participant",
+	SupportWorker = "supportWorker",
+	Guardian = "guardian",
+}
 
 // User Status type
 export type UserStatus = "active" | "pending" | "suspended" | "inactive";
@@ -81,9 +87,27 @@ export interface Experience {
 	description: string;
 }
 
+export interface RateTimeBandId {
+	_id: string;
+	name: string;
+	code: string;
+	startTime: string;
+	endTime: string;
+}
+export interface ShiftRate {
+	rateTimeBandId: RateTimeBandId;
+	hourlyRate: number;
+	_id: string;
+}
+
 // Support Worker interface
 export interface SupportWorker extends BaseUser {
-	skills: string[];
+	shiftRates: ShiftRate[];
+	skills: {
+		_id: string;
+		name: string;
+		code: string;
+	}[];
 	availability: Availability;
 	serviceAreas: string[];
 	languages: string[];

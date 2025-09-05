@@ -14,7 +14,7 @@ interface ServiceAgreement {
 	termsAccepted: boolean;
 }
 
-interface Worker {
+export interface IWorker {
 	serviceAgreement: ServiceAgreement;
 	workerId: {
 		profileImage: string | null;
@@ -28,9 +28,21 @@ interface Worker {
 	_id: string;
 }
 
-interface PendingInvite {
+export interface PendingInvite {
+	status: string;
+	proposedRates: {
+		baseHourlyRate: number;
+		shiftRates: ShiftRate[];
+		distanceTravelRate: number;
+	};
 	inviteId: string;
-	workerId: string;
+	workerId: {
+		profileImage: string;
+		_id: string;
+		email: string;
+		firstName: string;
+		lastName: string;
+	};
 	inviteDate: string;
 	proposedHourlyRate: number;
 	_id: string;
@@ -40,7 +52,7 @@ export interface Organization {
 	_id: string;
 	name: string;
 	participantId: string;
-	workers: Worker[];
+	workers: IWorker[];
 	pendingInvites: PendingInvite[];
 	description: string;
 	createdAt: string;
@@ -119,7 +131,7 @@ export class OrganizationService {
 		return await get<Invite[]>("/organizations/invites/pending");
 	}
 
-	// Get worker's invites (Worker only)
+	// Get worker's invites (IWorker only)
 	async getWorkerInvites(): Promise<Invite[]> {
 		return await get<Invite[]>("/organizations/invites/worker");
 	}

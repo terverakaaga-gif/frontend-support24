@@ -79,7 +79,7 @@ const inviteService = {
 		data: IInvitationRequest
 	): Promise<{ organization: IInvitationResponse }> => {
 		return post<{ organization: IInvitationResponse }>(
-			`/organizations/${organizationId}/invites`,
+			`/organizations/${organizationId}/invite`,
 			data
 		);
 	},

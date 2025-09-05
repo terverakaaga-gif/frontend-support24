@@ -67,6 +67,9 @@ import IncidentsPage from "./pages/IncidentsPage";
 import CreateIncidentPage from "./pages/CreateIncidentPage";
 import IncidentDetailsPage from "./pages/IncidentDetailsPage";
 import ResolveIncidentPage from "./pages/ResolveIncidentPage";
+import ProfileEditForm from "./components/layouts/ProfileEditForm";
+import SupportWorkerProfilePreview from "./pages/SupportWorkerProfilePreview";
+import SupportWorkerInvite from "./pages/SupportWorkerInvite";
 
 const queryClient = new QueryClient();
 
@@ -274,6 +277,12 @@ const AppRoutes = () => {
 							<Routes>
 								<Route path="/" element={<ParticipantDashboard />} />
 								<Route path="/profile" element={<ParticipantProfile />} />
+								<Route
+									path="/profile/:id"
+									element={<SupportWorkerProfilePreview />}
+								/>
+								<Route path="/invite/:id" element={<SupportWorkerInvite />} />
+								<Route path="/profile/edit" element={<ProfileEditForm />} />
 								<Route path="/shifts" element={<ParticipantShifts />} />
 								<Route
 									path="/shifts/:shiftId"
@@ -324,6 +333,7 @@ const AppRoutes = () => {
 									element={<OrganizationDetailsPage />}
 								/>
 								<Route path="/profile" element={<SupportWorkerProfile />} />
+								<Route path="/profile/edit" element={<ProfileEditForm />} />
 								<Route
 									path="/timesheets"
 									element={<SupportWorkerTimesheets />}

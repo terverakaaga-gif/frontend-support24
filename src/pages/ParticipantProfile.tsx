@@ -1,5 +1,6 @@
 import React from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useProfile } from "@/hooks/useProfile";
 import {
 	Card,
 	CardContent,
@@ -23,92 +24,62 @@ import {
 	AlertCircle,
 	Edit,
 	FileText,
+	Loader2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const mockParticipant = {
-	_id: "p1",
-	email: "emma@example.com",
-	firstName: "Emma",
-	lastName: "Wilson",
-	role: "participant" as const,
-	status: "active" as const,
-	phone: "555-123-4567",
-	gender: "female" as const,
-	dateOfBirth: new Date("1995-05-15"),
-	address: {
-		street: "123 Main St",
-		city: "Seattle",
-		state: "WA",
-		postalCode: "98101",
-		country: "USA",
-	},
-	profileImage: "/placeholder.svg",
-	bio: "I enjoy music, art therapy, and outdoor activities. I'm looking for consistent support to help with daily routines and community engagement.",
-	supportNeeds: [
-		"Personal care assistance",
-		"Transportation to appointments",
-		"Social activities",
-		"Meal preparation",
-	],
-	emergencyContact: {
-		name: "Robert Wilson",
-		relationship: "Father",
-		phone: "555-987-6543",
-	},
-	get fullName() {
-		return `${this.firstName} ${this.lastName}`;
-	},
-};
-
-// Just for demo purposes - in a real app these would come from a database
-const upcomingAppointments = [
-	{
-		id: "1",
-		date: "2025-04-10",
-		time: "10:00 AM - 12:00 PM",
-		supportWorker: "Sarah Johnson",
-		service: "Physical Therapy",
-	},
-	{
-		id: "2",
-		date: "2025-04-12",
-		time: "2:00 PM - 4:00 PM",
-		supportWorker: "Michael Smith",
-		service: "Social Support",
-	},
-];
-
-const recentUpdates = [
-	{
-		id: "1",
-		date: "2025-04-01",
-		supportWorker: "Sarah Johnson",
-		notes:
-			"Excellent progress with physical exercises. Emma showed increased mobility and engagement.",
-	},
-	{
-		id: "2",
-		date: "2025-03-25",
-		supportWorker: "Michael Smith",
-		notes:
-			"Successful community outing to the local art museum. Emma particularly enjoyed the interactive exhibits.",
-	},
-];
+import { Participant } from "@/types/user.types";
+import Loader from "@/components/Loader";
+import EditableAvatar from "@/components/EditableAvatar";
 
 export default function ParticipantProfile() {
-	const { user } = useAuth();
-	// In a real application, we would use the authenticated user's ID to fetch the participant profile
-	// For now, we'll use our mock data
-	const participant = mockParticipant;
+	const navigate = useNavigate();
+	const { data: profileData, isLoading, error, isError } = useProfile();
 
-	const formatDate = (date: Date) => {
+	if (isLoading) {
+		return <Loader />;
+	}
+
+	if (isError || !profileData) {
+		return (
+			<div className="container py-6 space-y-6">
+				<Card className="border-red-200 bg-red-50">
+					<CardContent className="pt-6">
+						<div className="text-center">
+							<AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+							<p className="text-red-700 mb-4">
+								{error?.message || "Failed to load profile data"}
+							</p>
+							<Button
+								onClick={() => window.location.reload()}
+								variant="outline"
+							>
+								Try Again
+							</Button>
+						</div>
+					</CardContent>
+				</Card>
+			</div>
+		);
+	}
+
+	const participant = profileData.user as Participant;
+
+	console.log("Participant Profile Data:", participant);
+
+	const formatDate = (date: Date | string) => {
 		return new Date(date).toLocaleDateString("en-US", {
 			year: "numeric",
 			month: "long",
 			day: "numeric",
 		});
 	};
+
+	const handleEditProfile = () => {
+		navigate("/participant/profile/edit");
+	};
+
+	// Mock data for appointments and updates until API endpoints are available
+	const upcomingAppointments: any[] = [];
+	const recentUpdates: any[] = [];
 
 	return (
 		<div className="container py-6 space-y-6">
@@ -122,7 +93,10 @@ export default function ParticipantProfile() {
 						Manage your personal information and care preferences
 					</p>
 				</div>
-				<Button className="bg-[#008CFF] hover:bg-[#008CFF]/90 shadow-md">
+				<Button
+					onClick={handleEditProfile}
+					className="bg-[#008CFF] hover:bg-[#008CFF]/90 shadow-md"
+				>
 					<Edit className="mr-2 h-4 w-4" />
 					Edit Profile
 				</Button>
@@ -133,22 +107,10 @@ export default function ParticipantProfile() {
 				<Card className="lg:col-span-1 border-[#008CFF]/10 transition-all duration-200 hover:shadow-lg">
 					<CardHeader className="text-center pb-4">
 						<div className="flex justify-center mb-6">
-							<div className="relative">
-								<Avatar className="h-24 w-24 border-4 border-[#008CFF]/10 shadow-lg">
-									<AvatarImage
-										src={participant.profileImage}
-										alt={participant.fullName}
-									/>
-									<AvatarFallback className="text-2xl bg-[#008CFF] text-white font-semibold">
-										{participant.firstName.charAt(0)}
-										{participant.lastName.charAt(0)}
-									</AvatarFallback>
-								</Avatar>
-								<div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
-							</div>
+							<EditableAvatar />
 						</div>
 						<CardTitle className="text-2xl text-gray-900">
-							{participant.fullName}
+							{participant.firstName} {participant.lastName}
 						</CardTitle>
 						<CardDescription className="mt-2">
 							<Badge className="bg-[#008CFF] text-white hover:bg-[#008CFF]/90 shadow-sm">
@@ -167,14 +129,16 @@ export default function ParticipantProfile() {
 									{participant.email}
 								</span>
 							</div>
-							<div className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#008CFF]/5 transition-colors">
-								<div className="w-8 h-8 rounded-lg bg-[#008CFF]/10 flex items-center justify-center">
-									<Phone className="h-4 w-4 text-[#008CFF]" />
+							{participant.phone && (
+								<div className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#008CFF]/5 transition-colors">
+									<div className="w-8 h-8 rounded-lg bg-[#008CFF]/10 flex items-center justify-center">
+										<Phone className="h-4 w-4 text-[#008CFF]" />
+									</div>
+									<span className="text-sm text-gray-700">
+										{participant.phone}
+									</span>
 								</div>
-								<span className="text-sm text-gray-700">
-									{participant.phone}
-								</span>
-							</div>
+							)}
 							{participant.address && (
 								<div className="flex items-start gap-3 p-2 rounded-lg hover:bg-[#008CFF]/5 transition-colors">
 									<div className="w-8 h-8 rounded-lg bg-[#008CFF]/10 flex items-center justify-center mt-0.5">
@@ -257,30 +221,59 @@ export default function ParticipantProfile() {
 									<CardTitle className="text-[#008CFF]">About Me</CardTitle>
 								</CardHeader>
 								<CardContent className="space-y-6 pt-6">
-									<div>
+									{/* <div>
 										<h3 className="text-lg font-medium mb-3 text-gray-900">
 											Bio
 										</h3>
-										<p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
-											{participant.bio}
-										</p>
-									</div>
+										{participant.bio ? (
+											<p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
+												{participant.bio}
+											</p>
+										) : (
+											<div className="text-center py-8 bg-gray-50 rounded-lg">
+												<p className="text-gray-500 mb-2">No bio added yet</p>
+												<Button
+													onClick={handleEditProfile}
+													variant="outline"
+													size="sm"
+												>
+													Add Bio
+												</Button>
+											</div>
+										)}
+									</div> */}
 
 									<div>
 										<h3 className="text-lg font-medium mb-3 text-gray-900">
 											Support Needs
 										</h3>
-										<div className="flex flex-wrap gap-2">
-											{participant.supportNeeds.map((need, index) => (
-												<Badge
-													key={index}
+										{participant.supportNeeds &&
+										participant.supportNeeds.length > 0 ? (
+											<div className="flex flex-wrap gap-2">
+												{participant.supportNeeds.map((need, index) => (
+													<Badge
+														key={index}
+														variant="outline"
+														className="bg-[#008CFF]/10 text-[#008CFF] border-[#008CFF]/20 hover:bg-[#008CFF]/20 transition-colors"
+													>
+														{need.name}
+													</Badge>
+												))}
+											</div>
+										) : (
+											<div className="text-center py-8 bg-gray-50 rounded-lg">
+												<p className="text-gray-500 mb-2">
+													No support needs specified
+												</p>
+												<Button
+													onClick={handleEditProfile}
 													variant="outline"
-													className="bg-[#008CFF]/10 text-[#008CFF] border-[#008CFF]/20 hover:bg-[#008CFF]/20 transition-colors"
+													size="sm"
 												>
-													{need}
-												</Badge>
-											))}
-										</div>
+													Add Support Needs
+												</Button>
+											</div>
+										)}
 									</div>
 
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

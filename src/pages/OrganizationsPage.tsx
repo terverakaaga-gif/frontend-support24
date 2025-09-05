@@ -5,19 +5,15 @@ import {
 	Building2,
 	Users,
 	Search,
-	Filter,
 	Calendar,
 	DollarSign,
 	Mail,
-	User,
 	Clock,
 	CheckCircle,
 	XCircle,
-	AlertCircle,
 	Eye,
 	MoreVertical,
 	Building,
-	UserCheck,
 	TrendingUp,
 	Activity,
 } from "lucide-react";
@@ -40,9 +36,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
-import { organizationService } from "@/api/services/organizationService";
+import {
+	organizationService,
+	Organization,
+	PendingInvite,
+} from "@/api/services/organizationService";
 
 export default function OrganizationsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -51,17 +50,22 @@ export default function OrganizationsPage() {
 
 	// Fetch organizations data
 	const {
-		data: organizations = [],
+		data: organizationsData,
 		isLoading,
 		error,
 		refetch,
 	} = useQuery({
 		queryKey: ["support-worker-organizations"],
-		queryFn: async () =>
-			(await organizationService.getOrganizations()).organizations,
+		queryFn: async () => {
+			const response = await organizationService.getOrganizations();
+			console.log("API Response:", response);
+			return response;
+		},
 	});
 
-	console.log("organizations: ", organizations);
+	const organizations: Organization[] = organizationsData?.organizations || [];
+
+	console.log("Organizations data:", organizations);
 
 	// Filter organizations based on search
 	const filteredOrganizations = organizations.filter((org) => {
@@ -70,10 +74,14 @@ export default function OrganizationsPage() {
 			org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			org.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			org.workers.some((worker) =>
-				worker._id.toLowerCase().includes(searchTerm.toLowerCase())
+				`${worker.workerId.firstName} ${worker.workerId.lastName}`
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase())
 			) ||
 			org.pendingInvites.some((invite) =>
-				invite.workerId.toLowerCase().includes(searchTerm.toLowerCase())
+				`${invite.workerId.firstName} ${invite.workerId.lastName}`
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase())
 			);
 
 		return matchesSearch;
@@ -87,7 +95,9 @@ export default function OrganizationsPage() {
 			0
 		),
 		totalPendingInvites: organizations.reduce(
-			(sum, org) => sum + org.pendingInvites.length,
+			(sum, org) =>
+				sum +
+				org.pendingInvites.filter((inv) => inv.status === "pending").length,
 			0
 		),
 		averageBaseRate:
@@ -109,6 +119,14 @@ export default function OrganizationsPage() {
 				: 0,
 		activeConnections: organizations.filter((org) => org.workers.length > 0)
 			.length,
+	};
+
+	const getWorkerInitials = (firstName: string, lastName: string) => {
+		return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+	};
+
+	const getWorkerFullName = (worker: PendingInvite["workerId"]) => {
+		return `${worker.firstName} ${worker.lastName}`;
 	};
 
 	if (error) {
@@ -245,7 +263,7 @@ export default function OrganizationsPage() {
 						<div className="relative flex-1">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
 							<Input
-								placeholder="Search organizations, participants, or workers..."
+								placeholder="Search organizations, workers, or invites..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
 								className="pl-10 h-11"
@@ -259,8 +277,8 @@ export default function OrganizationsPage() {
 							</SelectTrigger>
 							<SelectContent>
 								<SelectItem value="all">All Organizations</SelectItem>
-								<SelectItem value="active">Active Invites</SelectItem>
-								<SelectItem value="no-invites">No Invites</SelectItem>
+								<SelectItem value="active">Active Workers</SelectItem>
+								<SelectItem value="pending">Pending Invites</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
@@ -387,57 +405,77 @@ export default function OrganizationsPage() {
 										</div>
 									) : (
 										<div className="space-y-3 max-h-48 overflow-y-auto">
-											{organization.workers.map((worker) => (
-												<div
-													key={worker._id}
-													className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-guardian/20 transition-colors"
-												>
-													<div className="flex items-center gap-3">
-														<Avatar className="w-8 h-8">
-															<AvatarFallback className="text-xs">
-																{worker._id.slice(-2).toUpperCase()}
-															</AvatarFallback>
-														</Avatar>
-														<div>
-															<p className="text-sm font-medium text-gray-900">
-																Worker ID: {worker._id.slice(-8)}
-															</p>
-															<div className="flex items-center gap-3 text-xs text-gray-500">
-																<span className="flex items-center gap-1">
-																	<Calendar className="w-3 h-3" />
-																	{format(
-																		parseISO(worker.joinedDate),
-																		"MMM dd, yyyy"
-																	)}
-																</span>
-																<span className="flex items-center gap-1">
-																	<DollarSign className="w-3 h-3" />$
-																	{worker.serviceAgreement.baseHourlyRate}/hr
-																</span>
+											{organization.workers.map((worker) => {
+												return (
+													<div
+														key={worker._id}
+														className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-guardian/20 transition-colors"
+													>
+														<div className="flex items-center gap-3">
+															<Avatar className="w-8 h-8">
+																{worker.workerId.profileImage ? (
+																	<AvatarImage
+																		src={worker.workerId.profileImage}
+																		alt={getWorkerFullName(worker.workerId)}
+																	/>
+																) : (
+																	<AvatarFallback className="text-xs">
+																		{getWorkerInitials(
+																			worker.workerId.firstName,
+																			worker.workerId.lastName
+																		)}
+																	</AvatarFallback>
+																)}
+															</Avatar>
+															<div>
+																<p className="text-sm font-medium text-gray-900">
+																	{getWorkerFullName(worker.workerId)}
+																</p>
+																<div className="flex items-center gap-3 text-xs text-gray-500">
+																	<span className="flex items-center gap-1">
+																		<Calendar className="w-3 h-3" />
+																		{format(
+																			parseISO(worker.joinedDate),
+																			"MMM dd, yyyy"
+																		)}
+																	</span>
+																	<span className="flex items-center gap-1">
+																		<DollarSign className="w-3 h-3" />$
+																		{worker.serviceAgreement.baseHourlyRate}/hr
+																	</span>
+																</div>
 															</div>
 														</div>
+														<div className="flex items-center gap-2">
+															<Badge
+																variant="outline"
+																className="text-xs bg-green-50 text-green-700 border-green-200"
+															>
+																<CheckCircle className="w-3 h-3 mr-1" />
+																Active
+															</Badge>
+														</div>
 													</div>
-													<div className="flex items-center gap-2">
-														<Badge
-															variant="outline"
-															className="text-xs bg-green-50 text-green-700 border-green-200"
-														>
-															<CheckCircle className="w-3 h-3 mr-1" />
-															Active
-														</Badge>
-													</div>
-												</div>
-											))}
+												);
+											})}
 										</div>
 									)}
 								</div>
 
 								{/* Pending Invites Section */}
-								{organization.pendingInvites.length > 0 && (
+								{organization.pendingInvites.filter(
+									(inv) => inv.status === "pending"
+								).length > 0 && (
 									<div>
 										<div className="flex items-center justify-between mb-3">
 											<h4 className="text-sm font-semibold text-gray-900">
-												Pending Invites ({organization.pendingInvites.length})
+												Pending Invites (
+												{
+													organization.pendingInvites.filter(
+														(inv) => inv.status === "pending"
+													).length
+												}
+												)
 											</h4>
 											<Badge
 												variant="outline"
@@ -448,29 +486,43 @@ export default function OrganizationsPage() {
 											</Badge>
 										</div>
 										<div className="space-y-2 max-h-32 overflow-y-auto">
-											{organization.pendingInvites.map((invite) => (
-												<div
-													key={invite._id}
-													className="flex items-center justify-between p-2 bg-orange-50 border border-orange-200 rounded-lg"
-												>
-													<div className="flex items-center gap-2">
-														<div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-															<Mail className="w-3 h-3 text-orange-600" />
+											{organization.pendingInvites
+												.filter((invite) => invite.status === "pending")
+												.map((invite) => (
+													<div
+														key={invite._id}
+														className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg"
+													>
+														<div className="flex items-center gap-3">
+															<Avatar className="w-8 h-8">
+																{invite.workerId.profileImage ? (
+																	<AvatarImage
+																		src={invite.workerId.profileImage}
+																		alt={getWorkerFullName(invite.workerId)}
+																	/>
+																) : (
+																	<AvatarFallback className="text-xs">
+																		{getWorkerInitials(
+																			invite.workerId.firstName,
+																			invite.workerId.lastName
+																		)}
+																	</AvatarFallback>
+																)}
+															</Avatar>
+															<div>
+																<p className="text-sm font-medium text-gray-900">
+																	{getWorkerFullName(invite.workerId)}
+																</p>
+																<p className="text-xs text-gray-500">
+																	${invite.proposedRates.baseHourlyRate}/hr
+																</p>
+															</div>
 														</div>
-														<div>
-															<p className="text-xs font-medium text-gray-900">
-																Worker ID: {invite.workerId.slice(-8)}
-															</p>
-															<p className="text-xs text-gray-500">
-																${invite.proposedHourlyRate}/hr
-															</p>
-														</div>
+														<Badge variant="secondary" className="text-xs">
+															{invite.status}
+														</Badge>
 													</div>
-													<Badge variant="secondary" className="text-xs">
-														Pending
-													</Badge>
-												</div>
-											))}
+												))}
 										</div>
 									</div>
 								)}
