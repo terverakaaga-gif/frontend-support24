@@ -22,3 +22,10 @@ export interface UserSummary {
   phone: string;
   profileImage?: string;
 }
+
+// Service type information as returned by API
+export interface ServiceTypeInfo {
+  id: string;
+  name: string;
+  code: string;
+}

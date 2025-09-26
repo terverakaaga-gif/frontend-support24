@@ -116,7 +116,7 @@ export interface Shift {
 	isMultiWorkerShift: boolean; // Whether shift requires multiple workers
 	workerId?: string | UserSummary; // Support worker assigned (single-worker mode)
 	workerAssignments?: WorkerAssignment[]; // Support workers assigned (multi-worker mode)
-	serviceTypeId: ServiceTypeId; // Type of service requested
+	serviceTypeId?: ServiceTypeId; // Type of service requested
 	startTime: string; // Scheduled start time
 	endTime: string; // Scheduled end time
 

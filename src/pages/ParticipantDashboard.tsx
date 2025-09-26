@@ -33,20 +33,53 @@ import {
 	useGetParticipantOverview,
 	useGetParticipantServices,
 } from "@/hooks/useAnalyticsHooks";
+import type { ServiceTypeInfo } from "@/entities/types";
 import Loader from "@/components/Loader";
 
-// Service type labels for display
+// Service type labels for display (fallback mapping by code)
 const SERVICE_TYPE_LABELS: Record<string, string> = {
-	personalCare: "Personal Care",
-	socialSupport: "Social Support",
-	transport: "Transport",
-	householdTasks: "Household Tasks",
-	mealPreparation: "Meal Preparation",
-	medicationSupport: "Medication Support",
-	mobilityAssistance: "Mobility Assistance",
-	therapySupport: "Therapy Support",
-	behaviorSupport: "Behavior Support",
-	communityAccess: "Community Access",
+	PERSONALCARE: "Personal Care",
+	SOCIALSUP: "Social Support",
+	TRANSPORT: "Transport",
+	HOUSEHOLD: "Household Tasks",
+	MEALPREP: "Meal Preparation",
+	MEDICATIONSUP: "Medication Support",
+	MOBILITYASSIST: "Mobility Assistance",
+	THERAPYSUP: "Therapy Support",
+	BEHAVESUP: "Behavior Support",
+	COMMUNITYACCESS: "Community Access",
+};
+
+/**
+ * Helper function to get service type display name
+ * Handles both legacy string format and new ServiceTypeInfo object format
+ * API returns serviceType as: { id: string, name: string, code: string }
+ */
+const getServiceTypeDisplayName = (serviceType: ServiceTypeInfo | string): string => {
+	// If it's already a string (legacy format), return it
+	if (typeof serviceType === 'string') {
+		return SERVICE_TYPE_LABELS[serviceType] || serviceType;
+	}
+	
+	// If it's an object with the proper structure
+	if (serviceType && typeof serviceType === 'object') {
+		// First try to use the name from the API
+		if (serviceType.name) {
+			return serviceType.name;
+		}
+		
+		// Fallback to our mapping using the code
+		if (serviceType.code && SERVICE_TYPE_LABELS[serviceType.code]) {
+			return SERVICE_TYPE_LABELS[serviceType.code];
+		}
+		
+		// Last resort: use the code itself
+		if (serviceType.code) {
+			return serviceType.code;
+		}
+	}
+	
+	return 'Unknown Service';
 };
 
 // Shift Management Component
@@ -139,6 +172,9 @@ export default function ParticipantDashboard() {
 		isLoading: serviceLoading,
 		error: serviceError,
 	} = useGetParticipantServices("month");
+
+	console.log("Overview Data:", overviewData);
+	console.log("Service Data:", serviceData);
 
 	// Format data for charts
 	const spendingTrendData = overviewData?.financialSummary?.spendingTrend || [];
@@ -270,8 +306,7 @@ export default function ParticipantDashboard() {
 									>
 										<div className="flex justify-between items-center mb-2">
 											<h4 className="font-medium text-gray-900">
-												{SERVICE_TYPE_LABELS[service.serviceType] ||
-													service.serviceType}
+												{getServiceTypeDisplayName(service.serviceType)}
 											</h4>
 											<Badge
 												variant="secondary"

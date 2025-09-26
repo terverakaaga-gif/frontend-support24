@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ISearchSupportWorkers } from "@/api/services/participantService";
 import { useMyOrganizations, useSupportWorkers } from "@/hooks/useParticipant";
+import { Organization } from "@/api/services/organizationService";
 
 interface SearchSupportWorkersProps {
 	open: boolean;
@@ -107,7 +108,7 @@ export function SearchSupportWorkers({
 	const isWorkerInOrganization = (workerId: string) => {
 		return (
 			organizations?.some((org) =>
-				org.workers?.some((member) => member._id === workerId)
+				org.workers?.some((member) => member.workerId._id === workerId)
 			) || false
 		);
 	};

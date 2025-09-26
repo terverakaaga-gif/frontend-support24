@@ -23,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import shiftService from "@/api/services/shiftService";
-import { Shift, ShiftStatus, ServiceType } from "@/entities/Shift";
+import { Shift, ShiftStatus, ServiceType, ServiceTypeId } from "@/entities/Shift";
 import { format, parseISO } from "date-fns";
 
 const ParticipantShiftDetails = () => {
@@ -90,11 +90,22 @@ const ParticipantShiftDetails = () => {
   };
 
   // Format service type for display
-  const formatServiceType = (serviceType: ServiceType) => {
-    return serviceType
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase())
-      .trim();
+  const formatServiceType = (serviceTypeId?: ServiceTypeId) => {
+    if (!serviceTypeId) return "Unknown Service";
+    
+    // Use the name if available, otherwise format the code
+    if (serviceTypeId.name) {
+      return serviceTypeId.name;
+    }
+    
+    if (serviceTypeId.code) {
+      return serviceTypeId.code
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase())
+        .trim();
+    }
+    
+    return "Unknown Service";
   };
 
   // Get shift duration
@@ -192,7 +203,7 @@ const ParticipantShiftDetails = () => {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              {formatServiceType(shift.serviceType)}
+              {formatServiceType(shift.serviceTypeId)}
             </h1>
             {shift.recurrence?.pattern !== "none" && (
               <Badge variant="outline" className="gap-1">

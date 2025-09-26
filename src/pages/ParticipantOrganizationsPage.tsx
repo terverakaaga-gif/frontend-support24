@@ -49,30 +49,31 @@ import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import { organizationService } from "@/api/services/organizationService";
 
-// Helper function to safely get worker ID as string
-const getWorkerIdString = (workerId: string | unknown): string => {
-	if (typeof workerId === "string") {
-		return workerId;
+// Helper function to safely get worker full name
+const getWorkerFullName = (worker: any): string => {
+	if (worker?.workerId?.firstName && worker?.workerId?.lastName) {
+		return `${worker.workerId.firstName} ${worker.workerId.lastName}`;
 	}
-
-	return String(workerId || "Unknown");
-};
-
-// Helper function to safely get last characters of worker ID
-const getWorkerIdDisplay = (
-	workerId: string | unknown,
-	length: number = 8
-): string => {
-	const idString = getWorkerIdString(workerId);
-	return idString.length >= length ? idString.slice(-length) : idString;
+	if (worker?.firstName && worker?.lastName) {
+		return `${worker.firstName} ${worker.lastName}`;
+	}
+	return "Unknown Worker";
 };
 
 // Helper function to get worker initials
-const getWorkerInitials = (workerId: string | unknown): string => {
-	const idString = getWorkerIdString(workerId);
-	return idString.length >= 2
-		? idString.slice(-2).toUpperCase()
-		: idString.toUpperCase();
+const getWorkerInitials = (worker: any): string => {
+	if (worker?.workerId?.firstName && worker?.workerId?.lastName) {
+		return `${worker.workerId.firstName.charAt(0)}${worker.workerId.lastName.charAt(0)}`.toUpperCase();
+	}
+	if (worker?.firstName && worker?.lastName) {
+		return `${worker.firstName.charAt(0)}${worker.lastName.charAt(0)}`.toUpperCase();
+	}
+	return "UW";
+};
+
+// Helper function to get worker email
+const getWorkerEmail = (worker: any): string => {
+	return worker?.workerId?.email || worker?.email || "No email";
 };
 
 export default function ParticipantOrganizationsPage() {
@@ -99,12 +100,18 @@ export default function ParticipantOrganizationsPage() {
 			org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			org.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			org.workers.some((worker) =>
-				getWorkerIdString(worker.workerId)
+				getWorkerFullName(worker)
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase()) ||
+				getWorkerEmail(worker)
 					.toLowerCase()
 					.includes(searchTerm.toLowerCase())
 			) ||
 			org.pendingInvites.some((invite) =>
-				getWorkerIdString(invite.workerId)
+				getWorkerFullName(invite)
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase()) ||
+				getWorkerEmail(invite)
 					.toLowerCase()
 					.includes(searchTerm.toLowerCase())
 			);
@@ -502,12 +509,12 @@ export default function ParticipantOrganizationsPage() {
 													<div className="flex items-center gap-3">
 														<Avatar className="w-8 h-8">
 															<AvatarFallback className="text-xs">
-																{getWorkerInitials(worker.workerId)}
+																{getWorkerInitials(worker)}
 															</AvatarFallback>
 														</Avatar>
 														<div>
 															<p className="text-sm font-medium text-gray-900">
-																Worker {getWorkerIdDisplay(worker.workerId)}
+																{getWorkerFullName(worker)}
 															</p>
 															<div className="flex items-center gap-3 text-xs text-gray-500">
 																<span className="flex items-center gap-1">
@@ -572,7 +579,7 @@ export default function ParticipantOrganizationsPage() {
 														</div>
 														<div>
 															<p className="text-xs font-medium text-gray-900">
-																Worker {getWorkerIdDisplay(invite.workerId)}
+																{getWorkerFullName(invite)}
 															</p>
 															<p className="text-xs text-gray-500">
 																${invite.proposedHourlyRate}/hr

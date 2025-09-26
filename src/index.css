@@ -6,6 +6,10 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    --font-montserrat: "Montserrat", sans-serif;
+    --font-montserrat-medium: "Montserrat Medium", sans-serif;
+    --font-montserrat-semibold: "Montserrat Semibold", sans-serif;
+    --font-montserrat-bold: "Montserrat Bold", sans-serif;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -86,6 +90,35 @@
 @layer base {
   * {
     @apply border-border;
+  }
+
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../public/fonts/Montserrat/static/Montserrat-Regular.ttf") format("trueType"),
+         url("../public/fonts/Montserrat/static/Montserrat-Regular.ttf") format("woff");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Montserrat Medium";
+    src: url("../public/fonts/Montserrat/static/Montserrat-Medium.ttf") format("trueType"),
+         url("../public/fonts/Montserrat/static/Montserrat-MediumItalic.ttf") format("woff");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Montserrat Bold";
+    src: url("../public/fonts/Montserrat/static/Montserrat-Bold.ttf") format("trueType"),
+         url("../public/fonts/Montserrat/static/Montserrat-BoldItalic.ttf") format("woff");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Montserrat Semibold";
+    src: url("../public/fonts/Montserrat/static/Montserrat-SemiBold.ttf") format("trueType"),
+         url("../public/fonts/Montserrat/static/Montserrat-SemiBoldItalic.ttf") format("woff");
+    font-weight: 400;
+    font-style: normal;
   }
 
   body {

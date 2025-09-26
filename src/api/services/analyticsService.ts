@@ -7,6 +7,7 @@ import {
   ComparisonData, 
   AnalyticsResponse
 } from '../../entities/Analytics';
+import { ServiceTypeInfo } from '../../entities/types';
 
 // Analytics overview interfaces
 export interface AdminOverviewAnalytics {
@@ -180,9 +181,10 @@ export interface ParticipantOverviewAnalytics {
   };
 }
 
+// Updated interface to match actual API response
 export interface ParticipantServiceAnalytics {
   serviceDistribution: Array<{
-    serviceType: string;
+    serviceType: ServiceTypeInfo;
     hours: number;
     percentage: number;
   }>;
