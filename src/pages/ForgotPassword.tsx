@@ -1,17 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import authService from "@/api/services/authService";
@@ -59,194 +52,162 @@ export default function ForgotPassword() {
 	};
 
 	return (
-		<div className="flex min-h-screen w-full overflow-hidden bg-gradient-to-br from-slate-50 to-gray-100">
-			{/* Brand section - Left side */}
+		<div className="flex min-h-screen w-full bg-[#FDFDFD]">
+			{/* Left side - Illustration */}
 			<motion.div
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				transition={{ duration: 0.8 }}
-				className="hidden lg:flex lg:w-1/2 bg-[#2195F2] p-12 flex-col justify-between relative overflow-hidden"
+				initial={{ x: -100, opacity: 0 }}
+				animate={{ x: 0, opacity: 1 }}
+				transition={{ duration: 0.6, ease: "easeOut" }}
+				className="hidden lg:flex lg:w-1/2 bg-[#F7F7F7] relative overflow-hidden"
 			>
-				<div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0)_60%)]"></div>
+				{/* Illustration Container */}
+				<div className="flex flex-col justify-center items-center w-full p-12 relative z-10">
+					<motion.div
+						initial={{ y: 20, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						transition={{ delay: 0.3, duration: 0.6 }}
+						className="w-full max-w-lg"
+					>
+						<img
+							src="/new-res/forgotpassword.svg"
+							alt="Forgot Password"
+							className="w-full h-auto object-contain"
+						/>
+					</motion.div>
+				</div>
+			</motion.div>
 
+			{/* Right side - Form */}
+			<motion.div
+				initial={{ x: 100, opacity: 0 }}
+				animate={{ x: 0, opacity: 1 }}
+				transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+				className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
+			>
+				{/* Logo */}
 				<motion.div
-					initial={{ y: -20 }}
-					animate={{ y: 0 }}
-					transition={{ delay: 0.3, duration: 0.5 }}
-					className="z-10 mb-auto"
+					initial={{ y: -20, opacity: 0 }}
+					animate={{ y: 0, opacity: 1 }}
+					transition={{ delay: 0.4, duration: 0.5 }}
+					className="flex justify-center items-center w-full mb-16"
 				>
-					<div className="flex items-center gap-2 mb-2">
-						{/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
-						<img src="/favicon.svg" alt="Support 24" className="h-10 w-10" />
-						<span className="text-2xl font-bold text-white drop-shadow-sm">
-							GuardianCare+
-						</span>
-					</div>
+					<img src="/logo.svg" alt="Support 24" className="h-12" />
 				</motion.div>
 
+				{/* Form Container */}
 				<motion.div
 					initial={{ y: 20, opacity: 0 }}
 					animate={{ y: 0, opacity: 1 }}
-					transition={{ delay: 0.6, duration: 0.5 }}
-					className="z-10 space-y-8"
+					transition={{ delay: 0.5, duration: 0.6 }}
+					className="w-full max-w-md space-y-8"
 				>
-					<div className="space-y-6">
-						<h1 className="text-4xl font-bold text-white leading-tight">
-							Reset Your Password
-						</h1>
-						<p className="text-white/90 text-lg leading-relaxed">
-							Don't worry, it happens to the best of us. Enter your email
-							address and we'll send you instructions to reset your password.
-						</p>
-					</div>
+					{isSuccess ? (
+						<motion.div
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="text-center space-y-6"
+						>
+							<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+								<CheckCircle className="w-8 h-8 text-green-600" />
+							</div>
+							<div className="space-y-2">
+								<h1 className="text-3xl font-montserrat-bold text-gray-900">
+									Check your email
+								</h1>
+								<p className="text-gray-600 font-semibold">
+									We've sent password reset instructions to {email}
+								</p>
+							</div>
+							<Button
+								asChild
+								className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg"
+							>
+								<Link to="/login">
+									<ArrowLeft className="w-4 h-4 mr-2" />
+									Back to Login
+								</Link>
+							</Button>
+						</motion.div>
+					) : (
+						<>
+							{/* Header */}
+							<div className="text-center">
+								<h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
+									Forgot Password
+								</h1>
+								<p className="font-semibold text-gray-600">
+									Please enter your email and we will send an OTP code
+									<br />
+									in the next step to reset your password
+								</p>
+							</div>
 
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ delay: 0.8, duration: 0.5 }}
-						className="grid grid-cols-2 gap-4"
-					>
-						<div className="bg-white/20 backdrop-blur-sm p-5 rounded-xl border border-white/30 flex flex-col items-center shadow-lg hover:bg-white/25 transition-all">
-							<Mail className="h-8 w-8 text-white mb-2" />
-							<h3 className="text-white font-medium">Email Verification</h3>
-							<p className="text-white/80 text-sm text-center">
-								Secure password reset via email
-							</p>
-						</div>
-						<div className="bg-white/20 backdrop-blur-sm p-5 rounded-xl border border-white/30 flex flex-col items-center shadow-lg hover:bg-white/25 transition-all">
-							<CheckCircle className="h-8 w-8 text-white mb-2" />
-							<h3 className="text-white font-medium">Quick Process</h3>
-							<p className="text-white/80 text-sm text-center">
-								Get back to your account quickly
-							</p>
-						</div>
-					</motion.div>
-				</motion.div>
+							{/* Form */}
+							<form onSubmit={handleSubmit} className="space-y-6">
+								{error && (
+									<Alert variant="destructive">
+										<AlertDescription>{error}</AlertDescription>
+									</Alert>
+								)}
 
-				<motion.div
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ delay: 0.9, duration: 0.5 }}
-					className="z-10 mt-auto"
-				>
-					<p className="text-white/70 text-sm">
-						© {new Date().getFullYear()} Support 24. All rights reserved.
-					</p>
-				</motion.div>
-			</motion.div>
+								{/* Email Field */}
+								<div className="space-y-2">
+									<Label 
+										htmlFor="email" 
+										className="text-gray-700 font-montserrat-semibold"
+									>
+										Email Address
+									</Label>
+									<Input
+										id="email"
+										type="email"
+										placeholder="e.g johndoe@gmail.com"
+										value={email}
+										onChange={(e) => setEmail(e.target.value)}
+										required
+										className="h-12 px-4 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+										disabled={isLoading}
+									/>
+								</div>
 
-			{/* Form section - Right side */}
-			<div className="flex w-full lg:w-1/2 items-center justify-center p-8">
-				<motion.div
-					initial={{ x: 20, opacity: 0 }}
-					animate={{ x: 0, opacity: 1 }}
-					transition={{ delay: 0.2, duration: 0.5 }}
-					className="w-full max-w-md space-y-6"
-				>
-					<div className="lg:hidden text-center mb-8">
-						<div className="flex items-center justify-center gap-2 mb-4">
-							<Heart className="h-8 w-8 text-[#2195F2]" fill="#2195F2" />
-							<span className="text-2xl font-bold text-gray-900">
-								Support 24
-							</span>
-						</div>
-					</div>
-
-					<Card className="border-0  bg-transparent">
-						<CardHeader className="text-center space-y-1 pb-6">
-							<CardTitle className="text-2xl font-bold">
-								Forgot Password?
-							</CardTitle>
-							<CardDescription className="text-gray-600">
-								Enter your email address and we'll send you a link to reset your
-								password
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-6">
-							{isSuccess ? (
+								{/* Continue Button */}
 								<motion.div
-									initial={{ opacity: 0, y: 10 }}
-									animate={{ opacity: 1, y: 0 }}
-									className="text-center space-y-4"
+									whileHover={{ scale: 1.02 }}
+									whileTap={{ scale: 0.98 }}
 								>
-									<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-										<CheckCircle className="w-8 h-8 text-green-600" />
-									</div>
-									<div className="space-y-2">
-										<h3 className="text-lg font-semibold text-gray-900">
-											Check your email
-										</h3>
-										<p className="text-gray-600 text-sm">
-											We've sent password reset instructions to {email}
-										</p>
-									</div>
-									<div className="space-y-3">
-										<Button
-											asChild
-											className="w-full bg-[#2195F2] hover:bg-[#1976D2]"
-										>
-											<Link to="/login">
-												<ArrowLeft className="w-4 h-4 mr-2" />
-												Back to Login
-											</Link>
-										</Button>
-									</div>
-								</motion.div>
-							) : (
-								<form onSubmit={handleSubmit} className="space-y-4">
-									{error && (
-										<Alert variant="destructive">
-											<AlertDescription>{error}</AlertDescription>
-										</Alert>
-									)}
-
-									<div className="space-y-2">
-										<Label htmlFor="email">Email Address</Label>
-										<Input
-											id="email"
-											type="email"
-											placeholder="Enter your email address"
-											value={email}
-											onChange={(e) => setEmail(e.target.value)}
-											required
-											className="h-11"
-											disabled={isLoading}
-										/>
-									</div>
-
 									<Button
 										type="submit"
-										className="w-full h-11 bg-[#2195F2] hover:bg-[#1976D2] text-white font-medium"
+										className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
 										disabled={isLoading || !email.trim()}
 									>
-										{isLoading ? "Sending..." : "Send Reset Instructions"}
+										{isLoading ? (
+											<div className="flex items-center gap-2">
+												<div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+												Sending...
+											</div>
+										) : (
+											<div className="flex items-center gap-2">
+												Continue
+												<ArrowRight className="w-4 h-4" />
+											</div>
+										)}
 									</Button>
+								</motion.div>
+							</form>
 
-									<div className="text-center">
-										<Link
-											to="/login"
-											className="text-sm text-[#2195F2] hover:text-[#1976D2] font-medium inline-flex items-center gap-1"
-										>
-											<ArrowLeft className="w-4 h-4" />
-											Back to Login
-										</Link>
-									</div>
-								</form>
-							)}
-						</CardContent>
-					</Card>
-
-					<div className="text-center text-sm text-gray-600">
-						Don't have an account?{" "}
-						<Link
-							to="/register"
-							className="text-[#2195F2] hover:text-[#1976D2] font-medium"
-						>
-							Sign up
-						</Link>
-					</div>
+							{/* Back to Login */}
+							<div className="text-center pt-4">
+								<Link
+									to="/login"
+									className="text-orange-500 hover:text-orange-600 font-montserrat-semibold transition-colors inline-flex items-center gap-1"
+								>
+									Back to Login
+								</Link>
+							</div>
+						</>
+					)}
 				</motion.div>
-			</div>
+			</motion.div>
 		</div>
 	);
 }

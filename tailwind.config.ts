@@ -43,15 +43,23 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        
+        // Updated primary colors to match the design's blue theme
         primary: {
-          DEFAULT: "#2563eb", // Blue-600 to match the new design
+          DEFAULT: "#0D2BEC", // Main blue from the design
           foreground: "#ffffff",
-          50: "#eff6ff",
-          100: "#dbeafe",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
+          50: "#f0f4ff",
+          100: "#e0ecff",
+          200: "#c7dbff",
+          300: "#a4c2ff",
+          400: "#7ea0ff",
+          500: "#5b82ff",
+          600: "#0D2BEC", // Main primary color
+          700: "#1e3fff",
+          800: "#1a2fd1",
+          900: "#06136A",
         },
+        
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -64,11 +72,24 @@ export default {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
+        
+        // Updated accent colors to match the yellow/orange from the design
         accent: {
-          DEFAULT: "#fbbf24", // Amber-400 for accent elements
-          foreground: "#1f2937",
-          light: "#fef3c7",
+          DEFAULT: "#E6A500", // Normal state yellow/orange
+          foreground: "#ffffff",
+          light: "#FEF3C7", // Light state
+          50: "#FFFBEB", // Light state
+          100: "#FEF3C7", // Light hover state
+          200: "#FDE68A", // Light active state
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#E6A500", // Normal state
+          600: "#D69E2E", // Normal hover state  
+          700: "#B45309", // Normal active state
+          800: "#92400E", // Dark state
+          900: "#78350F", // Darker state
         },
+        
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -87,34 +108,66 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Updated to match new design color scheme
+        
+        // Updated support colors to match new primary
         support: {
-          DEFAULT: "#2563eb", // Primary blue
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
+          DEFAULT: "#0D2BEC",
+          50: "#f0f4ff",
+          100: "#e0ecff",
+          200: "#c7dbff",
+          300: "#a4c2ff",
+          400: "#7ea0ff",
+          500: "#5b82ff",
+          600: "#0D2BEC",
+          700: "#1e3fff",
+          800: "#1a2fd1",
+          900: "#1a2aa3",
         },
+        
         guardian: {
-          DEFAULT: "#2563eb", // Updated to match new blue
-          light: "#dbeafe",
-          dark: "#1d4ed8",
+          DEFAULT: "#0D2BEC",
+          light: "#e0ecff",
+          dark: "#1e3fff",
         },
+        
         status: {
-          confirmed: "#10b981",
-          pending: "#f59e0b",
-          progress: "#3b82f6",
+          confirmed: "#10b981", // Green
+          pending: "#f59e0b",   // Amber
+          progress: "#0D2BEC",  // Primary blue
         },
-        // New color additions for the design
+        
+        // Updated gray scale to match the design
         gray: {
-          50: "#f9fafb",
-          100: "#f3f4f6",
+          50: "#FDFDFD",   // Main background color from design
+          100: "#F7F7F7",  // Left panel background color
+          200: "#e5e7eb",
+          300: "#d1d5db",
+          400: "#9ca3af",
+          500: "#6b7280",
+          600: "#4b5563",  // Text colors
+          700: "#374151",
+          800: "#1f2937",
+          900: "#111827",  // Dark text
+        },
+        
+        // Updated orange/yellow colors for links and accents
+        orange: {
+          50: "#FFFBEB", // Light state
+          100: "#FEF3C7", // Light hover
+          200: "#FDE68A", // Light active
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#E6A500", // Normal state from your color scheme
+          600: "#D69E2E", // Normal hover
+          700: "#B45309", // Normal active
+          800: "#92400E", // Dark
+          900: "#78350F", // Darker
+        },
+        
+        // Additional colors from the design
+        neutral: {
+          50: "#FDFDFD",
+          100: "#F7F7F7",
           200: "#e5e7eb",
           300: "#d1d5db",
           400: "#9ca3af",
@@ -123,11 +176,7 @@ export default {
           700: "#374151",
           800: "#1f2937",
           900: "#111827",
-        },
-        orange: {
-          400: "#fb923c",
-          500: "#f97316",
-        },
+        }
       },
       borderRadius: {
         lg: "var(--radius)",

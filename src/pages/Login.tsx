@@ -157,7 +157,7 @@ export default function Login() {
               transition={{ duration: 0.5 }}
               className="max-w-md self-start"
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-montserrat-bold font-bold text-gray-900 mb-4">
                 {currentSlide === 0 && (
                   <>
                     Effortless NDIS{" "}
@@ -177,7 +177,7 @@ export default function Login() {
                   </>
                 )}
               </h2>
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-gray-600 text-lg leading-relaxed font-semibold">
                 {onboardingSlides[currentSlide].subtitle}
               </p>
             </motion.div>
