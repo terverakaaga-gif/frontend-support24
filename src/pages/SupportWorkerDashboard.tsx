@@ -1,578 +1,581 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-	Clock,
-	Users,
-	DollarSign,
-	Star,
-	MessageSquare,
-	Calendar,
-	Download,
-	FileCheck,
-	FileWarning,
-	Inbox,
-	CheckCircle,
-	MapPin,
-	Activity,
-	XCircle,
-	TrendingUp,
-	Target,
-	Search,
-	Bell,
-	Eye,
-	X,
-	ChevronRight,
-	BarChart3,
-	AlertTriangle,
+  Clock,
+  Users,
+  DollarSign,
+  Star,
+  Calendar,
+  ChevronRight,
+  MapPin,
+  CheckCircle,
+  XCircle,
+  Eye,
+  Bell,
+  Search,
+  ChevronDown,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { StatCard } from "@/components/StatCard";
-import { ChartSection } from "@/components/ChartSection";
-import { NotificationsList } from "@/components/NotificationsList";
-import { ParticipantInvitations } from "@/components/supportworker/ParticipantInvitations";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
-import { useAuth } from "@/contexts/AuthContext";
-import { SupportWorker } from "@/types/user.types";
-import { cn } from "@/lib/utils";
 import {
-	useGetSupportWorkerOverview,
-	useGetSupportWorkerFinancial,
-	useGetSupportWorkerSchedule,
-	useGetSupportWorkerPerformance,
-} from "@/hooks/useAnalyticsHooks";
-import Loader from "@/components/Loader";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	BarChart,
-	Bar,
-	LineChart,
-	Line,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	ComposedChart,
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ComposedChart,
 } from "recharts";
 
-// Service type labels for display
-const SERVICE_TYPE_LABELS: Record<string, string> = {
-	personalCare: "Personal Care",
-	socialSupport: "Social Support",
-	transport: "Transport",
-	householdTasks: "Household Tasks",
-	mealPreparation: "Meal Preparation",
-	medicationSupport: "Medication Support",
-	mobilityAssistance: "Mobility Assistance",
-	therapySupport: "Therapy Support",
-	behaviorSupport: "Behavior Support",
-	communityAccess: "Community Access",
+// Mock data for visualization when real data is unavailable
+const MOCK_OVERVIEW_DATA = {
+  workSummary: {
+    hoursWorked: { current: 2, trend: "up", percentageChange: 12.6 },
+    activeClients: 2,
+    earnings: { current: 500.0, trend: "up" },
+    upcomingShifts: [
+      {
+        _id: "1",
+        serviceType: "behaviorSupport",
+        participantName: "Jossy T",
+        startTime: new Date(2025, 8, 25, 9, 0).toISOString(),
+        endTime: new Date(2025, 8, 25, 10, 0).toISOString(),
+        address: "123 Main St, Anytown, Ca 12345",
+        status: "Upcoming",
+      },
+      {
+        _id: "2",
+        serviceType: "behaviorSupport",
+        participantName: "Jossy T",
+        startTime: new Date(2025, 8, 25, 9, 0).toISOString(),
+        endTime: new Date(2025, 8, 25, 10, 0).toISOString(),
+        address: "123 Main St, Anytown, Ca 12345",
+        status: "Upcoming",
+      },
+      {
+        _id: "3",
+        serviceType: "behaviorSupport",
+        participantName: "Jossy T",
+        startTime: new Date(2025, 8, 25, 9, 0).toISOString(),
+        endTime: new Date(2025, 8, 25, 10, 0).toISOString(),
+        address: "123 Main St, Anytown, Ca 12345",
+        status: "Upcoming",
+      },
+    ],
+  },
+  performanceMetrics: {
+    completionRate: 80,
+    onTimeRate: 95,
+    averageRating: 1.5,
+  },
 };
 
-// Performance Chart Component using real data and Recharts
-function PerformanceChart({ overviewData, performanceData, scheduleData }: any) {
-	// Transform real performance data for the chart
-	const chartData = useMemo(() => {
-		if (!performanceData?.monthlyTrends) {
-			return [];
-		}
-		
-		return performanceData.monthlyTrends.map((trend: any) => ({
-			month: new Date(trend.month).toLocaleDateString('en-US', { month: 'short' }),
-			completion: trend.completionRate || 0,
-			onTime: trend.onTimeRate || 0,
-			availability: trend.availabilityUtilization || 0,
-		}));
-	}, [performanceData]);
+const MOCK_PERFORMANCE_DATA = {
+  monthlyTrends: [
+    { month: "2025-01-01", completionRate: 35, onTimeRate: 30 },
+    { month: "2025-02-01", completionRate: 18, onTimeRate: 42 },
+    { month: "2025-03-01", completionRate: 48, onTimeRate: 28 },
+    { month: "2025-04-01", completionRate: 85, onTimeRate: 58 },
+    { month: "2025-05-01", completionRate: 62, onTimeRate: 32 },
+    { month: "2025-06-01", completionRate: 45, onTimeRate: 48 },
+    { month: "2025-07-01", completionRate: 38, onTimeRate: 35 },
+    { month: "2025-08-01", completionRate: 52, onTimeRate: 45 },
+  ],
+  availabilityComparison: { utilizationPercentage: 0.0 },
+};
 
-	return (
-		<Card className="border-guardian/10">
-			<CardHeader>
-				<div className="flex justify-between items-center">
-					<CardTitle className="text-lg font-medium text-guardian">Performance Overview</CardTitle>
-					<div className="flex items-center gap-4">
-						<Button variant="outline" size="sm" className="border-guardian/20">
-							<Calendar className="h-4 w-4 mr-2" />
-							Pick Date
-						</Button>
-						<Select defaultValue="current">
-							<SelectTrigger className="w-32 border-guardian/20">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="current">Current Month</SelectItem>
-								<SelectItem value="last">Last Month</SelectItem>
-								<SelectItem value="quarter">This Quarter</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-				</div>
-			</CardHeader>
-			<CardContent>
-				<div className="space-y-6">
-					{/* Performance Metric Display */}
-					<div>
-						<div className="flex justify-between items-center mb-4">
-							<span className="text-4xl font-bold text-guardian">
-								{overviewData?.performanceMetrics?.completionRate || 0}%
-							</span>
-							<span className="text-green-600 text-sm flex items-center font-medium">
-								<TrendingUp className="w-4 h-4 mr-1" />
-								{overviewData?.workSummary?.hoursWorked?.percentageChange || 0}%
-							</span>
-						</div>
-						
-						{/* Performance Stats Grid */}
-						<div className="grid grid-cols-3 gap-4 text-sm mb-6">
-							<div>
-								<div className="text-muted-foreground mb-1">Completion Rate</div>
-								<div className="font-semibold text-lg">
-									{overviewData?.performanceMetrics?.completionRate || 0}%
-								</div>
-							</div>
-							<div>
-								<div className="text-muted-foreground mb-1">On-Time Rate</div>
-								<div className="font-semibold text-lg">
-									{overviewData?.performanceMetrics?.onTimeRate || 0}%
-								</div>
-							</div>
-							<div>
-								<div className="text-muted-foreground mb-1">Availability Utilization</div>
-								<div className="font-semibold text-lg">
-									{performanceData?.availabilityComparison?.utilizationPercentage?.toFixed(1) || 0.0}%
-								</div>
-							</div>
-						</div>
+const MOCK_INVITATIONS = [
+  {
+    id: "1",
+    clientName: "Jane Smith",
+    serviceRequested: "Elderly Care",
+    date: "Sept 20, 2025",
+    location: "123 Main Street, AnyTown",
+    hourlyRate: "$35.000/hr",
+    status: "Pending",
+  },
+  {
+    id: "2",
+    clientName: "Jane Smith",
+    serviceRequested: "Elderly Care",
+    date: "Sept 20, 2025",
+    location: "123 Main Street, AnyTown",
+    hourlyRate: "$35.000/hr",
+    status: "Confirmed",
+  },
+  {
+    id: "3",
+    clientName: "Jane Smith",
+    serviceRequested: "Elderly Care",
+    date: "Sept 20, 2025",
+    location: "123 Main Street, AnyTown",
+    hourlyRate: "$35.000/hr",
+    status: "Completed",
+  },
+];
 
-						{/* Recharts Chart */}
-						<div className="h-64">
-							<ResponsiveContainer width="100%" height="100%">
-								<ComposedChart
-									data={chartData}
-									margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-								>
-									<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e7ff" />
-									<XAxis
-										dataKey="month"
-										axisLine={false}
-										tickLine={false}
-										tick={{ fill: "#64748b", fontSize: 12 }}
-									/>
-									<YAxis
-										axisLine={false}
-										tickLine={false}
-										tick={{ fill: "#64748b", fontSize: 12 }}
-									/>
-									<Tooltip
-										contentStyle={{
-											background: "white",
-											borderRadius: "8px",
-											border: "none",
-											boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-											padding: "8px 12px",
-										}}
-										labelStyle={{
-											color: "#1e3b93",
-											fontWeight: 600,
-											marginBottom: 4,
-										}}
-									/>
-									<Bar
-										dataKey="completion"
-										fill="#1e3b93"
-										radius={[4, 4, 0, 0]}
-										maxBarSize={40}
-									/>
-									<Line
-										type="monotone"
-										dataKey="onTime"
-										stroke="#fbbf24"
-										strokeWidth={3}
-										dot={{ r: 4, fill: "#fbbf24" }}
-										activeDot={{ r: 6, fill: "#fbbf24" }}
-									/>
-								</ComposedChart>
-							</ResponsiveContainer>
-						</div>
-						
-						{/* Chart Legend */}
-						<div className="flex justify-center gap-6 mt-4 text-sm">
-							<div className="flex items-center">
-								<div className="w-4 h-3 bg-guardian rounded mr-2"></div>
-								<span className="text-muted-foreground">Completion Rate</span>
-							</div>
-							<div className="flex items-center">
-								<div className="w-4 h-1 bg-yellow-400 rounded mr-2"></div>
-								<span className="text-muted-foreground">On-Time Trend</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-	);
+const SERVICE_TYPE_LABELS = {
+  behaviorSupport: "Behavior Support",
+  personalCare: "Personal Care",
+  socialSupport: "Social Support",
+  transport: "Transport",
+  householdTasks: "Household Tasks",
+  mealPreparation: "Meal Preparation",
+  medicationSupport: "Medication Support",
+  mobilityAssistance: "Mobility Assistance",
+  therapySupport: "Therapy Support",
+  communityAccess: "Community Access",
+};
+
+// Simple stat card component matching design
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  additionalText,
+  trendDirection,
+}) {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-montserrat-semibold text-gray-600">{title}</div>
+        <div className="p-2 rounded-full bg-primary-300/20">
+          <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
+        </div>
+      </div>
+      <div className="text-2xl font-montserrat-bold text-gray-900 mb-1">{value}</div>
+      {trend && (
+        <div
+          className={`text-sm flex items-center ${
+            trendDirection === "up" ? "text-green-600" : "text-gray-500"
+          }`}
+        >
+          {trendDirection === "up" && <span className="mr-1">↗</span>}
+          {trend}
+        </div>
+      )}
+      {additionalText && (
+        <div className="text-sm text-gray-500">{additionalText}</div>
+      )}
+    </div>
+  );
 }
 
-export default function SupportWorkerDashboard() {
-	const { user } = useAuth();
-	const navigate = useNavigate();
-	const [searchQuery, setSearchQuery] = useState("");
-	const [filteredShifts, setFilteredShifts] = useState<any[]>([]);
+// Performance chart component using Recharts
+function PerformanceChart({ overviewData, performanceData }) {
+  const chartData = useMemo(() => {
+    const data =
+      performanceData?.monthlyTrends && performanceData.monthlyTrends.length > 0
+        ? performanceData.monthlyTrends
+        : MOCK_PERFORMANCE_DATA.monthlyTrends;
+    return data.map((trend) => ({
+      month: new Date(trend.month).toLocaleDateString("en-US", {
+        month: "short",
+      }),
+      completionRate: trend.completionRate || 0,
+      onTimeRate: trend.onTimeRate || 0,
+    }));
+  }, [performanceData]);
 
-	// Listen for search events from the header
-	useEffect(() => {
-		const handleSearchEvent = (event: CustomEvent) => {
-			setSearchQuery(event.detail.query);
-		};
+  const metrics = {
+    completionRate:
+      overviewData?.performanceMetrics?.completionRate ||
+      MOCK_OVERVIEW_DATA.performanceMetrics.completionRate,
+    onTimeRate:
+      overviewData?.performanceMetrics?.onTimeRate ||
+      MOCK_OVERVIEW_DATA.performanceMetrics.onTimeRate,
+    utilizationRate:
+      performanceData?.availabilityComparison?.utilizationPercentage ||
+      MOCK_PERFORMANCE_DATA.availabilityComparison.utilizationPercentage,
+    percentageChange:
+      overviewData?.workSummary?.hoursWorked?.percentageChange ||
+      MOCK_OVERVIEW_DATA.workSummary.hoursWorked.percentageChange,
+  };
 
-		window.addEventListener('dashboardSearch', handleSearchEvent as EventListener);
-		return () => {
-			window.removeEventListener('dashboardSearch', handleSearchEvent as EventListener);
-		};
-	}, []);
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Performance Overview
+        </h2>
+        <div className="flex items-center gap-3">
+          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-50 bg-white">
+            Pick Date
+            <Calendar className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
 
-	// Fetch analytics data
-	const {
-		data: overviewData,
-		isLoading: overviewLoading,
-		error: overviewError,
-	} = useGetSupportWorkerOverview("month", true);
-	const {
-		data: financialData,
-		isLoading: financialLoading,
-		error: financialError,
-	} = useGetSupportWorkerFinancial("month");
-	const {
-		data: scheduleData,
-		isLoading: scheduleLoading,
-		error: scheduleError,
-	} = useGetSupportWorkerSchedule("month");
-	const {
-		data: performanceData,
-		isLoading: performanceLoading,
-		error: performanceError,
-	} = useGetSupportWorkerPerformance("month");
+      <div className="flex items-center gap-8 mb-6">
+        <div className="flex gap-3 items-center">
+          <div className="text-2xl font-bold">
+            {metrics.completionRate}%
+          </div>
+          <div className="text-green-600 bg-green-600/10 rounded-lg px-2 py-1 text-sm font-medium flex items-center mt-1">
+            <span className="mr-1">↑</span> {metrics.percentageChange}%
+          </div>
+        </div>
+      </div>
 
-	// Filter shifts based on search query
-	useEffect(() => {
-		if (!overviewData?.workSummary?.upcomingShifts) {
-			setFilteredShifts([]);
-			return;
-		}
 
-		const filtered = overviewData.workSummary.upcomingShifts.filter((shift: any) => {
-			const searchTerm = searchQuery.toLowerCase();
-			return (
-				shift.participantName?.toLowerCase().includes(searchTerm) ||
-				SERVICE_TYPE_LABELS[shift.serviceType]?.toLowerCase().includes(searchTerm) ||
-				shift.serviceType?.toLowerCase().includes(searchTerm) ||
-				shift.address?.toLowerCase().includes(searchTerm)
-			);
-		});
-		setFilteredShifts(filtered);
-	}, [searchQuery, overviewData]);
+      {/* Recharts Implementation */}
+      <ResponsiveContainer width="100%" height={250}>
+        <ComposedChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#E5E7EB"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="month"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6B7280", fontSize: 12 }}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6B7280", fontSize: 12 }}
+            domain={[0, 100]}
+            ticks={[0, 20, 40, 60, 80, 100]}
+            tickFormatter={(value) => `${value}%`}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "white",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+            }}
+            formatter={(value) => `${value}%`}
+          />
+          <Bar
+            dataKey="completionRate"
+            fill="#0D2BEC"
+            radius={[4, 4, 0, 0]}
+            barSize={40}
+          />
+          <Line
+            type="monotone"
+            dataKey="onTimeRate"
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: "#FBBF24", r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
 
-	// Format data for charts
-	const earningsTrendData = financialData?.earnings?.trend || [];
-	const weeklyHoursData = scheduleData?.weeklyHours || [];
-	const shiftsByServiceType = scheduleData?.shiftDistribution?.byServiceType || {};
+      {/* Legend */}
+      <div className="flex justify-center gap-8 text-sm mt-4">
+        <div className="flex items-center">
+          <div
+            className="w-4 h-3 rounded mr-2"
+            style={{ backgroundColor: "#0D2BEC" }}
+          ></div>
+          <span className="text-gray-600">Completion Rate</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-8 h-1 bg-yellow-400 rounded mr-2"></div>
+          <span className="text-gray-600">On-Time Trend</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-	// Function to handle view shift details
-	const handleViewShiftDetails = (shiftId: string) => {
-		navigate(`/support-worker/shifts/${shiftId}`);
-	};
+// Upcoming Shifts Component
+function UpcomingShifts({ shifts }) {
+  const displayShifts =
+    shifts && shifts.length > 0
+      ? shifts
+      : MOCK_OVERVIEW_DATA.workSummary.upcomingShifts;
 
-	if (overviewLoading || financialLoading || scheduleLoading || performanceLoading) {
-		return <Loader />;
-	}
+  return (
+    <div className="bg-white rounded-lg border border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
+        <h2 className="text-lg font-semibold text-gray-900">Upcoming Shifts</h2>
+        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+          View all →
+        </button>
+      </div>
 
-	if (overviewError || financialError || scheduleError || performanceError) {
-		return (
-			<div className="container py-6 space-y-8">
-				<div className="flex items-center justify-center py-12">
-					<div className="text-center">
-						<XCircle className="mx-auto h-12 w-12 text-red-500" />
-						<p className="mt-4 text-muted-foreground">
-							Failed to load dashboard data
-						</p>
-						<Button
-							className="mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
-							onClick={() => window.location.reload()}
-						>
-							Try Again
-						</Button>
-					</div>
-				</div>
-			</div>
-		);
-	}
+      <div className="p-6 space-y-4">
+        {displayShifts.slice(0, 3).map((shift) => (
+          <div
+            key={shift._id}
+            className="p-4 border border-gray-200 rounded-lg"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h4 className="font-semibold text-gray-900">
+                  {SERVICE_TYPE_LABELS[shift.serviceType]}
+                </h4>
+                <span className="inline-block mt-2 px-3 py-1 bg-primary-50 text-primary-700 text-xs rounded-full">
+                  {shift.status}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white"></div>
+                  <div className="w-8 h-8 bg-gray-400 rounded-full border-2 border-white"></div>
+                </div>
+                <button className="ml-3 w-8 h-8 bg-primary rounded flex items-center justify-center text-white hover:bg-primary-700">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
 
-	return (
-		<div className="container py-6 space-y-8">
-			{/* Show alert if support worker hasn't completed onboarding */}
-			{user &&
-				user.role === "supportWorker" &&
-				(user as SupportWorker).verificationStatus?.onboardingComplete && (
-					<ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
-				)}
-				{/* Stats Row - Updated Design */}
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-					<StatCard
-						title="Hours Worked"
-						value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
-						icon={<Clock size={20} />}
-						change={{
-							value: "From last Month",
-							positive: overviewData?.workSummary?.hoursWorked?.trend === "up",
-						}}
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-					<StatCard
-						title="Active Clients"
-						value={overviewData?.workSummary?.activeClients?.toString() || "0"}
-						icon={<Users size={20} />}
-						additionalText="Currently Supporting"
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-					<StatCard
-						title="Earnings"
-						value={`$${overviewData?.workSummary?.earnings?.current?.toFixed(2) || "0.00"}`}
-						icon={<DollarSign size={20} />}
-						change={{
-							value: "From last Month",
-							positive: overviewData?.workSummary?.earnings?.trend === "up",
-						}}
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-					<StatCard
-						title="Performance Ratings"
-						value={
-							overviewData?.performanceMetrics?.averageRating > 0
-								? `${overviewData.performanceMetrics.averageRating.toFixed(1)}`
-								: "1.5"
-						}
-						icon={<Star size={20} />}
-						additionalText={`${overviewData?.performanceMetrics?.onTimeRate || 95}% on time rate`}
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-				</div>
+            <div className="space-y-2 text-sm text-gray-600">
+              <div className="flex items-start">
+                <span className="font-medium mr-2">Date:</span>
+                <span>
+                  {new Date(shift.startTime).toLocaleDateString()} | Time:{" "}
+                  {new Date(shift.startTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  -{" "}
+                  {new Date(shift.endTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <Users className="h-4 w-4 mr-2" />
+                <span>{shift.participantName}</span>
+              </div>
+              <div className="flex items-start">
+                <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                <span className="text-primary">{shift.address}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-				{/* Main Content Grid */}
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-					{/* Left Column - Performance and Invitations */}
-					<div className="lg:col-span-2 space-y-6">
-						{/* Performance Chart */}
-						<PerformanceChart 
-							overviewData={overviewData} 
-							performanceData={performanceData}
-						/>
+// Invitations Table Component
+function InvitationsTable({ invitations }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const displayInvitations =
+    invitations && invitations.length > 0 ? invitations : MOCK_INVITATIONS;
 
-						{/* All Invitations Table */}
-						<Card className="border-guardian/10">
-							<CardHeader>
-								<div className="flex justify-between items-center">
-									<CardTitle className="text-lg font-medium text-guardian">All Invitations</CardTitle>
-									<Button variant="link" className="text-guardian hover:text-guardian/80">
-										View all →
-									</Button>
-								</div>
-							</CardHeader>
-							<CardContent className="p-0">
-								<ParticipantInvitations />
-								
-								{/* Pagination */}
-								<div className="flex justify-between items-center p-4 border-t border-guardian/10">
-									<div className="text-sm text-muted-foreground">
-										Showing 5 entries
-									</div>
-									<div className="flex items-center space-x-1">
-										<Button variant="outline" size="sm" className="border-guardian/20">‹</Button>
-										<Button size="sm" className="bg-guardian hover:bg-guardian/90">1</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">2</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">3</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">4</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">5</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">›</Button>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
+  return (
+    <div className="bg-white mt-8 rounded-lg border border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
+        <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
+        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+          View all →
+        </button>
+      </div>
 
-					{/* Right Column - Upcoming Shifts */}
-					<div className="space-y-6">
-						<Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
-							<CardHeader className="pb-4 border-b border-guardian/10">
-								<div className="flex justify-between items-center">
-									<CardTitle className="text-lg font-medium text-guardian">
-										Upcoming Shifts
-									</CardTitle>
-									<Button
-										variant="link"
-										className="text-sm p-0 text-guardian hover:text-guardian/80"
-									>
-										View all →
-									</Button>
-								</div>
-							</CardHeader>
-							<CardContent className="pt-6">
-								<div className="space-y-4">
-									{overviewData?.workSummary?.upcomingShifts &&
-									overviewData.workSummary.upcomingShifts.length > 0 ? (
-										<div className="space-y-4">
-											{overviewData.workSummary.upcomingShifts
-												.slice(0, 3)
-												.map((shift: any, index: number) => (
-													<div
-														key={index}
-														className="p-4 rounded-lg border border-guardian/10 transition-all duration-200 hover:shadow-md hover:border-guardian/20"
-													>
-														<div className="flex justify-between items-start mb-3">
-															<div>
-																<h4 className="font-semibold text-gray-900 mb-1">
-																	{SERVICE_TYPE_LABELS[shift.serviceType] || "Behavior Support"}
-																</h4>
-																<Badge 
-																	variant="secondary" 
-																	className="bg-blue-100 text-blue-800"
-																>
-																	{shift.status || "Upcoming"}
-																</Badge>
-															</div>
-															<div className="flex items-center space-x-2">
-																<Avatar className="h-6 w-6">
-																	<AvatarFallback className="bg-gray-300 text-xs">
-																		{shift.participantName?.split(' ').map(n => n[0]).join('') || 'JT'}
-																	</AvatarFallback>
-																</Avatar>
-																<Avatar className="h-6 w-6 -ml-2">
-																	<AvatarFallback className="bg-gray-400 text-xs">
-																		A
-																	</AvatarFallback>
-																</Avatar>
-																<Button 
-																	size="sm" 
-																	className="bg-guardian hover:bg-guardian/90 ml-2"
-																	onClick={() => handleViewShiftDetails(shift._id)}
-																>
-																	<ChevronRight className="h-4 w-4" />
-																</Button>
-															</div>
-														</div>
-														
-														<div className="space-y-2 text-sm text-muted-foreground">
-															<div className="flex items-center">
-																<Calendar className="h-4 w-4 mr-2" />
-																<span>
-																	Date: {new Date(shift.startTime).toLocaleDateString()} | 
-																	Time: {new Date(shift.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-																	{new Date(shift.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-																</span>
-															</div>
-															<div className="flex items-center">
-																<Users className="h-4 w-4 mr-2" />
-																<span>{shift.participantName || "Jossy T"}</span>
-															</div>
-															<div className="flex items-center">
-																<MapPin className="h-4 w-4 mr-2" />
-																<span>{shift.address || "123 Main St, Anytown, Ca 12345"}</span>
-															</div>
-														</div>
-													</div>
-												))}
-										</div>
-									) : (
-										<div className="text-center py-8 text-muted-foreground">
-											<Calendar className="mx-auto h-12 w-12 mb-4 text-guardian/30" />
-											<p>No upcoming shifts scheduled</p>
-											<Button
-												className="mt-4 bg-guardian hover:bg-guardian/90"
-												onClick={() => navigate("/support-worker/shifts")}
-											>
-												View Schedule
-											</Button>
-										</div>
-									)}
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-200 bg-gray-50">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Client Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Service Requested
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Location
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Hourly Rate
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {displayInvitations.map((invitation) => (
+              <tr key={invitation.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full mr-3"></div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {invitation.clientName}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {invitation.serviceRequested}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {invitation.date}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {invitation.location}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {invitation.hourlyRate}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      invitation.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : invitation.status === "Confirmed"
+                        ? "bg-primary-100 text-primary-800"
+                        : "bg-green-100 text-green-800"
+                    }`}
+                  >
+                    {invitation.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  {invitation.status === "Pending" ? (
+                    <div className="flex gap-2 justify-end">
+                      <button className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white hover:bg-primary-700">
+                        <CheckCircle className="h-4 w-4" />
+                      </button>
+                      <button className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white hover:bg-red-700">
+                        <XCircle className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-1">
+                      <Eye className="h-4 w-4" /> View
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-				{/* Additional Analytics - Hidden for cleaner design but keeping existing functionality */}
-				<div className="hidden">
-					{/* Analytics Charts */}
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						<ChartSection
-							title="Monthly Earnings Trend"
-							data={earningsTrendData}
-							type="line"
-							dataKey="value"
-							xAxisKey="label"
-							className="border-guardian/10"
-						/>
-						<ChartSection
-							title="Weekly Hours Worked"
-							data={weeklyHoursData}
-							type="bar"
-							dataKey="value"
-							xAxisKey="label"
-							className="border-guardian/10"
-						/>
-					</div>
+      {/* Pagination */}
+      <div className="p-4 border-t border-gray-200 flex justify-between items-center">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>Showing</span>
+          <select className="border border-gray-200 rounded px-2 py-1">
+            <option>5 entries</option>
+            <option>10 entries</option>
+            <option>20 entries</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-1">
+          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">
+            ‹
+          </button>
+          {[1, 2, 3, 4, 5].map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-3 py-1 rounded ${
+                currentPage === page
+                  ? "bg-primary text-white"
+                  : "border border-gray-200 hover:bg-gray-50"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">
+            ›
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-					{/* Service Distribution */}
-					{Object.keys(shiftsByServiceType).length > 0 && (
-						<Card className="border-guardian/10">
-							<CardHeader>
-								<CardTitle className="text-lg font-medium text-guardian">
-									Service Type Distribution This Month
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-									{Object.entries(shiftsByServiceType).map(([serviceType, count]) => (
-										<div key={serviceType} className="p-4 rounded-lg border border-guardian/10">
-											<div className="flex justify-between items-center mb-2">
-												<h4 className="font-medium text-gray-900">
-													{SERVICE_TYPE_LABELS[serviceType] || serviceType}
-												</h4>
-												<Badge variant="secondary" className="bg-guardian/10 text-guardian">
-													{count} shifts
-												</Badge>
-											</div>
-											<Progress
-												value={(count / Math.max(...Object.values(shiftsByServiceType))) * 100}
-												className="mt-2 h-2"
-											/>
-										</div>
-									))}
-								</div>
-							</CardContent>
-						</Card>
-					)}
-				</div>
-			</div>
+export default function SupportWorkerDashboard({
+  overviewData: propOverviewData,
+  performanceData: propPerformanceData,
+  invitations: propInvitations,
+}) {
+  // Use prop data if available and not empty, otherwise use mock data
+  const overviewData =
+    propOverviewData && Object.keys(propOverviewData).length > 0
+      ? propOverviewData
+      : MOCK_OVERVIEW_DATA;
+
+  const performanceData =
+    propPerformanceData && Object.keys(propPerformanceData).length > 0
+      ? propPerformanceData
+      : MOCK_PERFORMANCE_DATA;
+
+  const invitations =
+    propInvitations && propInvitations.length > 0
+      ? propInvitations
+      : MOCK_INVITATIONS;
+
+  const upcomingShifts = overviewData?.workSummary?.upcomingShifts || [];
+
+  return (
+    <div className="min-h-screen font-sans">
+      <div className="p-8">
+        
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Hours Worked"
+            value={`${overviewData.workSummary.hoursWorked.current}h`}
+            icon={Clock}
+            trend="From last Month"
+            trendDirection="up"
+            additionalText={undefined}
+          />
+          <StatCard
+            title="Active Clients"
+            value={overviewData.workSummary.activeClients}
+            icon={Users}
+            additionalText="Currently Supporting"
+            trend={undefined}
+            trendDirection={undefined}
+          />
+          <StatCard
+            title="Earnings"
+            value={`$${overviewData.workSummary.earnings.current.toFixed(2)}`}
+            icon={DollarSign}
+            trend="From last Month"
+            trendDirection="up"
+            additionalText={undefined}
+          />
+          <StatCard
+            title="Performance Ratings"
+            value={overviewData.performanceMetrics.averageRating.toFixed(1)}
+            icon={Star}
+            additionalText={`${overviewData.performanceMetrics.onTimeRate}% on time rate`}
+            trend={undefined}
+            trendDirection={undefined}
+          />
+        </div>
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Performance & Invitations */}
+          <div className="lg:col-span-2 space-y-6">
+            <PerformanceChart
+              overviewData={overviewData}
+              performanceData={performanceData}
+            />
+          </div>
+
+          {/* Right Column - Upcoming Shifts */}
+          <div>
+            <UpcomingShifts shifts={upcomingShifts} />
+          </div>
+        </div>
 		
-	);
+            <InvitationsTable invitations={invitations} />
+      </div>
+    </div>
+  );
 }
