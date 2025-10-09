@@ -102,7 +102,7 @@ const IncidentDetailsPage = () => {
 
 	const getSeverityColor = (severity: string) => {
 		const colors = {
-			LOW: "bg-blue-100 text-blue-800",
+			LOW: "bg-primary-100 text-primary-800",
 			MEDIUM: "bg-orange-100 text-orange-800",
 			HIGH: "bg-red-100 text-red-800",
 		};
@@ -262,7 +262,7 @@ const IncidentDetailsPage = () => {
 
 	if (isLoading) {
 		return (
-			<div className="min-h-screen bg-gray-50">
+			<div className="min-h-screen bg-gray-100">
 				<div className="max-w-6xl mx-10 p-6">
 					<div className="mb-6">
 						<button
@@ -286,7 +286,7 @@ const IncidentDetailsPage = () => {
 
 	if (error || !incident) {
 		return (
-			<div className="min-h-screen bg-gray-50">
+			<div className="min-h-screen bg-gray-100">
 				<div className="max-w-6xl mx-10 p-6">
 					<div className="mb-6">
 						<button
@@ -302,7 +302,7 @@ const IncidentDetailsPage = () => {
 							{error?.message || "Incident not found"}
 						</div>
 						{!error && !incident && (
-							<p className="text-gray-500 text-center">
+							<p className="text-gray-1000 text-center">
 								The incident with ID "{id}" does not exist or has been deleted.
 							</p>
 						)}
@@ -312,7 +312,7 @@ const IncidentDetailsPage = () => {
 									queryKey: ["incident-details", id],
 								})
 							}
-							className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+							className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700"
 						>
 							Retry
 						</button>
@@ -323,14 +323,14 @@ const IncidentDetailsPage = () => {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-gray-100">
 			<div className="max-w-6xl mx-10 p-6">
 				<div className="bg-white rounded-lg shadow-sm border border-gray-200">
 					{/* Header */}
 					<div className="p-6 border-b border-gray-200">
 						<div className="flex items-center justify-between">
 							<div>
-								<h1 className="text-2xl font-bold text-gray-900">
+								<h1 className="text-2xl font-montserrat-bold text-gray-900">
 									Incident Details
 								</h1>
 								<p className="text-gray-600 mt-1">
@@ -347,13 +347,13 @@ const IncidentDetailsPage = () => {
 									<div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
 										<button
 											onClick={exportToPDF}
-											className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+											className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg"
 										>
 											Export as PDF
 										</button>
 										<button
 											onClick={exportToCSV}
-											className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg"
+											className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg"
 										>
 											Export as CSV
 										</button>
@@ -382,21 +382,21 @@ const IncidentDetailsPage = () => {
 					</div>
 
 					{/* Status Header */}
-					<div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+					<div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
 						<div className="flex items-center justify-between">
-							<h2 className="text-xl font-semibold text-gray-900">
+							<h2 className="text-xl font-montserrat-semibold text-gray-900">
 								{incident.title}
 							</h2>
 							<div className="flex items-center gap-2">
 								<span
-									className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+									className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusColor(
 										incident.status
 									)}`}
 								>
 									{incident.status.replace("_", " ")}
 								</span>
 								<span
-									className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSeverityColor(
+									className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityColor(
 										incident.severity
 									)}`}
 								>
@@ -413,20 +413,20 @@ const IncidentDetailsPage = () => {
 							<h3 className="text-lg font-medium text-gray-900 mb-3">
 								Description
 							</h3>
-							<div className="bg-gray-50 rounded-lg p-4 border">
+							<div className="bg-gray-100 rounded-lg p-4 border">
 								<div
 									className="ql-editor-preview prose prose-sm max-w-none text-gray-700
-										prose-headings:text-gray-900 prose-headings:font-semibold prose-headings:mt-4 prose-headings:mb-2
-										prose-h1:text-xl prose-h1:font-bold prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
-										prose-h2:text-lg prose-h2:font-semibold
+										prose-headings:text-gray-900 prose-headings:font-montserrat-semibold prose-headings:mt-4 prose-headings:mb-2
+										prose-h1:text-xl prose-h1:font-montserrat-bold prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
+										prose-h2:text-lg prose-h2:font-montserrat-semibold
 										prose-h3:text-base prose-h3:font-medium
 										prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-3
-										prose-strong:text-gray-900 prose-strong:font-semibold
+										prose-strong:text-gray-900 prose-strong:font-montserrat-semibold
 										prose-em:text-gray-600 prose-em:italic
 										prose-ul:text-gray-700 prose-ul:my-3 prose-ul:pl-6
 										prose-ol:text-gray-700 prose-ol:my-3 prose-ol:pl-6
 										prose-li:text-gray-700 prose-li:my-1 prose-li:leading-relaxed
-										prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800
+										prose-a:text-primary prose-a:underline hover:prose-a:text-primary-800
 										prose-blockquote:text-gray-600 prose-blockquote:border-l-gray-300 prose-blockquote:pl-4 prose-blockquote:italic
 										prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
 									"
@@ -438,7 +438,7 @@ const IncidentDetailsPage = () => {
 						{/* Details Grid */}
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<h4 className="text-sm font-medium text-gray-500 mb-2">
+								<h4 className="text-sm font-medium text-gray-1000 mb-2">
 									Reported By
 								</h4>
 								<div className="flex items-center gap-2">
@@ -451,7 +451,7 @@ const IncidentDetailsPage = () => {
 							</div>
 
 							<div>
-								<h4 className="text-sm font-medium text-gray-500 mb-2">
+								<h4 className="text-sm font-medium text-gray-1000 mb-2">
 									Reported On
 								</h4>
 								<div className="flex items-center gap-2">
@@ -464,7 +464,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.shiftId && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-500 mb-2">
+									<h4 className="text-sm font-medium text-gray-1000 mb-2">
 										Shift ID
 									</h4>
 									<p className="text-gray-900">{incident.shiftId}</p>
@@ -473,7 +473,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.reportedAgainst && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-500 mb-2">
+									<h4 className="text-sm font-medium text-gray-1000 mb-2">
 										Reported Against
 									</h4>
 									<div className="flex items-center gap-2">
@@ -488,7 +488,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.resolvedBy && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-500 mb-2">
+									<h4 className="text-sm font-medium text-gray-1000 mb-2">
 										Resolved By
 									</h4>
 									<div className="flex items-center gap-2">
@@ -503,7 +503,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.resolvedAt && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-500 mb-2">
+									<h4 className="text-sm font-medium text-gray-1000 mb-2">
 										Resolved On
 									</h4>
 									<div className="flex items-center gap-2">
@@ -543,9 +543,9 @@ const IncidentDetailsPage = () => {
 									{incident.urlLinks.map((link, index) => (
 										<div
 											key={index}
-											className="flex items-center gap-2 text-sm bg-gray-50 p-3 rounded-lg border"
+											className="flex items-center gap-2 text-sm bg-gray-100 p-3 rounded-lg border"
 										>
-											<FileText className="h-4 w-4 text-gray-500 flex-shrink-0" />
+											<FileText className="h-4 w-4 text-gray-1000 flex-shrink-0" />
 											<span className="text-gray-700 break-all">{link}</span>
 										</div>
 									))}

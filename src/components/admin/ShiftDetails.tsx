@@ -81,7 +81,7 @@ const formatDuration = (startTime: string, endTime: string) => {
 const getStatusBadge = (status: string) => {
 	const statusMap: Record<string, { className: string; label: string }> = {
 		[ShiftStatus.OPEN]: {
-			className: "bg-blue-100 text-blue-800 border-blue-200",
+			className: "bg-primary-100 text-primary-800 border-primary-200",
 			label: "Open",
 		},
 		[ShiftStatus.PENDING]: {
@@ -93,7 +93,7 @@ const getStatusBadge = (status: string) => {
 			label: "Confirmed",
 		},
 		[ShiftStatus.IN_PROGRESS]: {
-			className: "bg-blue-100 text-blue-800 border-blue-200",
+			className: "bg-primary-100 text-primary-800 border-primary-200",
 			label: "In Progress",
 		},
 		[ShiftStatus.COMPLETED]: {
@@ -133,7 +133,7 @@ const getLargeStatusBadge = (status: string) => {
 		{ className: string; label: string; icon: JSX.Element }
 	> = {
 		[ShiftStatus.OPEN]: {
-			className: "bg-blue-100 text-blue-800 border-blue-200",
+			className: "bg-primary-100 text-primary-800 border-primary-200",
 			label: "Open",
 			icon: <Calendar className="h-4 w-4 mr-2" />,
 		},
@@ -148,7 +148,7 @@ const getLargeStatusBadge = (status: string) => {
 			icon: <Calendar className="h-4 w-4 mr-2" />,
 		},
 		[ShiftStatus.IN_PROGRESS]: {
-			className: "bg-blue-100 text-blue-800 border-blue-200",
+			className: "bg-primary-100 text-primary-800 border-primary-200",
 			label: "In Progress",
 			icon: <Clock className="h-4 w-4 mr-2" />,
 		},
@@ -204,7 +204,7 @@ const getServiceTypeBadge = (serviceType: string) => {
 	> = {
 		personalCare: {
 			icon: <UserCircle className="h-4 w-4 mr-2" />,
-			className: "bg-blue-50 text-blue-700 border-blue-200",
+			className: "bg-primary-100 text-primary-700 border-primary-200",
 		},
 		mealPreparation: {
 			icon: <Briefcase className="h-4 w-4 mr-2" />,
@@ -226,7 +226,7 @@ const getServiceTypeBadge = (serviceType: string) => {
 
 	const typeInfo = serviceTypeMap[serviceType] || {
 		icon: <Briefcase className="h-4 w-4 mr-2" />,
-		className: "bg-gray-50 text-gray-700 border-gray-200",
+		className: "bg-gray-100 text-gray-700 border-gray-200",
 	};
 
 	return (
@@ -282,7 +282,7 @@ const getTimeStatusBadge = (dateTimeString: string) => {
 		return (
 			<Badge
 				variant="outline"
-				className="bg-blue-50 text-blue-700 border-blue-200"
+				className="bg-primary-100 text-primary-700 border-primary-200"
 			>
 				Upcoming
 			</Badge>
@@ -385,7 +385,7 @@ export function ShiftDetailView() {
 					<ArrowLeft className="h-4 w-4 mr-2" />
 					Back to Shifts
 				</Button>
-				<h1 className="text-2xl font-bold">Shift Details</h1>
+				<h1 className="text-2xl font-montserrat-bold">Shift Details</h1>
 				<div className="ml-auto flex items-center gap-2">
 					{getTimeStatusBadge(shift.startTime)}
 					{getLargeStatusBadge(shift.status)}
@@ -659,8 +659,8 @@ export function ShiftDetailView() {
 											</h3>
 											<div className="space-y-4">
 												<div className="flex items-start gap-3">
-													<div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-														<Calendar className="h-4 w-4 text-blue-700" />
+													<div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+														<Calendar className="h-4 w-4 text-primary-700" />
 													</div>
 													<div>
 														<p className="text-sm font-medium">Shift Created</p>
@@ -904,8 +904,8 @@ export function ShiftDetailView() {
 							</CardHeader>
 							<CardContent>
 								<div className="flex items-center gap-4 mb-4">
-									<div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-										<Users className="h-6 w-6 text-blue-600" />
+									<div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
+										<Users className="h-6 w-6 text-primary" />
 									</div>
 									<div>
 										<h3 className="font-medium">Multi-worker shift</h3>

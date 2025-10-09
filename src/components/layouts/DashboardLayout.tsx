@@ -3,45 +3,14 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  Heart,
-  Home,
-  UserRound,
-  Users,
-  Calendar,
-  ShieldCheck,
-  Settings,
-  Bell,
-  ReceiptText,
-  Search,
-  BellRing,
-  ChevronDown,
-  Clock,
-  Menu,
-  X,
-  LogOut,
-  ChevronRight,
-  Building2,
-  FileText,
-  BarChart3,
-  MessageCircle,
-  FileStack,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
+import { Bell, Buildings3, Calendar, ChatLine, ClipboardList, HamburgerMenu, Heart, Logout, Safe2, Scanner, Settings, ShieldUser, UsersGroupRounded, UsersGroupTwoRounded, Widget, Widget5 } from "@solar-icons/react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -80,19 +49,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/admin"
-              icon={<Home size={20} />}
+              icon={<Widget5 size={20} />}
               label="Dashboard"
               active={isActive("/admin")}
             />
 
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-bold tracking-tight text-white/90 font-montserrat">
+              <h2 className="mb-2 px-4 text-lg font-montserrat-bold tracking-tight text-white/90">
                 Management
               </h2>
               <div className="space-y-1">
                 <NavItem
                   to="/admin/all-admin"
-                  icon={<Users size={20} />}
+                  icon={<UsersGroupTwoRounded size={20} />}
                   label="Admins"
                   active={isActive("/admin/all-admin")}
                 />
@@ -104,13 +73,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 />
                 <NavItem
                   to="/admin/support-workers"
-                  icon={<Users size={20} />}
+                  icon={<UsersGroupRounded size={20} />}
                   label="Support Workers"
                   active={isActive("/admin/support-workers")}
                 />
                 <NavItem
                   to="/admin/invites"
-                  icon={<BellRing size={20} />}
+                  icon={<Bell size={20} />}
                   label="Invitations"
                   active={isActive("/admin/invites")}
                 />
@@ -124,7 +93,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-bold tracking-tight text-white/90 font-montserrat">
+              <h2 className="mb-2 px-4 text-lg font-montserrat-bold tracking-tight text-white/90">
                 Bookings
               </h2>
               <div className="space-y-1">
@@ -136,19 +105,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 />
                 <NavItem
                   to="/admin/timesheets"
-                  icon={<ReceiptText size={20} />}
+                  icon={<ClipboardList size={20} />}
                   label="Timesheets"
                   active={isActive("/admin/timesheets")}
                 />
                 <NavItem
                   to="/admin/batch-invoices"
-                  icon={<FileStack size={20} />}
+                  icon={<Scanner size={20} />}
                   label="Batch Invoices"
                   active={isActive("/admin/batch-invoices")}
                 />
                 <NavItem
                   to="/admin/rate-time-band"
-                  icon={<Clock size={20} />}
+                  icon={<Safe2 size={20} />}
                   label="Rate-Time-Band"
                   active={isActive("/admin/rate-time-band")}
                 />
@@ -156,19 +125,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-bold tracking-tight text-white/90 font-montserrat">
+              <h2 className="mb-2 px-4 text-lg font-montserrat-bold tracking-tight text-white/90">
                 Other
               </h2>
               <div className="space-y-1">
                 <NavItem
                   to="/admin/incidents"
-                  icon={<ShieldCheck size={20} />}
+                  icon={<ShieldUser size={20} />}
                   label="Incidents"
                   active={isActive("/admin/incidents")}
                 />
                 <NavItem
                   to="/admin/chats"
-                  icon={<MessageCircle size={20} />}
+                  icon={<ChatLine size={20} />}
                   label="Messages"
                   active={isActive("/admin/chats")}
                 />
@@ -193,7 +162,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             <NavItem
               to="/guardian/chats"
-              icon={<MessageCircle size={20} />}
+              icon={<ChatLine size={20} />}
               label="Messages"
               active={isActive("/guardian/chats")}
             />
@@ -204,7 +173,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/participant"
-              icon={<UserRound size={20} />}
+              icon={<Widget5 size={20} />}
               label="Dashboard"
               active={isActive("/participant")}
             />
@@ -216,25 +185,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             <NavItem
               to="/participant/organizations"
-              icon={<Building2 size={20} />}
+              icon={<Buildings3 size={20} />}
               label="Organizations"
               active={isActive("/participant/organizations")}
             />
             <NavItem
               to="/participant/timesheets"
-              icon={<FileText size={20} />}
+              icon={<ClipboardList size={20} />}
               label="My Timesheets"
               active={isActive("/participant/timesheets")}
             />
             <NavItem
               to="/participant/incidents"
-              icon={<ShieldCheck size={20} />}
+              icon={<ShieldUser size={20} />}
               label="Incidents"
               active={isActive("/participant/incidents")}
             />
             <NavItem
               to="/participant/chats"
-              icon={<MessageCircle size={20} />}
+              icon={<ChatLine size={20} />}
               label="Messages"
               active={isActive("/participant/chats")}
             />
@@ -245,7 +214,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/support-worker"
-              icon={<BarChart3 size={20} />}
+              icon={<Widget5 size={20} />}
               label="Dashboard"
               active={isActive("/support-worker")}
             />
@@ -257,25 +226,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             <NavItem
               to="/support-worker/organizations"
-              icon={<Building2 size={20} />}
+              icon={<Buildings3 size={20} />}
               label="Organizations"
               active={isActive("/support-worker/organizations")}
             />
             <NavItem
               to="/support-worker/timesheets"
-              icon={<FileText size={20} />}
+              icon={<ClipboardList size={20} />}
               label="My Timesheets"
               active={isActive("/support-worker/timesheets")}
             />
             <NavItem
               to="/support-worker/incidents"
-              icon={<ShieldCheck size={20} />}
+              icon={<ShieldUser size={20} />}
               label="Incidents"
               active={isActive("/support-worker/incidents")}
             />
             <NavItem
               to="/support-worker/chats"
-              icon={<MessageCircle size={20} />}
+              icon={<ChatLine size={20} />}
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
@@ -321,18 +290,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </ScrollArea>
 
       {/* User Profile Section */}
-      <div className="mt-auto p-4 border-t border-primary-700">
-        <div className="bg-primary-600 rounded-lg p-4 text-center">
+      <div className="mt-auto p-4">
+        <div className="bg-primary rounded-lg p-4 text-center">
           <Avatar className="h-16 w-16 mx-auto mb-3">
             <AvatarImage
               src={user?.profileImage}
               alt={`${user?.firstName} ${user.lastName}`}
             />
-            <AvatarFallback className="bg-primary-600 text-white text-lg">
+            <AvatarFallback className="bg-primary text-white text-lg">
               {user?.firstName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div className="text-sm text-white font-semibold font-montserrat">
+          <div className="text-sm text-white font-montserrat-semibold">
             {user.email}
           </div>
           <div className="text-xs text-primary-300 capitalize font-montserrat">
@@ -340,10 +309,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 text-white/80 hover:text-white hover:bg-orange-700 mt-3 font-semibold font-montserrat"
+            className="w-full justify-start gap-2 text-white/80 hover:text-white hover:bg-orange-700 mt-3 font-montserrat-semibold"
             onClick={() => logout()}
           >
-            <LogOut className="h-4 w-4" />
+            <Logout />
             <span>Logout</span>
           </Button>
         </div>
@@ -362,11 +331,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetTrigger asChild>
           <Button
-            variant="ghost"
-            className="lg:hidden fixed left-4 top-4 z-40"
-            size="icon"
+        variant="ghost"
+        className="lg:hidden fixed left-4 top-6 z-40"
+        size="icon"
           >
-            <Menu className="h-6 w-6" />
+        <HamburgerMenu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
@@ -379,7 +348,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       
 
         {/* Content rendered by children */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
           {children}
         </div>
       </main>
@@ -406,7 +375,7 @@ const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
     className={cn(
       "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors relative",
       active
-        ? "bg-primary-600 text-white"
+        ? "bg-primary text-white"
         : "text-white/80 hover:bg-primary-700 hover:text-white"
     )}
   >

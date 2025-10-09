@@ -353,7 +353,7 @@ export function SupportWorkerSetup({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 py-6 px-8">
+    <div className="flex flex-col min-h-screen bg-gray-100 py-6 px-8">
       {/* Back Button & Header */}
       <div className="">
         <button
@@ -422,7 +422,7 @@ export function SupportWorkerSetup({
                         ) : (
                           <span
                             className={cn(
-                              "text-sm font-semibold",
+                              "text-sm font-montserrat-semibold",
                               isActive ? "text-primary" : "text-gray-400"
                             )}
                           >
@@ -489,7 +489,7 @@ export function SupportWorkerSetup({
                         ) : (
                           <span
                             className={cn(
-                              "text-xs font-semibold",
+                              "text-xs font-montserrat-semibold",
                               isActive ? "text-primary" : "text-gray-400"
                             )}
                           >
@@ -500,7 +500,7 @@ export function SupportWorkerSetup({
                       <span
                         className={cn(
                           "text-[10px] font-medium mt-1.5 text-center",
-                          isActive ? "text-primary" : "text-gray-500"
+                          isActive ? "text-primary" : "text-gray-1000"
                         )}
                       >
                         {s.label}
@@ -518,7 +518,7 @@ export function SupportWorkerSetup({
               {step === 1 && (
                 <div className="bg-white rounded-xl border border-gray-200">
                   <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                       Bio
                     </h3>
                     <p className="text-sm text-gray-600 mb-6">
@@ -552,7 +552,7 @@ export function SupportWorkerSetup({
                                   className="min-h-[100px] text-sm resize-none"
                                 />
                               </FormControl>
-                              <FormDescription className="text-xs text-gray-500 flex items-start gap-1.5">
+                              <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
                                 <span className="text-primary mt-0.5">ⓘ</span>
                                 <span>
                                   You can edit this info later in your profile
@@ -624,14 +624,14 @@ export function SupportWorkerSetup({
                                     });
                                     bioForm.setValue("languages", newLanguages);
                                   }}
-                                  className="h-8 px-3 text-xs bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700"
+                                  className="h-8 px-3 text-xs bg-white border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700"
                                 >
                                   + {language}
                                 </Button>
                               ))}
                           </div>
 
-                          <p className="text-xs text-gray-500 flex items-start gap-1.5 mt-2">
+                          <p className="text-xs text-gray-1000 flex items-start gap-1.5 mt-2">
                             <span className="text-primary mt-0.5">ⓘ</span>
                             <span>
                               Select from common languages or add your own
@@ -666,7 +666,7 @@ export function SupportWorkerSetup({
               {step === 2 && (
                 <div className="bg-white rounded-xl border border-gray-200">
                   <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                       Skills & Services
                     </h3>
                     <p className="text-sm text-gray-600 mb-6">
@@ -716,7 +716,7 @@ export function SupportWorkerSetup({
                                           "cursor-pointer p-4 rounded-xl border-2 transition-all",
                                           isSelected
                                             ? "bg-primary border-primary"
-                                            : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
+                                            : "border-gray-200 hover:border-primary/50 hover:bg-gray-100"
                                         )}
                                       >
                                         <div className="flex flex-col items-center text-center">
@@ -745,7 +745,7 @@ export function SupportWorkerSetup({
                                               "text-xs mt-1",
                                               isSelected
                                                 ? "text-white/80"
-                                                : "text-gray-500"
+                                                : "text-gray-1000"
                                             )}
                                           >
                                             {serviceType.code}
@@ -789,7 +789,7 @@ export function SupportWorkerSetup({
               {step === 3 && (
                 <div className="bg-white rounded-xl border border-gray-200">
                   <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                       Work Experience
                     </h3>
                     <p className="text-sm text-gray-600 mb-6">
@@ -806,7 +806,7 @@ export function SupportWorkerSetup({
                         {formData.experience.map((exp, index) => (
                           <div
                             key={index}
-                            className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-50"
+                            className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-100"
                           >
                             <div className="flex justify-between items-start">
                               <h4 className="font-medium text-gray-700 text-sm italic">
@@ -820,7 +820,7 @@ export function SupportWorkerSetup({
                                   onClick={() => removeExperience(index)}
                                   className="h-8 w-8 p-0"
                                 >
-                                  <Trash2 className="h-4 w-4 text-gray-500" />
+                                  <Trash2 className="h-4 w-4 text-gray-1000" />
                                 </Button>
                               )}
                             </div>
@@ -1021,7 +1021,7 @@ export function SupportWorkerSetup({
               {step === 4 && (
                 <div className="bg-white rounded-xl border border-gray-200">
                   <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                       Hourly Rates
                     </h3>
                     <p className="text-sm text-gray-600 mb-6">
@@ -1055,13 +1055,13 @@ export function SupportWorkerSetup({
                                 >
                                   <div className="flex items-start justify-between mb-4">
                                     <div className="flex-1">
-                                      <h4 className="font-semibold text-gray-900 text-base mb-1">
+                                      <h4 className="font-montserrat-semibold text-gray-900 text-base mb-1">
                                         {band.name}
                                       </h4>
                                       <p className="text-sm text-gray-600 mb-1">
                                         {band.description}
                                       </p>
-                                      <p className="text-xs text-gray-500">
+                                      <p className="text-xs text-gray-1000">
                                         {band.startTime} - {band.endTime}
                                       </p>
                                     </div>
@@ -1154,7 +1154,7 @@ export function SupportWorkerSetup({
               {step === 5 && (
                 <div className="bg-white rounded-xl border border-gray-200">
                   <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                       Availability
                     </h3>
                     <p className="text-sm text-gray-600 mb-6">
@@ -1197,7 +1197,7 @@ export function SupportWorkerSetup({
                                     )}
                                   </div>
                                   <label
-                                    className="font-semibold text-gray-900 capitalize cursor-pointer text-base"
+                                    className="font-montserrat-semibold text-gray-900 capitalize cursor-pointer text-base"
                                     onClick={() =>
                                       toggleDayAvailability(dayIndex)
                                     }

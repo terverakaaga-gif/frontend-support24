@@ -1,623 +1,1113 @@
 import { useState, useEffect } from "react";
-import {
-	Search,
-	Filter,
-	Plus,
-	Eye,
-	Trash2,
-	CheckCircle,
-	Clock,
-	AlertTriangle,
-	FileText,
-	FilterIcon,
-	ChevronDown,
-} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import incidentService from "@/api/services/incidentService";
-import { IIncident } from "@/types/incidents.types";
-import * as Dialog from "@radix-ui/react-dialog";
-import * as Select from "@radix-ui/react-select";
+import shiftService from "@/api/services/shiftService";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import {
+  AddCircle,
+  Eye,
+  Magnifer,
+  CloseCircle,
+  AltArrowLeft,
+  AltArrowRight,
+} from "@solar-icons/react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import Loader from "@/components/Loader";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { Plus, PlusCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { CreateIncidentDTO } from "@/types/incidents.types";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import GeneralHeader from "@/components/GeneralHeader";
+import { pageTitles } from "@/constants/pageTitles";
+import { useNavigate } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const IncidentsPage = () => {
-	const { user } = useAuth();
-	const queryClient = useQueryClient();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-	// Fetch incidents
-	const {
-		data: incidentsData,
-		error: incidentsError,
-		isLoading: isIncidentsLoading,
-	} = useQuery({
-		queryKey: ["incidents"],
-		queryFn: () => incidentService.getIncidents(),
-	});
+  // Fetch incidents
+  const {
+    data: incidentsData,
+    error: incidentsError,
+    isLoading: isIncidentsLoading,
+  } = useQuery({
+    queryKey: ["incidents"],
+    queryFn: () => incidentService.getIncidents(),
+  });
 
-	// State management
-	const [filteredIncidents, setFilteredIncidents] = useState<IIncident[]>([]);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [statusFilter, setStatusFilter] = useState("ALL");
-	const [severityFilter, setSeverityFilter] = useState("ALL");
-	const [currentPage, setCurrentPage] = useState(1);
-	const [itemsPerPage] = useState(10);
+  // Fetch shifts
+  const { data: shifts, isLoading: isShiftsLoading } = useQuery({
+    queryKey: ["shifts"],
+    queryFn: () => shiftService.getShifts(),
+  });
 
-	// Delete modal state
-	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-	const [incidentToDelete, setIncidentToDelete] = useState<IIncident | null>(
-		null
-	);
+  // State management
+  const [filteredIncidents, setFilteredIncidents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All Status");
+  const [severityFilter, setSeverityFilter] = useState("All Severity");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [shiftSearchTerm, setShiftSearchTerm] = useState("");
 
-	// Calculate stats from real data - ONLY FOR ADMIN
-	const stats =
-		user?.role === "admin"
-			? {
-					totalIncidents: incidentsData?.incidents.length || 0,
-					byStatus: {
-						OPEN:
-							incidentsData?.incidents.filter(
-								(incident) => incident.status === "OPEN"
-							).length || 0,
-						IN_REVIEW:
-							incidentsData?.incidents.filter(
-								(incident) => incident.status === "IN_REVIEW"
-							).length || 0,
-						RESOLVED:
-							incidentsData?.incidents.filter(
-								(incident) => incident.status === "RESOLVED"
-							).length || 0,
-						REJECTED:
-							incidentsData?.incidents.filter(
-								(incident) => incident.status === "REJECTED"
-							).length || 0,
-					},
-					bySeverity: {
-						LOW:
-							incidentsData?.incidents.filter(
-								(incident) => incident.severity === "LOW"
-							).length || 0,
-						MEDIUM:
-							incidentsData?.incidents.filter(
-								(incident) => incident.severity === "MEDIUM"
-							).length || 0,
-						HIGH:
-							incidentsData?.incidents.filter(
-								(incident) => incident.severity === "HIGH"
-							).length || 0,
-					},
-					resolvedIncidents:
-						incidentsData?.incidents.filter(
-							(incident) => incident.status === "RESOLVED"
-						).length || 0,
-					averageResolutionTime: 24, // This would need to be calculated from your data
-			  }
-			: null;
+  // Create incident form state
+  const [incidentForm, setIncidentForm] = useState({
+    title: "",
+    description: "",
+    severity: "",
+    shiftId: "",
+    reportedAgainst: "",
+    urlLinks: [],
+  });
 
-	// Filter incidents based on search and filters
-	useEffect(() => {
-		if (incidentsData?.incidents) {
-			let filtered = [...incidentsData.incidents];
+  // ReactQuill configuration
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["link"],
+      ["clean"],
+    ],
+  };
 
-			if (searchTerm) {
-				filtered = filtered.filter(
-					(incident) =>
-						incident.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-						incident.description
-							.toLowerCase()
-							.includes(searchTerm.toLowerCase())
-				);
-			}
+  const quillFormats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "list",
+    "bullet",
+    "align",
+    "link",
+  ];
 
-			if (statusFilter !== "ALL") {
-				filtered = filtered.filter(
-					(incident) => incident.status === statusFilter
-				);
-			}
+  // Create incident mutation
+  const createIncidentMutation = useMutation({
+    mutationFn: (data: CreateIncidentDTO) =>
+      incidentService.createIncident(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
+      toast.success("Incident created successfully");
+      setReviewModalOpen(false);
+      setIncidentForm({
+        title: "",
+        description: "",
+        severity: "",
+        shiftId: "",
+        reportedAgainst: "",
+        urlLinks: [],
+      });
+    },
+    onError: (error) => {
+      toast.error("Failed to create incident");
+      console.error("Error creating incident:", error);
+    },
+  });
 
-			if (severityFilter !== "ALL") {
-				filtered = filtered.filter(
-					(incident) => incident.severity === severityFilter
-				);
-			}
+  // Filter incidents based on search and filters
+  useEffect(() => {
+    if (incidentsData?.incidents) {
+      let filtered = [...incidentsData.incidents];
 
-			setFilteredIncidents(filtered);
-			setCurrentPage(1);
-		}
-	}, [searchTerm, statusFilter, severityFilter, incidentsData]);
+      if (searchTerm) {
+        filtered = filtered.filter(
+          (incident) =>
+            incident.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            incident.description
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+        );
+      }
 
-	// Mutation for deleting incidents
-	const deleteIncidentMutation = useMutation({
-		mutationFn: (id: string) => incidentService.deleteIncident(id),
-		onSuccess: () => {
-			// Reload incidents
-			queryClient.invalidateQueries({ queryKey: ["incidents"] });
-			toast.success("Incident deleted successfully");
-			setDeleteModalOpen(false);
-		},
-		onError: (error) => {
-			toast.error("Failed to delete incident");
-			console.error("Error deleting incident:", error);
-		},
-	});
+      if (statusFilter !== "All Status") {
+        const filterMap = {
+          Opened: "OPEN",
+          Pending: "IN_REVIEW",
+          Resolved: "RESOLVED",
+        };
+        filtered = filtered.filter(
+          (incident) => incident.status === filterMap[statusFilter]
+        );
+      }
+      if (severityFilter !== "All Severity") {
+        filtered = filtered.filter(
+          (incident) =>
+            incident.severity.toLocaleUpperCase() ===
+            severityFilter.toLocaleUpperCase()
+        );
+      }
 
-	const getStatusColor = (status: string) => {
-		const colors = {
-			OPEN: "bg-red-100 text-red-800",
-			IN_REVIEW: "bg-yellow-100 text-yellow-800",
-			RESOLVED: "bg-green-100 text-green-800",
-			REJECTED: "bg-gray-100 text-gray-800",
-		};
-		return colors[status] || "bg-gray-100 text-gray-800";
-	};
+      setFilteredIncidents(filtered);
+      setCurrentPage(1);
+    }
+  }, [searchTerm, statusFilter, incidentsData, severityFilter]);
 
-	const getSeverityColor = (severity: string) => {
-		const colors = {
-			LOW: "bg-blue-100 text-blue-800",
-			MEDIUM: "bg-orange-100 text-orange-800",
-			HIGH: "bg-red-100 text-red-800",
-		};
-		return colors[severity] || "bg-gray-100 text-gray-800";
-	};
+  const getStatusBadgeStyle = (status) => {
+    switch (status) {
+      case "OPEN":
+        return "bg-gray-100 text-gray-600";
+      case "IN_REVIEW":
+        return "bg-orange-50 text-orange-600";
+      case "RESOLVED":
+        return "bg-green-50 text-green-600";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
 
-	const formatDate = (dateString: string) => {
-		return new Date(dateString).toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-		});
-	};
+  const getSeverityBadgeStyle = (severity) => {
+    switch (severity) {
+      case "LOW":
+        return "bg-primary-50 text-primary-600";
+      case "MEDIUM":
+        return "bg-orange-50 text-orange-600";
+      case "HIGH":
+        return "bg-red-50 text-red-600";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
 
-	const handleDeleteIncident = () => {
-		if (incidentToDelete) {
-			deleteIncidentMutation.mutate(incidentToDelete._id);
-		}
-	};
+  const getStatusLabel = (status) => {
+    const labels = {
+      OPEN: "Opened",
+      IN_REVIEW: "Pending",
+      RESOLVED: "Resolved",
+      REJECTED: "Rejected",
+    };
+    return labels[status] || status;
+  };
 
-	// Check if user can delete incident
-	const canDeleteIncident = (incident: IIncident) => {
-		if (user?.role === "admin") return true;
-		return false;
-	};
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
-	// Check if user can resolve incident - ONLY ADMIN
-	const canResolveIncident = (incident: IIncident) => {
-		return user?.role === "admin" && incident.status !== "RESOLVED";
-	};
+  const formatTime = (dateString) => {
+    return new Date(dateString).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
-	// Pagination
-	const indexOfLastItem = currentPage * itemsPerPage;
-	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-	const currentItems = filteredIncidents.slice(
-		indexOfFirstItem,
-		indexOfLastItem
-	);
-	const totalPages = Math.ceil(filteredIncidents.length / itemsPerPage);
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredIncidents.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredIncidents.length / itemsPerPage);
 
-	if (isIncidentsLoading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#20AFF0]"></div>
-			</div>
-		);
-	}
+  const handleViewIncident = (incident) => {
+    setSelectedIncident(incident);
+    setViewModalOpen(true);
+  };
 
-	if (incidentsError) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-red-500">Error loading incidents</div>
-			</div>
-		);
-	}
+  const handleCreateIncident = () => {
+    setIncidentForm({
+      title: "",
+      description: "",
+      severity: "",
+      shiftId: "",
+      reportedAgainst: "",
+      urlLinks: [],
+    });
+    setCreateModalOpen(true);
+  };
 
-	return (
-		<div className="min-h-screen" style={{ backgroundColor: "#F9FCFF" }}>
-			<div className="max-w-7xl mx-auto p-6">
-				{/* Header */}
-				<div className="mb-8">
-					<h1 className="text-3xl font-bold text-gray-900 mb-2">
-						Incident Management
-					</h1>
-					<p className="text-gray-600">
-						Monitor and manage all incidents across shifts
-					</p>
-				</div>
+  const handleReviewIncident = () => {
+    if (
+      !incidentForm.title ||
+      !incidentForm.description ||
+      !incidentForm.severity ||
+      !incidentForm.shiftId
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    setCreateModalOpen(false);
+    setReviewModalOpen(true);
+  };
 
-				{/* Statistics Cards - ONLY FOR ADMIN */}
-				{user?.role === "admin" && stats && (
-					<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-sm font-medium text-gray-600">
-										Total Incidents
-									</p>
-									<p className="text-2xl font-bold text-gray-900">
-										{stats.totalIncidents}
-									</p>
-								</div>
-								<FileText className="h-8 w-8 text-[#008CFF]" />
-							</div>
-						</div>
+  const handleSaveIncident = () => {
+    const submitData = {
+      title: incidentForm.title,
+      description: incidentForm.description,
+      severity: incidentForm.severity,
+      shiftId: incidentForm.shiftId,
+      urlLinks: incidentForm.urlLinks,
+    };
 
-						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-sm font-medium text-gray-600">
-										Open Incidents
-									</p>
-									<p className="text-2xl font-bold text-red-600">
-										{stats.byStatus.OPEN}
-									</p>
-								</div>
-								<AlertTriangle className="h-8 w-8 text-red-500" />
-							</div>
-						</div>
+    // createIncidentMutation.mutate(submitData);
+  };
 
-						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-sm font-medium text-gray-600">Resolved</p>
-									<p className="text-2xl font-bold text-green-600">
-										{stats.resolvedIncidents}
-									</p>
-								</div>
-								<CheckCircle className="h-8 w-8 text-green-500" />
-							</div>
-						</div>
+  const handleShiftSelect = (shift) => {
+    setIncidentForm({ ...incidentForm, shiftId: shift.shiftId });
+    setShowShiftModal(false);
+  };
 
-						<div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-sm font-medium text-gray-600">
-										Avg. Resolution
-									</p>
-									<p className="text-2xl font-bold text-blue-600">
-										{stats.averageResolutionTime}h
-									</p>
-								</div>
-								<Clock className="h-8 w-8 text-blue-500" />
-							</div>
-						</div>
-					</div>
-				)}
+  const filteredShifts = shifts?.filter((shift) => {
+    const searchLower = shiftSearchTerm.toLowerCase();
+    const participant = shift.participantId;
+    const hasFirstName =
+      typeof participant === "object" &&
+      participant !== null &&
+      "firstName" in participant;
+    const hasLastName =
+      typeof participant === "object" &&
+      participant !== null &&
+      "lastName" in participant;
 
-				{/* Filters and Search */}
-				<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-					<div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-						<div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-							<div className="relative">
-								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-								<input
-									type="text"
-									placeholder="Search incidents..."
-									className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#008CFF] focus:border-transparent w-full sm:w-64"
-									value={searchTerm}
-									onChange={(e) => setSearchTerm(e.target.value)}
-								/>
-							</div>
-							<div className="flex items-center gap-4">
-								<Select.Root
-									value={statusFilter}
-									onValueChange={setStatusFilter}
-								>
-									<Select.Trigger className="min-w-[180px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#008CFF] focus:border-transparent flex items-center justify-between gap-2 bg-white hover:bg-gray-50 transition-colors">
-										<div className="flex items-center gap-2">
-											<Filter size={16} className="text-gray-500" />
-											<span className="text-sm text-gray-700">
-												<Select.Value placeholder="All Statuses" />
-											</span>
-										</div>
-										<Select.Icon className="ml-2">
-											<ChevronDown size={16} className="text-gray-500" />
-										</Select.Icon>
-									</Select.Trigger>
-									<Select.Portal>
-										<Select.Content
-											className="bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-[180px]"
-											position="popper"
-											sideOffset={4}
-										>
-											<Select.Viewport className="p-1">
-												<Select.Item
-													value="ALL"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>All Statuses</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="OPEN"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>Open</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="IN_REVIEW"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>In Review</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="RESOLVED"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>Resolved</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="REJECTED"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>Rejected</Select.ItemText>
-												</Select.Item>
-											</Select.Viewport>
-										</Select.Content>
-									</Select.Portal>
-								</Select.Root>
+    return (
+      shift.shiftId.toLowerCase().includes(searchLower) ||
+      (hasFirstName &&
+        participant.firstName.toLowerCase().includes(searchLower)) ||
+      (hasLastName &&
+        participant.lastName.toLowerCase().includes(searchLower)) ||
+      shift.serviceType.toLowerCase().includes(searchLower)
+    );
+  });
 
-								<Select.Root
-									value={severityFilter}
-									onValueChange={setSeverityFilter}
-								>
-									<Select.Trigger className="min-w-[180px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#008CFF] focus:border-transparent flex items-center justify-between gap-2 bg-white hover:bg-gray-50 transition-colors">
-										<div className="flex items-center gap-2">
-											<Filter size={16} className="text-gray-500" />
-											<span className="text-sm text-gray-700">
-												<Select.Value placeholder="All Severities" />
-											</span>
-										</div>
-										<Select.Icon className="ml-2">
-											<ChevronDown size={16} className="text-gray-500" />
-										</Select.Icon>
-									</Select.Trigger>
-									<Select.Portal>
-										<Select.Content
-											className="bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-[180px]"
-											position="popper"
-											sideOffset={4}
-										>
-											<Select.Viewport className="p-1">
-												<Select.Item
-													value="ALL"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>All Severities</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="LOW"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>Low</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="MEDIUM"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>Medium</Select.ItemText>
-												</Select.Item>
-												<Select.Item
-													value="HIGH"
-													className="px-3 py-2 text-sm rounded cursor-pointer hover:bg-gray-100 focus:bg-gray-100 outline-none"
-												>
-													<Select.ItemText>High</Select.ItemText>
-												</Select.Item>
-											</Select.Viewport>
-										</Select.Content>
-									</Select.Portal>
-								</Select.Root>
-							</div>
-						</div>
+  const getSelectedShift = () => {
+    return shifts?.find((shift) => shift.shiftId === incidentForm.shiftId);
+  };
 
-						{user?.role === "supportWorker" && (
-							<Link
-								to="/support-worker/incidents/create"
-								className="bg-[#008CFF] text-white px-4 py-2 rounded-lg hover:bg-[#008CFF]/90 transition-colors flex items-center gap-2"
-							>
-								<Plus className="h-4 w-4" />
-								Create Incident
-							</Link>
-						)}
-					</div>
-				</div>
+  if (isIncidentsLoading) {
+    return <Loader />;
+  }
 
-				{/* Incidents Table */}
-				<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-					<div className="overflow-x-auto">
-						<table className="w-full">
-							<thead className="bg-gray-50 border-b border-gray-200">
-								<tr>
-									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Incident
-									</th>
-									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Status
-									</th>
-									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Severity
-									</th>
-									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Reported By
-									</th>
-									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Date
-									</th>
-									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Actions
-									</th>
-								</tr>
-							</thead>
-							<tbody className="bg-white divide-y divide-gray-200">
-								{currentItems.map((incident) => (
-									<tr key={incident._id} className="hover:bg-gray-50">
-										<td className="px-6 py-4">
-											<div>
-												<div className="text-sm font-medium text-gray-900">
-													{incident.title}
-												</div>
-												<div className="text-sm text-gray-500 truncate max-w-xs">
-													{incident.description.replace(/<[^>]*>/g, "")}
-												</div>
-											</div>
-										</td>
-										<td className="px-6 py-4">
-											<span
-												className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-													incident.status
-												)}`}
-											>
-												{incident.status}
-											</span>
-										</td>
-										<td className="px-6 py-4">
-											<span
-												className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSeverityColor(
-													incident.severity
-												)}`}
-											>
-												{incident.severity}
-											</span>
-										</td>
-										<td className="px-6 py-4">
-											<div className="text-sm text-gray-900">
-												{incident.reportedBy.firstName}{" "}
-												{incident.reportedBy.lastName}
-											</div>
-										</td>
-										<td className="px-6 py-4 text-sm text-gray-500">
-											{formatDate(incident.createdAt)}
-										</td>
-										<td className="px-6 py-4">
-											<div className="flex items-center gap-2">
-												{/* View Button - Available for all roles */}
-												<Link
-													to={`${
-														user.role === "admin"
-															? "/admin"
-															: user.role === "supportWorker"
-															? "/support-worker"
-															: "/participant"
-													}/incidents/${incident._id}`}
-													className="text-[#008CFF] flex gap-3 items-center hover:text-[#1599D3] p-1"
-													title="View Details"
-												>
-													<Eye className="h-4 w-4" />{" "}
-													<span className="text-sm text-[#008CFF]">View</span>
-												</Link>
+  if (incidentsError) {
+    return <ErrorDisplay message={"Error loading incidents"} />;
+  }
 
-												{/* Resolve Button - Only for admin on non-resolved incidents */}
-												{canResolveIncident(incident) && (
-													<Link
-														to={`/admin/incidents/${incident._id}/resolve`}
-														className="text-green-600 hover:text-green-800 p-1"
-														title="Resolve Incident"
-													>
-														<CheckCircle className="h-4 w-4" />
-													</Link>
-												)}
+  return (
+    <div className="min-h-screen bg-gray-100 p-10">
+      {/* Header */}
+      <GeneralHeader
+        title={
+          user.role === "supportWorker"
+            ? pageTitles.supportWorker["/support-worker/incidents"].title
+            : user.role === "participant"
+            ? pageTitles.participant["/participant/incidents"].title
+            : pageTitles.admin["/admin/incidents"].title
+        }
+        subtitle={
+          user.role === "supportWorker"
+            ? pageTitles.supportWorker["/support-worker/incidents"].subtitle
+            : user.role === "participant"
+            ? pageTitles.participant["/participant/incidents"].subtitle
+            : pageTitles.admin["/admin/incidents"].subtitle
+        }
+        user={user}
+        onViewProfile={() => {
+          navigate(
+            user.role === "supportWorker"
+              ? Object.keys(pageTitles.supportWorker).find(
+                  (key) =>
+                    key !== "/support-worker/incidents" &&
+                    pageTitles.supportWorker[key] ===
+                      pageTitles.supportWorker["/support-worker/profile"]
+                )
+              : user.role === "participant"
+              ? Object.keys(pageTitles.participant).find(
+                  (key) =>
+                    key !== "/participant/incidents" &&
+                    pageTitles.participant[key] ===
+                      pageTitles.participant["/participant/profile"]
+                )
+              : Object.keys(pageTitles.admin).find(
+                  (key) =>
+                    key !== "/admin/incidents" &&
+                    pageTitles.admin[key] === pageTitles.admin["/admin/profile"]
+                )
+          );
+        }}
+        onLogout={logout}
+        rightComponent={
+          <>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Magnifer className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  type="text"
+                  placeholder="Search incidents...."
+                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-80"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
 
-												{/* Delete Button - Available based on role permissions */}
-												{canDeleteIncident(incident) && (
-													<button
-														onClick={() => {
-															setIncidentToDelete(incident);
-															setDeleteModalOpen(true);
-														}}
-														className="text-red-600 hover:text-red-800 p-1"
-														title="Delete Incident"
-													>
-														<Trash2 className="h-4 w-4" />
-													</button>
-												)}
-											</div>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+              {user.role === "supportWorker" && (
+                <Button
+                  onClick={handleCreateIncident}
+                  className="bg-primary hover:bg-primary-700 text-white px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <AddCircle className="h-8 w-8 white" />
+                  <span>Create Incident</span>
+                </Button>
+              )}
+            </div>
+          </>
+        }
+      />
 
-					{/* Pagination */}
-					{totalPages > 1 && (
-						<div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center">
-									<p className="text-sm text-gray-700">
-										Showing {indexOfFirstItem + 1} to{" "}
-										{Math.min(indexOfLastItem, filteredIncidents.length)} of{" "}
-										{filteredIncidents.length} results
-									</p>
-								</div>
-								<div className="flex items-center gap-2">
-									<button
-										onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-										disabled={currentPage === 1}
-										className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-									>
-										Previous
-									</button>
-									{Array.from({ length: totalPages }, (_, i) => i + 1).map(
-										(page) => (
-											<button
-												key={page}
-												onClick={() => setCurrentPage(page)}
-												className={`px-3 py-1 text-sm rounded-md ${
-													currentPage === page
-														? "bg-[#008CFF] text-white"
-														: "bg-white border border-gray-300 hover:bg-gray-50"
-												}`}
-											>
-												{page}
-											</button>
-										)
-									)}
-									<button
-										onClick={() =>
-											setCurrentPage(Math.min(totalPages, currentPage + 1))
-										}
-										disabled={currentPage === totalPages}
-										className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-									>
-										Next
-									</button>
-								</div>
-							</div>
-						</div>
-					)}
-				</div>
-			</div>
+      {/* Filters */}
+      <div className="rounded-t-lg border border-gray-200 border-b-0">
+        <div className="flex items-center gap-3">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All Status">All Status</SelectItem>
+              <SelectItem value="Opened">Opened</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Resolved">Resolved</SelectItem>
+            </SelectContent>
+          </Select>
 
-			{/* Delete Confirmation Modal */}
-			<Dialog.Root open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-				<Dialog.Portal>
-					<Dialog.Overlay className="fixed inset-0 bg-black/50" />
-					<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-						<Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
-							Confirm Delete
-						</Dialog.Title>
-						<p className="text-gray-600 mb-6">
-							Are you sure you want to delete this incident? This action cannot
-							be undone.
-						</p>
-						<div className="flex justify-end gap-3">
-							<button
-								onClick={() => setDeleteModalOpen(false)}
-								className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-							>
-								Cancel
-							</button>
-							<button
-								onClick={handleDeleteIncident}
-								className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-							>
-								Delete
-							</button>
-						</div>
-					</Dialog.Content>
-				</Dialog.Portal>
-			</Dialog.Root>
-		</div>
-	);
+          <Select value={severityFilter} onValueChange={setSeverityFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Severity" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All Severity">All Severity</SelectItem>
+              <SelectItem value="Low">Low</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="High">High</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Table */}
+
+      <div className="bg-white rounded-b-lg border border-gray-200 overflow-hidden my-3">
+        <Table>
+          <TableHeader>
+            <TableRow className="font-montserrat-semibold">
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                INCIDENT REPORT
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                REPORTED BY
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                DATE
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                TIME
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                SEVERITY
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                STATUS
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+                ACTIONS
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentItems.map((incident) => (
+              <TableRow key={incident._id} className="hover:bg-gray-100">
+                <TableCell className="flex flex-col px-6 py-4">
+                  <div className="text-sm font-montserrat-bold text-gray-900">
+                    {incident.title}
+                  </div>
+                  <div className="text-sm text-gray-1000">
+                    {incident.description
+                      .replace(/<[^>]*>/g, "")
+                      .substring(0, 50)}
+                    ...
+                  </div>
+                </TableCell>
+                <TableCell className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={`https://i.pravatar.cc/32?img=${
+                        Math.abs(parseInt(incident._id.slice(-4), 16)) % 10
+                      }`}
+                      alt="Avatar"
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span className="text-sm text-gray-900">
+                      {incident.reportedBy.firstName}{" "}
+                      {incident.reportedBy.lastName}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="px-6 py-4 text-sm text-gray-1000">
+                  {formatDate(incident.createdAt)}
+                </TableCell>
+                <TableCell className="px-6 py-4 text-sm text-gray-1000">
+                  {formatTime(incident.createdAt)}
+                </TableCell>
+                <TableCell className="px-6 py-4">
+                  <span
+                    className={`inline-flex px-3 py-1 text-xs font-montserrat-bold rounded-full ${getSeverityBadgeStyle(
+                      incident.severity
+                    )}`}
+                  >
+                    {incident.severity}
+                  </span>
+                </TableCell>
+                <TableCell className="px-6 py-4">
+                  <span
+                    className={`inline-flex px-3 py-1 text-xs font-montserrat-bold rounded-full ${getStatusBadgeStyle(
+                      incident.status
+                    )}`}
+                  >
+                    {getStatusLabel(incident.status)}
+                  </span>
+                </TableCell>
+                <TableCell className="px-6 py-4">
+                  <Button
+                    onClick={() => handleViewIncident(incident)}
+                    className="text-primary bg-white border border-primary hover:text-white hover:bg-primary flex items-center gap-2 text-sm font-montserrat-bold"
+                  >
+                    <Eye className="h-4 w-4" />
+                    View
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Showing <span className="font-montserrat-bold">{itemsPerPage}</span>{" "}
+              incidents
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+              >
+                <AltArrowLeft className="h-4 w-4" />
+              </Button>
+              {Array.from(
+                { length: Math.min(totalPages, 5) },
+                (_, i) => i + 1
+              ).map((page) => (
+                <Button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-4 py-1 text-sm rounded ${
+                    currentPage === page
+                      ? "bg-primary-600 text-white"
+                      : "border border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button
+                onClick={() =>
+                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+              >
+                <AltArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Create Incident Dialog */}
+      {user.role === "supportWorker" && createModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 py-10 border-b border-gray-200">
+              <h2 className="text-xl font-montserrat-semibold text-gray-900">
+                Create Incident
+              </h2>
+              <Button
+                variant="ghost"
+                onClick={() => setCreateModalOpen(false)}
+                className="text-black hover:bg-transparent hover:text-primary"
+              >
+                <CloseCircle size={24} />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                  Title
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Brief title of the incident"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  value={incidentForm.title}
+                  onChange={(e) =>
+                    setIncidentForm({ ...incidentForm, title: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                  Description
+                </label>
+                <div className="quill-wrapper">
+                  <ReactQuill
+                    theme="snow"
+                    value={incidentForm.description}
+                    onChange={(content) =>
+                      setIncidentForm({ ...incidentForm, description: content })
+                    }
+                    modules={quillModules}
+                    formats={quillFormats}
+                    placeholder="Provide a detailed description of what happened. Use the formatting tools above to structure your report."
+                    style={{ height: "200px", marginBottom: "50px" }}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                    Severity
+                  </label>
+                  <Select
+                    value={incidentForm.severity}
+                    onValueChange={(value) =>
+                      setIncidentForm({ ...incidentForm, severity: value })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select severity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Low">Low</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                    Shift
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      className="w-full px-4 py-2.5 border font-montserrat-semibold border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="Select a shift"
+                      value={incidentForm.shiftId}
+                      readOnly
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowShiftModal(true)}
+                      className=" hover:bg-primary-700 px-4 py-2 transition-colors whitespace-nowrap"
+                    >
+                      Select Shift
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* <div>
+                <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                  Reported Against
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  value={incidentForm.reportedAgainst}
+                  onChange={(e) => setIncidentForm({ ...incidentForm, reportedAgainst: e.target.value })}
+                />
+              </div> */}
+
+              <div>
+                <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                  Evidence (Optional)
+                </label>
+                <label className="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm flex items-center gap-2 w-fit">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  Upload Files
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        const files = Array.from(e.target.files);
+                        setIncidentForm({
+                          ...incidentForm,
+                          urlLinks: files.map((file) => file.name),
+                        });
+                      }
+                    }}
+                    multiple
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <Button
+                onClick={() => setCreateModalOpen(false)}
+                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-montserrat-bold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleReviewIncident}
+                className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-montserrat-bold"
+              >
+                Review Incident
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shift Selection Modal */}
+      {showShiftModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-montserrat-semibold text-gray-900">
+                Select Shift
+              </h2>
+              <Button
+              variant="ghost"
+                onClick={() => setShowShiftModal(false)}
+                className="text-black hover:text-primary hover:bg-transparent"
+              >
+                <CloseCircle size={24} />
+              </Button>
+            </div>
+
+            <div className="p-6">
+              <div className="mb-4">
+                <div className="relative">
+                  <Magnifer className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <input
+                    type="text"
+                    placeholder="Search shifts..."
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full"
+                    value={shiftSearchTerm}
+                    onChange={(e) => setShiftSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {isShiftsLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredShifts?.length ? (
+                    filteredShifts.map((shift) => (
+                      <div
+                        key={shift._id}
+                        className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
+                          incidentForm.shiftId === shift.shiftId
+                            ? "border-primary-600 bg-primary-50"
+                            : "border-gray-200"
+                        }`}
+                        onClick={() => handleShiftSelect(shift)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-montserrat-bold text-gray-900">
+                              {typeof shift.participantId === "object" &&
+                              shift.participantId !== null
+                                ? `${shift.participantId.firstName} ${shift.participantId.lastName}`
+                                : String(shift.participantId)}
+                            </h3>
+                            <p className="text-sm text-gray-1000">
+                              {shift.serviceType}
+                            </p>
+                          </div>
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              shift.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : shift.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {shift.status}
+                          </span>
+                        </div>
+                        <div className="mt-2 text-sm">
+                          <p>
+                            <span className="font-montserrat-bold">Shift ID:</span>{" "}
+                            {shift.shiftId}
+                          </p>
+                          <p>
+                            <span className="font-montserrat-bold">Time:</span>{" "}
+                            {new Date(shift.startTime).toLocaleString()} -{" "}
+                            {new Date(shift.endTime).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-1000">
+                      No shifts found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Incident Dialog */}
+      {reviewModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-montserrat-bold text-gray-900">
+                Review Incident
+              </h2>
+              <Button
+                variant="ghost"
+                onClick={() => setReviewModalOpen(false)}
+                className="text-black hover:text-primary-600 hover:bg-transparent"
+              >
+                <CloseCircle size={24} />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Title and Severity */}
+              <div className="flex items-start justify-between">
+                <h3 className="text-xl font-montserrat-semibold text-gray-900">
+                  {incidentForm.title}
+                </h3>
+                <span
+                  className={`inline-flex px-3 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityBadgeStyle(
+                    incidentForm.severity
+                  )}`}
+                >
+                  {incidentForm.severity}
+                </span>
+              </div>
+
+              {/* Reported By */}
+              <div>
+                <h4 className="text-sm font-montserrat-bold text-gray-1000 mb-2">
+                  Reported By
+                </h4>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Avatar className="w-10 h-10 rounded-full">
+                      <AvatarImage
+                        src={
+                          user?.profileImage || `https://i.pravatar.cc/40?img=5`
+                        }
+                        alt="Reporter"
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <AvatarFallback>
+                        {user?.firstName?.charAt(0)}
+                        {user?.lastName?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-montserrat-bold text-gray-900">
+                      {user?.firstName} {user?.lastName}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-1000 font-montserrat-semibold">
+                    {formatDate(new Date().toISOString())},{" "}
+                    {formatTime(new Date().toISOString())}
+                  </span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="bg-gray-100 rounded-lg p-4">
+                <div
+                  className="prose prose-sm max-w-none text-gray-700"
+                  dangerouslySetInnerHTML={{ __html: incidentForm.description }}
+                />
+              </div>
+
+              {/* Details Grid */}
+              <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
+                <div className="grid grid-cols-2 gap-4">
+                  {/* <div>
+                    <p className="text-xs font-montserrat-bold text-gray-1000 mb-2">Reported Against</p>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={`https://i.pravatar.cc/32?img=7`}
+                        alt="Reported Against"
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <div>
+                        <p className="text-sm font-montserrat-bold text-gray-900">
+                          {incidentForm.reportedAgainst || "Michael Hishen"}
+                        </p>
+                        <p className="text-xs text-gray-1000">Michaels Foundation</p>
+                      </div>
+                    </div>
+                  </div> */}
+                  <div>
+                    <p className="text-xs mb-1 text-gray-1000 font-montserrat-semibold">
+                      Shift ID
+                    </p>
+                    <p className="text-sm font-montserrat-semibold text-gray-900">
+                      {incidentForm.shiftId}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <Button
+                onClick={() => {
+                  setReviewModalOpen(false);
+                  setCreateModalOpen(true);
+                }}
+                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-montserrat-bold"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={handleSaveIncident}
+                disabled={createIncidentMutation.isPending}
+                className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-montserrat-bold disabled:opacity-50"
+              >
+                {createIncidentMutation.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Incident Dialog */}
+      {viewModalOpen && selectedIncident && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-montserrat-bold text-gray-900">View Incident</h2>
+              <Button
+                variant="ghost"
+                onClick={() => setViewModalOpen(false)}
+                className="text-black hover:text-primary-600 hover:bg-transparent"
+              >
+                <CloseCircle size={24} />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="flex items-start justify-between">
+                <h3 className="text-xl font-montserrat-semibold text-gray-900">
+                  {selectedIncident.title}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex px-3 py-1 text-xs font-montserrat-bold rounded-full ${getSeverityBadgeStyle(
+                      selectedIncident.severity
+                    )}`}
+                  >
+                    {selectedIncident.severity}
+                  </span>
+                  <span
+                    className={`inline-flex px-3 py-1 text-xs font-montserrat-bold rounded-full ${getStatusBadgeStyle(
+                      selectedIncident.status
+                    )}`}
+                  >
+                    {getStatusLabel(selectedIncident.status)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 py-4 border-b border-gray-200">
+                <Avatar className="w-10 h-10 rounded-full">
+                  <AvatarImage
+                    src={
+                      selectedIncident.reportedBy.profileImage ||
+                      `https://i.pravatar.cc/40?img=5`
+                    }
+                    alt="Reporter"
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <AvatarFallback>
+                    {selectedIncident.reportedBy.firstName.charAt(0)}
+                    {selectedIncident.reportedBy.lastName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm text-gray-1000">Reported By</p>
+                  <p className="text-sm font-montserrat-semibold text-gray-900">
+                    {selectedIncident.reportedBy.firstName}{" "}
+                    {selectedIncident.reportedBy.lastName}
+                  </p>
+                </div>
+                <div className="ml-auto text-right">
+                  <p className="text-sm text-gray-1000">
+                    {formatDate(selectedIncident.createdAt)},{" "}
+                    {formatTime(selectedIncident.createdAt)}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-montserrat-semibold text-gray-900 mb-2">
+                  Description
+                </h4>
+                <div className="text-sm text-gray-700 leading-relaxed bg-gray-100 rounded-lg p-4">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: selectedIncident.description,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-1000 mb-1">
+                      Reported Against
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={`https://i.pravatar.cc/32?img=${
+                          (Math.abs(
+                            parseInt(selectedIncident._id.slice(-4), 16)
+                          ) %
+                            10) +
+                          2
+                        }`}
+                        alt="Reported Against"
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <div>
+                        <p className="text-sm font-montserrat-bold text-gray-900">
+                          Michael Hishen
+                        </p>
+                        <p className="text-xs text-gray-1000">
+                          Michaels Foundation
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-1000 mb-1">Shift ID</p>
+                    <p className="text-sm font-montserrat-semibold text-gray-900">
+                      {selectedIncident.shiftId || "SHIFT_68674636SV"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom styles for ReactQuill */}
+      <style>
+        {`
+          .quill-wrapper .ql-toolbar {
+            border: 1px solid #d1d5db;
+            border-bottom: none;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+          }
+
+          .quill-wrapper .ql-container {
+            border: 1px solid #d1d5db;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+          }
+
+          .quill-wrapper .ql-editor {
+            min-height: 120px;
+          }
+
+          .quill-wrapper .ql-editor.ql-blank::before {
+            font-style: normal;
+            color: #9ca3af;
+          }
+
+          .quill-wrapper .ql-toolbar.ql-snow {
+            border-color: #d1d5db;
+          }
+
+          .quill-wrapper .ql-container.ql-snow {
+            border-color: #d1d5db;
+          }
+
+          .quill-wrapper .ql-editor:focus {
+            outline: none;
+          }
+
+          .quill-wrapper:focus-within .ql-toolbar,
+          .quill-wrapper:focus-within .ql-container {
+            border-color: #008cff;
+            box-shadow: 0 0 0 2px rgba(0, 140, 255, 0.1);
+          }
+        `}
+      </style>
+    </div>
+  );
 };
 
 export default IncidentsPage;

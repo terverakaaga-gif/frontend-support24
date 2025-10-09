@@ -154,7 +154,7 @@ export default function Register() {
             <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
               Create Account
             </h1>
-            <p className="font-semibold text-gray-600">
+            <p className="font-montserrat-semibold text-gray-600">
               Sign up to get started with Support24
             </p>
           </div>
@@ -448,7 +448,7 @@ export default function Register() {
               transition={{ duration: 0.5 }}
               className="max-w-md self-start"
             >
-              <h2 className="text-3xl font-montserrat-bold font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-montserrat-bold font-montserrat-bold text-gray-900 mb-4">
                 {currentSlide === 0 && (
                   <>
                     Effortless NDIS{" "}
@@ -468,7 +468,7 @@ export default function Register() {
                   </>
                 )}
               </h2>
-              <p className="text-gray-600 text-lg leading-relaxed font-semibold">
+              <p className="text-gray-600 text-lg leading-relaxed font-montserrat-semibold">
                 {onboardingSlides[currentSlide].subtitle}
               </p>
             </motion.div>
@@ -480,7 +480,7 @@ export default function Register() {
               className="self-start w-full flex items-center justify-between"
             >
               <button
-                className="text-gray-500 font-montserrat-semibold hover:text-gray-700 transition-colors"
+                className="text-gray-1000 font-montserrat-semibold hover:text-gray-700 transition-colors"
                 onClick={() => setCurrentSlide(onboardingSlides.length - 1)}
               >
                 Skip

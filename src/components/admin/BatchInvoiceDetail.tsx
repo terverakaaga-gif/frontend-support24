@@ -208,7 +208,7 @@ const BatchInvoiceDetail: React.FC = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Batch Invoices
           </Button>
-          <h1 className="text-2xl font-bold">Loading Batch Invoice...</h1>
+          <h1 className="text-2xl font-montserrat-bold">Loading Batch Invoice...</h1>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -252,14 +252,14 @@ const BatchInvoiceDetail: React.FC = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Batch Invoices
           </Button>
-          <h1 className="text-2xl font-bold">Batch Invoice Not Found</h1>
+          <h1 className="text-2xl font-montserrat-bold">Batch Invoice Not Found</h1>
         </div>
         
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Batch Invoice Not Found</h3>
+              <h3 className="text-lg font-montserrat-semibold mb-2">Batch Invoice Not Found</h3>
               <p className="text-gray-600 mb-4">
                 The batch invoice you're looking for doesn't exist or has been removed.
               </p>
@@ -283,7 +283,7 @@ const BatchInvoiceDetail: React.FC = () => {
             Back to Batch Invoices
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{batchInvoice.batchNumber}</h1>
+            <h1 className="text-2xl font-montserrat-bold">{batchInvoice.batchNumber}</h1>
             <p className="text-sm text-gray-600">{batchInvoice.invoiceNumber}</p>
           </div>
         </div>
@@ -381,21 +381,21 @@ const BatchInvoiceDetail: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
-                        <Hash className="h-4 w-4 text-gray-500" />
+                        <Hash className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Batch Number</p>
                           <p className="font-medium text-sm">{batchInvoice.batchNumber}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Receipt className="h-4 w-4 text-gray-500" />
+                        <Receipt className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Invoice Number</p>
                           <p className="font-medium text-sm">{batchInvoice.invoiceNumber}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <Calendar className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Invoice Period</p>
                           <p className="font-medium text-sm">
@@ -406,7 +406,7 @@ const BatchInvoiceDetail: React.FC = () => {
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
+                        <Clock className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Status</p>
                           <div className="mt-1">
@@ -415,17 +415,17 @@ const BatchInvoiceDetail: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <History className="h-4 w-4 text-gray-500" />
+                        <History className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Generated At</p>
                           <p className="font-medium text-sm">{formatDateTime(batchInvoice.generatedAt)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Banknote className="h-4 w-4 text-gray-500" />
+                        <Banknote className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Total Amount</p>
-                          <p className="font-bold text-base">{formatCurrency(batchInvoice.invoiceTotal)}</p>
+                          <p className="font-montserrat-bold text-base">{formatCurrency(batchInvoice.invoiceTotal)}</p>
                         </div>
                       </div>
                     </div>
@@ -490,14 +490,14 @@ const BatchInvoiceDetail: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <User className="h-4 w-4 text-gray-500" />
+                        <User className="h-4 w-4 text-gray-1000" />
                         <span className="text-sm font-medium">Participant Email</span>
                       </div>
                       {getEmailStatus(batchInvoice.sentToParticipant, batchInvoice.participantEmailSentAt)}
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <UserCircle className="h-4 w-4 text-gray-500" />
+                        <UserCircle className="h-4 w-4 text-gray-1000" />
                         <span className="text-sm font-medium">Worker Email</span>
                       </div>
                       {getEmailStatus(batchInvoice.sentToWorker, batchInvoice.workerEmailSentAt)}
@@ -592,7 +592,7 @@ const BatchInvoiceDetail: React.FC = () => {
                       <span className="font-medium text-sm">{formatCurrency(batchInvoice.additionalExpensesTotal)}</span>
                     </div>
                     <Separator />
-                    <div className="flex justify-between items-center text-base font-bold">
+                    <div className="flex justify-between items-center text-base font-montserrat-bold">
                       <span>Total Amount:</span>
                       <span>{formatCurrency(batchInvoice.invoiceTotal)}</span>
                     </div>
@@ -673,7 +673,7 @@ const BatchInvoiceDetail: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Total Amount:</span>
-                  <span className="text-sm font-bold">{formatCurrency(batchInvoice.invoiceTotal)}</span>
+                  <span className="text-sm font-montserrat-bold">{formatCurrency(batchInvoice.invoiceTotal)}</span>
                 </div>
               </div>
             </CardContent>

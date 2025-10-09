@@ -77,7 +77,7 @@ export function InviteConfirmation() {
           title: "Make Invitation Available",
           description: "You're about to make this invitation available to the support worker.",
           confirmText: "This will notify the support worker that they have a new connection request. They will be able to view and respond to the invitation.",
-          icon: <Send className="h-12 w-12 text-blue-500 mb-2" />,
+          icon: <Send className="h-12 w-12 text-primary-500 mb-2" />,
           color: "blue",
           buttonText: "Make Available",
           successMessage: "Invitation has been made available to the support worker."
@@ -107,7 +107,7 @@ export function InviteConfirmation() {
           title: "Invalid Action",
           description: "The requested action is not valid.",
           confirmText: "Please return to the invitation details page and try again.",
-          icon: <XCircle className="h-12 w-12 text-gray-500 mb-2" />,
+          icon: <XCircle className="h-12 w-12 text-gray-1000 mb-2" />,
           color: "gray",
           buttonText: "Go Back",
           successMessage: ""
@@ -149,10 +149,10 @@ export function InviteConfirmation() {
 
   const actionContent = getActionContent();
   const colorClass = {
-    blue: "border-blue-200 bg-blue-50",
+    blue: "border-primary-200 bg-primary-100",
     green: "border-green-200 bg-green-50",
     red: "border-red-200 bg-red-50",
-    gray: "border-gray-200 bg-gray-50"
+    gray: "border-gray-200 bg-gray-100"
   }[actionContent.color as keyof typeof colorClass];
 
   return (
@@ -219,7 +219,7 @@ export function InviteConfirmation() {
                       className={`w-full ${
                         actionContent.color === "green" ? "bg-green-600 hover:bg-green-700" :
                         actionContent.color === "red" ? "bg-red-600 hover:bg-red-700" :
-                        actionContent.color === "blue" ? "bg-blue-600 hover:bg-blue-700" : ""
+                        actionContent.color === "blue" ? "bg-primary hover:bg-primary-700" : ""
                       }`}
                     >
                       {confirming ? (
@@ -258,7 +258,7 @@ export function InviteConfirmation() {
               </div>
               
               <div>
-                <h2 className="text-xl font-semibold mb-1">Action Completed Successfully</h2>
+                <h2 className="text-xl font-montserrat-semibold mb-1">Action Completed Successfully</h2>
                 <p className="text-muted-foreground">
                   {actionContent.successMessage}
                 </p>

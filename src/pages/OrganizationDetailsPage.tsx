@@ -294,7 +294,7 @@ export default function OrganizationDetailsPage() {
 			<div className="p-6">
 				<div className="text-center py-12">
 					<XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">
+					<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
 						Failed to load organization
 					</h3>
 					<p className="text-gray-600 mb-4">
@@ -331,7 +331,7 @@ export default function OrganizationDetailsPage() {
 			<div className="p-6">
 				<div className="text-center py-12">
 					<Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">
+					<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
 						Organization not found
 					</h3>
 					<p className="text-gray-600 mb-4">
@@ -358,11 +358,11 @@ export default function OrganizationDetailsPage() {
 				</Button>
 				<div className="flex-1">
 					<div className="flex items-center gap-3 mb-2">
-						<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1e3b93] to-blue-600 flex items-center justify-center">
+						<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1e3b93] to-primary flex items-center justify-center">
 							<Building className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<h1 className="text-3xl font-bold text-gray-900">
+							<h1 className="text-3xl font-montserrat-bold text-gray-900">
 								{organization.name}
 							</h1>
 							<p className="text-gray-600">{organization.description}</p>
@@ -403,27 +403,27 @@ export default function OrganizationDetailsPage() {
 				<CardContent className="p-6">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						<div className="flex items-center gap-3">
-							<CalendarIcon className="w-5 h-5 text-gray-500" />
+							<CalendarIcon className="w-5 h-5 text-gray-1000" />
 							<div>
-								<p className="text-sm text-gray-500">Created</p>
+								<p className="text-sm text-gray-1000">Created</p>
 								<p className="font-medium">
 									{format(parseISO(organization.createdAt), "MMMM dd, yyyy")}
 								</p>
 							</div>
 						</div>
 						<div className="flex items-center gap-3">
-							<Activity className="w-5 h-5 text-gray-500" />
+							<Activity className="w-5 h-5 text-gray-1000" />
 							<div>
-								<p className="text-sm text-gray-500">Last Updated</p>
+								<p className="text-sm text-gray-1000">Last Updated</p>
 								<p className="font-medium">
 									{format(parseISO(organization.updatedAt), "MMMM dd, yyyy")}
 								</p>
 							</div>
 						</div>
 						<div className="flex items-center gap-3">
-							<FileText className="w-5 h-5 text-gray-500" />
+							<FileText className="w-5 h-5 text-gray-1000" />
 							<div>
-								<p className="text-sm text-gray-500">Organization ID</p>
+								<p className="text-sm text-gray-1000">Organization ID</p>
 								<p className="font-medium font-mono text-xs">
 									{organization._id}
 								</p>
@@ -436,20 +436,20 @@ export default function OrganizationDetailsPage() {
 			{/* Stats Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<Card className="relative overflow-hidden border-0 shadow-lg">
-					<div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10" />
+					<div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary/10" />
 					<CardContent className="p-6 relative">
 						<div className="flex items-center justify-between">
 							<div className="space-y-1">
-								<p className="text-sm font-medium text-blue-600">
+								<p className="text-sm font-medium text-primary">
 									Active Workers
 								</p>
-								<p className="text-3xl font-bold text-gray-900">
+								<p className="text-3xl font-montserrat-bold text-gray-900">
 									{stats?.totalWorkers}
 								</p>
-								<p className="text-xs text-gray-500">Employed</p>
+								<p className="text-xs text-gray-1000">Employed</p>
 							</div>
-							<div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-								<Users className="w-6 h-6 text-blue-600" />
+							<div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center">
+								<Users className="w-6 h-6 text-primary" />
 							</div>
 						</div>
 					</CardContent>
@@ -463,10 +463,10 @@ export default function OrganizationDetailsPage() {
 								<p className="text-sm font-medium text-orange-600">
 									Pending Invites
 								</p>
-								<p className="text-3xl font-bold text-gray-900">
+								<p className="text-3xl font-montserrat-bold text-gray-900">
 									{stats?.pendingInvites}
 								</p>
-								<p className="text-xs text-gray-500">Awaiting Response</p>
+								<p className="text-xs text-gray-1000">Awaiting Response</p>
 							</div>
 							<div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
 								<Clock className="w-6 h-6 text-orange-600" />
@@ -483,10 +483,10 @@ export default function OrganizationDetailsPage() {
 								<p className="text-sm font-medium text-green-600">
 									Avg Base Rate
 								</p>
-								<p className="text-3xl font-bold text-gray-900">
+								<p className="text-3xl font-montserrat-bold text-gray-900">
 									${stats?.averageBaseRate}
 								</p>
-								<p className="text-xs text-gray-500">Per Hour</p>
+								<p className="text-xs text-gray-1000">Per Hour</p>
 							</div>
 							<div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
 								<DollarSign className="w-6 h-6 text-green-600" />
@@ -503,10 +503,10 @@ export default function OrganizationDetailsPage() {
 								<p className="text-sm font-medium text-purple-600">
 									Travel Rate
 								</p>
-								<p className="text-3xl font-bold text-gray-900">
+								<p className="text-3xl font-montserrat-bold text-gray-900">
 									${stats?.averageDistanceRate}
 								</p>
-								<p className="text-xs text-gray-500">Per Mile</p>
+								<p className="text-xs text-gray-1000">Per Mile</p>
 							</div>
 							<div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
 								<MapPin className="w-6 h-6 text-purple-600" />
@@ -523,10 +523,10 @@ export default function OrganizationDetailsPage() {
 					onOpenChange={() => toggleSection("workers")}
 				>
 					<CollapsibleTrigger asChild>
-						<CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+						<CardHeader className="cursor-pointer hover:bg-gray-100 transition-colors">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
-									<Users className="w-5 h-5 text-blue-600" />
+									<Users className="w-5 h-5 text-primary" />
 									<CardTitle className="text-xl">
 										Active Workers ({organization.workers.length})
 									</CardTitle>
@@ -565,7 +565,7 @@ export default function OrganizationDetailsPage() {
 														</AvatarFallback>
 													</Avatar>
 													<div>
-														<h3 className="text-lg font-semibold text-gray-900">
+														<h3 className="text-lg font-montserrat-semibold text-gray-900">
 															{getWorkerDisplayName(worker.workerId)}
 														</h3>
 														<div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
@@ -599,29 +599,29 @@ export default function OrganizationDetailsPage() {
 											</div>
 
 											<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-												<div className="bg-blue-50 p-4 rounded-lg">
-													<p className="text-sm font-medium text-blue-700">
+												<div className="bg-primary-100 p-4 rounded-lg">
+													<p className="text-sm font-medium text-primary-700">
 														Base Rate
 													</p>
-													<p className="text-2xl font-bold text-blue-900">
+													<p className="text-2xl font-montserrat-bold text-primary-900">
 														${worker.serviceAgreement.baseHourlyRate}
 													</p>
-													<p className="text-xs text-blue-600">per hour</p>
+													<p className="text-xs text-primary">per hour</p>
 												</div>
 												<div className="bg-purple-50 p-4 rounded-lg">
 													<p className="text-sm font-medium text-purple-700">
 														Travel Rate
 													</p>
-													<p className="text-2xl font-bold text-purple-900">
+													<p className="text-2xl font-montserrat-bold text-purple-900">
 														${worker.serviceAgreement.distanceTravelRate}
 													</p>
 													<p className="text-xs text-purple-600">per mile</p>
 												</div>
-												<div className="bg-gray-50 p-4 rounded-lg">
+												<div className="bg-gray-100 p-4 rounded-lg">
 													<p className="text-sm font-medium text-gray-700">
 														Joined
 													</p>
-													<p className="text-2xl font-bold text-gray-900">
+													<p className="text-2xl font-montserrat-bold text-gray-900">
 														{format(parseISO(worker.joinedDate), "MMM dd")}
 													</p>
 													<p className="text-xs text-gray-600">
@@ -639,18 +639,18 @@ export default function OrganizationDetailsPage() {
 													{worker.serviceAgreement.shiftRates.map((rate) => (
 														<div
 															key={rate._id}
-															className="bg-gray-50 p-3 rounded-lg border"
+															className="bg-gray-100 p-3 rounded-lg border"
 														>
 															<div className="flex items-center justify-between">
 																<span className="text-sm font-medium text-gray-700">
 																	{getRateBandName(rate.rateTimeBandId)}
 																</span>
-																<span className="text-sm font-bold text-gray-900">
+																<span className="text-sm font-montserrat-bold text-gray-900">
 																	${rate.hourlyRate}/hr
 																</span>
 															</div>
 															{getRateBandDetails(rate.rateTimeBandId) ? (
-																<div className="text-xs text-gray-500 mt-1">
+																<div className="text-xs text-gray-1000 mt-1">
 																	{getRateBandDetails(rate.rateTimeBandId)
 																		?.startTime &&
 																		getRateBandDetails(rate.rateTimeBandId)
@@ -671,7 +671,7 @@ export default function OrganizationDetailsPage() {
 																		)}
 																</div>
 															) : (
-																<div className="text-xs text-gray-500 mt-1">
+																<div className="text-xs text-gray-1000 mt-1">
 																	ID: {String(rate.rateTimeBandId).slice(-8)}
 																</div>
 															)}
@@ -689,7 +689,7 @@ export default function OrganizationDetailsPage() {
 															Service Agreement
 														</span>
 													</div>
-													<div className="flex items-center gap-4 text-xs text-gray-500">
+													<div className="flex items-center gap-4 text-xs text-gray-1000">
 														<span>
 															Start:{" "}
 															{format(
@@ -728,7 +728,7 @@ export default function OrganizationDetailsPage() {
 					onOpenChange={() => toggleSection("invites")}
 				>
 					<CollapsibleTrigger asChild>
-						<CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+						<CardHeader className="cursor-pointer hover:bg-gray-100 transition-colors">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
 									<Mail className="w-5 h-5 text-orange-600" />
@@ -766,7 +766,7 @@ export default function OrganizationDetailsPage() {
 														</AvatarFallback>
 													</Avatar>
 													<div>
-														<h3 className="text-lg font-semibold text-gray-900">
+														<h3 className="text-lg font-montserrat-semibold text-gray-900">
 															{getWorkerDisplayName(invite.workerId)}
 														</h3>
 														<div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
@@ -811,29 +811,29 @@ export default function OrganizationDetailsPage() {
 											</div>
 
 											<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-												<div className="bg-blue-50 p-4 rounded-lg">
-													<p className="text-sm font-medium text-blue-700">
+												<div className="bg-primary-100 p-4 rounded-lg">
+													<p className="text-sm font-medium text-primary-700">
 														Proposed Base Rate
 													</p>
-													<p className="text-2xl font-bold text-blue-900">
+													<p className="text-2xl font-montserrat-bold text-primary-900">
 														${invite.proposedRates.baseHourlyRate}
 													</p>
-													<p className="text-xs text-blue-600">per hour</p>
+													<p className="text-xs text-primary">per hour</p>
 												</div>
 												<div className="bg-purple-50 p-4 rounded-lg">
 													<p className="text-sm font-medium text-purple-700">
 														Travel Rate
 													</p>
-													<p className="text-2xl font-bold text-purple-900">
+													<p className="text-2xl font-montserrat-bold text-purple-900">
 														${invite.proposedRates.distanceTravelRate}
 													</p>
 													<p className="text-xs text-purple-600">per mile</p>
 												</div>
-												<div className="bg-gray-50 p-4 rounded-lg">
+												<div className="bg-gray-100 p-4 rounded-lg">
 													<p className="text-sm font-medium text-gray-700">
 														Invited
 													</p>
-													<p className="text-2xl font-bold text-gray-900">
+													<p className="text-2xl font-montserrat-bold text-gray-900">
 														{format(parseISO(invite.inviteDate), "MMM dd")}
 													</p>
 													<p className="text-xs text-gray-600">
@@ -855,30 +855,30 @@ export default function OrganizationDetailsPage() {
 														return (
 															<div
 																key={rate._id}
-																className="bg-gray-50 p-3 rounded-lg border"
+																className="bg-gray-100 p-3 rounded-lg border"
 															>
 																<div className="flex items-center justify-between">
 																	<span className="text-sm font-medium text-gray-700">
 																		{getRateBandName(rate.rateTimeBandId)}
 																	</span>
-																	<span className="text-sm font-bold text-gray-900">
+																	<span className="text-sm font-montserrat-bold text-gray-900">
 																		${rate.hourlyRate}/hr
 																	</span>
 																</div>
 																{rateBand ? (
 																	<>
 																		{rateBand.startTime && rateBand.endTime && (
-																			<div className="text-xs text-gray-500 mt-1">
+																			<div className="text-xs text-gray-1000 mt-1">
 																				{formatTime(rateBand.startTime)} -{" "}
 																				{formatTime(rateBand.endTime)}
 																			</div>
 																		)}
-																		<div className="text-xs text-gray-500 mt-1">
+																		<div className="text-xs text-gray-1000 mt-1">
 																			Code: {rateBand.code}
 																		</div>
 																	</>
 																) : (
-																	<div className="text-xs text-gray-500 mt-1">
+																	<div className="text-xs text-gray-1000 mt-1">
 																		ID: {String(rate.rateTimeBandId).slice(-8)}
 																	</div>
 																)}
@@ -891,11 +891,11 @@ export default function OrganizationDetailsPage() {
 											{/* Notes and Response */}
 											<div className="space-y-3">
 												{invite.notes && (
-													<div className="bg-blue-50 p-3 rounded-lg">
-														<p className="text-sm font-medium text-blue-700 mb-1">
+													<div className="bg-primary-100 p-3 rounded-lg">
+														<p className="text-sm font-medium text-primary-700 mb-1">
 															Invitation Notes
 														</p>
-														<p className="text-sm text-blue-900">
+														<p className="text-sm text-primary-900">
 															{invite.notes}
 														</p>
 													</div>

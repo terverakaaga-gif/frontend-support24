@@ -57,7 +57,7 @@ const IncidentDetailsModal = ({
 
 	const getSeverityColor = (severity: string) => {
 		const colors = {
-			LOW: "bg-blue-100 text-blue-800",
+			LOW: "bg-primary-100 text-primary-800",
 			MEDIUM: "bg-orange-100 text-orange-800",
 			HIGH: "bg-red-100 text-red-800",
 		};
@@ -81,7 +81,7 @@ const IncidentDetailsModal = ({
 				<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
 				<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
 					<div className="flex items-center justify-between p-6 border-b border-gray-200">
-						<Dialog.Title className="text-xl font-semibold text-gray-900">
+						<Dialog.Title className="text-xl font-montserrat-semibold text-gray-900">
 							Incident Details
 						</Dialog.Title>
 						<Dialog.Close asChild>
@@ -107,7 +107,7 @@ const IncidentDetailsModal = ({
 									Status
 								</label>
 								<span
-									className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+									className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusColor(
 										incident.status
 									)}`}
 								>
@@ -119,7 +119,7 @@ const IncidentDetailsModal = ({
 									Severity
 								</label>
 								<span
-									className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSeverityColor(
+									className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityColor(
 										incident.severity
 									)}`}
 								>
@@ -140,7 +140,7 @@ const IncidentDetailsModal = ({
 										{incident.reportedBy.lastName}
 									</span>
 								</div>
-								<p className="text-xs text-gray-500">
+								<p className="text-xs text-gray-1000">
 									{incident.reportedBy.email}
 								</p>
 							</div>
@@ -155,7 +155,7 @@ const IncidentDetailsModal = ({
 										{incident.reportedAgainst.lastName}
 									</span>
 								</div>
-								<p className="text-xs text-gray-500">
+								<p className="text-xs text-gray-1000">
 									{incident.reportedAgainst.email}
 								</p>
 							</div>
@@ -166,11 +166,11 @@ const IncidentDetailsModal = ({
 								<label className="block text-sm font-medium text-gray-700 mb-1">
 									Shift Information
 								</label>
-								<div className="bg-gray-50 rounded-lg p-3">
+								<div className="bg-gray-100 rounded-lg p-3">
 									<p className="text-sm font-medium text-gray-900">
 										{incident.shift.shiftId}
 									</p>
-									<p className="text-xs text-gray-500">
+									<p className="text-xs text-gray-1000">
 										{formatDate(incident.shift.startTime)} -{" "}
 										{formatDate(incident.shift.endTime)}
 									</p>
@@ -210,7 +210,7 @@ const IncidentDetailsModal = ({
 										{incident.resolutionNote}
 									</p>
 									{incident.resolvedBy && (
-										<p className="text-xs text-gray-500 mt-2">
+										<p className="text-xs text-gray-1000 mt-2">
 											Resolved by {incident.resolvedBy.firstName}{" "}
 											{incident.resolvedBy.lastName} on{" "}
 											{formatDate(incident.resolvedAt || incident.updatedAt)}
@@ -220,7 +220,7 @@ const IncidentDetailsModal = ({
 							</div>
 						)}
 
-						<div className="text-xs text-gray-500 border-t border-gray-200 pt-4">
+						<div className="text-xs text-gray-1000 border-t border-gray-200 pt-4">
 							<p>Created: {formatDate(incident.createdAt)}</p>
 							<p>Last Updated: {formatDate(incident.updatedAt)}</p>
 						</div>

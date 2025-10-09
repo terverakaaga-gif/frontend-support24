@@ -108,7 +108,7 @@ export function RegistrationForm({
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
                         placeholder="Dylan"
-                        className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
+                        className="pl-10 py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
                     </div>
@@ -128,7 +128,7 @@ export function RegistrationForm({
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
                         placeholder="Smith"
-                        className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
+                        className="pl-10 py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
                     </div>
@@ -152,7 +152,7 @@ export function RegistrationForm({
                       <Input
                         type="email"
                         placeholder="dylan.smith@gmail.com"
-                        className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
+                        className="pl-10 py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
                     </div>
@@ -174,7 +174,7 @@ export function RegistrationForm({
                       <Input
                         type="tel"
                         placeholder="+61 405 000 000"
-                        className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
+                        className="pl-10 py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
                     </div>
@@ -198,7 +198,7 @@ export function RegistrationForm({
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
+                        className="pl-10 py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
                       <Button
@@ -209,9 +209,9 @@ export function RegistrationForm({
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
+                          <EyeOff className="h-4 w-4 text-gray-1000" />
                         ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
+                          <Eye className="h-4 w-4 text-gray-1000" />
                         )}
                         <span className="sr-only">
                           {showPassword ? "Hide password" : "Show password"}
@@ -237,7 +237,7 @@ export function RegistrationForm({
                       <Input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10 py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
+                        className="pl-10 py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200"
                         {...field}
                       />
                       <Button
@@ -248,9 +248,9 @@ export function RegistrationForm({
                         onClick={toggleConfirmPasswordVisibility}
                       >
                         {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
+                          <EyeOff className="h-4 w-4 text-gray-1000" />
                         ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
+                          <Eye className="h-4 w-4 text-gray-1000" />
                         )}
                         <span className="sr-only">
                           {showConfirmPassword
@@ -277,7 +277,7 @@ export function RegistrationForm({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="py-6 bg-gray-50 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200">
+                    <SelectTrigger className="py-6 bg-gray-100 border-gray-200 rounded-xl focus:ring-guardian focus:border-guardian/50 transition-all duration-200">
                       <SelectValue placeholder="Select your role" />
                     </SelectTrigger>
                   </FormControl>

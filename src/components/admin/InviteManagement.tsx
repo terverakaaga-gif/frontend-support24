@@ -136,7 +136,7 @@ export function InviteManagement() {
 			{/* Header Section */}
 			<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div>
-					<h1 className="text-3xl font-bold tracking-tight text-guardian">
+					<h1 className="text-3xl font-montserrat-bold tracking-tight text-guardian">
 						Connection Invitations
 					</h1>
 					<p className="text-muted-foreground mt-2">
@@ -249,31 +249,31 @@ export function InviteManagement() {
 						<Table>
 							<TableHeader className="bg-guardian/5">
 								<TableRow className="border-guardian/10">
-									<TableHead className="font-semibold text-guardian">
+									<TableHead className="font-montserrat-semibold text-guardian">
 										<div className="flex items-center gap-2">
 											<Users className="w-4 h-4" />
 											Participant
 										</div>
 									</TableHead>
-									<TableHead className="font-semibold text-guardian">
+									<TableHead className="font-montserrat-semibold text-guardian">
 										<div className="flex items-center gap-2">
 											<Users className="w-4 h-4" />
 											Support Worker
 										</div>
 									</TableHead>
-									<TableHead className="font-semibold text-guardian">
+									<TableHead className="font-montserrat-semibold text-guardian">
 										<div className="flex items-center gap-2">
 											<Clock className="w-4 h-4" />
 											Status
 										</div>
 									</TableHead>
-									<TableHead className="font-semibold text-guardian">
+									<TableHead className="font-montserrat-semibold text-guardian">
 										<div className="flex items-center gap-2">
 											<Calendar className="w-4 h-4" />
 											Date
 										</div>
 									</TableHead>
-									<TableHead className="text-right font-semibold text-guardian">
+									<TableHead className="text-right font-montserrat-semibold text-guardian">
 										Actions
 									</TableHead>
 								</TableRow>
@@ -299,7 +299,7 @@ export function InviteManagement() {
 										<TableRow
 											key={invitation.inviteId}
 											className={`hover:bg-guardian/5 transition-colors ${
-												index % 2 === 0 ? "bg-gray-50/50" : "bg-white"
+												index % 2 === 0 ? "bg-gray-100/50" : "bg-white"
 											}`}
 										>
 											<TableCell className="py-4">

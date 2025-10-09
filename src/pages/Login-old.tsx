@@ -70,12 +70,12 @@ export default function Login() {
 				<div className="mb-auto">
 					<div className="flex items-center gap-2 mb-2">
 						<Heart className="h-8 w-8 text-white" />
-						<span className="text-2xl font-bold text-white">Support 24</span>
+						<span className="text-2xl font-montserrat-bold text-white">Support 24</span>
 					</div>
 				</div>
 
 				<div className="space-y-6 max-w-md">
-					<h1 className="text-4xl font-bold text-white">
+					<h1 className="text-4xl font-montserrat-bold text-white">
 						Welcome back to your care platform
 					</h1>
 					<p className="text-white/90 text-lg">
@@ -111,7 +111,7 @@ export default function Login() {
 			>
 				<div className="w-full max-w-md space-y-8">
 					<div className="text-center">
-						<h2 className="text-3xl font-bold tracking-tight text-gray-900">
+						<h2 className="text-3xl font-montserrat-bold tracking-tight text-gray-900">
 							Let's get you started
 						</h2>
 						<p className="mt-2 text-gray-600">

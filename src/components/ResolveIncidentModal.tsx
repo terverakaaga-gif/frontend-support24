@@ -20,7 +20,7 @@ const ResolveIncidentModal = ({
 			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
 			<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-md w-full">
 				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<Dialog.Title className="text-xl font-semibold text-gray-900">
+					<Dialog.Title className="text-xl font-montserrat-semibold text-gray-900">
 						Resolve Incident
 					</Dialog.Title>
 					<Dialog.Close asChild>

@@ -172,7 +172,7 @@ const TimesheetDetail: React.FC = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Timesheets
           </Button>
-          <h1 className="text-2xl font-bold">Loading Timesheet...</h1>
+          <h1 className="text-2xl font-montserrat-bold">Loading Timesheet...</h1>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -264,7 +264,7 @@ const TimesheetDetail: React.FC = () => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Timesheets
         </Button>
-        <h1 className="text-2xl font-bold">Timesheet Details</h1>
+        <h1 className="text-2xl font-montserrat-bold">Timesheet Details</h1>
         <div className="ml-auto flex items-center gap-2">
           {getStatusBadge(timesheet.status, timesheet.isPaid)}
         </div>
@@ -356,8 +356,8 @@ const TimesheetDetail: React.FC = () => {
                             <div>
                               <p className="text-sm font-medium mb-1">Extra Time</p>
                               <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-blue-500" />
-                                <p className="text-sm text-blue-700">
+                                <Clock className="h-4 w-4 text-primary-500" />
+                                <p className="text-sm text-primary-700">
                                   {timesheet.extraTime} minutes
                                 </p>
                               </div>
@@ -529,11 +529,11 @@ const TimesheetDetail: React.FC = () => {
                         <Separator className="my-2" />
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">Total Amount:</span>
-                          <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
+                          <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
                         </div>
                         {/* <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">Grand Total:</span>
-                          <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
+                          <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
                         </div> */}
                       </div>
                     </div>
@@ -743,12 +743,12 @@ const TimesheetDetail: React.FC = () => {
                 
                 <div className="flex justify-between">
                   <span className="text-sm font-medium">Total:</span>
-                  <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
+                  <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
                 </div>
                 
                 {/* <div className="flex justify-between">
                   <span className="text-sm font-medium">Grand Total:</span>
-                  <span className="text-base font-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
+                  <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
                 </div> */}
                 
                 {/* <div className="flex justify-between">

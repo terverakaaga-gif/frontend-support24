@@ -134,9 +134,9 @@ const AdminsList: React.FC = () => {
       case 'suspended':
         return <AlertCircle className="h-4 w-4 text-red-500" />;
       case 'inactive':
-        return <XCircle className="h-4 w-4 text-gray-500" />;
+        return <XCircle className="h-4 w-4 text-gray-1000" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-gray-1000" />;
     }
   };
 
@@ -160,7 +160,7 @@ const AdminsList: React.FC = () => {
       case 'superadmin':
         return <Crown className="h-4 w-4 text-yellow-500" />;
       default:
-        return <Shield className="h-4 w-4 text-blue-500" />;
+        return <Shield className="h-4 w-4 text-primary-500" />;
     }
   };
 
@@ -264,7 +264,7 @@ const AdminsList: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           {/* <div>
-            <h1 className="text-3xl font-bold tracking-tight">Administrators</h1>
+            <h1 className="text-3xl font-montserrat-bold tracking-tight">Administrators</h1>
             <p className="text-muted-foreground">
               Manage and view all administrators in the system
             </p>

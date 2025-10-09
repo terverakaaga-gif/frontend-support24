@@ -32,7 +32,7 @@ export function ChatCreationModal({
 	if (!isOpen) return null;
 
 	return (
-		<Card className="mb-6 shadow-lg border-0 bg-white">
+		<Card className="mb-6 shadow-lg border-0 bg-white font-montserrat">
 			<CardHeader>
 				<CardTitle>
 					{chatType === "group" || selectedUsers.length > 1
@@ -49,13 +49,13 @@ export function ChatCreationModal({
 							onChange={(e) => onGroupNameChange(e.target.value)}
 							className="mb-2"
 						/>
-						<div className="flex flex-wrap gap-2 mb-2">
+						<div className="flex max-w-60 flex-wrap gap-2 mb-2">
 							{selectedUsers.map((userId) => {
 								const user = users.find((u) => u._id === userId);
 								return user ? (
 									<span
 										key={userId}
-										className="px-2 py-1 bg-[#66C2EB80] rounded-full text-sm flex items-center gap-1"
+										className="px-2 py-1 truncate bg-primary-100 rounded-full text-sm flex items-center gap-1"
 									>
 										{user.firstName}
 										<button
@@ -77,7 +77,7 @@ export function ChatCreationModal({
 							key={user._id}
 							className={`flex items-center p-2 rounded-lg cursor-pointer ${
 								selectedUsers.includes(user._id)
-									? "bg-[#66C2EB80]"
+									? "bg-primary-100"
 									: "hover:bg-[#66C2EB40]"
 							}`}
 							onClick={() => onUserSelect(user._id)}
@@ -92,7 +92,7 @@ export function ChatCreationModal({
 								</AvatarFallback>
 							</Avatar>
 							<div>
-								<p className="font-medium">
+								<p className="font-montserrat-medium truncate">
 									{user.firstName} {user.lastName}
 								</p>
 								<p className="text-sm text-[#9395A2]">{user.role}</p>
@@ -108,7 +108,7 @@ export function ChatCreationModal({
 					<Button
 						onClick={onCreate}
 						disabled={isLoading}
-						className="bg-[#008CFF] hover:bg-[#008CFF]/90"
+						className="bg-primary hover:bg-primary-700"
 					>
 						{isLoading ? (
 							<Loader2Icon className="h-4 w-4 animate-spin" />

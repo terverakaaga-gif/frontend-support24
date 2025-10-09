@@ -2,20 +2,32 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
-    Building2,
-    Users,
-    Search,
-    Calendar,
-    DollarSign,
-    Mail,
-    Clock,
-    CheckCircle,
-    XCircle,
-    Eye,
-    MoreVertical,
-    Building,
-    TrendingUp,
-    Activity,
+  Building2,
+  Users,
+  Search,
+  Calendar,
+  DollarSign,
+  Mail,
+  Clock,
+  CheckCircle,
+  Eye,
+  MoreVertical,
+  Building,
+  Activity,
+  Plus,
+  Settings,
+  UserPlus,
+  Edit,
+  Trash2,
+  ChevronLeft,
+  Phone,
+  MapPin,
+  Star,
+  Shield,
+  FileText,
+  TrendingUp,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,544 +36,452 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+
 import { format, parseISO } from "date-fns";
 import {
-    organizationService,
-    Organization,
-    PendingInvite,
+  organizationService,
+  Organization,
+  PendingInvite,
 } from "@/api/services/organizationService";
+import { pageTitles } from "@/constants/pageTitles";
+import { useAuth } from "@/contexts/AuthContext";
+import GeneralHeader from "@/components/GeneralHeader";
+import Loader from "@/components/Loader";
 
-export default function OrganizationsPage() {
-    const [searchTerm, setSearchTerm] = useState("");
-    const navigate = useNavigate();
-    const [statusFilter, setStatusFilter] = useState<string>("all");
+// Helper functions
+const getWorkerFullName = (worker: any): string => {
+  if (!worker) return "Unknown Worker";
 
-    // Fetch organizations data
-    const {
-        data: organizationsData,
-        isLoading,
-        error,
-        refetch,
-    } = useQuery({
-        queryKey: ["support-worker-organizations"],
-        queryFn: async () => {
-            const response = await organizationService.getOrganizations();
-            console.log("API Response:", response);
-            return response;
-        },
-    });
+  const workerId = worker.workerId || worker;
+  if (typeof workerId === "string") return `Worker ID: ${workerId}`;
 
-    const organizations: Organization[] = organizationsData?.organizations || [];
+  if (workerId.firstName && workerId.lastName) {
+    return `${workerId.firstName} ${workerId.lastName}`;
+  }
+  return "Unknown Worker";
+};
 
-    console.log("Organizations data:", organizations);
+const getWorkerInitials = (worker: any): string => {
+  if (!worker) return "??";
 
-    // Filter organizations based on search
-    const filteredOrganizations = organizations.filter((org) => {
-        const matchesSearch =
-            searchTerm === "" ||
-            org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            org.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const workerId = worker.workerId || worker;
+  if (workerId.firstName && workerId.lastName) {
+    return `${workerId.firstName.charAt(0)}${workerId.lastName.charAt(
+      0
+    )}`.toUpperCase();
+  }
+  return "??";
+};
 
-        return matchesSearch;
-    });
+const getWorkerEmail = (worker: any): string => {
+  if (!worker) return "No email";
+  const workerId = worker.workerId || worker;
+  return workerId.email || "No email";
+};
 
-    // Calculate stats
-    const stats = {
-        totalOrganizations: organizations.length,
-        totalWorkers: organizations.reduce(
-            (sum, org) => sum + org.workers.length,
-            0
-        ),
-        totalPendingInvites: organizations.reduce(
-            (sum, org) =>
+const getWorkerPhone = (worker: any): string => {
+  if (!worker) return "No phone";
+  const workerId = worker.workerId || worker;
+  return workerId.phone || "No phone";
+};
+
+// Support Worker Organizations Page
+export default function SupportWorkerOrganizationsPage() {
+  const { user, logout } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const navigate = useNavigate();
+
+  const {
+    data: organizationsData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["support-worker-organizations"],
+    queryFn: async () => {
+      const response = await organizationService.getOrganizations();
+      return response;
+    },
+  });
+
+  const organizations: Organization[] = organizationsData?.organizations || [];
+
+  const filteredOrganizations = organizations.filter((org) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      org.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "active" && org.workers.length > 0) ||
+      (statusFilter === "pending" &&
+        org.pendingInvites.filter((inv) => inv.status === "pending").length >
+          0);
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const stats = {
+    totalOrganizations: organizations.length,
+    activeConnections: organizations.filter((org) => org.workers.length > 0)
+      .length,
+    totalPendingInvites: organizations.reduce(
+      (sum, org) =>
+        sum +
+        org.pendingInvites.filter((inv) => inv.status === "pending").length,
+      0
+    ),
+    averageBaseRate:
+      organizations.length > 0
+        ? Math.round(
+            organizations.reduce(
+              (sum, org) =>
                 sum +
-                org.pendingInvites.filter((inv) => inv.status === "pending").length,
-            0
-        ),
-        averageBaseRate:
-            organizations.length > 0
-                ? Math.round(
-                        organizations.reduce(
-                            (sum, org) =>
-                                sum +
-                                org.workers.reduce(
-                                    (workerSum, worker) =>
-                                        workerSum + (worker.serviceAgreement?.baseHourlyRate || 0),
-                                    0
-                                ),
-                            0
-                        ) /
-                            organizations.reduce((sum, org) => sum + org.workers.length, 0) ||
-                            0
-                  )
-                : 0,
-        activeConnections: organizations.filter((org) => org.workers.length > 0)
-            .length,
-    };
+                org.workers.reduce(
+                  (workerSum, worker) =>
+                    workerSum + (worker.serviceAgreement?.baseHourlyRate || 0),
+                  0
+                ),
+              0
+            ) /
+              (organizations.reduce(
+                (sum, org) => sum + org.workers.length,
+                0
+              ) || 1)
+          )
+        : 0,
+  };
 
-    const getWorkerInitials = (firstName?: string, lastName?: string) => {
-        if (!firstName || !lastName) return "??";
-        return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-    };
-
-    const getWorkerFullName = (worker: any) => {
-        if (typeof worker === 'string') {
-            return `Worker ID: ${worker}`;
-        }
-        if (!worker?.firstName || !worker?.lastName) {
-            return "Unknown Worker";
-        }
-        return `${worker.firstName} ${worker.lastName}`;
-    };
-
-    const isWorkerPopulated = (worker: any) => {
-        return worker && typeof worker === 'object' && worker.firstName && worker.lastName;
-    };
-
-    if (error) {
-        return (
-            <div className="p-6">
-                <div className="text-center py-12">
-                    <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Failed to load organizations
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                        There was an error loading your organizations. Please try again.
-                    </p>
-                    <Button color="#008CFF" onClick={() => refetch()}>
-                        Try Again
-                    </Button>
-                </div>
-            </div>
-        );
-    }
-
+  if (error) {
     return (
-        <div className="p-6 space-y-8">
-            {/* Enhanced Header */}
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="space-y-1">
-                    <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-guardian to-blue-600 bg-clip-text text-transparent">
-                        Organizations
-                    </h1>
-                    <div className="text-lg text-gray-600">
-                        Manage your organization connections and invites
-                    </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Badge variant="outline" className="px-4 py-2 text-sm font-medium">
-                        <Activity className="w-4 h-4 mr-2" />
-                        {filteredOrganizations.length} organizations
-                    </Badge>
-                </div>
-            </div>
-
-            {/* Enhanced Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Total Organizations */}
-                <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-blue-600/10" />
-                    <CardContent className="p-6 relative">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium text-guardian">
-                                    Total Organizations
-                                </div>
-                                <div className="text-3xl font-bold text-gray-900 group-hover:text-guardian transition-colors">
-                                    {stats.totalOrganizations}
-                                </div>
-                                <div className="text-xs text-gray-500">Connected</div>
-                            </div>
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1e3b93] to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                <Building2 className="w-7 h-7 text-white" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Total Workers */}
-                <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-purple-600/10" />
-                    <CardContent className="p-6 relative">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium text-purple-600">
-                                    Total Workers
-                                </div>
-                                <div className="text-3xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                                    {stats.totalWorkers}
-                                </div>
-                                <div className="text-xs text-gray-500">Connected</div>
-                            </div>
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                <Users className="w-7 h-7 text-white" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Average Base Rate */}
-                <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-green-600/10" />
-                    <CardContent className="p-6 relative">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium text-green-600">
-                                    Average Base Rate
-                                </div>
-                                <div className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
-                                    ${stats.averageBaseRate}
-                                </div>
-                                <div className="text-xs text-gray-500">Per hour</div>
-                            </div>
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                <DollarSign className="w-7 h-7 text-white" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Pending Invites */}
-                <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-guardian/5 to-orange-600/10" />
-                    <CardContent className="p-6 relative">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium text-orange-600">
-                                    Pending Invites
-                                </div>
-                                <div className="text-3xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                                    {stats.totalPendingInvites}
-                                </div>
-                                <div className="text-xs text-gray-500">Waiting</div>
-                            </div>
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                <Mail className="w-7 h-7 text-white" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Enhanced Filters and Search */}
-            <Card className="border-0 shadow-lg">
-                <CardContent className="p-6">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                        {/* Search */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <Input
-                                placeholder="Search organizations..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 h-11"
-                            />
-                        </div>
-
-                        {/* Status Filter */}
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-full md:w-48 h-11">
-                                <SelectValue placeholder="Filter by status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Organizations</SelectItem>
-                                <SelectItem value="active">Active Workers</SelectItem>
-                                <SelectItem value="pending">Pending Invites</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Organizations Grid */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {[...Array(4)].map((_, i) => (
-                        <Card key={i} className="border-0 shadow-lg">
-                            <CardContent className="p-6">
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <Skeleton className="w-12 h-12 rounded-full" />
-                                        <div className="space-y-2">
-                                            <Skeleton className="h-4 w-48" />
-                                            <Skeleton className="h-3 w-32" />
-                                        </div>
-                                    </div>
-                                    <Skeleton className="h-20 w-full" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            ) : filteredOrganizations.length === 0 ? (
-                <Card className="border-0 shadow-lg">
-                    <CardContent className="p-12 text-center">
-                        <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                            No organizations found
-                        </h3>
-                        <div className="text-gray-600 max-w-md mx-auto">
-                            {searchTerm
-                                ? "Try adjusting your search to see more results."
-                                : "You don't have any organization connections yet. Contact organizations to get started."}
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {filteredOrganizations.map((organization) => (
-                        <Card
-                            key={organization._id}
-                            className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group"
-                        >
-                            <CardHeader className="pb-4">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-guardian to-blue-600 flex items-center justify-center">
-                                            <Building className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div>
-                                            <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-guardian transition-colors">
-                                                {organization.name}
-                                            </CardTitle>
-                                            <div className="text-sm text-gray-600">
-                                                {organization.description}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <MoreVertical className="w-4 h-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/support-worker/organizations/${organization._id}`
-                                                    )
-                                                }
-                                            >
-                                                <Eye className="w-4 h-4 mr-2" />
-                                                View Details
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Mail className="w-4 h-4 mr-2" />
-                                                Contact Organization
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {/* Organization Info */}
-                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                    <div className="flex items-center gap-2">
-                                        <Calendar className="w-4 h-4 text-gray-500" />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            Created
-                                        </span>
-                                    </div>
-                                    <span className="text-sm text-gray-600">
-                                        {format(parseISO(organization.createdAt), "MMM dd, yyyy")}
-                                    </span>
-                                </div>
-
-                                {/* Workers Section */}
-                                <div>
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h4 className="text-sm font-semibold text-gray-900">
-                                            Active Workers ({organization.workers.length})
-                                        </h4>
-                                        {organization.workers.length > 0 && (
-                                            <Badge variant="outline" className="text-xs">
-                                                <TrendingUp className="w-3 h-3 mr-1" />
-                                                Active
-                                            </Badge>
-                                        )}
-                                    </div>
-
-                                    {organization.workers.length === 0 ? (
-                                        <div className="text-center py-6 bg-gray-50 rounded-lg">
-                                            <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                            <div className="text-sm text-gray-500">No workers yet</div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-3 max-h-48 overflow-y-auto">
-                                            {organization.workers.map((worker) => {
-                                                return (
-                                                    <div
-                                                        key={worker._id}
-                                                        className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-guardian/20 transition-colors"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <Avatar className="w-8 h-8">
-                                                                {isWorkerPopulated(worker.workerId) && worker.workerId.profileImage ? (
-                                                                    <AvatarImage
-                                                                        src={worker.workerId.profileImage}
-                                                                        alt={getWorkerFullName(worker.workerId)}
-                                                                    />
-                                                                ) : (
-                                                                    <AvatarFallback className="text-xs">
-                                                                        {isWorkerPopulated(worker.workerId) 
-                                                                            ? getWorkerInitials(
-                                                                                worker.workerId.firstName,
-                                                                                worker.workerId.lastName
-                                                                            )
-                                                                            : "??"
-                                                                        }
-                                                                    </AvatarFallback>
-                                                                )}
-                                                            </Avatar>
-                                                            <div>
-                                                                <div className="text-sm font-medium text-gray-900">
-                                                                    {getWorkerFullName(worker.workerId)}
-                                                                </div>
-                                                                <div className="flex items-center gap-3 text-xs text-gray-500">
-                                                                    <span className="flex items-center gap-1">
-                                                                        <Calendar className="w-3 h-3" />
-                                                                        {format(
-                                                                            parseISO(worker.joinedDate),
-                                                                            "MMM dd, yyyy"
-                                                                        )}
-                                                                    </span>
-                                                                    <span className="flex items-center gap-1">
-                                                                        <DollarSign className="w-3 h-3" />$
-                                                                        {worker.serviceAgreement?.baseHourlyRate || 0}/hr
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <Badge
-                                                                variant="outline"
-                                                                className="text-xs bg-green-50 text-green-700 border-green-200"
-                                                            >
-                                                                <CheckCircle className="w-3 h-3 mr-1" />
-                                                                Active
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Pending Invites Section */}
-                                {organization.pendingInvites.filter(
-                                    (inv) => inv.status === "pending"
-                                ).length > 0 && (
-                                    <div>
-                                        <div className="flex items-center justify-between mb-3">
-                                            <h4 className="text-sm font-semibold text-gray-900">
-                                                Pending Invites (
-                                                {
-                                                    organization.pendingInvites.filter(
-                                                        (inv) => inv.status === "pending"
-                                                    ).length
-                                                }
-                                                )
-                                            </h4>
-                                            <Badge
-                                                variant="outline"
-                                                className="text-xs bg-orange-50 text-orange-700 border-orange-200"
-                                            >
-                                                <Clock className="w-3 h-3 mr-1" />
-                                                Pending
-                                            </Badge>
-                                        </div>
-                                        <div className="space-y-2 max-h-32 overflow-y-auto">
-                                            {organization.pendingInvites
-                                                .filter((invite) => invite.status === "pending")
-                                                .map((invite) => (
-                                                    <div
-                                                        key={invite._id}
-                                                        className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <Avatar className="w-8 h-8">
-                                                                {isWorkerPopulated(invite.workerId) && invite.workerId.profileImage ? (
-                                                                    <AvatarImage
-                                                                        src={invite.workerId.profileImage}
-                                                                        alt={getWorkerFullName(invite.workerId)}
-                                                                    />
-                                                                ) : (
-                                                                    <AvatarFallback className="text-xs">
-                                                                        {isWorkerPopulated(invite.workerId)
-                                                                            ? getWorkerInitials(
-                                                                                invite.workerId.firstName,
-                                                                                invite.workerId.lastName
-                                                                            )
-                                                                            : "??"
-                                                                        }
-                                                                    </AvatarFallback>
-                                                                )}
-                                                            </Avatar>
-                                                            <div>
-                                                                <div className="text-sm font-medium text-gray-900">
-                                                                    {getWorkerFullName(invite.workerId)}
-                                                                </div>
-                                                                <div className="text-xs text-gray-500">
-                                                                    ${invite.proposedRates?.baseHourlyRate || 0}/hr
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <Badge variant="secondary" className="text-xs">
-                                                            {invite.status}
-                                                        </Badge>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Action Buttons */}
-                                <div className="flex gap-2 pt-4 border-t">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1 border-guardian/20 text-guardian hover:bg-guardian/10"
-                                        onClick={() =>
-                                            navigate(
-                                                `/support-worker/organizations/${organization._id}`
-                                            )
-                                        }
-                                    >
-                                        <Eye className="w-4 h-4 mr-2" />
-                                        View Details
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        className="flex-1 bg-guardian hover:bg-guardian/90"
-                                    >
-                                        <Mail className="w-4 h-4 mr-2" />
-                                        Contact
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            )}
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+        <div className="max-w-md mx-auto mt-20">
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
+                Failed to load organizations
+              </h3>
+              <p className="text-gray-600 mb-6">
+                There was an error loading your organizations. Please try again.
+              </p>
+              <Button
+                onClick={() => refetch()}
+                className="bg-guardian hover:bg-guardian/90"
+              >
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
         </div>
+      </div>
     );
+  }
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <div className="p-10 space-y-6">
+        {/* Header */}
+        <GeneralHeader
+          title={
+            pageTitles.supportWorker["/support-worker/organizations"].title
+          }
+          subtitle={
+            pageTitles.supportWorker["/support-worker/organizations"].subtitle
+          }
+          user={user}
+          onViewProfile={() => {
+            navigate(
+              Object.keys(pageTitles.supportWorker).find(
+                (key) =>
+                  key !== "/support-worker/organizations" &&
+                  pageTitles.supportWorker[key] ===
+                    pageTitles.supportWorker["/support-worker/profile"]
+              )
+            );
+          }}
+          onLogout={logout}
+        />
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between mb-2">
+                <Building2 className="w-8 h-8 text-guardian" />
+                <span className="text-xs text-gray-1000">Total</span>
+              </div>
+              <p className="text-2xl font-montserrat-bold text-gray-900">
+                {stats.totalOrganizations}
+              </p>
+              <p className="text-sm text-gray-600">Organizations</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between mb-2">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+                <span className="text-xs text-gray-1000">Active</span>
+              </div>
+              <p className="text-2xl font-montserrat-bold text-gray-900">
+                {stats.activeConnections}
+              </p>
+              <p className="text-sm text-gray-600">Connections</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between mb-2">
+                <Clock className="w-8 h-8 text-orange-600" />
+                <span className="text-xs text-gray-1000">Pending</span>
+              </div>
+              <p className="text-2xl font-montserrat-bold text-gray-900">
+                {stats.totalPendingInvites}
+              </p>
+              <p className="text-sm text-gray-600">Invites</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between mb-2">
+                <DollarSign className="w-8 h-8 text-primary" />
+                <span className="text-xs text-gray-1000">Average</span>
+              </div>
+              <p className="text-2xl font-montserrat-bold text-gray-900">
+                ${stats.averageBaseRate}
+              </p>
+              <p className="text-sm text-gray-600">Per Hour</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search and Filters */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search organizations..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Organizations</SelectItem>
+                  <SelectItem value="active">Active Only</SelectItem>
+                  <SelectItem value="pending">With Pending Invites</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Organizations List */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i} className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <Skeleton className="h-12 w-12 rounded-full mb-4" />
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-3 w-1/2" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : filteredOrganizations.length === 0 ? (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-12 text-center">
+              <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
+                No organizations found
+              </h3>
+              <p className="text-gray-600">
+                {searchTerm
+                  ? "Try adjusting your search criteria"
+                  : "You don't have any organization connections yet"}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid grid-cols-1 md:grid-cols-2 gap-4"
+                : "space-y-4"
+            }
+          >
+            {filteredOrganizations.map((org) => (
+              <OrganizationCard
+                key={org._id}
+                organization={org}
+                viewMode={viewMode}
+                onViewDetails={() =>
+                  navigate(`/support-worker/organizations/${org._id}`)
+                }
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Organization Card Component
+function OrganizationCard({
+  organization,
+  viewMode,
+  onViewDetails,
+}: {
+  organization: any;
+  viewMode: "grid" | "list";
+  onViewDetails: () => void;
+}) {
+  const activeWorkers = organization.workers || [];
+  const pendingInvites = (organization.pendingInvites || []).filter(
+    (inv: any) => inv.status === "pending"
+  );
+
+  return (
+    <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-guardian to-primary flex items-center justify-center flex-shrink-0">
+              <Building className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-montserrat-semibold text-gray-900">
+                {organization.name}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {organization.description}
+              </p>
+            </div>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onViewDetails}>
+                <Eye className="w-4 h-4 mr-2" />
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Mail className="w-4 h-4 mr-2" />
+                Contact Organization
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="text-center p-2 bg-gray-100 rounded-lg">
+            <p className="text-lg font-montserrat-semibold text-gray-900">
+              {activeWorkers.length}
+            </p>
+            <p className="text-xs text-gray-600">Workers</p>
+          </div>
+          <div className="text-center p-2 bg-gray-100 rounded-lg">
+            <p className="text-lg font-montserrat-semibold text-gray-900">
+              {pendingInvites.length}
+            </p>
+            <p className="text-xs text-gray-600">Pending</p>
+          </div>
+          <div className="text-center p-2 bg-gray-100 rounded-lg">
+            <p className="text-lg font-montserrat-semibold text-gray-900">
+              $
+              {activeWorkers.length > 0
+                ? Math.round(
+                    activeWorkers.reduce(
+                      (sum: number, w: any) =>
+                        sum + (w.serviceAgreement?.baseHourlyRate || 0),
+                      0
+                    ) / activeWorkers.length
+                  )
+                : 0}
+            </p>
+            <p className="text-xs text-gray-600">Avg Rate</p>
+          </div>
+        </div>
+
+        {/* Recent Workers */}
+        {activeWorkers.length > 0 && (
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Recent Workers
+            </p>
+            <div className="space-y-2">
+              {activeWorkers.slice(0, 2).map((worker: any) => (
+                <div
+                  key={worker._id}
+                  className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg"
+                >
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback className="text-xs">
+                      {getWorkerInitials(worker)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {getWorkerFullName(worker)}
+                    </p>
+                    <p className="text-xs text-gray-1000">
+                      ${worker.serviceAgreement?.baseHourlyRate || 0}/hr
+                    </p>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-green-50 text-green-700 border-green-200"
+                  >
+                    Active
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Button
+          className="w-full bg-guardian hover:bg-guardian/90"
+          onClick={onViewDetails}
+        >
+          View Details
+        </Button>
+      </CardContent>
+    </Card>
+  );
 }

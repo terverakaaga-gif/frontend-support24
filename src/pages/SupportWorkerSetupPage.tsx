@@ -94,7 +94,7 @@ export default function SupportWorkerSetupPage() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Dashboard
           </Button>
-          <h1 className="text-lg font-semibold">Profile Setup</h1>
+          <h1 className="text-lg font-montserrat-semibold">Profile Setup</h1>
           <div className="w-24"></div> 
         </div>
       </div> */}

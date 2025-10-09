@@ -298,7 +298,7 @@ const TimesheetsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-montserrat-bold tracking-tight">
             Timesheet Management
           </h1>
           <p className="text-muted-foreground">
@@ -334,9 +334,9 @@ const TimesheetsManagement: React.FC = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <FileText className="h-4 w-4 text-blue-500" />
+                <FileText className="h-4 w-4 text-primary-500" />
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-montserrat-bold">
                     {timesheetData.summary.totalTimesheets}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -351,7 +351,7 @@ const TimesheetsManagement: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-montserrat-bold">
                     {Math.round(timesheetData.summary.totalHours)}
                   </p>
                   <p className="text-xs text-muted-foreground">Total Hours</p>
@@ -364,7 +364,7 @@ const TimesheetsManagement: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-yellow-500" />
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-montserrat-bold">
                     {formatCurrency(timesheetData.summary.totalAmount)}
                   </p>
                   <p className="text-xs text-muted-foreground">Total Amount</p>
@@ -377,7 +377,7 @@ const TimesheetsManagement: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4 text-purple-500" />
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-montserrat-bold">
                     {timesheetData.summary.pendingCount}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -651,7 +651,7 @@ const TimesheetsManagement: React.FC = () => {
                                 )}
                               </span>
                               {timesheet.extraTime > 0 && (
-                                <span className="text-blue-600 ml-1">
+                                <span className="text-primary ml-1">
                                   (+{timesheet.extraTime}m extra)
                                 </span>
                               )}
@@ -708,7 +708,7 @@ const TimesheetsManagement: React.FC = () => {
                         <TableCell>
                           <div className="flex flex-col">
                             <div className="font-medium flex items-center">
-                              <Receipt className="h-3 w-3 mr-1 text-blue-500" />
+                              <Receipt className="h-3 w-3 mr-1 text-primary-500" />
                               {formatCurrency(timesheet.totalExpenses)}
                             </div>
                             <span className="text-xs text-muted-foreground">

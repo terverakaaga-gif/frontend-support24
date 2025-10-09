@@ -23,7 +23,7 @@ export function NotificationsList({
 			case "booking":
 				return <Calendar className="h-5 w-5 text-green-500" />;
 			case "message":
-				return <MessageSquare className="h-5 w-5 text-blue-500" />;
+				return <MessageSquare className="h-5 w-5 text-primary-500" />;
 			case "update":
 				return <Info className="h-5 w-5 text-yellow-500" />;
 			case "reminder":
@@ -38,7 +38,7 @@ export function NotificationsList({
 			case "booking":
 				return "bg-green-100";
 			case "message":
-				return "bg-blue-100";
+				return "bg-primary-100";
 			case "update":
 				return "bg-yellow-100";
 			case "reminder":

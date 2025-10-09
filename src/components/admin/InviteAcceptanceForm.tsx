@@ -133,7 +133,7 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
                   <DollarSign className="h-4 w-4 text-green-600" />
                   <span className="font-medium">Base Hourly Rate</span>
                 </div>
-                <span className="text-lg font-semibold text-green-600">
+                <span className="text-lg font-montserrat-semibold text-green-600">
                   {formatCurrency(invite.proposedRates.baseHourlyRate)}
                 </span>
               </div>
@@ -154,7 +154,7 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
                           </p>
                         )}
                       </div>
-                      <span className="text-sm font-semibold text-green-600">
+                      <span className="text-sm font-montserrat-semibold text-green-600">
                         {formatCurrency(rate.hourlyRate)}
                       </span>
                     </div>
@@ -167,10 +167,10 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
               {/* Distance Travel Rate */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-blue-600" />
+                  <Clock className="h-4 w-4 text-primary" />
                   <span className="font-medium">Distance Travel Rate</span>
                 </div>
-                <span className="text-lg font-semibold text-blue-600">
+                <span className="text-lg font-montserrat-semibold text-primary">
                   {formatCurrency(invite.proposedRates.distanceTravelRate)}
                 </span>
               </div>
@@ -222,8 +222,8 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
           </div>
 
           {/* Terms */}
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <div className="flex items-center gap-2 text-blue-700">
+          <div className="p-4 bg-primary-100 rounded-lg">
+            <div className="flex items-center gap-2 text-primary-700">
               <CheckCircle className="h-4 w-4" />
               <span className="text-sm font-medium">
                 Terms and conditions will be automatically accepted upon submission

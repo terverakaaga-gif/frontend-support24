@@ -1,3 +1,12 @@
+import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  useGetSupportWorkerOverview,
+  useGetSupportWorkerPerformance,
+} from "@/hooks/useAnalyticsHooks";
+import { useGetOrganizationInvites } from "@/hooks/useInviteHooks";
+import { CourseDown, CourseUp } from "@solar-icons/react";
+import { SupportWorker } from "@/types/user.types";
 import {
   Clock,
   Users,
@@ -9,15 +18,10 @@ import {
   CheckCircle,
   XCircle,
   Eye,
-  Bell,
-  Search,
-  ChevronDown,
 } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
-  LineChart,
   Line,
-  BarChart,
   Bar,
   XAxis,
   YAxis,
@@ -26,6 +30,11 @@ import {
   ResponsiveContainer,
   ComposedChart,
 } from "recharts";
+import ShiftCard from "@/components/ShiftCard";
+import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
+import GeneralHeader from "@/components/GeneralHeader";
+import { pageTitles } from "@/constants/pageTitles";
+import { useNavigate } from "react-router-dom";
 
 // Mock data for visualization when real data is unavailable
 const MOCK_OVERVIEW_DATA = {
@@ -139,24 +148,33 @@ function StatCard({
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-montserrat-semibold text-gray-600">{title}</div>
+        <div className="text-sm font-montserrat-semibold text-gray-600">
+          {title}
+        </div>
         <div className="p-2 rounded-full bg-primary-300/20">
           <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
         </div>
       </div>
-      <div className="text-2xl font-montserrat-bold text-gray-900 mb-1">{value}</div>
+      <div className="text-2xl font-montserrat-bold text-gray-900 mb-1">
+        {value}
+      </div>
       {trend && (
         <div
-          className={`text-sm flex items-center ${
-            trendDirection === "up" ? "text-green-600" : "text-gray-500"
+          className={`text-xs font-montserrat-semibold flex items-center ${
+            trendDirection === "up"
+              ? "text-green-600"
+              : trendDirection === "down"
+              ? "text-red-600"
+              : "text-gray-1000"
           }`}
         >
-          {trendDirection === "up" && <span className="mr-1">↗</span>}
+          {trendDirection === "up" && <CourseUp className="mr-1" />}
+          {trendDirection === "down" && <CourseDown className="mr-1" />}
           {trend}
         </div>
       )}
       {additionalText && (
-        <div className="text-sm text-gray-500">{additionalText}</div>
+        <div className="text-sm text-gray-1000">{additionalText}</div>
       )}
     </div>
   );
@@ -196,11 +214,11 @@ function PerformanceChart({ overviewData, performanceData }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">
           Performance Overview
         </h2>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-50 bg-white">
+          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-100 bg-white">
             Pick Date
             <Calendar className="h-4 w-4" />
           </button>
@@ -209,15 +227,12 @@ function PerformanceChart({ overviewData, performanceData }) {
 
       <div className="flex items-center gap-8 mb-6">
         <div className="flex gap-3 items-center">
-          <div className="text-2xl font-bold">
-            {metrics.completionRate}%
-          </div>
+          <div className="text-2xl font-montserrat-bold">{metrics.completionRate}%</div>
           <div className="text-green-600 bg-green-600/10 rounded-lg px-2 py-1 text-sm font-medium flex items-center mt-1">
             <span className="mr-1">↑</span> {metrics.percentageChange}%
           </div>
         </div>
       </div>
-
 
       {/* Recharts Implementation */}
       <ResponsiveContainer width="100%" height={250}>
@@ -288,78 +303,44 @@ function PerformanceChart({ overviewData, performanceData }) {
 }
 
 // Upcoming Shifts Component
-function UpcomingShifts({ shifts }) {
-  const displayShifts =
-    shifts && shifts.length > 0
-      ? shifts
-      : MOCK_OVERVIEW_DATA.workSummary.upcomingShifts;
+// function UpcomingShifts({ shifts = [] }) {
+//   const [selectedShift, setSelectedShift] = useState<any>(null);
+//   const displayShifts =
+//     shifts && shifts.length > 0
+//       ? shifts
+//       : MOCK_OVERVIEW_DATA.workSummary.upcomingShifts;
 
-  return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
-        <h2 className="text-lg font-semibold text-gray-900">Upcoming Shifts</h2>
-        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
-          View all →
-        </button>
-      </div>
+//   return (
+//     <div className="bg-white rounded-lg border border-gray-200">
+//       {/* Shift Details Dialog */}
+//       <ShiftDetailsDialog
+//         shift={selectedShift}
+//         open={!!selectedShift}
+//         onOpenChange={(open) => !open && setSelectedShift(null)}
+//       />
+//       <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
+//         <h2 className="text-lg font-montserrat-semibold text-gray-900">Upcoming Shifts</h2>
+//         <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+//           View all →
+//         </button>
+//       </div>
 
-      <div className="p-6 space-y-4">
-        {displayShifts.slice(0, 3).map((shift) => (
-          <div
-            key={shift._id}
-            className="p-4 border border-gray-200 rounded-lg"
-          >
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h4 className="font-semibold text-gray-900">
-                  {SERVICE_TYPE_LABELS[shift.serviceType]}
-                </h4>
-                <span className="inline-block mt-2 px-3 py-1 bg-primary-50 text-primary-700 text-xs rounded-full">
-                  {shift.status}
-                </span>
-              </div>
-              <div className="flex items-center">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white"></div>
-                  <div className="w-8 h-8 bg-gray-400 rounded-full border-2 border-white"></div>
-                </div>
-                <button className="ml-3 w-8 h-8 bg-primary rounded flex items-center justify-center text-white hover:bg-primary-700">
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2 text-sm text-gray-600">
-              <div className="flex items-start">
-                <span className="font-medium mr-2">Date:</span>
-                <span>
-                  {new Date(shift.startTime).toLocaleDateString()} | Time:{" "}
-                  {new Date(shift.startTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}{" "}
-                  -{" "}
-                  {new Date(shift.endTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center">
-                <Users className="h-4 w-4 mr-2" />
-                <span>{shift.participantName}</span>
-              </div>
-              <div className="flex items-start">
-                <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-primary">{shift.address}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+//       <div className="p-6 space-y-4">
+//         {displayShifts.length > 0 ? (
+//           displayShifts.map((shift) => (
+//             <ShiftCard
+//               key={shift._id}
+//               shift={shift}
+//               onClick={() => setSelectedShift(shift)}
+//             />
+//           ))
+//         ) : (
+//           <p className="text-gray-1000">No upcoming shifts</p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
 
 // Invitations Table Component
 function InvitationsTable({ invitations }) {
@@ -370,7 +351,7 @@ function InvitationsTable({ invitations }) {
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
-        <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">All Invitations</h2>
         <button className="text-status-pending hover:text-status-pending text-sm font-medium">
           View all →
         </button>
@@ -379,7 +360,7 @@ function InvitationsTable({ invitations }) {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
+            <tr className="border-b border-gray-200 bg-gray-100">
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Client Name
               </th>
@@ -403,7 +384,7 @@ function InvitationsTable({ invitations }) {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {displayInvitations.map((invitation) => (
-              <tr key={invitation.id} className="hover:bg-gray-50">
+              <tr key={invitation.id} className="hover:bg-gray-100">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-gray-300 rounded-full mr-3"></div>
@@ -448,7 +429,7 @@ function InvitationsTable({ invitations }) {
                       </button>
                     </div>
                   ) : (
-                    <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-1">
+                    <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100 flex items-center gap-1">
                       <Eye className="h-4 w-4" /> View
                     </button>
                   )}
@@ -470,7 +451,7 @@ function InvitationsTable({ invitations }) {
           </select>
         </div>
         <div className="flex items-center gap-1">
-          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">
+          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100">
             ‹
           </button>
           {[1, 2, 3, 4, 5].map((page) => (
@@ -480,13 +461,13 @@ function InvitationsTable({ invitations }) {
               className={`px-3 py-1 rounded ${
                 currentPage === page
                   ? "bg-primary text-white"
-                  : "border border-gray-200 hover:bg-gray-50"
+                  : "border border-gray-200 hover:bg-gray-100"
               }`}
             >
               {page}
             </button>
           ))}
-          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">
+          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100">
             ›
           </button>
         </div>
@@ -495,11 +476,19 @@ function InvitationsTable({ invitations }) {
   );
 }
 
-export default function SupportWorkerDashboard({
-  overviewData: propOverviewData,
-  performanceData: propPerformanceData,
-  invitations: propInvitations,
-}) {
+export default function SupportWorkerDashboard() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { data: propOverviewData } = useGetSupportWorkerOverview();
+  const { data: propPerformanceData } = useGetSupportWorkerPerformance();
+  const { data: propInvitations } = useGetOrganizationInvites();
+
+  console.log("SupportWorkerDashboard render", {
+    user,
+    propOverviewData,
+    propPerformanceData,
+    propInvitations,
+  });
   // Use prop data if available and not empty, otherwise use mock data
   const overviewData =
     propOverviewData && Object.keys(propOverviewData).length > 0
@@ -517,11 +506,53 @@ export default function SupportWorkerDashboard({
       : MOCK_INVITATIONS;
 
   const upcomingShifts = overviewData?.workSummary?.upcomingShifts || [];
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    let greeting = "";
+    if (hour >= 6 && hour < 12) {
+      greeting = "Good Morning";
+    } else if (hour >= 12 && hour < 18) {
+      greeting = "Good Afternoon";
+    } else if (hour >= 18 && hour < 22) {
+      greeting = "Good Evening";
+    } else {
+      greeting = "Good Night";
+    }
+    if (user?.firstName) {
+      greeting += `, ${user.firstName}`;
+    }
+    return greeting;
+  };
 
   return (
     <div className="min-h-screen font-sans">
-      <div className="p-8">
-        
+      <div className="p-10">
+        {/* Header */}
+
+        <GeneralHeader
+          stickyTop={true}
+          title={getGreeting()}
+          subtitle="Here's a summary of your recent activities and performance"
+          user={user}
+          onLogout={logout}
+          onViewProfile={() => {
+            navigate(
+              Object.keys(pageTitles.supportWorker).find(
+                (key) =>
+                  pageTitles.supportWorker[key] ===
+                  pageTitles.supportWorker["/support-worker/profile"]
+              )
+            );
+          }}
+        />
+
+        {/* Show alert if support worker hasn't completed onboarding */}
+        {user &&
+          user.role === "supportWorker" &&
+          (user as SupportWorker).verificationStatus?.onboardingComplete && (
+            <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+          )}
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
@@ -536,9 +567,9 @@ export default function SupportWorkerDashboard({
             title="Active Clients"
             value={overviewData.workSummary.activeClients}
             icon={Users}
-            additionalText="Currently Supporting"
-            trend={undefined}
-            trendDirection={undefined}
+            additionalText={undefined}
+            trend={"Currently Supporting"}
+            trendDirection={"down"}
           />
           <StatCard
             title="Earnings"
@@ -552,9 +583,9 @@ export default function SupportWorkerDashboard({
             title="Performance Ratings"
             value={overviewData.performanceMetrics.averageRating.toFixed(1)}
             icon={Star}
-            additionalText={`${overviewData.performanceMetrics.onTimeRate}% on time rate`}
-            trend={undefined}
-            trendDirection={undefined}
+            additionalText={undefined}
+            trend={`${overviewData.performanceMetrics.onTimeRate}% on time rate`}
+            trendDirection={"down"}
           />
         </div>
 
@@ -569,12 +600,10 @@ export default function SupportWorkerDashboard({
           </div>
 
           {/* Right Column - Upcoming Shifts */}
-          <div>
-            <UpcomingShifts shifts={upcomingShifts} />
-          </div>
+          <div>{/* <UpcomingShifts shifts={upcomingShifts} /> */}</div>
         </div>
-		
-            <InvitationsTable invitations={invitations} />
+
+        <InvitationsTable invitations={invitations} />
       </div>
     </div>
   );

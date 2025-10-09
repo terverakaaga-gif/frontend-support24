@@ -159,7 +159,7 @@ export default function AdminDashboard() {
       {/* Header Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+          <h1 className="text-3xl font-montserrat-bold tracking-tight">Admin Dashboard</h1>
           <p className="text-muted-foreground">
             Welcome back! Here's your system overview.
           </p>
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
                     {item.growth}
                   </Badge>
                 </div>
-                <div className="text-2xl font-bold">{item.count}</div>
+                <div className="text-2xl font-montserrat-bold">{item.count}</div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <span>{item.active} Active</span>
                   <span className="mx-2">•</span>

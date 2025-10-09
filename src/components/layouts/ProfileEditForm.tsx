@@ -719,7 +719,7 @@ export default function ProfileEditForm() {
 				</Button>
 				<div>
 					<h1
-						className={`text-3xl font-bold tracking-tight text-${themeColor}`}
+						className={`text-3xl font-montserrat-bold tracking-tight text-${themeColor}`}
 					>
 						Edit Profile
 					</h1>

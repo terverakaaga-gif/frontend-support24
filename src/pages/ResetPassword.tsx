@@ -112,7 +112,7 @@ export default function ResetPassword() {
 					<h2 className="text-2xl font-montserrat-bold text-gray-900">
 						Invalid Reset Link
 					</h2>
-					<p className="text-gray-600 font-semibold">
+					<p className="text-gray-600 font-montserrat-semibold">
 						This password reset link is invalid or has expired.
 					</p>
 					<Link
@@ -212,7 +212,7 @@ export default function ResetPassword() {
 								<h1 className="text-3xl font-montserrat-bold text-gray-900">
 									Password Reset Successfully!
 								</h1>
-								<p className="text-gray-600 font-semibold">
+								<p className="text-gray-600 font-montserrat-semibold">
 									Your password has been updated. You can now login with your new password.
 								</p>
 							</div>
@@ -230,7 +230,7 @@ export default function ResetPassword() {
 								<h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
 									Reset Password
 								</h1>
-								<p className="font-semibold text-gray-600">
+								<p className="font-montserrat-semibold text-gray-600">
 									Create a strong new password and confirm to secure
 									<br />
 									your account
@@ -317,7 +317,7 @@ export default function ResetPassword() {
 										{getPasswordRequirements().map((req, index) => (
 											<div key={index} className="flex items-center gap-2 text-sm">
 												<div className={`w-2 h-2 rounded-full ${req.met ? 'bg-green-500' : 'bg-gray-300'}`} />
-												<span className={req.met ? 'text-green-600' : 'text-gray-500'}>
+												<span className={req.met ? 'text-green-600' : 'text-gray-1000'}>
 													{req.text}
 												</span>
 											</div>

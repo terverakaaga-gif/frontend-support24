@@ -119,10 +119,10 @@ export function ShiftsManagement() {
   // Badge components
   const getStatusBadge = (status: string) => {
     const statusClasses: Record<string, string> = {
-      [ShiftStatus.OPEN]: "bg-blue-100 text-blue-800 border-blue-200", 
+      [ShiftStatus.OPEN]: "bg-primary-100 text-primary-800 border-primary-200", 
       [ShiftStatus.PENDING]: "bg-yellow-100 text-yellow-800 border-yellow-200", 
       [ShiftStatus.CONFIRMED]: "bg-green-100 text-green-800 border-green-200", 
-      [ShiftStatus.IN_PROGRESS]: "bg-blue-100 text-blue-800 border-blue-200", 
+      [ShiftStatus.IN_PROGRESS]: "bg-primary-100 text-primary-800 border-primary-200", 
       [ShiftStatus.COMPLETED]: "bg-purple-100 text-purple-800 border-purple-200", 
       [ShiftStatus.CANCELLED]: "bg-gray-100 text-gray-800 border-gray-200", 
       [ShiftStatus.NO_SHOW]: "bg-red-100 text-red-800 border-red-200",
@@ -373,8 +373,8 @@ export function ShiftsManagement() {
                       <TableCell>
                         {shift.isMultiWorkerShift ? (
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                              <Users className="h-4 w-4 text-blue-600" />
+                            <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                              <Users className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex flex-col">
                               <span className="font-medium text-sm">Multi-worker shift</span>

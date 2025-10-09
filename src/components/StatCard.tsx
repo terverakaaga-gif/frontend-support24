@@ -61,7 +61,7 @@ export function StatCard({
 
           <div className="space-y-1">
             <div className="flex items-baseline gap-2">
-              <div className="text-2xl font-bold tracking-tight transition-transform group-hover:scale-105 text-guardian">
+              <div className="text-2xl font-montserrat-bold tracking-tight transition-transform group-hover:scale-105 text-guardian">
                 {value}
               </div>
               {change && (

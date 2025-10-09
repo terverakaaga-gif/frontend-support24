@@ -216,7 +216,7 @@ export default function GuardianDashboard() {
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Guardian Dashboard</h1>
+          <h1 className="text-3xl font-montserrat-bold">Guardian Dashboard</h1>
           <p className="text-muted-foreground">
             Welcome back! Here's how {user?.firstName} is doing.
           </p>

@@ -62,15 +62,15 @@ const ParticipantShiftDetails = () => {
         return {
           variant: "default" as const,
           icon: <Clock className="w-4 h-4" />,
-          color: "text-blue-600",
-          bg: "bg-blue-50",
+          color: "text-primary",
+          bg: "bg-primary-100",
         };
       case ShiftStatus.COMPLETED:
         return {
           variant: "outline" as const,
           icon: <CheckCircle className="w-4 h-4" />,
           color: "text-gray-600",
-          bg: "bg-gray-50",
+          bg: "bg-gray-100",
         };
       case ShiftStatus.CANCELLED:
         return {
@@ -84,7 +84,7 @@ const ParticipantShiftDetails = () => {
           variant: "secondary" as const,
           icon: <AlertCircle className="w-4 h-4" />,
           color: "text-gray-600",
-          bg: "bg-gray-50",
+          bg: "bg-gray-100",
         };
     }
   };
@@ -126,7 +126,7 @@ const ParticipantShiftDetails = () => {
       <div className="p-6">
         <div className="text-center py-12">
           <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
             Failed to load shift details
           </h3>
           <p className="text-gray-600 mb-4">
@@ -168,7 +168,7 @@ const ParticipantShiftDetails = () => {
       <div className="p-6">
         <div className="text-center py-12">
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
             Shift not found
           </h3>
           <p className="text-gray-600 mb-4">
@@ -202,7 +202,7 @@ const ParticipantShiftDetails = () => {
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            <h1 className="text-3xl font-montserrat-bold tracking-tight text-gray-900">
               {formatServiceType(shift.serviceTypeId)}
             </h1>
             {shift.recurrence?.pattern !== "none" && (
@@ -231,21 +231,21 @@ const ParticipantShiftDetails = () => {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-600" />
+                <Calendar className="w-5 h-5 text-primary" />
                 Schedule Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Date</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm font-medium text-gray-1000 mb-1">Date</p>
+                  <p className="text-lg font-montserrat-semibold text-gray-900">
                     {format(parseISO(shift.startTime), "EEEE, MMMM dd, yyyy")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Time</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm font-medium text-gray-1000 mb-1">Time</p>
+                  <p className="text-lg font-montserrat-semibold text-gray-900">
                     {format(parseISO(shift.startTime), "h:mm a")} -{" "}
                     {format(parseISO(shift.endTime), "h:mm a")}
                   </p>
@@ -309,7 +309,7 @@ const ParticipantShiftDetails = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
+                  <p className="text-sm font-medium text-gray-1000 mb-1">
                     Shift Type
                   </p>
                   <p className="text-gray-900">
@@ -319,7 +319,7 @@ const ParticipantShiftDetails = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
+                  <p className="text-sm font-medium text-gray-1000 mb-1">
                     Supervision Required
                   </p>
                   <p className="text-gray-900">
@@ -330,7 +330,7 @@ const ParticipantShiftDetails = () => {
 
               {shift.recurrence?.pattern !== "none" && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
+                  <p className="text-sm font-medium text-gray-1000 mb-1">
                     Recurrence
                   </p>
                   <p className="text-gray-900 capitalize">
@@ -374,7 +374,7 @@ const ParticipantShiftDetails = () => {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">
+                        <h4 className="font-montserrat-semibold text-gray-900">
                           {assignment.workerId.firstName}{" "}
                           {assignment.workerId.lastName}
                         </h4>
@@ -398,11 +398,11 @@ const ParticipantShiftDetails = () => {
               ) : shift.workerId ? (
                 typeof shift.workerId === "string" ? (
                   <div className="text-center py-8">
-                    <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
-                      <User className="w-8 h-8 text-blue-600" />
+                    <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-3">
+                      <User className="w-8 h-8 text-primary" />
                     </div>
                     <p className="font-medium text-gray-900">Worker Assigned</p>
-                    <p className="text-sm text-gray-500 font-mono">
+                    <p className="text-sm text-gray-1000 font-mono">
                       ID: {shift.workerId}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
@@ -419,7 +419,7 @@ const ParticipantShiftDetails = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-montserrat-semibold text-gray-900">
                         {shift.workerId.firstName} {shift.workerId.lastName}
                       </h4>
                       <div className="space-y-1 mt-2">
@@ -440,7 +440,7 @@ const ParticipantShiftDetails = () => {
                   <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
                     <User className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="font-medium text-gray-500">
+                  <p className="font-medium text-gray-1000">
                     No worker assigned
                   </p>
                   <p className="text-sm text-gray-400">Pending assignment</p>
@@ -457,10 +457,10 @@ const ParticipantShiftDetails = () => {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                  <div className="w-2 h-2 rounded-full bg-primary"></div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">Created</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-1000">
                       {format(
                         parseISO(shift.createdAt),
                         "MMM dd, yyyy 'at' h:mm a"
@@ -474,7 +474,7 @@ const ParticipantShiftDetails = () => {
                     <p className="text-sm font-medium text-gray-900">
                       Last Updated
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-1000">
                       {format(
                         parseISO(shift.updatedAt),
                         "MMM dd, yyyy 'at' h:mm a"

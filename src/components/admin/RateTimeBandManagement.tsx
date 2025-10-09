@@ -115,7 +115,7 @@ export function RateTimeBandsManagement() {
   const getShiftTypeIcon = (band: RateTimeBand) => {
     if (band.isPublicHoliday) return <CalendarIcon className="h-4 w-4 text-red-500" />;
     if (band.isWeekend) return <Sun className="h-4 w-4 text-orange-500" />;
-    if (band.isSleepover) return <Bed className="h-4 w-4 text-blue-500" />;
+    if (band.isSleepover) return <Bed className="h-4 w-4 text-primary-500" />;
     
     // For regular day shifts based on time
     if (band.startTime && band.endTime) {
@@ -125,7 +125,7 @@ export function RateTimeBandsManagement() {
       return <Moon className="h-4 w-4 text-indigo-500" />;
     }
     
-    return <Clock className="h-4 w-4 text-gray-500" />;
+    return <Clock className="h-4 w-4 text-gray-1000" />;
   };
 
   const getStatusBadge = (isActive: boolean) => {

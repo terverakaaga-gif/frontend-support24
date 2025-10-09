@@ -28,7 +28,7 @@ import { format } from "date-fns";
 import useShiftStore, { ServiceCategory, ParticipantType } from '@/store/useShiftStore';
 
 const serviceCategoryIcons: Record<ServiceCategory, React.ReactNode> = {
-  'personal-care': <User className="h-5 w-5 text-blue-500" />,
+  'personal-care': <User className="h-5 w-5 text-primary-500" />,
   'transport': <MapPin className="h-5 w-5 text-green-500" />,
   'therapy': <User className="h-5 w-5 text-purple-500" />,
   'social-support': <User className="h-5 w-5 text-orange-500" />,
@@ -393,7 +393,7 @@ const ShiftManagement = () => {
           <div className="p-2 bg-guardian/10 rounded-full">
             <Calendar className="h-5 w-5 text-guardian" />
           </div>
-          <h2 className="text-xl font-bold">Shift Management</h2>
+          <h2 className="text-xl font-montserrat-bold">Shift Management</h2>
         </div>
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <div className="relative flex-1 md:flex-none md:w-60">
@@ -470,7 +470,7 @@ const ShiftManagement = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded-full">
                     {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
                   </span>
                   <Button variant="outline" size="sm">View Details</Button>

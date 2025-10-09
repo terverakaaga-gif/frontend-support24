@@ -38,7 +38,7 @@ export function ComparisonCard({
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
             <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-bold">{formattedCurrent}</p>
+              <p className="text-2xl font-montserrat-bold">{formattedCurrent}</p>
               <div 
                 className={cn(
                   'flex items-center text-sm font-medium gap-1',

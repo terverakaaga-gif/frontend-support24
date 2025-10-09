@@ -108,9 +108,9 @@ const ParticipantsList: React.FC = () => {
       case 'suspended':
         return <AlertCircle className="h-4 w-4 text-red-500" />;
       case 'inactive':
-        return <XCircle className="h-4 w-4 text-gray-500" />;
+        return <XCircle className="h-4 w-4 text-gray-1000" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-gray-1000" />;
     }
   };
 
@@ -200,7 +200,7 @@ const ParticipantsList: React.FC = () => {
       <div className="flex items-start justify-between">
         <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Participants Management</h1>
+          <h1 className="text-3xl font-montserrat-bold">Participants Management</h1>
           <p className="text-muted-foreground">Manage all participants</p>
         </div>
       </div>

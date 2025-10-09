@@ -77,7 +77,7 @@ const EditableAvatar = () => {
 		if (isUploading) {
 			return (
 				<div className="h-full w-full rounded-full flex items-center justify-center bg-gray-100">
-					<Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+					<Loader2 className="h-8 w-8 animate-spin text-primary-500" />
 				</div>
 			);
 		}
@@ -98,7 +98,7 @@ const EditableAvatar = () => {
 
 		return (
 			<div className="h-full w-full flex items-center justify-center bg-gray-200">
-				<span className="text-2xl font-semibold text-gray-600">
+				<span className="text-2xl font-montserrat-semibold text-gray-600">
 					{getInitials()}
 				</span>
 			</div>
@@ -114,12 +114,12 @@ const EditableAvatar = () => {
 					{/* Edit button - always visible */}
 					{!isUploading && (
 						<Button
-							className="absolute -bottom-1 -right-1 rounded-full bg-white p-2 border-2 border-gray-300 cursor-pointer shadow-md hover:bg-gray-50 transition-colors z-50 flex items-center justify-center"
+							className="absolute -bottom-1 -right-1 rounded-full bg-white p-2 border-2 border-gray-300 cursor-pointer shadow-md hover:bg-gray-100 transition-colors z-50 flex items-center justify-center"
 							onClick={triggerFileInput}
 							aria-label="Edit profile picture"
 							style={{ width: 36, height: 36 }}
 						>
-							<Camera className="text-blue-500" size={20} />
+							<Camera className="text-primary-500" size={20} />
 						</Button>
 					)}
 				</div>
@@ -128,7 +128,7 @@ const EditableAvatar = () => {
 			{/* Edit text indication */}
 			{!isUploading && (
 				<span
-					className="text-sm text-blue-500 mt-2 cursor-pointer hover:text-blue-600 transition-colors"
+					className="text-sm text-primary-500 mt-2 cursor-pointer hover:text-primary transition-colors"
 					onClick={triggerFileInput}
 				>
 					Edit profile photo
@@ -136,7 +136,7 @@ const EditableAvatar = () => {
 			)}
 
 			{isUploading && (
-				<span className="text-sm text-gray-500 mt-2">Uploading...</span>
+				<span className="text-sm text-gray-1000 mt-2">Uploading...</span>
 			)}
 
 			{/* Hidden file input */}

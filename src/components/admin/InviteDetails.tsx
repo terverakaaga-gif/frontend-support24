@@ -162,7 +162,7 @@ export function InviteDetails() {
 					<ArrowLeft className="h-4 w-4 mr-2" />
 					Back to Invitations
 				</Button>
-				<h1 className="text-2xl font-bold">Invitation Details</h1>
+				<h1 className="text-2xl font-montserrat-bold">Invitation Details</h1>
 				<Badge
 					variant="outline"
 					className="ml-4 bg-yellow-50 text-yellow-700 border-yellow-300"
@@ -209,7 +209,7 @@ export function InviteDetails() {
 										<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 											<div className="flex flex-col gap-4">
 												<div className="p-4 bg-muted/50 rounded-lg">
-													<p className="text-sm font-semibold mb-2">
+													<p className="text-sm font-montserrat-semibold mb-2">
 														Organization
 													</p>
 													<div className="flex items-center gap-3">
@@ -226,12 +226,12 @@ export function InviteDetails() {
 												</div>
 
 												<div className="p-4 bg-muted/50 rounded-lg">
-													<p className="text-sm font-semibold mb-2">
+													<p className="text-sm font-montserrat-semibold mb-2">
 														Base Hourly Rate
 													</p>
 													<div className="flex items-center gap-3">
 														<DollarSign className="h-5 w-5 text-green-600" />
-														<p className="text-lg font-semibold text-green-600">
+														<p className="text-lg font-montserrat-semibold text-green-600">
 															{formatCurrency(
 																inviteDetails.proposedRates.baseHourlyRate
 															)}
@@ -242,7 +242,7 @@ export function InviteDetails() {
 
 											<div className="flex flex-col gap-4">
 												<div className="p-4 bg-muted/50 rounded-lg">
-													<p className="text-sm font-semibold mb-2">
+													<p className="text-sm font-montserrat-semibold mb-2">
 														Invite Status
 													</p>
 													<Badge
@@ -254,7 +254,7 @@ export function InviteDetails() {
 												</div>
 
 												<div className="p-4 bg-muted/50 rounded-lg">
-													<p className="text-sm font-semibold mb-2">
+													<p className="text-sm font-montserrat-semibold mb-2">
 														Invite ID
 													</p>
 													<p className="text-xs font-mono bg-muted p-1 rounded">
@@ -271,7 +271,7 @@ export function InviteDetails() {
 										<div className="p-4 bg-muted/50 rounded-lg">
 											<div className="flex items-center justify-between mb-4">
 												<h3 className="font-medium">Base Hourly Rate</h3>
-												<p className="text-lg font-semibold text-green-600">
+												<p className="text-lg font-montserrat-semibold text-green-600">
 													{formatCurrency(
 														inviteDetails.proposedRates.baseHourlyRate
 													)}
@@ -301,7 +301,7 @@ export function InviteDetails() {
 																	Code: {rate.rateTimeBandId.code}
 																</p>
 															</div>
-															<p className="text-lg font-semibold text-green-600">
+															<p className="text-lg font-montserrat-semibold text-green-600">
 																{formatCurrency(rate.hourlyRate)}
 															</p>
 														</div>
@@ -346,7 +346,7 @@ export function InviteDetails() {
 							<div className="flex flex-wrap gap-3">
 								<Button
 									variant="outline"
-									className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+									className="text-primary hover:text-primary-700 hover:bg-primary-100 border-primary-200"
 									onClick={handleMakeAvailable}
 								>
 									<Send className="h-4 w-4 mr-2" />
@@ -402,7 +402,7 @@ export function InviteDetails() {
 									</AvatarFallback>
 								</Avatar>
 								<div>
-									<h3 className="text-lg font-semibold">
+									<h3 className="text-lg font-montserrat-semibold">
 										{inviteDetails.participantName}
 									</h3>
 									<p className="text-sm text-muted-foreground">
@@ -450,7 +450,7 @@ export function InviteDetails() {
 									</AvatarFallback>
 								</Avatar>
 								<div>
-									<h3 className="text-lg font-semibold">
+									<h3 className="text-lg font-montserrat-semibold">
 										{inviteDetails.workerName}
 									</h3>
 									<p className="text-sm text-muted-foreground">

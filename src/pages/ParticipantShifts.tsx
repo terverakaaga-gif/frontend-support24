@@ -1,42 +1,12 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  User,
-  Filter,
-  Search,
-  ChevronDown,
-  MoreVertical,
-  CheckCircle,
-  AlertCircle,
-  XCircle,
-  Eye,
-  Users,
-  Repeat,
-  TrendingUp,
-  Activity,
-  CalendarCheck,
-  PlayCircle,
-  Ban,
-  CalendarDays,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { useGetShifts } from "@/hooks/useShiftHooks";
+import Loader from "@/components/Loader";
+import ErrorDisplay from "@/components/ErrorDisplay";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -44,348 +14,327 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import shiftService from "@/api/services/shiftService";
-import { Shift, ShiftStatus, ServiceType } from "@/entities/Shift";
-import { format, parseISO, isToday, isTomorrow, isThisWeek } from "date-fns";
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  ArrowRightUp,
+  Calendar,
+  CalendarMark,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  CourseUp,
+  DangerCircle,
+  DollarMinimalistic,
+  Eye,
+  History2,
+  List,
+  Magnifer,
+  MapPoint,
+  PlayCircle,
+  Repeat,
+  StationMinimalistic,
+  User,
+  UserHeart,
+  UsersGroupRounded,
+  Widget,
+} from "@solar-icons/react";
+import { ClipboardCheck } from "lucide-react";
+import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
+import GeneralHeader from "@/components/GeneralHeader";
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate, useNavigate } from "react-router-dom";
+import { pageTitles } from "@/constants/pageTitles";
 
-const ParticipantShifts = () => {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [serviceTypeFilter, setServiceTypeFilter] = useState<string>("all");
-  const [sortField, setSortField] = useState<string>("startTime");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  // Fetch shifts data
-  const {
-    data: shifts = [],
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["participant-shifts"],
-    queryFn: () => shiftService.getShifts(),
-  });
-
-  // Filter shifts based on search and filters
-  const filteredShifts = shifts.filter((shift) => {
-    const matchesSearch =
-      searchTerm === "" ||
-      shift.shiftId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (shift.workerId &&
-        typeof shift.workerId === "object" &&
-        `${shift.workerId.firstName} ${shift.workerId.lastName}`
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())) ||
-      (shift.workerId &&
-        typeof shift.workerId === "string" &&
-        shift.workerId.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (shift.workerAssignments &&
-        shift.workerAssignments.some((assignment) =>
-          `${assignment.workerId.firstName} ${assignment.workerId.lastName}`
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        ));
-
-    const matchesStatus =
-      statusFilter === "all" || shift.status === statusFilter;
-
-    const matchesServiceType =
-      serviceTypeFilter === "all" || shift.serviceType === serviceTypeFilter;
-
-    return matchesSearch && matchesStatus && matchesServiceType;
-  });
-
-  // Sort shifts
-  const sortedShifts = [...filteredShifts].sort((a, b) => {
-    let aValue: string | Date;
-    let bValue: string | Date;
-
-    switch (sortField) {
-      case "startTime":
-        aValue = new Date(a.startTime);
-        bValue = new Date(b.startTime);
-        break;
-      case "serviceType":
-        aValue = a.serviceType;
-        bValue = b.serviceType;
-        break;
-      case "status":
-        aValue = a.status;
-        bValue = b.status;
-        break;
-      case "worker":
-        aValue = a.workerId
-          ? typeof a.workerId === "string"
-            ? a.workerId
-            : `${a.workerId.firstName} ${a.workerId.lastName}`
-          : "";
-        bValue = b.workerId
-          ? typeof b.workerId === "string"
-            ? b.workerId
-            : `${b.workerId.firstName} ${b.workerId.lastName}`
-          : "";
-        break;
-      default:
-        aValue = a.startTime;
-        bValue = b.startTime;
-    }
-
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(sortedShifts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedShifts = sortedShifts.slice(
-    startIndex,
-    startIndex + itemsPerPage
+// Date formatting utilities
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const dateOnly = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
   );
 
+  if (dateOnly.getTime() === today.getTime()) return "Today";
+  if (dateOnly.getTime() === tomorrow.getTime()) return "Tomorrow";
+
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay());
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+
+  if (dateOnly >= weekStart && dateOnly <= weekEnd) {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    return days[date.getDay()];
+  }
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+};
+
+const formatTime = (dateString) => {
+  const date = new Date(dateString);
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12 || 12;
+  const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+  return `${hours}:${minutesStr} ${ampm}`;
+};
+
+const isThisWeek = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay());
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  return date >= weekStart && date <= weekEnd;
+};
+
+const getShiftDuration = (startTime, endTime) => {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  const diffInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+  const hours = Math.floor(diffInMinutes / 60);
+  const minutes = diffInMinutes % 60;
+  if (hours === 0) return `${minutes}m`;
+  if (minutes === 0) return `${hours}h`;
+  return `${hours}h ${minutes}m`;
+};
+
+const ParticipantShifts = () => {
+  const {user,logout} = useAuth()
+  const navigate = useNavigate();
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [viewMode, setViewMode] = useState("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [selectedShift, setSelectedShift] = useState<any>(null);
+
+  const { data: shifts = [], isLoading, error, refetch } = useGetShifts();
+
   // Calculate stats
-  const stats = {
-    total: shifts.length,
-    confirmed: shifts.filter((s) => s.status === ShiftStatus.CONFIRMED).length,
-    pending: shifts.filter((s) => s.status === ShiftStatus.PENDING).length,
-    completed: shifts.filter((s) => s.status === ShiftStatus.COMPLETED).length,
-    inProgress: shifts.filter((s) => s.status === ShiftStatus.IN_PROGRESS)
-      .length,
-    cancelled: shifts.filter((s) => s.status === ShiftStatus.CANCELLED).length,
-    thisWeek: shifts.filter((s) => isThisWeek(parseISO(s.startTime))).length,
-    upcoming: shifts.filter((s) => parseISO(s.startTime) > new Date()).length,
+  const stats = useMemo(() => {
+    const now = new Date();
+    return {
+      total: shifts.length,
+      confirmed: shifts.filter((s) => s.status === "confirmed").length,
+      pending: shifts.filter((s) => s.status === "pending").length,
+      completed: shifts.filter((s) => s.status === "completed").length,
+      inProgress: shifts.filter((s) => s.status.toLowerCase() === "in_progress")
+        .length,
+      cancelled: shifts.filter((s) => s.status === "cancelled").length,
+      thisWeek: shifts.filter((s) => isThisWeek(s.startTime)).length,
+      upcoming: shifts.filter((s) => new Date(s.startTime) > now).length,
+    };
+  }, [shifts]);
+
+  // Filter shifts
+  const filteredShifts = useMemo(() => {
+    return shifts.filter((shift) => {
+      const matchesStatus =
+        statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
+
+      const matchesSearch =
+        searchQuery === "" ||
+        shift.shiftId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        shift.serviceTypeId?.name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        shift.address?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [shifts, statusFilter, searchQuery]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredShifts.length / itemsPerPage);
+  const paginatedShifts = filteredShifts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Helper functions
+  const getStatusInfo = (status) => {
+    const statusMap = {
+      confirmed: {
+        icon: <CheckCircle className="w-3 h-3" />,
+        color: "text-green-600",
+        bg: "bg-green-600",
+        lightBg: "bg-green-50",
+      },
+      pending: {
+        icon: <DangerCircle className="w-3 h-3" />,
+        color: "text-orange-600",
+        bg: "bg-orange-600",
+        lightBg: "bg-orange-50",
+      },
+      in_progress: {
+        icon: <ClockCircle className="w-3 h-3" />,
+        color: "text-yellow-600",
+        bg: "bg-yellow-600",
+        lightBg: "bg-yellow-50",
+      },
+      completed: {
+        icon: <CheckCircle className="w-3 h-3" />,
+        color: "text-green-600",
+        bg: "bg-green-600",
+        lightBg: "bg-green-50",
+      },
+      cancelled: {
+        icon: <CloseCircle className="w-3 h-3" />,
+        color: "text-red-600",
+        bg: "bg-red-600",
+        lightBg: "bg-red-50",
+      },
+    };
+    return statusMap[status.toLowerCase()] || statusMap.pending;
   };
 
-  // Get status badge variant and icon
-  const getStatusInfo = (status: ShiftStatus) => {
-    switch (status) {
-      case ShiftStatus.CONFIRMED:
-        return {
-          variant: "default" as const,
-          icon: <CheckCircle className="w-3 h-3" />,
-          color: "text-green-600",
-          bg: "bg-green-50",
-        };
-      case ShiftStatus.PENDING:
-        return {
-          variant: "secondary" as const,
-          icon: <AlertCircle className="w-3 h-3" />,
-          color: "text-yellow-600",
-          bg: "bg-yellow-50",
-        };
-      case ShiftStatus.IN_PROGRESS:
-        return {
-          variant: "default" as const,
-          icon: <Clock className="w-3 h-3" />,
-          color: "text-blue-600",
-          bg: "bg-blue-50",
-        };
-      case ShiftStatus.COMPLETED:
-        return {
-          variant: "outline" as const,
-          icon: <CheckCircle className="w-3 h-3" />,
-          color: "text-gray-600",
-          bg: "bg-gray-50",
-        };
-      case ShiftStatus.CANCELLED:
-        return {
-          variant: "destructive" as const,
-          icon: <XCircle className="w-3 h-3" />,
-          color: "text-red-600",
-          bg: "bg-red-50",
-        };
-      default:
-        return {
-          variant: "secondary" as const,
-          icon: <AlertCircle className="w-3 h-3" />,
-          color: "text-gray-600",
-          bg: "bg-gray-50",
-        };
-    }
-  };
-
-  // Format service type for display
-  const formatServiceType = (serviceType?: ServiceType) => {
-    if (!serviceType) return "Unknown";
-    return serviceType
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase())
-      .trim();
-  };
-
-  // Format date for display
-  const formatShiftDate = (dateString: string) => {
-    const date = parseISO(dateString);
-    if (isToday(date)) return "Today";
-    if (isTomorrow(date)) return "Tomorrow";
-    if (isThisWeek(date)) return format(date, "EEEE");
-    return format(date, "MMM dd, yyyy");
-  };
-
-  // Get shift duration
-  const getShiftDuration = (startTime: string, endTime: string) => {
-    const start = parseISO(startTime);
-    const end = parseISO(endTime);
-    const diffInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-    const hours = Math.floor(diffInMinutes / 60);
-    const minutes = diffInMinutes % 60;
-
-    if (hours === 0) return `${minutes}m`;
-    if (minutes === 0) return `${hours}h`;
-    return `${hours}h ${minutes}m`;
-  };
-
-  // Handle sorting
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  // Render worker info
-  const renderWorkerInfo = (shift: Shift) => {
+  const renderWorkerInfo = (shift) => {
     if (shift.isMultiWorkerShift && shift.workerAssignments) {
       return (
         <div className="flex items-center gap-2">
-          <div className="flex -space-x-1">
+          <div className="flex -space-x-2">
             {shift.workerAssignments.slice(0, 2).map((assignment, index) => (
               <Avatar
-                key={assignment._id}
-                className="w-6 h-6 border-2 border-white"
+                key={assignment._id || index}
+                className="w-8 h-8 border-2 border-white"
               >
-                <AvatarImage src={assignment.workerId.profileImage} />
-                <AvatarFallback className="text-xs">
-                  {assignment.workerId.firstName[0]}
-                  {assignment.workerId.lastName[0]}
+                <AvatarImage src={assignment.workerId?.profileImage} />
+                <AvatarFallback className="text-xs bg-purple-100 text-purple-600">
+                  {assignment.workerId?.firstName?.[0]}
+                  {assignment.workerId?.lastName?.[0]}
                 </AvatarFallback>
               </Avatar>
             ))}
             {shift.workerAssignments.length > 2 && (
-              <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
-                <span className="text-xs text-gray-600">
+              <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
+                <span className="text-xs font-medium text-gray-600">
                   +{shift.workerAssignments.length - 2}
                 </span>
               </div>
             )}
           </div>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 font-medium">
             {shift.workerAssignments.length} workers
           </span>
         </div>
       );
     } else if (shift.workerId) {
-      if (typeof shift.workerId === "string") {
+      if (typeof shift.workerId === "object") {
         return (
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-              <User className="w-3 h-3 text-blue-600" />
-            </div>
-            <span className="text-sm text-gray-600">Assigned Worker</span>
-          </div>
-        );
-      } else {
-      return (
-          <div className="flex items-center gap-2">
-            <Avatar className="w-6 h-6">
-            <AvatarImage src={shift.workerId.profileImage} />
-              <AvatarFallback className="text-xs">
-              {shift.workerId.firstName[0]}
-              {shift.workerId.lastName[0]}
-            </AvatarFallback>
-          </Avatar>
-            <span className="text-sm font-medium">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={shift.workerId.profileImage} />
+              <AvatarFallback className="text-xs bg-primary-100 text-primary-600">
+                {shift.workerId.firstName?.[0]}
+                {shift.workerId.lastName?.[0]}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-medium text-gray-900">
               {shift.workerId.firstName} {shift.workerId.lastName}
             </span>
+          </div>
+        );
+      }
+      return (
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+            <User className="w-4 h-4 text-primary-600" />
+          </div>
+          <span className="text-sm text-gray-600">Assigned Worker</span>
         </div>
       );
-      }
     } else {
       return (
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-            <User className="w-3 h-3 text-gray-400" />
+          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <User className="w-4 h-4 text-gray-400" />
           </div>
-          <span className="text-sm text-gray-500">Unassigned</span>
+          <span className="text-sm text-gray-1000">Unassigned</span>
         </div>
       );
     }
   };
 
+  if (isLoading) {
+    return <Loader type="pulse" />;
+  }
+
   if (error) {
     return (
-      <div className="p-6">
-        <div className="text-center py-12">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Failed to load shifts
-          </h3>
-          <p className="text-gray-600 mb-4">
-            There was an error loading your shifts. Please try again.
-          </p>
-          <Button onClick={() => refetch()}>Try Again</Button>
-        </div>
-      </div>
+      <ErrorDisplay
+        title="Failed to load shifts"
+        message={error.message}
+        onRetry={refetch}
+        showRetry={true}
+      />
     );
   }
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Enhanced Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            My Shifts
-          </h1>
-          <p className="text-lg text-gray-600">
-            Manage your care schedule and track upcoming appointments
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="px-4 py-2 text-sm font-medium">
-            <Activity className="w-4 h-4 mr-2" />
-            {filteredShifts.length} shifts
-          </Badge>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-100">
+      <div className="p-10">
+        {/* Header */}
+        <GeneralHeader
+          stickyTop={true} 
+          title={pageTitles.participant["/participant/shifts"].title}
+          subtitle="Manage your care schedule and track upcoming appointments"
+          user={user}
+          onLogout={logout}
+          onViewProfile={()=>{navigate(Object.keys(pageTitles.participant).find(key => pageTitles.participant[key] === pageTitles.participant["/participant/profile"]))}} />
 
-      {/* Enhanced Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Total Shifts */}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10" />
+            {/* <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary-600/10" /> */}
             <CardContent className="p-6 relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-blue-600">
+                  <p className="text-sm font-montserrat-bold">
                     Total Shifts
                   </p>
-                  <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-primary-600 transition-colors">
                     {stats.total}
                   </p>
-                  <p className="text-xs text-gray-500">All time</p>
+                  <p className="text-xs text-gray-1000 font-montserrat-semibold">All time</p>
                 </div>
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Calendar className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Calendar className="w-7 h-7 text-primary" />
                 </div>
               </div>
               <div className="mt-4 flex items-center gap-1 text-sm">
-                <TrendingUp className="w-4 h-4 text-green-500" />
+                <CourseUp className="w-4 h-4 text-green-500" />
                 <span className="text-green-600 font-medium">
                   {stats.thisWeek} this week
                 </span>
@@ -393,75 +342,76 @@ const ParticipantShifts = () => {
             </CardContent>
           </Card>
 
-          {/* Upcoming Shifts */}
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" />
+            {/* <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" /> */}
             <CardContent className="p-6 relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                <p className="text-sm font-medium text-purple-600">Upcoming</p>
-                  <p className="text-3xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                  <p className="text-sm font-montserrat-bold">
+                    Upcoming
+                  </p>
+                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-purple-600 transition-colors">
                     {stats.upcoming}
                   </p>
-                  <p className="text-xs text-gray-500">Future shifts</p>
+                  <p className="text-xs text-gray-1000 font-montserrat-semibold">Future shifts</p>
                 </div>
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <CalendarDays className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <CalendarMark className="w-7 h-7 text-primary" />
                 </div>
               </div>
               <div className="mt-4 flex items-center gap-1 text-sm">
-                <Clock className="w-4 h-4 text-blue-500" />
-                <span className="text-blue-600 font-medium">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="text-green-600 font-medium">
                   {stats.confirmed} confirmed
                 </span>
               </div>
             </CardContent>
           </Card>
 
-          {/* In Progress */}
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" />
+            {/* <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" /> */}
             <CardContent className="p-6 relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-orange-600">
+                  <p className="text-sm font-montserrat-bold">
                     Active Now
                   </p>
-                  <p className="text-3xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-orange-600 transition-colors">
                     {stats.inProgress}
                   </p>
-                  <p className="text-xs text-gray-500">In progress</p>
+                  <p className="text-xs text-gray-1000 font-montserrat-semibold">In progress</p>
                 </div>
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <PlayCircle className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <UserHeart className="w-7 h-7 text-primary" />
                 </div>
               </div>
               <div className="mt-4 flex items-center gap-1 text-sm">
-                <Activity className="w-4 h-4 text-green-500" />
+                <StationMinimalistic className="w-4 h-4 text-green-500" />
                 <span className="text-green-600 font-medium">Live updates</span>
               </div>
             </CardContent>
           </Card>
 
-          {/* Completion Rate */}
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" />
+            {/* <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" /> */}
             <CardContent className="p-6 relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                <p className="text-sm font-medium text-green-600">Completed</p>
-                  <p className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
+                  <p className="text-sm font-montserrat-bold">
+                    Completed
+                  </p>
+                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-green-600 transition-colors">
                     {stats.completed}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-1000 font-montserrat-semibold">
                     {stats.total > 0
                       ? Math.round((stats.completed / stats.total) * 100)
                       : 0}
                     % completion rate
                   </p>
                 </div>
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <CalendarCheck className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <History2 className="w-7 h-7 text-primary" />
                 </div>
               </div>
               <div className="mt-4 flex items-center gap-1 text-sm">
@@ -472,329 +422,395 @@ const ParticipantShifts = () => {
               </div>
             </CardContent>
           </Card>
-      </div>
-
-      {/* Enhanced Filters and Search */}
-      <Card className="border-0 shadow-lg">
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center">
-            {/* Search */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search by shift ID or worker name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-11"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-48 h-11">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="confirmed">Confirmed</SelectItem>
-                <SelectItem value="inProgress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Service Type Filter */}
-            <Select
-              value={serviceTypeFilter}
-              onValueChange={setServiceTypeFilter}
-            >
-              <SelectTrigger className="w-full md:w-48 h-11">
-                <SelectValue placeholder="Filter by service" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Services</SelectItem>
-                <SelectItem value="personalCare">Personal Care</SelectItem>
-                <SelectItem value="householdTasks">Household Tasks</SelectItem>
-                <SelectItem value="socialSupport">Social Support</SelectItem>
-                <SelectItem value="transport">Transport</SelectItem>
-                <SelectItem value="mealPreparation">
-                  Meal Preparation
-                </SelectItem>
-                <SelectItem value="medicationSupport">
-                  Medication Support
-                </SelectItem>
-                <SelectItem value="mobilityAssistance">
-                  Mobility Assistance
-                </SelectItem>
-                <SelectItem value="therapySupport">Therapy Support</SelectItem>
-                <SelectItem value="behaviorSupport">
-                  Behavior Support
-                </SelectItem>
-                <SelectItem value="communityAccess">
-                  Community Access
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Modern Table */}
-      <Card className="border-0 shadow-lg overflow-hidden">
-        <CardContent className="p-0">
-      {isLoading ? (
-            <div className="p-6">
-        <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <Skeleton className="w-8 h-8 rounded-full" />
-                    <Skeleton className="h-4 flex-1" />
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-20" />
-                  </div>
-          ))}
-              </div>
         </div>
-      ) : filteredShifts.length === 0 ? (
-            <div className="p-12 text-center">
-            <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No shifts found
-            </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
-              {searchTerm ||
-              statusFilter !== "all" ||
-              serviceTypeFilter !== "all"
-                ? "Try adjusting your filters to see more results."
-                : "You don't have any shifts scheduled yet. Contact your support coordinator to schedule your first shift."}
-            </p>
-            </div>
-          ) : (
-            <div>
-              <Table>
-                <TableHeader className="bg-gray-50/50">
-                  <TableRow className="border-b border-gray-200">
-                    <TableHead className="font-semibold text-gray-700">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("serviceType")}
-                        className="h-auto p-0 font-semibold text-gray-700 hover:text-gray-900"
-                      >
-                        Service
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-700">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("worker")}
-                        className="h-auto p-0 font-semibold text-gray-700 hover:text-gray-900"
-                      >
-                        Worker
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-700">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("startTime")}
-                        className="h-auto p-0 font-semibold text-gray-700 hover:text-gray-900"
-                      >
-                        Date & Time
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-700">
-                      Duration
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-700">
-                      Location
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-700">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("status")}
-                        className="h-auto p-0 font-semibold text-gray-700 hover:text-gray-900"
-                      >
-                        Status
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-12"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedShifts.map((shift) => {
+
+        {/* Filters */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {[
+            {
+              key: "all",
+              label: "All",
+              count: shifts.length,
+              color: "bg-primary",
+            },
+            {
+              key: "pending",
+              label: "Pending",
+              count: stats.pending,
+              color: "bg-orange-600",
+            },
+            {
+              key: "confirmed",
+              label: "Confirmed",
+              count: stats.confirmed,
+              color: "bg-purple-600",
+            },
+            {
+              key: "in_progress",
+              label: "In Progress",
+              count: stats.inProgress,
+              color: "bg-yellow-600",
+            },
+            {
+              key: "completed",
+              label: "Completed",
+              count: stats.completed,
+              color: "bg-green-600",
+            },
+            {
+              key: "cancelled",
+              label: "Cancelled",
+              count: stats.cancelled,
+              color: "bg-red-600",
+            },
+          ].map(({ key, label, count, color }) => (
+            <button
+              key={key}
+              onClick={() => {
+                setStatusFilter(key);
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-montserrat-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
+                statusFilter === key
+                  ? `${color} text-white shadow-lg`
+                  : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
+              }`}
+            >
+              {label}
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  statusFilter === key
+                    ? "bg-white text-gray-700"
+                    : "bg-gray-100"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Search and View Toggle */}
+        <div className="flex gap-4 mb-6">
+          <div className="flex-1 relative">
+            <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search by shift ID, service type, or location..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="pl-10 h-11"
+            />
+          </div>
+          <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+                viewMode === "grid"
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <Widget size={24} />
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+                viewMode === "list"
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <List size={24} />
+              List
+            </button>
+          </div>
+        </div>
+
+        {/* Shifts Grid/List */}
+        <div
+          className={cn(
+            "gap-6 mb-6",
+            viewMode === "grid"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              : "flex flex-col"
+          )}
+        >
+          {paginatedShifts.map((shift) => {
             const statusInfo = getStatusInfo(shift.status);
             return (
-                      <TableRow
+              <Card
+                onClick={() => setSelectedShift(shift)}
                 key={shift._id}
-                        className="hover:bg-gray-50/50 transition-colors cursor-pointer border-b border-gray-100"
-                        onClick={() =>
-                          navigate(`/participant/shifts/${shift._id}`)
-                        }
-                      >
-                        <TableCell className="py-4">
-                          <div className="space-y-1">
-                            <div className="font-medium text-gray-900">
-                              {formatServiceType(shift.serviceType)}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <code className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                {shift.shiftId}
-                              </code>
-                            {shift.recurrence?.pattern !== "none" && (
-                              <Badge variant="outline" className="text-xs">
-                                <Repeat className="w-3 h-3 mr-1" />
-                                Recurring
-                              </Badge>
-                            )}
-                          </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          {renderWorkerInfo(shift)}
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="space-y-1">
-                            <div className="font-medium text-gray-900">
-                              {formatShiftDate(shift.startTime)}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              {format(parseISO(shift.startTime), "h:mm a")} -{" "}
-                              {format(parseISO(shift.endTime), "h:mm a")}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <span className="text-sm font-medium text-gray-600">
-                            {getShiftDuration(shift.startTime, shift.endTime)}
-                          </span>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="max-w-xs">
-                            <span className="text-sm text-gray-600 line-clamp-2">
-                              {shift.address || "Location not specified"}
-                            </span>
+                className={cn(
+                  "overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 shadow-lg",
+                  viewMode === "list" && "flex-row"
+                )}
+              >
+                <CardContent
+                  className={cn("p-0", viewMode === "list" && "flex w-full")}
+                >
+                  {/* <div
+                    className={cn(
+                      statusInfo.bg,
+                      viewMode === "grid" ? "h-2 w-full" : "w-2 h-full"
+                    )}
+                  /> */}
+
+                  <div
+                    className={cn(
+                      "p-5",
+                      viewMode === "list" && "flex-1 flex items-center gap-6"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "space-y-3",
+                        viewMode === "list" &&
+                          "flex-1 space-y-0 flex items-center gap-6"
+                      )}
+                    >
+                      <div className={cn(viewMode === "list" && "flex-1")}>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-montserrat-semibold text-gray-900 text-lg group-hover:text-primary transition-colors">
+                            {shift.serviceTypeId?.name || "Unknown Service"}
+                          </h3>
+                          {viewMode === "grid" && (
+                            <Badge
+                              className={cn(
+                                "gap-1",
+                                statusInfo.lightBg,
+                                statusInfo.color
+                              )}
+                            >
+                              {statusInfo.icon}
+                              {shift.status}
+                            </Badge>
+                          )}
                         </div>
-                        </TableCell>
-                        <TableCell className="py-4">
+                        <code className="text-xs text-gray-1000 bg-gray-100 px-2 py-1 font-montserrat-semibold rounded">
+                          {shift.shiftId}
+                        </code>
+                      </div>
+
+                      <div
+                        className={cn(
+                          "space-y-2",
+                          viewMode === "list" && "min-w-[200px]"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 text-sm">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <span className="font-medium text-gray-900">
+                            {formatDate(shift.startTime)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <ClockCircle className="w-4 h-4 text-gray-400" />
+                          <span>
+                            {formatTime(shift.startTime)} -{" "}
+                            {formatTime(shift.endTime)}
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {getShiftDuration(shift.startTime, shift.endTime)}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div
+                        className={cn(viewMode === "list" && "min-w-[250px]")}
+                      >
+                        {renderWorkerInfo(shift)}
+                      </div>
+
+                      {shift.address && (
+                        <div className="flex items-start gap-2 text-sm text-gray-600">
+                          <MapPoint className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <span className="line-clamp-2">{shift.address}</span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {shift.recurrence?.pattern !== "none" && (
+                          <Badge variant="outline" className="text-xs">
+                            <Repeat className="w-3 h-3 mr-1" />
+                            Recurring
+                          </Badge>
+                        )}
+                        {shift.isMultiWorkerShift && (
+                          <Badge variant="outline" className="text-xs">
+                            <UsersGroupRounded className="w-3 h-3 mr-1" />
+                            Multi-worker
+                          </Badge>
+                        )}
+                      </div>
+
+                      {viewMode === "list" && (
+                        <div className="flex items-center gap-2">
                           <Badge
-                            variant={statusInfo.variant}
                             className={cn(
-                              "gap-1 font-medium",
-                              statusInfo.bg,
+                              "gap-1",
+                              statusInfo.lightBg,
                               statusInfo.color
                             )}
                           >
                             {statusInfo.icon}
                             {shift.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0 hover:bg-gray-100"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MoreVertical className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/participant/shifts/${shift._id}`);
-                                }}
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50/30">
-                  <div className="text-sm text-gray-600">
-                    Showing {startIndex + 1} to{" "}
-                    {Math.min(startIndex + itemsPerPage, filteredShifts.length)}{" "}
-                    of {filteredShifts.length} shifts
                         </div>
+                      )}
+                    </div>
+
+                    <div
+                      className={cn(
+                        "flex items-center justify-end pt-3 border-t border-gray-100",
+                        viewMode === "list" && "pt-0 border-t-0"
+                      )}
+                    >
+                      <Button
+                        onClick={() => setSelectedShift(shift)}
+                        variant="default"
+                        size="sm"
+                        className="gap-2 rounded-full font-montserrat-semibold"
+                      >
+                        {viewMode === "grid" ? (
+                          <>
+                            <Eye size={24} />
+                            View Details
+                          </>
+                        ) : (
+                          <ArrowRightUp size={24} />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {paginatedShifts.length === 0 && (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-12 text-center">
+              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
+                No shifts found
+              </h3>
+              <p className="text-gray-600 max-w-md mx-auto">
+                {searchQuery || statusFilter !== "all"
+                  ? "Try adjusting your filters to see more results."
+                  : "You don't have any shifts scheduled yet."}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {filteredShifts.length > 0 && (
+          <Card className="border-0 shadow-lg mt-6">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <p className="text-sm text-gray-600">
+                    Showing{" "}
+                    <span className="font-medium">
+                      {Math.min(itemsPerPage, paginatedShifts.length)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-medium">{filteredShifts.length}</span>{" "}
+                    shifts
+                  </p>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Show:</span>
+                    <Select
+                      value={itemsPerPage.toString()}
+                      onValueChange={(value) => {
+                        setItemsPerPage(Number(value));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <SelectTrigger className="w-20 h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">5</SelectItem>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="15">15</SelectItem>
+                        <SelectItem value="25">25</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {totalPages > 1 && (
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={currentPage === 1}
-                      className="h-8"
                     >
-                      <ChevronLeft className="w-4 h-4" />
-                      Previous
+                      <AltArrowLeft size={24} />
                     </Button>
-                    <div className="flex items-center gap-1">
-                      {Array.from(
-                        { length: Math.min(5, totalPages) },
-                        (_, i) => {
-                          const page = i + 1;
-                          return (
-                            <Button
-                              key={page}
-                              variant={
-                                currentPage === page ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() => setCurrentPage(page)}
-                              className="h-8 w-8"
-                            >
-                              {page}
-                            </Button>
-                          );
+                    {[...Array(Math.min(5, totalPages))].map((_, idx) => (
+                      <Button
+                        key={idx}
+                        variant={
+                          currentPage === idx + 1 ? "default" : "outline"
                         }
-                      )}
-                      {totalPages > 5 && (
-                        <>
-                          <span className="text-gray-400">...</span>
-                          <Button
-                            variant={
-                              currentPage === totalPages ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCurrentPage(totalPages)}
-                            className="h-8 w-8"
-                          >
-                            {totalPages}
-                          </Button>
-                        </>
-                      )}
-                    </div>
+                        size="sm"
+                        onClick={() => setCurrentPage(idx + 1)}
+                        className="w-9"
+                      >
+                        {idx + 1}
+                      </Button>
+                    ))}
+                    {totalPages > 5 && (
+                      <>
+                        <span className="text-gray-400">...</span>
+                        <Button
+                          variant={
+                            currentPage === totalPages ? "default" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => setCurrentPage(totalPages)}
+                          className="w-9"
+                        >
+                          {totalPages}
+                        </Button>
+                      </>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
                       disabled={currentPage === totalPages}
-                      className="h-8"
                     >
-                      Next
-                      <ChevronRight className="w-4 h-4" />
+                      <AltArrowRight size={24} />
                     </Button>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-                </CardContent>
-              </Card>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Shift Details Dialog */}
+        <ShiftDetailsDialog
+          shift={selectedShift}
+          open={!!selectedShift}
+          onOpenChange={(open) => !open && setSelectedShift(null)}
+        />
+      </div>
     </div>
   );
 };

@@ -114,7 +114,7 @@ export default function ForgotPassword() {
 								<h1 className="text-3xl font-montserrat-bold text-gray-900">
 									Check your email
 								</h1>
-								<p className="text-gray-600 font-semibold">
+								<p className="text-gray-600 font-montserrat-semibold">
 									We've sent password reset instructions to {email}
 								</p>
 							</div>
@@ -135,7 +135,7 @@ export default function ForgotPassword() {
 								<h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
 									Forgot Password
 								</h1>
-								<p className="font-semibold text-gray-600">
+								<p className="font-montserrat-semibold text-gray-600">
 									Please enter your email and we will send an OTP code
 									<br />
 									in the next step to reset your password

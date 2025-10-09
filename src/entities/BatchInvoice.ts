@@ -224,7 +224,7 @@ export const BATCH_PROCESSING_STATUS_CONFIG: Record<BatchProcessingStatus, {
   started: {
     label: 'Started',
     variant: 'secondary',
-    color: 'text-blue-600',
+    color: 'text-primary',
   },
   completed: {
     label: 'Completed',
