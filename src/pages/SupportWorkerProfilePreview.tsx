@@ -103,7 +103,7 @@ export default function SupportWorkerProfilePreview() {
 						</AvatarFallback>
 					</Avatar>
 					<div className="flex-1">
-						<h1 className="text-3xl font-bold">
+						<h1 className="text-3xl font-montserrat-bold">
 							{getWorkerFullName(workerProfile.worker)}
 						</h1>
 						<div className="flex items-center gap-2 text-muted-foreground mt-1">
@@ -137,7 +137,7 @@ export default function SupportWorkerProfilePreview() {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div className="space-y-4">
 						<div>
-							<h3 className="font-semibold flex items-center gap-2 mb-2">
+							<h3 className="font-montserrat-semibold flex items-center gap-2 mb-2">
 								<User className="h-4 w-4" />
 								About
 							</h3>
@@ -147,7 +147,7 @@ export default function SupportWorkerProfilePreview() {
 						</div>
 
 						<div>
-							<h3 className="font-semibold flex items-center gap-2 mb-2">
+							<h3 className="font-montserrat-semibold flex items-center gap-2 mb-2">
 								<Languages className="h-4 w-4" />
 								Languages
 							</h3>
@@ -166,7 +166,7 @@ export default function SupportWorkerProfilePreview() {
 
 					<div className="space-y-4">
 						<div>
-							<h3 className="font-semibold flex items-center gap-2 mb-2">
+							<h3 className="font-montserrat-semibold flex items-center gap-2 mb-2">
 								<Workflow className="h-4 w-4" />
 								Workflow & Specializations
 							</h3>
@@ -183,7 +183,7 @@ export default function SupportWorkerProfilePreview() {
 						</div>
 
 						<div>
-							<h3 className="font-semibold flex items-center gap-2 mb-2">
+							<h3 className="font-montserrat-semibold flex items-center gap-2 mb-2">
 								<Clock className="h-4 w-4" />
 								Rates
 							</h3>

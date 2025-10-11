@@ -80,7 +80,7 @@
 //         {currentStep === 'form' && (
 //           <div className="w-full max-w-md">
 //             <div className="text-center mb-6">
-//               <h1 className="text-3xl font-bold">Create an Account</h1>
+//               <h1 className="text-3xl font-montserrat-bold">Create an Account</h1>
 //               <p className="text-muted-foreground">Join our community of care providers and participants</p>
 //             </div>
 //             <RegistrationForm onSubmit={handleRegistration} />
@@ -113,12 +113,12 @@
 //         <div className="mb-auto">
 //           <div className="flex items-center gap-2 mb-2">
 //             <Heart className="h-8 w-8 text-white" />
-//             <span className="text-2xl font-bold text-white">Support 24</span>
+//             <span className="text-2xl font-montserrat-bold text-white">Support 24</span>
 //           </div>
 //         </div>
 
 //         <div className="space-y-6 max-w-md">
-//           <h1 className="text-4xl font-bold text-white">Join our caring community</h1>
+//           <h1 className="text-4xl font-montserrat-bold text-white">Join our caring community</h1>
 //           <p className="text-white/90 text-lg">
 //             Support 24 connects participants, guardians, and support workers in a seamless care ecosystem.
 //           </p>

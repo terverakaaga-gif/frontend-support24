@@ -119,7 +119,7 @@ export function SearchSupportWorkers({
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto border-primary/10">
 					<DialogHeader className="border-b border-primary/10 pb-4">
-						<DialogTitle className="text-xl font-semibold text-primary">
+						<DialogTitle className="text-xl font-montserrat-semibold text-primary">
 							Find Support Workers
 						</DialogTitle>
 					</DialogHeader>
@@ -140,7 +140,7 @@ export function SearchSupportWorkers({
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto border-primary/10">
 					<DialogHeader className="border-b border-primary/10 pb-4">
-						<DialogTitle className="text-xl font-semibold text-primary">
+						<DialogTitle className="text-xl font-montserrat-semibold text-primary">
 							Find Support Workers
 						</DialogTitle>
 					</DialogHeader>
@@ -168,7 +168,7 @@ export function SearchSupportWorkers({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto border-primary/10">
 				<DialogHeader className="border-b border-primary/10 pb-4">
-					<DialogTitle className="text-xl font-semibold text-primary">
+					<DialogTitle className="text-xl font-montserrat-semibold text-primary">
 						Find Support Workers
 					</DialogTitle>
 					<DialogDescription className="text-muted-foreground">
@@ -244,7 +244,7 @@ export function SearchSupportWorkers({
 									<div className="flex flex-col md:flex-row gap-4">
 										<div className="flex-shrink-0">
 											<Avatar className="h-16 w-16 border-2 border-primary/10">
-												<AvatarFallback className="bg-primary text-white text-xl font-semibold">
+												<AvatarFallback className="bg-primary text-white text-xl font-montserrat-semibold">
 													{getWorkerInitials(worker)}
 												</AvatarFallback>
 											</Avatar>
@@ -253,14 +253,14 @@ export function SearchSupportWorkers({
 										<div className="flex-1 min-w-0">
 											<div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
 												<div className="flex-1">
-													<h3 className="font-semibold text-lg text-gray-900">
+													<h3 className="font-montserrat-semibold text-lg text-gray-900">
 														{getWorkerFullName(worker)}
 													</h3>
 													<p className="text-sm text-muted-foreground mb-1">
 														{worker.serviceAreas.join(", ")}
 													</p>
 													<div className="flex items-center gap-3 text-sm mb-3">
-														<span className="font-semibold text-primary">
+														<span className="font-montserrat-semibold text-primary">
 															${worker.hourlyRate.baseRate}/hr
 														</span>
 														<span className="text-muted-foreground">•</span>
@@ -291,13 +291,13 @@ export function SearchSupportWorkers({
 															worker.skills.slice(0, 3).map((skill) => (
 																<span
 																	key={skill}
-																	className="text-xs px-2 py-1 rounded-full border bg-gray-50 text-gray-700 border-gray-200 inline-block font-medium"
+																	className="text-xs px-2 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200 inline-block font-medium"
 																>
 																	{skill}
 																</span>
 															))}
 														{worker.skills.length > 3 && (
-															<span className="text-xs px-2 py-1 rounded-full border bg-gray-50 text-gray-700 border-gray-200 inline-block font-medium">
+															<span className="text-xs px-2 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200 inline-block font-medium">
 																+{worker.skills.length - 3} more
 															</span>
 														)}
@@ -320,7 +320,7 @@ export function SearchSupportWorkers({
 															size="sm"
 															variant="outline"
 															disabled
-															className="bg-blue-50 border-blue-200 text-blue-700"
+															className="bg-primary-100 border-primary-200 text-primary-700"
 														>
 															<Check size={16} className="mr-1" />
 															In Network

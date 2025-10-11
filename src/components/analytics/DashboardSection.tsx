@@ -32,7 +32,7 @@ export function DashboardSection({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {icon}
-            <CardTitle className="text-xl font-semibold text-guardian">{title}</CardTitle>
+            <CardTitle className="text-xl font-montserrat-semibold text-guardian">{title}</CardTitle>
           </div>
           {action}
         </div>

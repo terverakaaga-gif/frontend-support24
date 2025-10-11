@@ -266,7 +266,7 @@ const CreateIncidentModal = ({
 									key={`new-${index}`}
 									className="flex items-center gap-2 text-sm"
 								>
-									<FileText className="h-4 w-4 text-gray-500" />
+									<FileText className="h-4 w-4 text-gray-1000" />
 									<span>{file.name}</span>
 									<span className="text-xs text-gray-400">
 										{(file.size / 1024).toFixed(1)} KB
@@ -279,7 +279,7 @@ const CreateIncidentModal = ({
 										key={`existing-${index}`}
 										className="flex items-center gap-2 text-sm"
 									>
-										<FileText className="h-4 w-4 text-gray-500" />
+										<FileText className="h-4 w-4 text-gray-1000" />
 										<span>{link}</span>
 									</div>
 								))}
@@ -314,7 +314,7 @@ const CreateIncidentModal = ({
 		return (
 			<div className="p-6">
 				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-xl font-semibold text-gray-900">
+					<h2 className="text-xl font-montserrat-semibold text-gray-900">
 						{isEditing ? "Review Incident Update" : "Review Incident Details"}
 					</h2>
 					<button
@@ -327,20 +327,20 @@ const CreateIncidentModal = ({
 				</div>
 
 				<div className="space-y-6">
-					<div className="bg-gray-50 rounded-lg p-4">
+					<div className="bg-gray-100 rounded-lg p-4">
 						<h3 className="font-medium text-gray-900">{formData.title}</h3>
 						<p className="text-gray-600 mt-2">{formData.description}</p>
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">
 						<div>
-							<label className="block text-sm font-medium text-gray-500 mb-1">
+							<label className="block text-sm font-medium text-gray-1000 mb-1">
 								Severity
 							</label>
 							<span
-								className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+								className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${
 									formData.severity === "LOW"
-										? "bg-blue-100 text-blue-800"
+										? "bg-primary-100 text-primary-800"
 										: formData.severity === "MEDIUM"
 										? "bg-orange-100 text-orange-800"
 										: "bg-red-100 text-red-800"
@@ -351,7 +351,7 @@ const CreateIncidentModal = ({
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium text-gray-500 mb-1">
+							<label className="block text-sm font-medium text-gray-1000 mb-1">
 								Shift ID
 							</label>
 							<p className="text-gray-900">{formData.shiftId}</p>
@@ -360,17 +360,17 @@ const CreateIncidentModal = ({
 
 					{selectedShift && (
 						<div>
-							<label className="block text-sm font-medium text-gray-500 mb-1">
+							<label className="block text-sm font-medium text-gray-1000 mb-1">
 								Shift Details
 							</label>
-							<div className="bg-gray-50 rounded-lg p-3">
+							<div className="bg-gray-100 rounded-lg p-3">
 								<p className="text-sm font-medium text-gray-900">
 									{typeof selectedShift.participantId === "object" &&
 									selectedShift.participantId !== null
 										? `${selectedShift.participantId.firstName} ${selectedShift.participantId.lastName}`
 										: String(selectedShift.participantId)}
 								</p>
-								<p className="text-xs text-gray-500 mt-1">
+								<p className="text-xs text-gray-1000 mt-1">
 									{new Date(selectedShift.startTime).toLocaleString()} -{" "}
 									{new Date(selectedShift.endTime).toLocaleString()}
 								</p>
@@ -380,7 +380,7 @@ const CreateIncidentModal = ({
 
 					{(selectedFiles.length > 0 || formData.urlLinks.length > 0) && (
 						<div>
-							<label className="block text-sm font-medium text-gray-500 mb-1">
+							<label className="block text-sm font-medium text-gray-1000 mb-1">
 								Evidence Files
 							</label>
 							<div className="space-y-2">
@@ -389,7 +389,7 @@ const CreateIncidentModal = ({
 										key={`preview-new-${index}`}
 										className="flex items-center gap-2 text-sm"
 									>
-										<FileText className="h-4 w-4 text-gray-500" />
+										<FileText className="h-4 w-4 text-gray-1000" />
 										<span>{file.name}</span>
 									</div>
 								))}
@@ -399,7 +399,7 @@ const CreateIncidentModal = ({
 											key={`preview-existing-${index}`}
 											className="flex items-center gap-2 text-sm"
 										>
-											<FileText className="h-4 w-4 text-gray-500" />
+											<FileText className="h-4 w-4 text-gray-1000" />
 											<span>{link}</span>
 										</div>
 									))}
@@ -441,7 +441,7 @@ const CreateIncidentModal = ({
 					? "Incident Updated Successfully"
 					: "Incident Created Successfully"}
 			</h3>
-			<p className="text-sm text-gray-500 mb-6">
+			<p className="text-sm text-gray-1000 mb-6">
 				{isEditing
 					? "Your incident has been updated."
 					: "Your incident has been submitted for review."}
@@ -460,7 +460,7 @@ const CreateIncidentModal = ({
 			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[100]" />
 			<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto z-[101]">
 				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<Dialog.Title className="text-xl font-semibold text-gray-900">
+					<Dialog.Title className="text-xl font-montserrat-semibold text-gray-900">
 						{isEditing ? "Review" : "Create"} Incident
 					</Dialog.Title>
 				</div>
@@ -476,7 +476,7 @@ const CreateIncidentModal = ({
 						<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[102]" />
 						<Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto z-[103]">
 							<div className="flex items-center justify-between p-6 border-b border-gray-200">
-								<Dialog.Title className="text-xl font-semibold text-gray-900">
+								<Dialog.Title className="text-xl font-montserrat-semibold text-gray-900">
 									Select Shift
 								</Dialog.Title>
 								<Dialog.Close asChild>
@@ -514,9 +514,9 @@ const CreateIncidentModal = ({
 											filteredShifts.map((shift) => (
 												<div
 													key={shift._id}
-													className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-50 ${
+													className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-100 ${
 														formData.shiftId === shift.shiftId
-															? "border-[#17AAEC] bg-blue-50"
+															? "border-[#17AAEC] bg-primary-100"
 															: "border-gray-200"
 													}`}
 													onClick={() => handleShiftSelect(shift as Shift)}
@@ -529,7 +529,7 @@ const CreateIncidentModal = ({
 																	? `${shift.participantId.firstName} ${shift.participantId.lastName}`
 																	: String(shift.participantId)}
 															</h3>
-															<p className="text-sm text-gray-500">
+															<p className="text-sm text-gray-1000">
 																{shift.serviceType}
 															</p>
 														</div>
@@ -559,7 +559,7 @@ const CreateIncidentModal = ({
 												</div>
 											))
 										) : (
-											<div className="text-center py-8 text-gray-500">
+											<div className="text-center py-8 text-gray-1000">
 												No shifts found
 											</div>
 										)}

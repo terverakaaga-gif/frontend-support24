@@ -93,7 +93,7 @@ export function ConnectionsList() {
 											</AvatarFallback>
 										</Avatar>
 										<div className="flex-1">
-											<h3 className="font-semibold text-lg">
+											<h3 className="font-montserrat-semibold text-lg">
 												{getUserFullName(connection.workerId)}
 											</h3>
 											{/* <div className="flex flex-wrap mt-2">

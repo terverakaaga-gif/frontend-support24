@@ -198,7 +198,7 @@ const BatchInvoicesManagement: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-600">{title}</p>
-            <p className="text-xl font-bold">{value}</p>
+            <p className="text-xl font-montserrat-bold">{value}</p>
           </div>
           <Icon className={cn("h-5 w-5", color)} />
         </div>
@@ -216,7 +216,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
     return (
       <div className="flex items-center justify-between space-x-2 py-4 m-4">
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-gray-1000">
           Showing {startItem} to {endItem} of {totalResults} results
         </div>
         <div className="flex items-center space-x-2">
@@ -304,7 +304,7 @@ const BatchInvoicesManagement: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Batch Invoices</h1>
+            <h1 className="text-2xl font-montserrat-bold">Batch Invoices</h1>
             <p className="text-gray-600 mt-1">Manage and monitor batch invoice generation</p>
           </div>
         </div>
@@ -312,7 +312,7 @@ const BatchInvoicesManagement: React.FC = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-red-600 mb-2">Error Loading Batch Invoices</h3>
+              <h3 className="text-lg font-montserrat-semibold text-red-600 mb-2">Error Loading Batch Invoices</h3>
               <p className="text-gray-600 mb-4">
                 There was an error loading the batch invoices. Please try again.
               </p>
@@ -332,7 +332,7 @@ const BatchInvoicesManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Batch Invoices</h1>
+          <h1 className="text-2xl font-montserrat-bold">Batch Invoices</h1>
           <p className="text-sm text-gray-600 mt-1">Manage and monitor batch invoice generation</p>
         </div>
         <div className="flex items-center space-x-2">
@@ -358,7 +358,7 @@ const BatchInvoicesManagement: React.FC = () => {
             title="Total Invoices"
             value={stats.totalInvoices}
             icon={FileText}
-            color="text-blue-600"
+            color="text-primary"
           />
           <StatCard
             title="Pending"
@@ -507,7 +507,7 @@ const BatchInvoicesManagement: React.FC = () => {
           {filteredBatchInvoices.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-base font-semibold mb-2">No batch invoices found</h3>
+              <h3 className="text-base font-montserrat-semibold mb-2">No batch invoices found</h3>
               <p className="text-sm text-gray-600">
                 {hasActiveFilters 
                   ? "No batch invoices match your current filters." 

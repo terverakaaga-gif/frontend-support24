@@ -37,14 +37,15 @@ export const analyticsKeys = {
     [...analyticsKeys.all, 'participant-overview', dateRange, comparison] as const,
   participantServices: (dateRange?: string) => 
     [...analyticsKeys.all, 'participant-services', dateRange] as const,
-  supportWorkerOverview: (dateRange?: string, comparison?: boolean) => 
-    [...analyticsKeys.all, 'support-worker-overview', dateRange, comparison] as const,
   supportWorkerFinancial: (dateRange?: string) => 
     [...analyticsKeys.all, 'support-worker-financial', dateRange] as const,
   supportWorkerSchedule: (dateRange?: string) => 
     [...analyticsKeys.all, 'support-worker-schedule', dateRange] as const,
-  supportWorkerPerformance: (dateRange?: string) => 
-    [...analyticsKeys.all, 'support-worker-performance', dateRange] as const,
+  supportWorkerOverview: (dateRange?: string | { start: string; end: string }, comparison?: boolean) => 
+    [...analyticsKeys.all, 'support-worker-overview', dateRange, comparison] as const,
+  supportWorkerPerformance: (dateRange?: string | { start: string; end: string }, comparison?: boolean) => 
+    [...analyticsKeys.all, 'support-worker-performance', dateRange, comparison] as const,
+  // ...existing code...
 };
 
 // Hook to get dashboard overview analytics
@@ -191,7 +192,7 @@ export const useGetParticipantServices = (
 
 // Hook to get support worker overview analytics
 export const useGetSupportWorkerOverview = (
-  dateRange: string = 'month',
+  dateRange: string | { start: string; end: string } = 'month',
   comparison: boolean = true,
   enabled: boolean = true
 ): UseQueryResult<SupportWorkerOverviewAnalytics> => {
@@ -231,7 +232,7 @@ export const useGetSupportWorkerSchedule = (
 
 // Hook to get support worker performance analytics
 export const useGetSupportWorkerPerformance = (
-  dateRange: string = 'month',
+  dateRange: string | { start: string; end: string } = 'month',
   enabled: boolean = true
 ): UseQueryResult<SupportWorkerPerformanceAnalytics> => {
   return useQuery({

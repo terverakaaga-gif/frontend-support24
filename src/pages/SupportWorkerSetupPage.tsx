@@ -30,11 +30,11 @@ export default function SupportWorkerSetupPage() {
     }
 
     // If support worker has already completed onboarding, show a message
-    if (supportWorker?.verificationStatus.profileSetupComplete) {
-      toast.success("Your profile is already set up!");
-      navigate('/support-worker');
-      return;
-    }
+    // if (supportWorker?.verificationStatus.profileSetupComplete) {
+    //   toast.success("Your profile is already set up!");
+    //   navigate('/support-worker');
+    //   return;
+    // }
 
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,7 +84,7 @@ export default function SupportWorkerSetupPage() {
 
   return (
     <div className="w-full">
-      <div className="bg-white shadow-sm py-2 mb-4">
+      {/* <div className="bg-white shadow-sm py-2 mb-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <Button 
             variant="ghost" 
@@ -94,10 +94,10 @@ export default function SupportWorkerSetupPage() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Dashboard
           </Button>
-          <h1 className="text-lg font-semibold">Profile Setup</h1>
-          <div className="w-24"></div> {/* Spacer for centering */}
+          <h1 className="text-lg font-montserrat-semibold">Profile Setup</h1>
+          <div className="w-24"></div> 
         </div>
-      </div>
+      </div> */}
       <SupportWorkerSetup 
         onComplete={handleSetupComplete} 
       />

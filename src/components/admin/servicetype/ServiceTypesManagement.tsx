@@ -238,7 +238,7 @@ const ServiceTypesManagement: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Service Types</h1>
+            <h1 className="text-2xl font-montserrat-bold">Service Types</h1>
             <p className="text-sm text-gray-600 mt-1">Manage service type categories</p>
           </div>
         </div>
@@ -246,7 +246,7 @@ const ServiceTypesManagement: React.FC = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="text-base font-semibold text-red-600 mb-2">Error Loading Service Types</h3>
+              <h3 className="text-base font-montserrat-semibold text-red-600 mb-2">Error Loading Service Types</h3>
               <p className="text-sm text-gray-600 mb-4">
                 There was an error loading the service types. Please try again.
               </p>
@@ -266,7 +266,7 @@ const ServiceTypesManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Service Types</h1>
+          <h1 className="text-2xl font-montserrat-bold">Service Types</h1>
           <p className="text-sm text-gray-600 mt-1">Manage service type categories</p>
         </div>
         <div className="flex items-center space-x-2">
@@ -419,7 +419,7 @@ const ServiceTypesManagement: React.FC = () => {
         <CardContent>
           {filteredServiceTypes.length === 0 ? (
             <div className="text-center py-8">
-              <h3 className="text-base font-semibold mb-2">No service types found</h3>
+              <h3 className="text-base font-montserrat-semibold mb-2">No service types found</h3>
               <p className="text-sm text-gray-600">
                 {hasActiveFilters 
                   ? "No service types match your current filters." 

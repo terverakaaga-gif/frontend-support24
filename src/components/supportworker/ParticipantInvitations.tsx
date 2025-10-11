@@ -292,7 +292,7 @@ export function ParticipantInvitations() {
 												</AvatarFallback>
 											</Avatar>
 											<div className="flex-1">
-												<h3 className="font-semibold text-lg">
+												<h3 className="font-montserrat-semibold text-lg">
 													{invite.workerEmail}
 												</h3>
 												<p className="text-sm text-muted-foreground">

@@ -67,7 +67,7 @@ export default function SetupChoicePage() {
 	}
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gray-50">
+		<div className="min-h-screen flex items-center justify-center bg-gray-100">
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
@@ -79,7 +79,7 @@ export default function SetupChoicePage() {
 					<div className="bg-guardian p-6 text-white">
 						<div className="flex items-center justify-center space-x-2 mb-2">
 							<CheckCircle className="h-7 w-7" />
-							<h1 className="text-2xl font-bold">Registration Complete!</h1>
+							<h1 className="text-2xl font-montserrat-bold">Registration Complete!</h1>
 						</div>
 						<p className="text-center text-white/90">
 							Your account has been created successfully.
@@ -89,7 +89,7 @@ export default function SetupChoicePage() {
 					{/* Content */}
 					<div className="p-6 md:p-8">
 						<div className="text-center mb-8">
-							<h2 className="text-xl font-bold mb-2">Welcome to Support 24</h2>
+							<h2 className="text-xl font-montserrat-bold mb-2">Welcome to Support 24</h2>
 							<p className="text-gray-600">
 								Would you like to complete your profile setup now or later?
 							</p>
@@ -103,17 +103,17 @@ export default function SetupChoicePage() {
 										<UserCog className="h-8 w-8 text-guardian" />
 									</div>
 								</div>
-								<h3 className="text-lg font-semibold text-center mb-2">
+								<h3 className="text-lg font-montserrat-semibold text-center mb-2">
 									Complete Setup Now
 								</h3>
 								<p className="text-gray-600 text-sm mb-4 text-center">
 									Set up your profile with skills, experience, and availability
 									to be visible to participants.
 								</p>
-								<div className="bg-blue-50 border border-blue-100 rounded-md p-3 mb-4">
+								<div className="bg-primary-100 border border-primary-100 rounded-md p-3 mb-4">
 									<div className="flex items-start">
-										<AlertCircle className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
-										<p className="text-xs text-blue-700">
+										<AlertCircle className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
+										<p className="text-xs text-primary-700">
 											A complete profile increases your visibility and chances
 											of being matched with participants.
 										</p>
@@ -126,13 +126,13 @@ export default function SetupChoicePage() {
 							</div>
 
 							{/* Skip Setup Option */}
-							<div className="border border-gray-200 rounded-lg p-5 hover:bg-gray-50 transition-colors">
+							<div className="border border-gray-200 rounded-lg p-5 hover:bg-gray-100 transition-colors">
 								<div className="flex justify-center mb-4">
 									<div className="bg-gray-100 p-3 rounded-full">
-										<ArrowRight className="h-8 w-8 text-gray-500" />
+										<ArrowRight className="h-8 w-8 text-gray-1000" />
 									</div>
 								</div>
-								<h3 className="text-lg font-semibold text-center mb-2">
+								<h3 className="text-lg font-montserrat-semibold text-center mb-2">
 									Skip for Now
 								</h3>
 								<p className="text-gray-600 text-sm mb-4 text-center">
@@ -158,7 +158,7 @@ export default function SetupChoicePage() {
 							</div>
 						</div>
 
-						<p className="text-center text-sm text-gray-500">
+						<p className="text-center text-sm text-gray-1000">
 							You can always access the profile setup from your dashboard later.
 						</p>
 					</div>

@@ -53,7 +53,7 @@ export function RateTimeBandDetailsPage() {
   const getShiftTypeIcon = (timeBand: RateTimeBand) => {
     if (timeBand.isPublicHoliday) return <CalendarIcon className="h-6 w-6 text-red-500" />;
     if (timeBand.isWeekend) return <Sun className="h-6 w-6 text-orange-500" />;
-    if (timeBand.isSleepover) return <Bed className="h-6 w-6 text-blue-500" />;
+    if (timeBand.isSleepover) return <Bed className="h-6 w-6 text-primary-500" />;
     
     // For regular day shifts based on time
     if (timeBand.startTime && timeBand.endTime) {
@@ -63,7 +63,7 @@ export function RateTimeBandDetailsPage() {
       return <Moon className="h-6 w-6 text-indigo-500" />;
     }
     
-    return <Clock className="h-6 w-6 text-gray-500" />;
+    return <Clock className="h-6 w-6 text-gray-1000" />;
   };
 
   // Loading state
@@ -124,7 +124,7 @@ export function RateTimeBandDetailsPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
-          <h1 className="text-2xl font-bold">Error Loading Rate Time Band</h1>
+          <h1 className="text-2xl font-montserrat-bold">Error Loading Rate Time Band</h1>
         </div>
         
         <Card>
@@ -180,7 +180,7 @@ export function RateTimeBandDetailsPage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Time Bands
         </Button>
-        <h1 className="text-2xl font-bold">Rate Time Band Details</h1>
+        <h1 className="text-2xl font-montserrat-bold">Rate Time Band Details</h1>
       </div>
       
       <Card>

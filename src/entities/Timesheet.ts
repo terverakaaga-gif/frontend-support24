@@ -1,5 +1,3 @@
-// types/timesheet.ts
-
 import { ServiceTypeId } from "./Shift";
 
 export interface Timesheet {
@@ -180,7 +178,7 @@ export const TIMESHEET_STATUS_CONFIG: Record<TimesheetStatus, {
   revised: {
     label: 'Revised',
     variant: 'outline',
-    color: 'text-blue-600',
+    color: 'text-primary',
   },
   processed: {
     label: 'Processed',

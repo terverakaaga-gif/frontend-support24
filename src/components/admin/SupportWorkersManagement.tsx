@@ -155,9 +155,9 @@ const SupportWorkersPage: React.FC = () => {
       case 'suspended':
         return <AlertCircle className="h-4 w-4 text-red-500" />;
       case 'inactive':
-        return <XCircle className="h-4 w-4 text-gray-500" />;
+        return <XCircle className="h-4 w-4 text-gray-1000" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-gray-1000" />;
     }
   };
 
@@ -289,7 +289,7 @@ const SupportWorkersPage: React.FC = () => {
         {/* Header */}
         {/* <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Support Workers</h1>
+            <h1 className="text-3xl font-montserrat-bold tracking-tight">Support Workers</h1>
             <p className="text-muted-foreground">
               Manage and view all support workers in the system
             </p>

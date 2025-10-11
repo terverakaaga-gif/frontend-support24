@@ -113,7 +113,7 @@ const ResolveIncidentPage = () => {
 
 	const getSeverityColor = (severity: string) => {
 		const colors = {
-			LOW: "bg-blue-100 text-blue-800",
+			LOW: "bg-primary-100 text-primary-800",
 			MEDIUM: "bg-orange-100 text-orange-800",
 			HIGH: "bg-red-100 text-red-800",
 		};
@@ -126,7 +126,7 @@ const ResolveIncidentPage = () => {
 				<div className="p-6 border-b border-gray-200">
 					<div className="flex items-center justify-between">
 						<div>
-							<h1 className="text-2xl font-bold text-gray-900">
+							<h1 className="text-2xl font-montserrat-bold text-gray-900">
 								Resolve Incident
 							</h1>
 							<p className="text-gray-600 mt-1">
@@ -147,24 +147,24 @@ const ResolveIncidentPage = () => {
 					<div className="space-y-6">
 						{/* Incident Summary */}
 						{incident && (
-							<div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-								<h3 className="text-sm font-medium text-blue-800 mb-3">
+							<div className="bg-primary-100 rounded-lg p-4 border border-primary-200">
+								<h3 className="text-sm font-medium text-primary-800 mb-3">
 									Incident Summary
 								</h3>
 								<div className="space-y-2">
 									<div className="flex items-center justify-between">
-										<h4 className="font-semibold text-blue-900">
+										<h4 className="font-montserrat-semibold text-primary-900">
 											{incident.title}
 										</h4>
 										<span
-											className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSeverityColor(
+											className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityColor(
 												incident.severity
 											)}`}
 										>
 											{incident.severity}
 										</span>
 									</div>
-									<div className="text-sm text-blue-700 space-y-1">
+									<div className="text-sm text-primary-700 space-y-1">
 										<div className="flex items-center gap-2">
 											<User className="h-4 w-4" />
 											<span>
@@ -282,7 +282,7 @@ const ResolveIncidentPage = () => {
 				<div className="p-6 border-b border-gray-200">
 					<div className="flex items-center justify-between">
 						<div>
-							<h1 className="text-2xl font-bold text-gray-900">
+							<h1 className="text-2xl font-montserrat-bold text-gray-900">
 								Review Resolution
 							</h1>
 							<p className="text-gray-600 mt-1">
@@ -306,13 +306,13 @@ const ResolveIncidentPage = () => {
 							<h3 className="text-lg font-medium text-gray-900 mb-3">
 								Incident Being Resolved
 							</h3>
-							<div className="bg-gray-50 rounded-lg p-4 border">
+							<div className="bg-gray-100 rounded-lg p-4 border">
 								<div className="flex items-center justify-between mb-2">
-									<h4 className="font-semibold text-gray-900">
+									<h4 className="font-montserrat-semibold text-gray-900">
 										{incident.title}
 									</h4>
 									<span
-										className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSeverityColor(
+										className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityColor(
 											incident.severity
 										)}`}
 									>
@@ -345,17 +345,17 @@ const ResolveIncidentPage = () => {
 						<div className="bg-green-50 rounded-lg p-4 border border-green-200">
 							<div
 								className="ql-editor-preview prose prose-sm max-w-none text-gray-700
-									prose-headings:text-gray-900 prose-headings:font-semibold prose-headings:mt-4 prose-headings:mb-2
-									prose-h1:text-xl prose-h1:font-bold prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
-									prose-h2:text-lg prose-h2:font-semibold
+									prose-headings:text-gray-900 prose-headings:font-montserrat-semibold prose-headings:mt-4 prose-headings:mb-2
+									prose-h1:text-xl prose-h1:font-montserrat-bold prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
+									prose-h2:text-lg prose-h2:font-montserrat-semibold
 									prose-h3:text-base prose-h3:font-medium
 									prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-3
-									prose-strong:text-gray-900 prose-strong:font-semibold
+									prose-strong:text-gray-900 prose-strong:font-montserrat-semibold
 									prose-em:text-gray-600 prose-em:italic
 									prose-ul:text-gray-700 prose-ul:my-3 prose-ul:pl-6
 									prose-ol:text-gray-700 prose-ol:my-3 prose-ol:pl-6
 									prose-li:text-gray-700 prose-li:my-1 prose-li:leading-relaxed
-									prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800
+									prose-a:text-primary prose-a:underline hover:prose-a:text-primary-800
 								"
 								dangerouslySetInnerHTML={{ __html: resolutionNote }}
 							/>
@@ -367,13 +367,13 @@ const ResolveIncidentPage = () => {
 						<h3 className="text-lg font-medium text-gray-900 mb-3">
 							Resolver Information
 						</h3>
-						<div className="bg-gray-50 rounded-lg p-4 border">
+						<div className="bg-gray-100 rounded-lg p-4 border">
 							<div className="flex items-center gap-2">
 								<User className="h-5 w-5 text-gray-400" />
 								<span className="text-gray-900">
 									{user?.firstName} {user?.lastName}
 								</span>
-								<span className="text-sm text-gray-500">({user?.role})</span>
+								<span className="text-sm text-gray-1000">({user?.role})</span>
 							</div>
 							<div className="flex items-center gap-2 mt-1">
 								<Calendar className="h-5 w-5 text-gray-400" />
@@ -480,7 +480,7 @@ const ResolveIncidentPage = () => {
 
 	if (isLoading) {
 		return (
-			<div className="min-h-screen bg-gray-50">
+			<div className="min-h-screen bg-gray-100">
 				<div className="max-w-6xl mx-10 p-6">
 					<div className="mb-6">
 						<button
@@ -504,7 +504,7 @@ const ResolveIncidentPage = () => {
 
 	if (error || !incident) {
 		return (
-			<div className="min-h-screen bg-gray-50">
+			<div className="min-h-screen bg-gray-100">
 				<div className="max-w-6xl mx-10 p-6">
 					<div className="mb-6">
 						<button
@@ -521,7 +521,7 @@ const ResolveIncidentPage = () => {
 						</div>
 						<button
 							onClick={handleGoBack}
-							className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+							className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700"
 						>
 							Go Back
 						</button>
@@ -532,7 +532,7 @@ const ResolveIncidentPage = () => {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-gray-100">
 			{currentStep === "form" && renderFormStep()}
 			{currentStep === "preview" && renderPreviewStep()}
 		</div>

@@ -1,578 +1,819 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-	Clock,
-	Users,
-	DollarSign,
-	Star,
-	MessageSquare,
-	Calendar,
-	Download,
-	FileCheck,
-	FileWarning,
-	Inbox,
-	CheckCircle,
-	MapPin,
-	Activity,
-	XCircle,
-	TrendingUp,
-	Target,
-	Search,
-	Bell,
-	Eye,
-	X,
-	ChevronRight,
-	BarChart3,
-	AlertTriangle,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { StatCard } from "@/components/StatCard";
-import { ChartSection } from "@/components/ChartSection";
-import { NotificationsList } from "@/components/NotificationsList";
-import { ParticipantInvitations } from "@/components/supportworker/ParticipantInvitations";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
 import { useAuth } from "@/contexts/AuthContext";
-import { SupportWorker } from "@/types/user.types";
-import { cn } from "@/lib/utils";
 import {
-	useGetSupportWorkerOverview,
-	useGetSupportWorkerFinancial,
-	useGetSupportWorkerSchedule,
-	useGetSupportWorkerPerformance,
+  useGetSupportWorkerOverview,
+  useGetSupportWorkerPerformance,
 } from "@/hooks/useAnalyticsHooks";
-import Loader from "@/components/Loader";
+import { useGetOrganizationInvites } from "@/hooks/useInviteHooks";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Calendar,
+  Chart,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  CourseDown,
+  CourseUp,
+  DollarMinimalistic,
+  Eye,
+  Star,
+  UsersGroupTwoRounded,
+} from "@solar-icons/react";
+import { SupportWorker } from "@/types/user.types";
+import { useState, useMemo } from "react";
+import {
+  Line,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ComposedChart,
+} from "recharts";
+import GeneralHeader from "@/components/GeneralHeader";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import {
-	BarChart,
-	Bar,
-	LineChart,
-	Line,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	ComposedChart,
-} from "recharts";
+import Loader from "@/components/Loader";
 
-// Service type labels for display
-const SERVICE_TYPE_LABELS: Record<string, string> = {
-	personalCare: "Personal Care",
-	socialSupport: "Social Support",
-	transport: "Transport",
-	householdTasks: "Household Tasks",
-	mealPreparation: "Meal Preparation",
-	medicationSupport: "Medication Support",
-	mobilityAssistance: "Mobility Assistance",
-	therapySupport: "Therapy Support",
-	behaviorSupport: "Behavior Support",
-	communityAccess: "Community Access",
-};
+// Stat card component
+function StatCard({ title, value, icon: Icon, trend, trendDirection }) {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm font-semibold text-gray-600">{title}</div>
+        <div className="p-2 rounded-full bg-primary-300/20">
+          <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
+        </div>
+      </div>
+      <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+        {value}
+      </div>
+      {trend && (
+        <div
+          className={`text-xs font-semibold flex items-center gap-1 ${
+            trendDirection === "up"
+              ? "text-green-600"
+              : trendDirection === "down"
+              ? "text-red-600"
+              : "text-gray-600"
+          }`}
+        >
+          {trendDirection === "up" && <CourseUp className="h-3 w-3" />}
+          {trendDirection === "down" && <CourseDown className="h-3 w-3" />}
+          {trend}
+        </div>
+      )}
+    </div>
+  );
+}
 
-// Performance Chart Component using real data and Recharts
-function PerformanceChart({ overviewData, performanceData, scheduleData }: any) {
-	// Transform real performance data for the chart
-	const chartData = useMemo(() => {
-		if (!performanceData?.monthlyTrends) {
-			return [];
-		}
-		
-		return performanceData.monthlyTrends.map((trend: any) => ({
-			month: new Date(trend.month).toLocaleDateString('en-US', { month: 'short' }),
-			completion: trend.completionRate || 0,
-			onTime: trend.onTimeRate || 0,
-			availability: trend.availabilityUtilization || 0,
-		}));
-	}, [performanceData]);
+// Performance chart component
+function PerformanceChart({
+  selectedOption,
+  onSelectedOptionChange,
+  customRange,
+  onCustomRangeChange,
+}) {
+  const dateRange =
+    selectedOption === "custom"
+      ? {
+          start: customRange.start.toISOString(),
+          end: customRange.end.toISOString(),
+        }
+      : selectedOption;
 
-	return (
-		<Card className="border-guardian/10">
-			<CardHeader>
-				<div className="flex justify-between items-center">
-					<CardTitle className="text-lg font-medium text-guardian">Performance Overview</CardTitle>
-					<div className="flex items-center gap-4">
-						<Button variant="outline" size="sm" className="border-guardian/20">
-							<Calendar className="h-4 w-4 mr-2" />
-							Pick Date
-						</Button>
-						<Select defaultValue="current">
-							<SelectTrigger className="w-32 border-guardian/20">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="current">Current Month</SelectItem>
-								<SelectItem value="last">Last Month</SelectItem>
-								<SelectItem value="quarter">This Quarter</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-				</div>
-			</CardHeader>
-			<CardContent>
-				<div className="space-y-6">
-					{/* Performance Metric Display */}
-					<div>
-						<div className="flex justify-between items-center mb-4">
-							<span className="text-4xl font-bold text-guardian">
-								{overviewData?.performanceMetrics?.completionRate || 0}%
-							</span>
-							<span className="text-green-600 text-sm flex items-center font-medium">
-								<TrendingUp className="w-4 h-4 mr-1" />
-								{overviewData?.workSummary?.hoursWorked?.percentageChange || 0}%
-							</span>
-						</div>
-						
-						{/* Performance Stats Grid */}
-						<div className="grid grid-cols-3 gap-4 text-sm mb-6">
-							<div>
-								<div className="text-muted-foreground mb-1">Completion Rate</div>
-								<div className="font-semibold text-lg">
-									{overviewData?.performanceMetrics?.completionRate || 0}%
-								</div>
-							</div>
-							<div>
-								<div className="text-muted-foreground mb-1">On-Time Rate</div>
-								<div className="font-semibold text-lg">
-									{overviewData?.performanceMetrics?.onTimeRate || 0}%
-								</div>
-							</div>
-							<div>
-								<div className="text-muted-foreground mb-1">Availability Utilization</div>
-								<div className="font-semibold text-lg">
-									{performanceData?.availabilityComparison?.utilizationPercentage?.toFixed(1) || 0.0}%
-								</div>
-							</div>
-						</div>
+  // Update hook calls
+  const { data: overviewData, isLoading: overviewLoading } =
+    useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: performanceData, isLoading: performanceLoading } =
+    useGetSupportWorkerPerformance(dateRange);
 
-						{/* Recharts Chart */}
-						<div className="h-64">
-							<ResponsiveContainer width="100%" height="100%">
-								<ComposedChart
-									data={chartData}
-									margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-								>
-									<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e7ff" />
-									<XAxis
-										dataKey="month"
-										axisLine={false}
-										tickLine={false}
-										tick={{ fill: "#64748b", fontSize: 12 }}
-									/>
-									<YAxis
-										axisLine={false}
-										tickLine={false}
-										tick={{ fill: "#64748b", fontSize: 12 }}
-									/>
-									<Tooltip
-										contentStyle={{
-											background: "white",
-											borderRadius: "8px",
-											border: "none",
-											boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-											padding: "8px 12px",
-										}}
-										labelStyle={{
-											color: "#1e3b93",
-											fontWeight: 600,
-											marginBottom: 4,
-										}}
-									/>
-									<Bar
-										dataKey="completion"
-										fill="#1e3b93"
-										radius={[4, 4, 0, 0]}
-										maxBarSize={40}
-									/>
-									<Line
-										type="monotone"
-										dataKey="onTime"
-										stroke="#fbbf24"
-										strokeWidth={3}
-										dot={{ r: 4, fill: "#fbbf24" }}
-										activeDot={{ r: 6, fill: "#fbbf24" }}
-									/>
-								</ComposedChart>
-							</ResponsiveContainer>
-						</div>
-						
-						{/* Chart Legend */}
-						<div className="flex justify-center gap-6 mt-4 text-sm">
-							<div className="flex items-center">
-								<div className="w-4 h-3 bg-guardian rounded mr-2"></div>
-								<span className="text-muted-foreground">Completion Rate</span>
-							</div>
-							<div className="flex items-center">
-								<div className="w-4 h-1 bg-yellow-400 rounded mr-2"></div>
-								<span className="text-muted-foreground">On-Time Trend</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-	);
+  const chartData = useMemo(() => {
+    if (
+      !performanceData?.monthlyTrends ||
+      performanceData.monthlyTrends.length === 0
+    ) {
+      return [];
+    }
+
+    return performanceData.monthlyTrends.map((trend) => ({
+      month: new Date(trend.month).toLocaleDateString("en-US", {
+        month: "short",
+      }),
+      completionRate: trend.completionRate || 0,
+      onTimeRate: trend.onTimeRate || 0,
+    }));
+  }, [performanceData]);
+
+  const metrics = {
+    completionRate: overviewData?.performanceMetrics?.completionRate || 0,
+    percentageChange: Math.abs(
+      overviewData?.workSummary?.hoursWorked?.percentageChange || 0
+    ),
+    hasIncrease:
+      (overviewData?.workSummary?.hoursWorked?.percentageChange || 0) > 0,
+  };
+
+  const isLoading = overviewLoading || performanceLoading;
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+          <div className="h-64 bg-gray-100 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Performance Overview
+          </h2>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <Select
+              value={selectedOption}
+              onValueChange={onSelectedOptionChange}
+            >
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Pick Date Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="quarter">This Quarter</SelectItem>
+                <SelectItem value="year">This Year</SelectItem>
+                <SelectItem value="custom">Custom Range</SelectItem>
+              </SelectContent>
+            </Select>
+            {selectedOption === "custom" && (
+              <>
+                <label className="text-sm font-medium text-gray-700">
+                  Start:
+                </label>
+                <input
+                  type="date"
+                  value={customRange.start.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    onCustomRangeChange({
+                      ...customRange,
+                      start: new Date(e.target.value),
+                    })
+                  }
+                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                />
+                <label className="text-sm font-medium text-gray-700">
+                  End:
+                </label>
+                <input
+                  type="date"
+                  value={customRange.end.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    onCustomRangeChange({
+                      ...customRange,
+                      end: new Date(e.target.value),
+                    })
+                  }
+                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                />
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+          <div className="text-center p-8">
+            <Chart className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+            <p className="text-sm font-medium">
+              No performance data available yet
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Complete shifts to see your performance trends
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Performance Overview
+        </h2>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Select value={selectedOption} onValueChange={onSelectedOptionChange}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Pick Date Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="custom">Custom Range</SelectItem>
+            </SelectContent>
+          </Select>
+          {selectedOption === "custom" && (
+            <>
+              <label className="text-sm font-medium text-gray-700">
+                Start:
+              </label>
+              <input
+                type="date"
+                value={customRange.start.toISOString().split("T")[0]}
+                onChange={(e) =>
+                  onCustomRangeChange({
+                    ...customRange,
+                    start: new Date(e.target.value),
+                  })
+                }
+                className="border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+              <label className="text-sm font-medium text-gray-700">End:</label>
+              <input
+                type="date"
+                value={customRange.end.toISOString().split("T")[0]}
+                onChange={(e) =>
+                  onCustomRangeChange({
+                    ...customRange,
+                    end: new Date(e.target.value),
+                  })
+                }
+                className="border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4 md:gap-8 mb-6">
+        <div className="flex gap-3 items-center">
+          <div className="text-2xl md:text-3xl font-bold text-gray-900">
+            {metrics.completionRate}%
+          </div>
+          {metrics.percentageChange > 0 && (
+            <div
+              className={`${
+                metrics.hasIncrease
+                  ? "text-green-600 bg-green-600/10"
+                  : "text-red-600 bg-red-600/10"
+              } rounded-lg px-2 py-1 text-sm font-medium flex items-center`}
+            >
+              <span className="mr-1">{metrics.hasIncrease ? "↑" : "↓"}</span>
+              {metrics.percentageChange.toFixed(1)}%
+            </div>
+          )}
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={250}>
+        <ComposedChart
+          data={chartData}
+          margin={{ top: 20, right: 10, left: -20, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#E5E7EB"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="month"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6B7280", fontSize: 12 }}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6B7280", fontSize: 12 }}
+            domain={[0, 100]}
+            ticks={[0, 20, 40, 60, 80, 100]}
+            tickFormatter={(value) => `${value}%`}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "white",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+            }}
+            formatter={(value) => `${value}%`}
+          />
+          <Bar
+            dataKey="completionRate"
+            fill="#0D2BEC"
+            radius={[4, 4, 0, 0]}
+            barSize={40}
+          />
+          <Line
+            type="monotone"
+            dataKey="onTimeRate"
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: "#FBBF24", r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+
+      <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-sm mt-4">
+        <div className="flex items-center">
+          <div className="w-4 h-3 rounded mr-2 bg-[#0D2BEC]"></div>
+          <span className="text-gray-600">Completion Rate</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-8 h-1 bg-yellow-400 rounded mr-2"></div>
+          <span className="text-gray-600">On-Time Trend</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Invitations Table Component
+function InvitationsTable({ invitations, isLoading }) {
+  const navigate = useNavigate();
+  const [entriesPerPage, setEntriesPerPage] = useState("5");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  if (isLoading) {
+    return (
+      <div className="bg-white mt-8 rounded-lg border border-gray-200">
+        <div className="p-4 md:p-6 border-b border-gray-200">
+          <div className="h-6 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+        </div>
+        <div className="p-8">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 bg-gray-100 rounded mb-3 animate-pulse"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!invitations || invitations.length === 0) {
+    return (
+      <div className="bg-white mt-8 rounded-lg border border-gray-200">
+        <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            All Invitations
+          </h2>
+        </div>
+        <div className="p-12 text-center text-gray-500">
+          <UsersGroupTwoRounded className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+          <p className="text-sm font-medium text-gray-600">
+            No invitations available
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            You'll see organization invitations here when they're sent to you
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const displayInvitations = invitations.map((org) => {
+    const workerData = org.workers?.find((w) => w.workerId);
+    const isConfirmed = workerData && workerData.joinedDate;
+
+    return {
+      id: org._id,
+      clientName: org.name,
+      serviceRequested: org.description || "Support Services",
+      date: formatDate(org.createdAt),
+      location: "Organization Network",
+      hourlyRate: workerData?.serviceAgreement?.baseHourlyRate
+        ? `$${workerData.serviceAgreement.baseHourlyRate.toFixed(2)}/hr`
+        : "N/A",
+      status: isConfirmed ? "Confirmed" : "Pending",
+    };
+  });
+
+  const totalPages = Math.ceil(
+    displayInvitations.length / parseInt(entriesPerPage)
+  );
+  const startIndex = (currentPage - 1) * parseInt(entriesPerPage);
+  const endIndex = startIndex + parseInt(entriesPerPage);
+  const currentInvitations = displayInvitations.slice(startIndex, endIndex);
+
+  return (
+    <div className="bg-white mt-8 rounded-lg border border-gray-200">
+      <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
+        <Button
+          onClick={()=>{navigate('/support-worker/organizations')}}
+          variant="link"
+          className="text-primary hover:text-primary/80 text-sm font-medium p-0"
+        >
+          View all →
+        </Button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-gray-200 bg-white font-montserrat-semibold">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+                Client Name
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden md:table-cell">
+                Service Requested
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden lg:table-cell">
+                Date
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden xl:table-cell">
+                Location
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+                Hourly Rate
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+                Status
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200 bg-white">
+            {currentInvitations.map((invitation) => (
+              <TableRow
+                key={invitation.id}
+                className="hover:bg-white transition-colors"
+              >
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
+                      {invitation.clientName.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {invitation.clientName}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">
+                  {invitation.serviceRequested}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
+                  {invitation.date}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
+                  {invitation.location}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {invitation.hourlyRate}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      invitation.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : invitation.status === "Confirmed"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-green-100 text-green-800"
+                    }`}
+                  >
+                    {invitation.status}
+                  </span>
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
+                  {invitation.status === "Pending" ? (
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="sm"
+                        className="w-8 h-8 p-0 bg-primary hover:bg-primary/90"
+                        title="Accept"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="w-8 h-8 p-0 bg-red-600 hover:bg-red-700"
+                        title="Decline"
+                      >
+                        <CloseCircle className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={()=>{navigate(`/support-worker/organizations/${invitation.id}`)}}
+                      variant="outline"
+                      size="sm"
+                      className="border-primary text-primary hover:bg-primary hover:text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-1" /> View
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>Showing</span>
+          <Select value={entriesPerPage} onValueChange={setEntriesPerPage}>
+            <SelectTrigger className="w-20 h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+            </SelectContent>
+          </Select>
+          <span>entries</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            ‹
+          </Button>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
+            (page) => (
+              <Button
+                key={page}
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 ${
+                  currentPage === page
+                    ? "bg-primary text-white hover:bg-primary/90"
+                    : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </Button>
+            )
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            ›
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function SupportWorkerDashboard() {
-	const { user } = useAuth();
-	const navigate = useNavigate();
-	const [searchQuery, setSearchQuery] = useState("");
-	const [filteredShifts, setFilteredShifts] = useState<any[]>([]);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [selectedOption, setSelectedOption] = useState("month"); // Default to "This Month"
+  const [customRange, setCustomRange] = useState({
+    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+    end: new Date(),
+  });
 
-	// Listen for search events from the header
-	useEffect(() => {
-		const handleSearchEvent = (event: CustomEvent) => {
-			setSearchQuery(event.detail.query);
-		};
+  // Determine dateRange for hooks
+  const dateRange =
+    selectedOption === "custom"
+      ? {
+          start: customRange.start.toISOString(),
+          end: customRange.end.toISOString(),
+        }
+      : selectedOption;
 
-		window.addEventListener('dashboardSearch', handleSearchEvent as EventListener);
-		return () => {
-			window.removeEventListener('dashboardSearch', handleSearchEvent as EventListener);
-		};
-	}, []);
+  const { data: overviewData, isLoading: overviewLoading } =
+    useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: invitations, isLoading: invitationsLoading } =
+    useGetOrganizationInvites();
 
-	// Fetch analytics data
-	const {
-		data: overviewData,
-		isLoading: overviewLoading,
-		error: overviewError,
-	} = useGetSupportWorkerOverview("month", true);
-	const {
-		data: financialData,
-		isLoading: financialLoading,
-		error: financialError,
-	} = useGetSupportWorkerFinancial("month");
-	const {
-		data: scheduleData,
-		isLoading: scheduleLoading,
-		error: scheduleError,
-	} = useGetSupportWorkerSchedule("month");
-	const {
-		data: performanceData,
-		isLoading: performanceLoading,
-		error: performanceError,
-	} = useGetSupportWorkerPerformance("month");
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    let greeting = "";
+    if (hour >= 6 && hour < 12) {
+      greeting = "Good Morning";
+    } else if (hour >= 12 && hour < 18) {
+      greeting = "Good Afternoon";
+    } else if (hour >= 18 && hour < 22) {
+      greeting = "Good Evening";
+    } else {
+      greeting = "Good Night";
+    }
+    if (user?.firstName) {
+      greeting += `, ${user.firstName}`;
+    }
+    return greeting;
+  };
 
-	// Filter shifts based on search query
-	useEffect(() => {
-		if (!overviewData?.workSummary?.upcomingShifts) {
-			setFilteredShifts([]);
-			return;
-		}
+  const getTrendDirection = (trend) => {
+    if (!trend || trend === "stable") return "up";
+    return trend === "up" ? "up" : "down";
+  };
 
-		const filtered = overviewData.workSummary.upcomingShifts.filter((shift: any) => {
-			const searchTerm = searchQuery.toLowerCase();
-			return (
-				shift.participantName?.toLowerCase().includes(searchTerm) ||
-				SERVICE_TYPE_LABELS[shift.serviceType]?.toLowerCase().includes(searchTerm) ||
-				shift.serviceType?.toLowerCase().includes(searchTerm) ||
-				shift.address?.toLowerCase().includes(searchTerm)
-			);
-		});
-		setFilteredShifts(filtered);
-	}, [searchQuery, overviewData]);
+  console.log("overviewData:", overviewData);
 
-	// Format data for charts
-	const earningsTrendData = financialData?.earnings?.trend || [];
-	const weeklyHoursData = scheduleData?.weeklyHours || [];
-	const shiftsByServiceType = scheduleData?.shiftDistribution?.byServiceType || {};
+  if (overviewLoading || invitationsLoading) {
+    return <Loader />;
+  }
 
-	// Function to handle view shift details
-	const handleViewShiftDetails = (shiftId: string) => {
-		navigate(`/support-worker/shifts/${shiftId}`);
-	};
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="">
+        <GeneralHeader
+          stickyTop={true}
+          title={getGreeting()}
+          subtitle="Here's a summary of your recent activities and performance"
+          user={user}
+          onLogout={logout}
+          onViewProfile={() => navigate("/support-worker/profile")}
+        />
 
-	if (overviewLoading || financialLoading || scheduleLoading || performanceLoading) {
-		return <Loader />;
-	}
+        {user &&
+          user.role === "supportWorker" &&
+          (user as SupportWorker).verificationStatus?.onboardingComplete &&
+          !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
+            <div className="mb-6">
+              <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+            </div>
+          )}
 
-	if (overviewError || financialError || scheduleError || performanceError) {
-		return (
-			<div className="container py-6 space-y-8">
-				<div className="flex items-center justify-center py-12">
-					<div className="text-center">
-						<XCircle className="mx-auto h-12 w-12 text-red-500" />
-						<p className="mt-4 text-muted-foreground">
-							Failed to load dashboard data
-						</p>
-						<Button
-							className="mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90"
-							onClick={() => window.location.reload()}
-						>
-							Try Again
-						</Button>
-					</div>
-				</div>
-			</div>
-		);
-	}
+        {/* Stats */}
+        {overviewLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 animate-pulse"
+              >
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
+                <div className="h-8 bg-gray-200 rounded w-2/3 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+            <StatCard
+              title="Hours Worked"
+              value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
+              icon={ClockCircle}
+              trend="From last Month"
+              trendDirection={getTrendDirection(
+                overviewData?.workSummary?.hoursWorked?.trend
+              )}
+            />
+            <StatCard
+              title="Active Clients"
+              value={overviewData?.workSummary?.activeClients || 0}
+              icon={UsersGroupTwoRounded}
+              trend="Currently Supporting"
+              trendDirection="stable"
+            />
+            <StatCard
+              title="Earnings"
+              value={`$${(
+                overviewData?.workSummary?.earnings?.current || 0
+              ).toFixed(2)}`}
+              icon={DollarMinimalistic}
+              trend="From last Month"
+              trendDirection={getTrendDirection(
+                overviewData?.workSummary?.earnings?.trend
+              )}
+            />
+            <StatCard
+              title="Performance Ratings"
+              value={(
+                overviewData?.performanceMetrics?.averageRating || 0
+              ).toFixed(1)}
+              icon={Star}
+              trend={`${
+                overviewData?.performanceMetrics?.onTimeRate || 0
+              }% on time rate`}
+              trendDirection="stable"
+            />
+          </div>
+        )}
 
-	return (
-		<div className="container py-6 space-y-8">
-			{/* Show alert if support worker hasn't completed onboarding */}
-			{user &&
-				user.role === "supportWorker" &&
-				(user as SupportWorker).verificationStatus?.onboardingComplete && (
-					<ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
-				)}
-				{/* Stats Row - Updated Design */}
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-					<StatCard
-						title="Hours Worked"
-						value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
-						icon={<Clock size={20} />}
-						change={{
-							value: "From last Month",
-							positive: overviewData?.workSummary?.hoursWorked?.trend === "up",
-						}}
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-					<StatCard
-						title="Active Clients"
-						value={overviewData?.workSummary?.activeClients?.toString() || "0"}
-						icon={<Users size={20} />}
-						additionalText="Currently Supporting"
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-					<StatCard
-						title="Earnings"
-						value={`$${overviewData?.workSummary?.earnings?.current?.toFixed(2) || "0.00"}`}
-						icon={<DollarSign size={20} />}
-						change={{
-							value: "From last Month",
-							positive: overviewData?.workSummary?.earnings?.trend === "up",
-						}}
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-					<StatCard
-						title="Performance Ratings"
-						value={
-							overviewData?.performanceMetrics?.averageRating > 0
-								? `${overviewData.performanceMetrics.averageRating.toFixed(1)}`
-								: "1.5"
-						}
-						icon={<Star size={20} />}
-						additionalText={`${overviewData?.performanceMetrics?.onTimeRate || 95}% on time rate`}
-						className="border-guardian/10 hover:shadow-lg transition-shadow"
-					/>
-				</div>
+        {/* Two columns layout for charts */}
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-6">
+          {/* Performance Chart */}
+          <PerformanceChart
+            selectedOption={selectedOption}
+            onSelectedOptionChange={setSelectedOption}
+            customRange={customRange}
+            onCustomRangeChange={setCustomRange}
+          />
+          {/* Upcoming Schedules */}
+          <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
+           <div className="flex justify-between items-center mb-6">
+             <h2 className="text-lg font-semibold text-gray-900">
+              Upcoming Schedules
+            </h2>
+            <Button onClick={() => { navigate('/support-worker/shifts') }} variant="link" className="ml-auto">
+              View All
+            </Button>
+           </div>
+            {overviewData.workSummary?.upcomingShifts.length > 0 ? (
+              <Table className="mt-4">
+                <TableBody className="divide-y divide-gray-200 bg-white">
+                  {overviewData.workSummary.upcomingShifts.map((shift) => (
+                    <TableRow
+                      key={shift.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {new Date(shift.startTime).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(shift.startTime).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}{" "}
+                          -{" "}
+                          {new Date(shift.endTime).toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
+                        {shift.clientName}
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
+                        {shift.location || "N/A"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+                <div className="text-center p-8">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-sm font-medium">
+                    No upcoming schedules
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Your upcoming shifts will appear here once scheduled
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-				{/* Main Content Grid */}
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-					{/* Left Column - Performance and Invitations */}
-					<div className="lg:col-span-2 space-y-6">
-						{/* Performance Chart */}
-						<PerformanceChart 
-							overviewData={overviewData} 
-							performanceData={performanceData}
-						/>
-
-						{/* All Invitations Table */}
-						<Card className="border-guardian/10">
-							<CardHeader>
-								<div className="flex justify-between items-center">
-									<CardTitle className="text-lg font-medium text-guardian">All Invitations</CardTitle>
-									<Button variant="link" className="text-guardian hover:text-guardian/80">
-										View all →
-									</Button>
-								</div>
-							</CardHeader>
-							<CardContent className="p-0">
-								<ParticipantInvitations />
-								
-								{/* Pagination */}
-								<div className="flex justify-between items-center p-4 border-t border-guardian/10">
-									<div className="text-sm text-muted-foreground">
-										Showing 5 entries
-									</div>
-									<div className="flex items-center space-x-1">
-										<Button variant="outline" size="sm" className="border-guardian/20">‹</Button>
-										<Button size="sm" className="bg-guardian hover:bg-guardian/90">1</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">2</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">3</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">4</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">5</Button>
-										<Button variant="outline" size="sm" className="border-guardian/20">›</Button>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-
-					{/* Right Column - Upcoming Shifts */}
-					<div className="space-y-6">
-						<Card className="border-guardian/10 transition-all duration-200 hover:shadow-lg">
-							<CardHeader className="pb-4 border-b border-guardian/10">
-								<div className="flex justify-between items-center">
-									<CardTitle className="text-lg font-medium text-guardian">
-										Upcoming Shifts
-									</CardTitle>
-									<Button
-										variant="link"
-										className="text-sm p-0 text-guardian hover:text-guardian/80"
-									>
-										View all →
-									</Button>
-								</div>
-							</CardHeader>
-							<CardContent className="pt-6">
-								<div className="space-y-4">
-									{overviewData?.workSummary?.upcomingShifts &&
-									overviewData.workSummary.upcomingShifts.length > 0 ? (
-										<div className="space-y-4">
-											{overviewData.workSummary.upcomingShifts
-												.slice(0, 3)
-												.map((shift: any, index: number) => (
-													<div
-														key={index}
-														className="p-4 rounded-lg border border-guardian/10 transition-all duration-200 hover:shadow-md hover:border-guardian/20"
-													>
-														<div className="flex justify-between items-start mb-3">
-															<div>
-																<h4 className="font-semibold text-gray-900 mb-1">
-																	{SERVICE_TYPE_LABELS[shift.serviceType] || "Behavior Support"}
-																</h4>
-																<Badge 
-																	variant="secondary" 
-																	className="bg-blue-100 text-blue-800"
-																>
-																	{shift.status || "Upcoming"}
-																</Badge>
-															</div>
-															<div className="flex items-center space-x-2">
-																<Avatar className="h-6 w-6">
-																	<AvatarFallback className="bg-gray-300 text-xs">
-																		{shift.participantName?.split(' ').map(n => n[0]).join('') || 'JT'}
-																	</AvatarFallback>
-																</Avatar>
-																<Avatar className="h-6 w-6 -ml-2">
-																	<AvatarFallback className="bg-gray-400 text-xs">
-																		A
-																	</AvatarFallback>
-																</Avatar>
-																<Button 
-																	size="sm" 
-																	className="bg-guardian hover:bg-guardian/90 ml-2"
-																	onClick={() => handleViewShiftDetails(shift._id)}
-																>
-																	<ChevronRight className="h-4 w-4" />
-																</Button>
-															</div>
-														</div>
-														
-														<div className="space-y-2 text-sm text-muted-foreground">
-															<div className="flex items-center">
-																<Calendar className="h-4 w-4 mr-2" />
-																<span>
-																	Date: {new Date(shift.startTime).toLocaleDateString()} | 
-																	Time: {new Date(shift.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-																	{new Date(shift.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-																</span>
-															</div>
-															<div className="flex items-center">
-																<Users className="h-4 w-4 mr-2" />
-																<span>{shift.participantName || "Jossy T"}</span>
-															</div>
-															<div className="flex items-center">
-																<MapPin className="h-4 w-4 mr-2" />
-																<span>{shift.address || "123 Main St, Anytown, Ca 12345"}</span>
-															</div>
-														</div>
-													</div>
-												))}
-										</div>
-									) : (
-										<div className="text-center py-8 text-muted-foreground">
-											<Calendar className="mx-auto h-12 w-12 mb-4 text-guardian/30" />
-											<p>No upcoming shifts scheduled</p>
-											<Button
-												className="mt-4 bg-guardian hover:bg-guardian/90"
-												onClick={() => navigate("/support-worker/shifts")}
-											>
-												View Schedule
-											</Button>
-										</div>
-									)}
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
-
-				{/* Additional Analytics - Hidden for cleaner design but keeping existing functionality */}
-				<div className="hidden">
-					{/* Analytics Charts */}
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						<ChartSection
-							title="Monthly Earnings Trend"
-							data={earningsTrendData}
-							type="line"
-							dataKey="value"
-							xAxisKey="label"
-							className="border-guardian/10"
-						/>
-						<ChartSection
-							title="Weekly Hours Worked"
-							data={weeklyHoursData}
-							type="bar"
-							dataKey="value"
-							xAxisKey="label"
-							className="border-guardian/10"
-						/>
-					</div>
-
-					{/* Service Distribution */}
-					{Object.keys(shiftsByServiceType).length > 0 && (
-						<Card className="border-guardian/10">
-							<CardHeader>
-								<CardTitle className="text-lg font-medium text-guardian">
-									Service Type Distribution This Month
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-									{Object.entries(shiftsByServiceType).map(([serviceType, count]) => (
-										<div key={serviceType} className="p-4 rounded-lg border border-guardian/10">
-											<div className="flex justify-between items-center mb-2">
-												<h4 className="font-medium text-gray-900">
-													{SERVICE_TYPE_LABELS[serviceType] || serviceType}
-												</h4>
-												<Badge variant="secondary" className="bg-guardian/10 text-guardian">
-													{count} shifts
-												</Badge>
-											</div>
-											<Progress
-												value={(count / Math.max(...Object.values(shiftsByServiceType))) * 100}
-												className="mt-2 h-2"
-											/>
-										</div>
-									))}
-								</div>
-							</CardContent>
-						</Card>
-					)}
-				</div>
-			</div>
-		
-	);
+        {/* Invitations Table */}
+        <InvitationsTable
+          invitations={invitations}
+          isLoading={invitationsLoading}
+        />
+      </div>
+    </div>
+  );
 }

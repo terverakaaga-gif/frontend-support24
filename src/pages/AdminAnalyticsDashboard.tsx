@@ -345,7 +345,7 @@ export default function AdminAnalyticsDashboard() {
 			{/* Header Section */}
 			<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div>
-					<h1 className="text-3xl font-bold tracking-tight">
+					<h1 className="text-3xl font-montserrat-bold tracking-tight">
 						Analytics Dashboard
 					</h1>
 					<p className="text-muted-foreground">
@@ -433,7 +433,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingOverview
 													? "Loading..."
 													: formatPercent(
@@ -450,7 +450,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingOverview
 													? "Loading..."
 													: `${
@@ -470,7 +470,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardHeader>
 									<CardContent>
 										<div className="flex items-center gap-2">
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingOverview
 													? "Loading..."
 													: formatPercent(
@@ -516,7 +516,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingOverview
 													? "Loading..."
 													: formatCurrency(
@@ -533,7 +533,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingOverview
 													? "Loading..."
 													: formatCurrency(
@@ -552,7 +552,7 @@ export default function AdminAnalyticsDashboard() {
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
-										<div className="text-2xl font-bold">
+										<div className="text-2xl font-montserrat-bold">
 											{isLoadingOverview
 												? "Loading..."
 												: formatCurrency(
@@ -612,7 +612,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingUsers
 											? "Loading..."
 											: formatNumber(
@@ -628,7 +628,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingUsers
 											? "Loading..."
 											: formatNumber(
@@ -644,7 +644,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingUsers
 											? "Loading..."
 											: formatNumber(
@@ -660,7 +660,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingUsers
 											? "Loading..."
 											: formatNumber(
@@ -731,7 +731,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingFinancial
 											? "Loading..."
 											: formatCurrency(
@@ -747,7 +747,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingFinancial
 											? "Loading..."
 											: formatCurrency(
@@ -763,7 +763,7 @@ export default function AdminAnalyticsDashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
+									<div className="text-2xl font-montserrat-bold">
 										{isLoadingFinancial
 											? "Loading..."
 											: formatPercent(
@@ -800,7 +800,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingPlatform
 													? "Loading..."
 													: formatNumber(
@@ -817,7 +817,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingPlatform
 													? "Loading..."
 													: formatNumber(
@@ -836,7 +836,7 @@ export default function AdminAnalyticsDashboard() {
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
-										<div className="text-2xl font-bold">
+										<div className="text-2xl font-montserrat-bold">
 											{isLoadingPlatform
 												? "Loading..."
 												: formatPercent(
@@ -861,7 +861,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingPlatform
 													? "Loading..."
 													: formatNumber(
@@ -877,7 +877,7 @@ export default function AdminAnalyticsDashboard() {
 											</CardTitle>
 										</CardHeader>
 										<CardContent>
-											<div className="text-2xl font-bold">
+											<div className="text-2xl font-montserrat-bold">
 												{isLoadingPlatform
 													? "Loading..."
 													: formatNumber(
@@ -895,7 +895,7 @@ export default function AdminAnalyticsDashboard() {
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
-										<div className="text-2xl font-bold">
+										<div className="text-2xl font-montserrat-bold">
 											{isLoadingPlatform
 												? "Loading..."
 												: platformData?.organizationMetrics?.averageWorkersPerOrg.toFixed(

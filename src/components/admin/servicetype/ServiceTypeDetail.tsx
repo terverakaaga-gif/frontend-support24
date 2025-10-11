@@ -93,7 +93,7 @@ const ServiceTypeDetail: React.FC = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Service Types
           </Button>
-          <h1 className="text-2xl font-bold">Loading Service Type...</h1>
+          <h1 className="text-2xl font-montserrat-bold">Loading Service Type...</h1>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -157,7 +157,7 @@ const ServiceTypeDetail: React.FC = () => {
             Back to Service Types
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{serviceType.name}</h1>
+            <h1 className="text-2xl font-montserrat-bold">{serviceType.name}</h1>
             <p className="text-sm text-gray-600">Service Type Details</p>
           </div>
         </div>
@@ -184,7 +184,7 @@ const ServiceTypeDetail: React.FC = () => {
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-sm font-medium text-gray-600 mb-2">Service Name</h3>
-                      <p className="text-sm font-semibold">{serviceType.name}</p>
+                      <p className="text-sm font-montserrat-semibold">{serviceType.name}</p>
                     </div>
                     
                     <div>
@@ -209,7 +209,7 @@ const ServiceTypeDetail: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <Calendar className="h-4 w-4 text-gray-1000" />
                       <div>
                         <h3 className="text-sm font-medium text-gray-600">Created</h3>
                         <p className="text-sm">{formatDateTime(serviceType.createdAt)}</p>
@@ -219,7 +219,7 @@ const ServiceTypeDetail: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
-                      <Activity className="h-4 w-4 text-gray-500" />
+                      <Activity className="h-4 w-4 text-gray-1000" />
                       <div>
                         <h3 className="text-sm font-medium text-gray-600">Last Updated</h3>
                         <p className="text-sm">{formatDateTime(serviceType.updatedAt)}</p>
@@ -328,7 +328,7 @@ const ServiceTypeDetail: React.FC = () => {
                   <span className="text-xs font-medium">-</span>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-3">
+              <p className="text-xs text-gray-1000 mt-3">
                 Usage statistics will be available in a future update.
               </p>
             </CardContent>

@@ -226,7 +226,7 @@ export function RateTimeBandForm() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
-          <h1 className="text-2xl font-bold">Error Loading Rate Time Band</h1>
+          <h1 className="text-2xl font-montserrat-bold">Error Loading Rate Time Band</h1>
         </div>
         
         <Card>
@@ -261,7 +261,7 @@ export function RateTimeBandForm() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
-          <h1 className="text-2xl font-bold">Rate Time Band Not Found</h1>
+          <h1 className="text-2xl font-montserrat-bold">Rate Time Band Not Found</h1>
         </div>
         
         <Card>
@@ -288,7 +288,7 @@ export function RateTimeBandForm() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Time Bands
         </Button>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-montserrat-bold">
           {isEditMode ? "Edit Rate Time Band" : "Create New Rate Time Band"}
         </h1>
       </div>
@@ -516,7 +516,7 @@ export function RateTimeBandForm() {
                       <div className="space-y-1 leading-none">
                         <FormLabel>
                           <div className="flex items-center">
-                            <Bed className="h-4 w-4 mr-2 text-blue-500" />
+                            <Bed className="h-4 w-4 mr-2 text-primary-500" />
                             <span>Sleepover Shift</span>
                           </div>
                         </FormLabel>

@@ -67,7 +67,7 @@ export function OTPVerification({
     <ScrollArea className="h-[400px] w-full">
       <div className="space-y-6 px-4 py-2">
         <div className="text-center">
-          <h2 className="text-2xl font-bold">Verify Your Email</h2>
+          <h2 className="text-2xl font-montserrat-bold">Verify Your Email</h2>
           <p className="text-muted-foreground mt-2">
             We've sent a 6-digit verification code to <span className="font-medium">{email}</span>
           </p>

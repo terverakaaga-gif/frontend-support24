@@ -189,7 +189,7 @@ const CreateIncidentPage = () => {
 				<div className="p-6 border-b border-gray-200">
 					<div className="flex items-center justify-between">
 						<div>
-							<h1 className="text-2xl font-bold text-gray-900">
+							<h1 className="text-2xl font-montserrat-bold text-gray-900">
 								Create Incident
 							</h1>
 							<p className="text-gray-600 mt-1">
@@ -308,9 +308,9 @@ const CreateIncidentPage = () => {
 									{selectedFiles.map((file, index) => (
 										<div
 											key={index}
-											className="flex items-center gap-2 text-sm bg-gray-50 p-2 rounded"
+											className="flex items-center gap-2 text-sm bg-gray-100 p-2 rounded"
 										>
-											<FileText className="h-4 w-4 text-gray-500" />
+											<FileText className="h-4 w-4 text-gray-1000" />
 											<span>{file.name}</span>
 											<span className="text-xs text-gray-400">
 												{(file.size / 1024).toFixed(1)} KB
@@ -397,7 +397,7 @@ const CreateIncidentPage = () => {
 					<div className="p-6 border-b border-gray-200">
 						<div className="flex items-center justify-between">
 							<div>
-								<h1 className="text-2xl font-bold text-gray-900">
+								<h1 className="text-2xl font-montserrat-bold text-gray-900">
 									Review Incident
 								</h1>
 								<p className="text-gray-600 mt-1">
@@ -420,20 +420,20 @@ const CreateIncidentPage = () => {
 								{formData.title}
 							</h3>
 							<div
-								className="prose max-w-none text-gray-600 bg-gray-50 rounded-lg p-4"
+								className="prose max-w-none text-gray-600 bg-gray-100 rounded-lg p-4"
 								dangerouslySetInnerHTML={{ __html: formData.description }}
 							/>
 						</div>
 
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label className="block text-sm font-medium text-gray-500 mb-1">
+								<label className="block text-sm font-medium text-gray-1000 mb-1">
 									Severity
 								</label>
 								<span
-									className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+									className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${
 										formData.severity === "LOW"
-											? "bg-blue-100 text-blue-800"
+											? "bg-primary-100 text-primary-800"
 											: formData.severity === "MEDIUM"
 											? "bg-orange-100 text-orange-800"
 											: "bg-red-100 text-red-800"
@@ -444,7 +444,7 @@ const CreateIncidentPage = () => {
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-500 mb-1">
+								<label className="block text-sm font-medium text-gray-1000 mb-1">
 									Shift ID
 								</label>
 								<p className="text-gray-900">{formData.shiftId}</p>
@@ -453,21 +453,21 @@ const CreateIncidentPage = () => {
 
 						{selectedShift && (
 							<div>
-								<label className="block text-sm font-medium text-gray-500 mb-1">
+								<label className="block text-sm font-medium text-gray-1000 mb-1">
 									Shift Details
 								</label>
-								<div className="bg-gray-50 rounded-lg p-3">
+								<div className="bg-gray-100 rounded-lg p-3">
 									<p className="text-sm font-medium text-gray-900">
 										{typeof selectedShift.participantId === "object" &&
 										selectedShift.participantId !== null
 											? `${selectedShift.participantId.firstName} ${selectedShift.participantId.lastName}`
 											: String(selectedShift.participantId)}
 									</p>
-									<p className="text-xs text-gray-500 mt-1">
+									<p className="text-xs text-gray-1000 mt-1">
 										{new Date(selectedShift.startTime).toLocaleString()} -{" "}
 										{new Date(selectedShift.endTime).toLocaleString()}
 									</p>
-									<p className="text-xs text-gray-500">
+									<p className="text-xs text-gray-1000">
 										{selectedShift.serviceType}
 									</p>
 								</div>
@@ -476,7 +476,7 @@ const CreateIncidentPage = () => {
 
 						{selectedFiles.length > 0 && (
 							<div>
-								<label className="block text-sm font-medium text-gray-500 mb-1">
+								<label className="block text-sm font-medium text-gray-1000 mb-1">
 									Evidence Files
 								</label>
 								<div className="space-y-2">
@@ -485,7 +485,7 @@ const CreateIncidentPage = () => {
 											key={index}
 											className="flex items-center gap-2 text-sm"
 										>
-											<FileText className="h-4 w-4 text-gray-500" />
+											<FileText className="h-4 w-4 text-gray-1000" />
 											<span>{file.name}</span>
 										</div>
 									))}
@@ -520,7 +520,7 @@ const CreateIncidentPage = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-gray-100">
 			{currentStep === "form" && renderFormStep()}
 			{currentStep === "preview" && renderPreviewStep()}
 
@@ -529,7 +529,7 @@ const CreateIncidentPage = () => {
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
 					<div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
 						<div className="flex items-center justify-between p-6 border-b border-gray-200">
-							<h2 className="text-xl font-semibold text-gray-900">
+							<h2 className="text-xl font-montserrat-semibold text-gray-900">
 								Select Shift
 							</h2>
 							<button
@@ -568,9 +568,9 @@ const CreateIncidentPage = () => {
 										filteredShifts.map((shift) => (
 											<div
 												key={shift._id}
-												className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
+												className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
 													formData.shiftId === shift.shiftId
-														? "border-[#008CFF] bg-blue-50"
+														? "border-[#008CFF] bg-primary-100"
 														: "border-gray-200"
 												}`}
 												onClick={() => handleShiftSelect(shift)}
@@ -583,7 +583,7 @@ const CreateIncidentPage = () => {
 																? `${shift.participantId.firstName} ${shift.participantId.lastName}`
 																: String(shift.participantId)}
 														</h3>
-														<p className="text-sm text-gray-500">
+														<p className="text-sm text-gray-1000">
 															{shift.serviceType}
 														</p>
 													</div>
@@ -613,7 +613,7 @@ const CreateIncidentPage = () => {
 											</div>
 										))
 									) : (
-										<div className="text-center py-8 text-gray-500">
+										<div className="text-center py-8 text-gray-1000">
 											No shifts found
 										</div>
 									)}
