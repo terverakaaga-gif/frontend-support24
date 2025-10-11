@@ -24,7 +24,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const ShiftsPage = () => {
-  const {user, logout} = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -45,13 +45,19 @@ const ShiftsPage = () => {
       statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
     const matchesSearch =
       searchQuery === "" ||
-      shift.serviceTypeId.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      shift.serviceTypeId.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       (typeof shift.participantId === "object" &&
         shift.participantId.firstName &&
-        shift.participantId.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        shift.participantId.firstName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())) ||
       (typeof shift.participantId === "object" &&
         shift.participantId.lastName &&
-        shift.participantId.lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        shift.participantId.lastName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())) ||
       shift.address.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
@@ -84,13 +90,21 @@ const ShiftsPage = () => {
       <div className="px-8 py-6">
         {/* Header */}
         <GeneralHeader
-          stickyTop={true} 
+          stickyTop={true}
           title={pageTitles.participant["/participant/shifts"].title}
           subtitle="Manage your care schedule and track upcoming appointments"
           user={user}
           onLogout={logout}
-          onViewProfile={()=>{navigate(Object.keys(pageTitles.participant).find(key => pageTitles.participant[key] === pageTitles.participant["/participant/profile"]))}} />
-
+          onViewProfile={() => {
+            navigate(
+              Object.keys(pageTitles.participant).find(
+                (key) =>
+                  pageTitles.participant[key] ===
+                  pageTitles.participant["/participant/profile"]
+              )
+            );
+          }}
+        />
 
         {/* Filters */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -117,7 +131,9 @@ const ShiftsPage = () => {
               {label}
               <span
                 className={`px-1.5 py-0.5 rounded-full text-xs ${
-                  statusFilter === key ? "bg-white text-gray-700" : "bg-gray-100"
+                  statusFilter === key
+                    ? "bg-white text-gray-700"
+                    : "bg-gray-100"
                 }`}
               >
                 {getStatusCount(key)}
@@ -141,27 +157,27 @@ const ShiftsPage = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
-          <div className="flex bg-white border border-gray-300 rounded-md">
+          <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-colors ${
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
                 viewMode === "grid"
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-100"
-              } rounded-l-md`}
+              }`}
             >
-              <Widget className="w-4 h-4" />
+              <Widget size={24} />
               Grid
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-colors ${
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
                 viewMode === "list"
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-100"
-              } rounded-r-md`}
+              }`}
             >
-              <List className="w-4 h-4" />
+              <List size={24} />
               List
             </button>
           </div>
@@ -207,7 +223,7 @@ const ShiftsPage = () => {
                 of <span className="font-medium">{filteredShifts.length}</span>{" "}
                 entries
               </p>
-              
+
               {/* Items Per Page Selector */}
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Show:</span>
@@ -236,7 +252,9 @@ const ShiftsPage = () => {
             {totalPages > 1 && (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
                   disabled={currentPage === 1}
                   className="p-2 rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
                 >

@@ -71,6 +71,7 @@ import ResolveIncidentPage from "./pages/ResolveIncidentPage";
 import ProfileEditForm from "./components/layouts/ProfileEditForm";
 import SupportWorkerProfilePreview from "./pages/SupportWorkerProfilePreview";
 import SupportWorkerInvite from "./pages/SupportWorkerInvite";
+import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -296,10 +297,14 @@ const AppRoutes = () => {
                   path="/organizations"
                   element={<ParticipantOrganizationsPage />}
                 />
-                <Route
+                 <Route
                   path="/organizations/:id"
                   element={<OrganizationDetailsPage />}
                 />
+                {/* <Route
+                  path="/organizations/:id"
+                  element={<ParticipantOrganizationDetailsPage />}
+                /> */}
                 <Route path="/timesheets" element={<ParticipantTimesheets />} />
                 <Route
                   path="/timesheets/:id"

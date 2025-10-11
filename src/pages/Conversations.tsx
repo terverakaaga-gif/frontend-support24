@@ -212,7 +212,7 @@ export default function Conversations() {
   }
 
   return (
-    <div className="min-h-screen p-10 bg-gray-100 font-montserrat space-y-8">
+    <div className="min-h-screen p-8 bg-gray-100 font-montserrat space-y-8">
       {/* Header */}
       <GeneralHeader
         title={
@@ -268,7 +268,7 @@ export default function Conversations() {
         }
       />
 
-      <div className="flex flex-col md:flex-row gap-5 ">
+      <div className="flex flex-col md:flex-row gap-5 h-[85vh]">
         {/* Left Sidebar - Conversations List */}
         <div className="w-[400px] shadow-sm rounded-xl flex flex-col bg-white overflow-hidden">
           {/* Conversation Search */}
@@ -279,7 +279,7 @@ export default function Conversations() {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="px-10 py-5 border-gray-200 focus:border-primary-300"
+                className="px-8 py-5 border-gray-200 focus:border-primary-300"
               />
             </div>
           </div>

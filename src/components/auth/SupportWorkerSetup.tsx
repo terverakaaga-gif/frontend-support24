@@ -394,7 +394,7 @@ export function SupportWorkerSetup({
                     {/* Vertical Line */}
                     {index < steps.length - 1 && (
                       <div
-                        className="absolute left-4 top-10 bottom-0 w-0.5 bg-gray-200 -mb-2"
+                        className="absolute left-4 top-8 bottom-0 w-0.5 bg-gray-200 -mb-2"
                         style={{ height: "44px" }}
                       />
                     )}

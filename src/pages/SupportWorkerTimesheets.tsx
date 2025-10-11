@@ -163,7 +163,7 @@ const SupportWorkerTimesheets: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-10">
+    <div className="min-h-screen bg-gray-100 p-8">
       <div className="space-y-6">
         {/* Header */}
         <GeneralHeader

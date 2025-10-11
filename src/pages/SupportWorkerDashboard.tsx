@@ -35,6 +35,8 @@ import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Mock data for visualization when real data is unavailable
 const MOCK_OVERVIEW_DATA = {
@@ -218,16 +220,18 @@ function PerformanceChart({ overviewData, performanceData }) {
           Performance Overview
         </h2>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-100 bg-white">
+          <Button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-100 bg-white">
             Pick Date
             <Calendar className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="flex items-center gap-8 mb-6">
         <div className="flex gap-3 items-center">
-          <div className="text-2xl font-montserrat-bold">{metrics.completionRate}%</div>
+          <div className="text-2xl font-montserrat-bold">
+            {metrics.completionRate}%
+          </div>
           <div className="text-green-600 bg-green-600/10 rounded-lg px-2 py-1 text-sm font-medium flex items-center mt-1">
             <span className="mr-1">↑</span> {metrics.percentageChange}%
           </div>
@@ -320,9 +324,9 @@ function PerformanceChart({ overviewData, performanceData }) {
 //       />
 //       <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
 //         <h2 className="text-lg font-montserrat-semibold text-gray-900">Upcoming Shifts</h2>
-//         <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+//         <Button className="text-status-pending hover:text-status-pending text-sm font-medium">
 //           View all →
-//         </button>
+//         </Button>
 //       </div>
 
 //       <div className="p-6 space-y-4">
@@ -351,61 +355,65 @@ function InvitationsTable({ invitations }) {
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">All Invitations</h2>
-        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">
+          All Invitations
+        </h2>
+        <Button
+          variant="link"
+          className="text-status-pending hover:text-status-pending text-sm font-medium"
+        >
           View all →
-        </button>
+        </Button>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-100">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-gray-200 bg-gray-100">
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Client Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Service Requested
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Location
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Hourly Rate
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Status
-              </th>
-              <th className="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200">
             {displayInvitations.map((invitation) => (
-              <tr key={invitation.id} className="hover:bg-gray-100">
-                <td className="px-6 py-4 whitespace-nowrap">
+              <TableRow key={invitation.id} className="hover:bg-gray-100">
+                <TableCell className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-gray-300 rounded-full mr-3"></div>
                     <span className="text-sm font-medium text-gray-900">
                       {invitation.clientName}
                     </span>
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                </TableCell>
+                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                   {invitation.serviceRequested}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                </TableCell>
+                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                   {invitation.date}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-600">
+                </TableCell>
+                <TableCell className="px-6 py-4 text-sm text-gray-600">
                   {invitation.location}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                </TableCell>
+                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                   {invitation.hourlyRate}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                </TableCell>
+                <TableCell className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                       invitation.status === "Pending"
@@ -417,27 +425,27 @@ function InvitationsTable({ invitations }) {
                   >
                     {invitation.status}
                   </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right">
+                </TableCell>
+                <TableCell className="px-6 py-4 whitespace-nowrap text-right">
                   {invitation.status === "Pending" ? (
                     <div className="flex gap-2 justify-end">
-                      <button className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white hover:bg-primary-700">
+                      <Button className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white hover:bg-primary-700">
                         <CheckCircle className="h-4 w-4" />
-                      </button>
-                      <button className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white hover:bg-red-700">
+                      </Button>
+                      <Button className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white hover:bg-red-700">
                         <XCircle className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
                   ) : (
-                    <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100 flex items-center gap-1">
+                    <Button variant="outline" className="border-primary text-primary hover:text-white hover:bg-primary flex items-center gap-1">
                       <Eye className="h-4 w-4" /> View
-                    </button>
+                    </Button>
                   )}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination */}
@@ -451,11 +459,11 @@ function InvitationsTable({ invitations }) {
           </select>
         </div>
         <div className="flex items-center gap-1">
-          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100">
+          <Button className="border-primary text-primary hover:text-white hover:bg-primary">
             ‹
-          </button>
+          </Button>
           {[1, 2, 3, 4, 5].map((page) => (
-            <button
+            <Button
               key={page}
               onClick={() => setCurrentPage(page)}
               className={`px-3 py-1 rounded ${
@@ -465,11 +473,11 @@ function InvitationsTable({ invitations }) {
               }`}
             >
               {page}
-            </button>
+            </Button>
           ))}
-          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100">
+          <Button className="border-primary text-primary hover:text-white hover:bg-primary">
             ›
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -526,7 +534,7 @@ export default function SupportWorkerDashboard() {
 
   return (
     <div className="min-h-screen font-sans">
-      <div className="p-10">
+      <div className="p-8">
         {/* Header */}
 
         <GeneralHeader

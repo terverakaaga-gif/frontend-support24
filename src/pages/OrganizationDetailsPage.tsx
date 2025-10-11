@@ -1,945 +1,731 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-	Building2,
-	Users,
-	Calendar,
-	DollarSign,
-	Mail,
-	Clock,
-	CheckCircle,
-	XCircle,
-	AlertCircle,
-	Eye,
-	MoreVertical,
-	Building,
-	TrendingUp,
-	Activity,
-	ArrowLeft,
-	Phone,
-	User,
-	MapPin,
-	Edit,
-	Trash2,
-	UserPlus,
-	Settings,
-	Star,
-	FileText,
-	CreditCard,
-	Shield,
-	Target,
-	Award,
-	Calendar as CalendarIcon,
-	ChevronDown,
-	ChevronUp,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { get } from "@/api/apiClient";
 import { format, parseISO } from "date-fns";
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  ArrowLeft,
+  Buildings3,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  DangerCircle,
+  Letter,
+  List,
+  UsersGroupRounded,
+  UsersGroupTwoRounded,
+  Widget,
+} from "@solar-icons/react";
+import { Button } from "@/components/ui/button";
 
-// Updated types based on actual API response
+// Types
 interface RateTimeBand {
-	_id: string;
-	name: string;
-	code: string;
-	startTime?: string;
-	endTime?: string;
-	isActive: boolean;
+  _id: string;
+  name: string;
+  code: string;
+  startTime?: string;
+  endTime?: string;
+  isActive: boolean;
 }
 
 interface ShiftRate {
-	rateTimeBandId: string | RateTimeBand;
-	hourlyRate: number;
-	_id: string;
+  rateTimeBandId: string | RateTimeBand;
+  hourlyRate: number;
+  _id: string;
 }
 
 interface ServiceAgreement {
-	baseHourlyRate: number;
-	shiftRates: ShiftRate[];
-	distanceTravelRate: number;
-	startDate: string;
-	termsAccepted: boolean;
+  baseHourlyRate: number;
+  shiftRates: ShiftRate[];
+  distanceTravelRate: number;
+  startDate: string;
+  termsAccepted: boolean;
 }
 
 interface WorkerProfile {
-	_id: string;
-	email: string;
-	firstName: string;
-	lastName: string;
-	phone: string;
-	profileImage?: string;
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  profileImage?: string;
 }
 
 interface Worker {
-	serviceAgreement: ServiceAgreement;
-	workerId: string | WorkerProfile;
-	joinedDate: string;
-	_id: string;
+  serviceAgreement: ServiceAgreement;
+  workerId: string | WorkerProfile;
+  joinedDate: string;
+  _id: string;
 }
 
 interface ProposedRates {
-	baseHourlyRate: number;
-	shiftRates: ShiftRate[];
-	distanceTravelRate: number;
+  baseHourlyRate: number;
+  shiftRates: ShiftRate[];
+  distanceTravelRate: number;
 }
 
 interface PendingInvite {
-	proposedRates: ProposedRates;
-	serviceAgreement: {
-		shiftRates: ShiftRate[];
-	};
-	workerId: string | WorkerProfile;
-	inviteDate: string;
-	status: string;
-	notes: string;
-	_id: string;
-	adminId?: string;
-	responseDate?: string;
-	adminNotes?: string;
-	declineReason?: string;
+  proposedRates: ProposedRates;
+  serviceAgreement: {
+    shiftRates: ShiftRate[];
+  };
+  workerId: string | WorkerProfile;
+  inviteDate: string;
+  status: string;
+  notes: string;
+  _id: string;
+  adminId?: string;
+  responseDate?: string;
+  adminNotes?: string;
+  declineReason?: string;
 }
 
 interface Organization {
-	_id: string;
-	name: string;
-	participantId: string;
-	workers: Worker[];
-	pendingInvites: PendingInvite[];
-	description: string;
-	createdAt: string;
-	updatedAt: string;
-	__v: number;
-}
-
-interface OrganizationResponse {
-	organization: Organization;
+  _id: string;
+  name: string;
+  participantId: string;
+  workers: Worker[];
+  pendingInvites: PendingInvite[];
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 // API service
 const organizationDetailService = {
-	getOrganization: async (id: string): Promise<Organization> => {
-		// For now, we'll use the organizations endpoint and filter
-		// In a real app, this would be a dedicated endpoint like /organizations/:id
-		const response = await get<{ organizations: Organization[] }>(
-			"/organizations"
-		);
-		const organization = response.organizations.find((org) => org._id === id);
-		if (!organization) {
-			throw new Error("Organization not found");
-		}
-		return organization;
-	},
+  getOrganization: async (id: string): Promise<Organization> => {
+    const response = await get<{ organizations: Organization[] }>(
+      "/organizations"
+    );
+    const organization = response.organizations.find((org) => org._id === id);
+    if (!organization) {
+      throw new Error("Organization not found");
+    }
+    return organization;
+  },
 };
 
-export default function OrganizationDetailsPage() {
-	const { id } = useParams<{ id: string }>();
-	const navigate = useNavigate();
-	const [expandedSections, setExpandedSections] = useState<
-		Record<string, boolean>
-	>({
-		workers: true,
-		invites: true,
-		agreements: false,
-	});
+// Helper functions
+const getWorkerDisplayName = (workerId: string | WorkerProfile): string => {
+  if (typeof workerId === "string") {
+    return `Worker ${workerId.slice(-8)}`;
+  }
+  return `${workerId.firstName} ${workerId.lastName}`;
+};
 
-	const {
-		data: organization,
-		isLoading,
-		error,
-		refetch,
-	} = useQuery({
-		queryKey: ["organization-details", id],
-		queryFn: () => organizationDetailService.getOrganization(id!),
-		enabled: !!id,
-	});
+const getWorkerInitials = (workerId: string | WorkerProfile): string => {
+  if (typeof workerId === "string") {
+    return workerId.slice(0, 2).toUpperCase();
+  }
+  return `${workerId.firstName[0]}${workerId.lastName[0]}`.toUpperCase();
+};
 
-	const toggleSection = (section: string) => {
-		setExpandedSections((prev) => ({
-			...prev,
-			[section]: !prev[section],
-		}));
-	};
+const getWorkerEmail = (workerId: string | WorkerProfile): string => {
+  if (typeof workerId === "string") {
+    return "Email not available";
+  }
+  return workerId.email;
+};
 
-	// Helper function to get rate band name
-	const getRateBandName = (rateTimeBandId: string | RateTimeBand): string => {
-		if (typeof rateTimeBandId === "object") {
-			return rateTimeBandId.name;
-		}
-		// For string IDs, try to provide a more readable name based on common patterns
-		const rateBandNames: { [key: string]: string } = {
-			"681c6f750ab224ca6685d05c": "Morning Shift",
-			"681c6f750ab224ca6685d05d": "Afternoon Shift",
-			"681c6f750ab224ca6685d05e": "Night Shift",
-			"681c6f750ab224ca6685d05f": "Weekend Shift",
-			"681c6f750ab224ca6685d060": "Holiday Shift",
-		};
-		return (
-			rateBandNames[rateTimeBandId] || `Rate Band ${rateTimeBandId.slice(-4)}`
-		);
-	};
+const getWorkerPhone = (workerId: string | WorkerProfile): string => {
+  if (typeof workerId === "string") {
+    return "Phone not available";
+  }
+  return workerId.phone;
+};
 
-	// Helper function to get rate band details
-	const getRateBandDetails = (
-		rateTimeBandId: string | RateTimeBand
-	): RateTimeBand | null => {
-		if (typeof rateTimeBandId === "object") {
-			return rateTimeBandId;
-		}
-		return null;
-	};
+const getWorkerProfileImage = (
+  workerId: string | WorkerProfile
+): string | undefined => {
+  if (typeof workerId === "string") {
+    return undefined;
+  }
+  return workerId.profileImage;
+};
 
-	// Helper function to format time
-	const formatTime = (time?: string): string => {
-		if (!time) return "";
-		return time;
-	};
+const getShiftRateName = (code: string): string => {
+  const shiftNames: { [key: string]: string } = {
+    MORNING: "Morning Shift",
+    AFTERNOON: "Afternoon Shift",
+    NIGHT: "Night Shift",
+    WEEKEND: "Weekend Shift",
+    HOLIDAY: "Public Holiday Shift",
+  };
+  return shiftNames[code] || code;
+};
 
-	// Helper functions to handle worker ID (string or object)
-	const getWorkerIdString = (workerId: string | WorkerProfile): string => {
-		if (typeof workerId === "string") {
-			return workerId;
-		}
-		return workerId._id;
-	};
+const getRateBandName = (rateTimeBandId: string | RateTimeBand): string => {
+  if (typeof rateTimeBandId === "object") {
+    return getShiftRateName(rateTimeBandId.code);
+  }
+  const rateBandNames: { [key: string]: string } = {
+    "681c6f750ab224ca6685d05c": "Morning Shift",
+    "681c6f750ab224ca6685d05d": "Afternoon Shift",
+    "681c6f750ab224ca6685d05e": "Night Shift",
+    "681c6f750ab224ca6685d05f": "Weekend Shift",
+    "681c6f750ab224ca6685d060": "Public Holiday Shift",
+  };
+  return (
+    rateBandNames[rateTimeBandId] || `Rate Band ${rateTimeBandId.slice(-4)}`
+  );
+};
 
-	const getWorkerDisplayName = (workerId: string | WorkerProfile): string => {
-		if (typeof workerId === "string") {
-			return `Worker ${workerId.slice(-8)}`;
-		}
-		return `${workerId.firstName} ${workerId.lastName}`;
-	};
+const getRateBandCode = (rateTimeBandId: string | RateTimeBand): string => {
+  if (typeof rateTimeBandId === "object") {
+    return rateTimeBandId.code;
+  }
+  return "";
+};
 
-	const getWorkerInitials = (workerId: string | WorkerProfile): string => {
-		if (typeof workerId === "string") {
-			return workerId.slice(-2).toUpperCase();
-		}
-		return `${workerId.firstName[0]}${workerId.lastName[0]}`;
-	};
+// Support Worker Organization Details Page
+export default function SupportWorkerOrganizationDetailsPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"workers" | "invites">("workers");
+  const [viewMode, setViewMode] = useState("grid");
+  const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
+  const [showWorkerDetails, setShowWorkerDetails] = useState(false);
 
-	const getWorkerEmail = (workerId: string | WorkerProfile): string => {
-		if (typeof workerId === "string") {
-			return "Email not available";
-		}
-		return workerId.email;
-	};
+  const {
+    data: organization,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["organization-details", id],
+    queryFn: () => organizationDetailService.getOrganization(id!),
+    enabled: !!id,
+  });
 
-	const getWorkerPhone = (workerId: string | WorkerProfile): string => {
-		if (typeof workerId === "string") {
-			return "Phone not available";
-		}
-		return workerId.phone;
-	};
+  const activeWorkers = organization?.workers || [];
+  const pendingInvites =
+    organization?.pendingInvites.filter((inv) => inv.status === "pending") ||
+    [];
+  const declinedInvites =
+    organization?.pendingInvites.filter((inv) => inv.status === "declined") ||
+    [];
 
-	const getWorkerProfileImage = (
-		workerId: string | WorkerProfile
-	): string | undefined => {
-		if (typeof workerId === "string") {
-			return undefined;
-		}
-		return workerId.profileImage;
-	};
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+        <div className="max-w-md mx-auto mt-20">
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Failed to load organization
+              </h3>
+              <p className="text-gray-600 mb-6">
+                There was an error loading the organization details.
+              </p>
+              <Button
+                onClick={() => refetch()}
+                className="bg-guardian hover:bg-guardian/90"
+              >
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
-	// Calculate stats
-	const stats = organization
-		? {
-				totalWorkers: organization.workers.length,
-				totalInvites: organization.pendingInvites.length,
-				pendingInvites: organization.pendingInvites.filter(
-					(invite) => invite.status === "pending"
-				).length,
-				declinedInvites: organization.pendingInvites.filter(
-					(invite) => invite.status === "declined"
-				).length,
-				averageBaseRate:
-					organization.workers.length > 0
-						? Math.round(
-								organization.workers.reduce(
-									(sum, worker) => sum + worker.serviceAgreement.baseHourlyRate,
-									0
-								) / organization.workers.length
-						  )
-						: 0,
-				averageDistanceRate:
-					organization.workers.length > 0
-						? (
-								organization.workers.reduce(
-									(sum, worker) =>
-										sum + worker.serviceAgreement.distanceTravelRate,
-									0
-								) / organization.workers.length
-						  ).toFixed(2)
-						: 0,
-		  }
-		: null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <Skeleton className="h-12 w-64" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+          <Skeleton className="h-96" />
+        </div>
+      </div>
+    );
+  }
 
-	if (error) {
-		return (
-			<div className="p-6">
-				<div className="text-center py-12">
-					<XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-					<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
-						Failed to load organization
-					</h3>
-					<p className="text-gray-600 mb-4">
-						There was an error loading the organization details. Please try
-						again.
-					</p>
-					<Button color="#008CFF" onClick={() => refetch()}>
-						Try Again
-					</Button>
-				</div>
-			</div>
-		);
-	}
+  if (!organization) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="">
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <Buildings3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Organization not found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                The organization you're looking for doesn't exist.
+              </p>
+              <Button onClick={() => navigate(-1)}>Go Back</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
-	if (isLoading) {
-		return (
-			<div className="p-6 space-y-6">
-				<div className="flex items-center gap-4">
-					<Skeleton className="w-8 h-8" />
-					<Skeleton className="h-8 w-64" />
-				</div>
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-					{[...Array(4)].map((_, i) => (
-						<Skeleton key={i} className="h-32" />
-					))}
-				</div>
-				<Skeleton className="h-96" />
-			</div>
-		);
-	}
+  return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="mb-4 hover:bg-transparent text-gray-600 hover:text-gray-900 "
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Organizations
+          </Button>
 
-	if (!organization) {
-		return (
-			<div className="p-6">
-				<div className="text-center py-12">
-					<Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-					<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
-						Organization not found
-					</h3>
-					<p className="text-gray-600 mb-4">
-						The organization you're looking for doesn't exist or has been
-						removed.
-					</p>
-					<Button onClick={() => navigate(-1)}>Go Back</Button>
-				</div>
-			</div>
-		);
-	}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-guardian to-blue-600 flex items-center justify-center">
+                <UsersGroupTwoRounded className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {organization.name}
+                </h1>
+                <p className="text-gray-600">{organization.description}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className="text-green-700 bg-green-50 border-green-200"
+              >
+                <CheckCircle className="w-3 h-3 mr-1" />
+                {activeWorkers.length} Active Workers
+              </Badge>
+              {pendingInvites.length > 0 && (
+                <Badge
+                  variant="outline"
+                  className="text-orange-700 bg-orange-50 border-orange-200"
+                >
+                  <ClockCircle className="w-3 h-3 mr-1" />
+                  {pendingInvites.length} Pending Invites
+                </Badge>
+              )}
+              {declinedInvites.length > 0 && (
+                <Badge
+                  variant="outline"
+                  className="text-red-700 bg-red-50 border-red-200"
+                >
+                  <CloseCircle className="w-3 h-3 mr-1" />
+                  {declinedInvites.length} Declined Invites
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
 
-	return (
-		<div className="p-6 space-y-8 max-w-7xl mx-auto">
-			{/* Header */}
-			<div className="flex items-center gap-4 mb-6">
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => navigate(-1)}
-					className="p-2"
-				>
-					<ArrowLeft className="w-4 h-4" />
-				</Button>
-				<div className="flex-1">
-					<div className="flex items-center gap-3 mb-2">
-						<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1e3b93] to-primary flex items-center justify-center">
-							<Building className="w-6 h-6 text-white" />
-						</div>
-						<div>
-							<h1 className="text-3xl font-montserrat-bold text-gray-900">
-								{organization.name}
-							</h1>
-							<p className="text-gray-600">{organization.description}</p>
-						</div>
-					</div>
-				</div>
-				{/* <div className="flex items-center gap-2">
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm">
-								<MoreVertical className="w-4 h-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuItem>
-								<Edit className="w-4 h-4 mr-2" />
-								Edit Organization
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<Settings className="w-4 h-4 mr-2" />
-								Settings
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<UserPlus className="w-4 h-4 mr-2" />
-								Invite Workers
-							</DropdownMenuItem>
-							<DropdownMenuItem className="text-red-600">
-								<Trash2 className="w-4 h-4 mr-2" />
-								Delete
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div> */}
-			</div>
+        {/* Tab Navigation */}
+        <div className="flex gap-1">
+          <Button
+            onClick={() => setActiveTab("workers")}
+            className={`py-0 px-3 shadow-sm border border-slate-100 rounded-full text-xs font-montserrat-semibold transition-colors ${
+              activeTab === "workers"
+                ? "bg-guardian text-white"
+                : "text-gray-600 bg-slate-100 hover:bg-gray-200"
+            }`}
+          >
+            Active Workers
+          </Button>
+          <Button
+            onClick={() => setActiveTab("invites")}
+            className={`py-0 px-3 shadow-sm border border-slate-100 rounded-full text-xs font-montserrat-semibold transition-colors ${
+              activeTab === "invites"
+                ? "bg-guardian text-white"
+                : "text-gray-600 bg-slate-100 hover:bg-gray-200"
+            }`}
+          >
+            Pending Invites
+          </Button>
+        </div>
 
-			{/* Organization Info Bar */}
-			<Card className="border-0 shadow-lg">
-				<CardContent className="p-6">
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-						<div className="flex items-center gap-3">
-							<CalendarIcon className="w-5 h-5 text-gray-1000" />
-							<div>
-								<p className="text-sm text-gray-1000">Created</p>
-								<p className="font-medium">
-									{format(parseISO(organization.createdAt), "MMMM dd, yyyy")}
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<Activity className="w-5 h-5 text-gray-1000" />
-							<div>
-								<p className="text-sm text-gray-1000">Last Updated</p>
-								<p className="font-medium">
-									{format(parseISO(organization.updatedAt), "MMMM dd, yyyy")}
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<FileText className="w-5 h-5 text-gray-1000" />
-							<div>
-								<p className="text-sm text-gray-1000">Organization ID</p>
-								<p className="font-medium font-mono text-xs">
-									{organization._id}
-								</p>
-							</div>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
+        {/* Content */}
+        {activeTab === "workers" ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Active Workers ({activeWorkers.length})
+              </h2>
+              <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+                    viewMode === "grid"
+                      ? "bg-primary text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Widget size={24} />
+                  Grid
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+                    viewMode === "list"
+                      ? "bg-primary text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <List size={24} />
+                  List
+                </button>
+              </div>
+            </div>
 
-			{/* Stats Overview */}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				<Card className="relative overflow-hidden border-0 shadow-lg">
-					<div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary/10" />
-					<CardContent className="p-6 relative">
-						<div className="flex items-center justify-between">
-							<div className="space-y-1">
-								<p className="text-sm font-medium text-primary">
-									Active Workers
-								</p>
-								<p className="text-3xl font-montserrat-bold text-gray-900">
-									{stats?.totalWorkers}
-								</p>
-								<p className="text-xs text-gray-1000">Employed</p>
-							</div>
-							<div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center">
-								<Users className="w-6 h-6 text-primary" />
-							</div>
-						</div>
-					</CardContent>
-				</Card>
+            {activeWorkers.length === 0 ? (
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-12 text-center">
+                  <UsersGroupTwoRounded className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No active workers
+                  </h3>
+                  <p className="text-gray-600">
+                    This organization doesn't have any active workers yet.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                    : "space-y-4"
+                }
+              >
+                {activeWorkers.map((worker) => (
+                  <Card
+                    key={worker._id}
+                    className="border-0 shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                    onClick={() => {
+                      setSelectedWorker(worker);
+                      setShowWorkerDetails(true);
+                    }}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="w-12 h-12">
+                            {getWorkerProfileImage(worker.workerId) ? (
+                              <AvatarImage
+                                src={getWorkerProfileImage(worker.workerId)}
+                              />
+                            ) : (
+                              <AvatarFallback className="bg-guardian text-white">
+                                {getWorkerInitials(worker.workerId)}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">
+                              {getWorkerDisplayName(worker.workerId)}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {getWorkerEmail(worker.workerId)}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Joined:{" "}
+                              {format(
+                                parseISO(worker.joinedDate),
+                                "dd/MM/yyyy"
+                              )}
+                            </p>
+                          </div>
+                        </div>
 
-				<Card className="relative overflow-hidden border-0 shadow-lg">
-					<div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" />
-					<CardContent className="p-6 relative">
-						<div className="flex items-center justify-between">
-							<div className="space-y-1">
-								<p className="text-sm font-medium text-orange-600">
-									Pending Invites
-								</p>
-								<p className="text-3xl font-montserrat-bold text-gray-900">
-									{stats?.pendingInvites}
-								</p>
-								<p className="text-xs text-gray-1000">Awaiting Response</p>
-							</div>
-							<div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-								<Clock className="w-6 h-6 text-orange-600" />
-							</div>
-						</div>
-					</CardContent>
-				</Card>
+                        <div className="flex items-center gap-6">
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-guardian">
+                              ${worker.serviceAgreement.baseHourlyRate}/hr
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className="mt-1 text-green-700 bg-green-50 border-green-200"
+                            >
+                              Active
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Pending Invites ({pendingInvites.length})
+              </h2>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className={
+                    viewMode === "list" ? "bg-guardian text-white" : ""
+                  }
+                >
+                  List
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className={
+                    viewMode === "grid" ? "bg-guardian text-white" : ""
+                  }
+                >
+                  Grid
+                </Button>
+              </div>
+            </div>
 
-				<Card className="relative overflow-hidden border-0 shadow-lg">
-					<div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" />
-					<CardContent className="p-6 relative">
-						<div className="flex items-center justify-between">
-							<div className="space-y-1">
-								<p className="text-sm font-medium text-green-600">
-									Avg Base Rate
-								</p>
-								<p className="text-3xl font-montserrat-bold text-gray-900">
-									${stats?.averageBaseRate}
-								</p>
-								<p className="text-xs text-gray-1000">Per Hour</p>
-							</div>
-							<div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-								<DollarSign className="w-6 h-6 text-green-600" />
-							</div>
-						</div>
-					</CardContent>
-				</Card>
+            {pendingInvites.length === 0 ? (
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-12 text-center">
+                  <Letter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No pending invites
+                  </h3>
+                  <p className="text-gray-600">
+                    There are no pending invitations for this organization.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                    : "space-y-4"
+                }
+              >
+                {pendingInvites.map((invite) => (
+                  <Card key={invite._id} className="border-0 shadow-sm">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="w-12 h-12">
+                            <AvatarFallback className="bg-orange-100 text-orange-700">
+                              {getWorkerInitials(invite.workerId)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">
+                              {getWorkerDisplayName(invite.workerId)}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {getWorkerEmail(invite.workerId)}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Invited:{" "}
+                              {format(
+                                parseISO(invite.inviteDate),
+                                "dd/MM/yyyy"
+                              )}
+                            </p>
+                          </div>
+                        </div>
 
-				<Card className="relative overflow-hidden border-0 shadow-lg">
-					<div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" />
-					<CardContent className="p-6 relative">
-						<div className="flex items-center justify-between">
-							<div className="space-y-1">
-								<p className="text-sm font-medium text-purple-600">
-									Travel Rate
-								</p>
-								<p className="text-3xl font-montserrat-bold text-gray-900">
-									${stats?.averageDistanceRate}
-								</p>
-								<p className="text-xs text-gray-1000">Per Mile</p>
-							</div>
-							<div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-								<MapPin className="w-6 h-6 text-purple-600" />
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
+                        <div className="flex items-center gap-6">
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-orange-600">
+                              ${invite.proposedRates.baseHourlyRate}/hr
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className="mt-1 text-orange-700 bg-orange-50 border-orange-200"
+                            >
+                              Pending
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
 
-			{/* Active Workers Section */}
-			<Card className="border-0 shadow-lg">
-				<Collapsible
-					open={expandedSections.workers}
-					onOpenChange={() => toggleSection("workers")}
-				>
-					<CollapsibleTrigger asChild>
-						<CardHeader className="cursor-pointer hover:bg-gray-100 transition-colors">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-3">
-									<Users className="w-5 h-5 text-primary" />
-									<CardTitle className="text-xl">
-										Active Workers ({organization.workers.length})
-									</CardTitle>
-								</div>
-								{expandedSections.workers ? (
-									<ChevronUp className="w-5 h-5" />
-								) : (
-									<ChevronDown className="w-5 h-5" />
-								)}
-							</div>
-						</CardHeader>
-					</CollapsibleTrigger>
-					<CollapsibleContent>
-						<CardContent className="space-y-6">
-							{organization.workers.length === 0 ? (
-								<div className="text-center py-12">
-									<Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-									<p className="text-gray-600">No active workers yet</p>
-									<Button className="mt-4 bg-[#1e3b93] hover:bg-[#1e3b93]/90">
-										<UserPlus className="w-4 h-4 mr-2" />
-										Invite Workers
-									</Button>
-								</div>
-							) : (
-								organization.workers.map((worker) => (
-									<Card key={worker._id} className="border border-gray-200">
-										<CardContent className="p-6">
-											<div className="flex items-start justify-between mb-4">
-												<div className="flex items-center gap-4">
-													<Avatar className="w-16 h-16">
-														<AvatarImage
-															src={getWorkerProfileImage(worker.workerId)}
-														/>
-														<AvatarFallback className="text-lg">
-															{getWorkerInitials(worker.workerId)}
-														</AvatarFallback>
-													</Avatar>
-													<div>
-														<h3 className="text-lg font-montserrat-semibold text-gray-900">
-															{getWorkerDisplayName(worker.workerId)}
-														</h3>
-														<div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-															{typeof worker.workerId === "string" ? (
-																<span className="flex items-center gap-1">
-																	<User className="w-4 h-4" />
-																	Worker ID: {worker.workerId}
-																</span>
-															) : (
-																<>
-																	<span className="flex items-center gap-1">
-																		<Mail className="w-4 h-4" />
-																		{getWorkerEmail(worker.workerId)}
-																	</span>
-																	<span className="flex items-center gap-1">
-																		<Phone className="w-4 h-4" />
-																		{getWorkerPhone(worker.workerId)}
-																	</span>
-																</>
-															)}
-														</div>
-													</div>
-												</div>
-												<Badge
-													variant="outline"
-													className="bg-green-50 text-green-700 border-green-200"
-												>
-													<CheckCircle className="w-3 h-3 mr-1" />
-													Active
-												</Badge>
-											</div>
+                      {invite.notes && (
+                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Notes:</span>{" "}
+                            {invite.notes}
+                          </p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
-											<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-												<div className="bg-primary-100 p-4 rounded-lg">
-													<p className="text-sm font-medium text-primary-700">
-														Base Rate
-													</p>
-													<p className="text-2xl font-montserrat-bold text-primary-900">
-														${worker.serviceAgreement.baseHourlyRate}
-													</p>
-													<p className="text-xs text-primary">per hour</p>
-												</div>
-												<div className="bg-purple-50 p-4 rounded-lg">
-													<p className="text-sm font-medium text-purple-700">
-														Travel Rate
-													</p>
-													<p className="text-2xl font-montserrat-bold text-purple-900">
-														${worker.serviceAgreement.distanceTravelRate}
-													</p>
-													<p className="text-xs text-purple-600">per mile</p>
-												</div>
-												<div className="bg-gray-100 p-4 rounded-lg">
-													<p className="text-sm font-medium text-gray-700">
-														Joined
-													</p>
-													<p className="text-2xl font-montserrat-bold text-gray-900">
-														{format(parseISO(worker.joinedDate), "MMM dd")}
-													</p>
-													<p className="text-xs text-gray-600">
-														{format(parseISO(worker.joinedDate), "yyyy")}
-													</p>
-												</div>
-											</div>
+      {/* Worker Details Modal */}
+      {showWorkerDetails && selectedWorker && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900">
+                  Worker Details
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowWorkerDetails(false)}
+                >
+                  <CloseCircle className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
 
-											{/* Shift Rates */}
-											<div>
-												<h4 className="font-medium text-gray-900 mb-3">
-													Shift Rates
-												</h4>
-												<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-													{worker.serviceAgreement.shiftRates.map((rate) => (
-														<div
-															key={rate._id}
-															className="bg-gray-100 p-3 rounded-lg border"
-														>
-															<div className="flex items-center justify-between">
-																<span className="text-sm font-medium text-gray-700">
-																	{getRateBandName(rate.rateTimeBandId)}
-																</span>
-																<span className="text-sm font-montserrat-bold text-gray-900">
-																	${rate.hourlyRate}/hr
-																</span>
-															</div>
-															{getRateBandDetails(rate.rateTimeBandId) ? (
-																<div className="text-xs text-gray-1000 mt-1">
-																	{getRateBandDetails(rate.rateTimeBandId)
-																		?.startTime &&
-																		getRateBandDetails(rate.rateTimeBandId)
-																			?.endTime && (
-																			<span>
-																				{formatTime(
-																					getRateBandDetails(
-																						rate.rateTimeBandId
-																					)?.startTime
-																				)}{" "}
-																				-
-																				{formatTime(
-																					getRateBandDetails(
-																						rate.rateTimeBandId
-																					)?.endTime
-																				)}
-																			</span>
-																		)}
-																</div>
-															) : (
-																<div className="text-xs text-gray-1000 mt-1">
-																	ID: {String(rate.rateTimeBandId).slice(-8)}
-																</div>
-															)}
-														</div>
-													))}
-												</div>
-											</div>
+            <div className="p-6 space-y-6">
+              {/* Worker Info */}
+              <div className="flex items-center gap-4">
+                <Avatar className="w-20 h-20">
+                  {getWorkerProfileImage(selectedWorker.workerId) ? (
+                    <AvatarImage
+                      src={getWorkerProfileImage(selectedWorker.workerId)}
+                    />
+                  ) : (
+                    <AvatarFallback className="bg-guardian text-white text-2xl">
+                      {getWorkerInitials(selectedWorker.workerId)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {getWorkerDisplayName(selectedWorker.workerId)}
+                  </h3>
+                  <p className="text-gray-600">
+                    {getWorkerEmail(selectedWorker.workerId)}
+                  </p>
+                  <p className="text-gray-600">
+                    {getWorkerPhone(selectedWorker.workerId)}
+                  </p>
+                </div>
+              </div>
 
-											{/* Service Agreement Info */}
-											<div className="mt-4 pt-4 border-t">
-												<div className="flex items-center justify-between">
-													<div className="flex items-center gap-2">
-														<Shield className="w-4 h-4 text-green-500" />
-														<span className="text-sm text-gray-600">
-															Service Agreement
-														</span>
-													</div>
-													<div className="flex items-center gap-4 text-xs text-gray-1000">
-														<span>
-															Start:{" "}
-															{format(
-																parseISO(worker.serviceAgreement.startDate),
-																"MMM dd, yyyy"
-															)}
-														</span>
-														<Badge
-															variant={
-																worker.serviceAgreement.termsAccepted
-																	? "default"
-																	: "secondary"
-															}
-															className="text-xs"
-														>
-															{worker.serviceAgreement.termsAccepted
-																? "Terms Accepted"
-																: "Pending Acceptance"}
-														</Badge>
-													</div>
-												</div>
-											</div>
-										</CardContent>
-									</Card>
-								))
-							)}
-						</CardContent>
-					</CollapsibleContent>
-				</Collapsible>
-			</Card>
+              {/* Service Agreement */}
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  Service Agreement
+                </h4>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600">Base Hourly Rate:</p>
+                      <p className="text-xl font-bold text-guardian">
+                        ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
+                      </p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600">
+                        Distance Travel Rate:
+                      </p>
+                      <p className="text-xl font-bold text-purple-600">
+                        ${selectedWorker.serviceAgreement.distanceTravelRate}/km
+                      </p>
+                    </div>
+                  </div>
 
-			{/* Pending Invites Section */}
-			<Card className="border-0 shadow-lg">
-				<Collapsible
-					open={expandedSections.invites}
-					onOpenChange={() => toggleSection("invites")}
-				>
-					<CollapsibleTrigger asChild>
-						<CardHeader className="cursor-pointer hover:bg-gray-100 transition-colors">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-3">
-									<Mail className="w-5 h-5 text-orange-600" />
-									<CardTitle className="text-xl">
-										Pending Invitations ({organization.pendingInvites.length})
-									</CardTitle>
-								</div>
-								{expandedSections.invites ? (
-									<ChevronUp className="w-5 h-5" />
-								) : (
-									<ChevronDown className="w-5 h-5" />
-								)}
-							</div>
-						</CardHeader>
-					</CollapsibleTrigger>
-					<CollapsibleContent>
-						<CardContent className="space-y-6">
-							{organization.pendingInvites.length === 0 ? (
-								<div className="text-center py-12">
-									<Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-									<p className="text-gray-600">No pending invitations</p>
-								</div>
-							) : (
-								organization.pendingInvites.map((invite) => (
-									<Card key={invite._id} className="border border-gray-200">
-										<CardContent className="p-6">
-											<div className="flex items-start justify-between mb-4">
-												<div className="flex items-center gap-4">
-													<Avatar className="w-16 h-16">
-														<AvatarImage
-															src={getWorkerProfileImage(invite.workerId)}
-														/>
-														<AvatarFallback className="text-lg">
-															{getWorkerInitials(invite.workerId)}
-														</AvatarFallback>
-													</Avatar>
-													<div>
-														<h3 className="text-lg font-montserrat-semibold text-gray-900">
-															{getWorkerDisplayName(invite.workerId)}
-														</h3>
-														<div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-															{typeof invite.workerId === "string" ? (
-																<span className="flex items-center gap-1">
-																	<User className="w-4 h-4" />
-																	Worker ID: {invite.workerId}
-																</span>
-															) : (
-																<>
-																	<span className="flex items-center gap-1">
-																		<Mail className="w-4 h-4" />
-																		{getWorkerEmail(invite.workerId)}
-																	</span>
-																	<span className="flex items-center gap-1">
-																		<Phone className="w-4 h-4" />
-																		{getWorkerPhone(invite.workerId)}
-																	</span>
-																</>
-															)}
-														</div>
-													</div>
-												</div>
-												<Badge
-													variant={
-														invite.status === "pending"
-															? "default"
-															: invite.status === "declined"
-															? "destructive"
-															: "secondary"
-													}
-													className="capitalize"
-												>
-													{invite.status === "pending" && (
-														<Clock className="w-3 h-3 mr-1" />
-													)}
-													{invite.status === "declined" && (
-														<XCircle className="w-3 h-3 mr-1" />
-													)}
-													{invite.status}
-												</Badge>
-											</div>
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600">Start Date:</p>
+                    <p className="font-medium">
+                      {format(
+                        parseISO(selectedWorker.serviceAgreement.startDate),
+                        "dd/MM/yyyy"
+                      )}
+                    </p>
+                  </div>
 
-											<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-												<div className="bg-primary-100 p-4 rounded-lg">
-													<p className="text-sm font-medium text-primary-700">
-														Proposed Base Rate
-													</p>
-													<p className="text-2xl font-montserrat-bold text-primary-900">
-														${invite.proposedRates.baseHourlyRate}
-													</p>
-													<p className="text-xs text-primary">per hour</p>
-												</div>
-												<div className="bg-purple-50 p-4 rounded-lg">
-													<p className="text-sm font-medium text-purple-700">
-														Travel Rate
-													</p>
-													<p className="text-2xl font-montserrat-bold text-purple-900">
-														${invite.proposedRates.distanceTravelRate}
-													</p>
-													<p className="text-xs text-purple-600">per mile</p>
-												</div>
-												<div className="bg-gray-100 p-4 rounded-lg">
-													<p className="text-sm font-medium text-gray-700">
-														Invited
-													</p>
-													<p className="text-2xl font-montserrat-bold text-gray-900">
-														{format(parseISO(invite.inviteDate), "MMM dd")}
-													</p>
-													<p className="text-xs text-gray-600">
-														{format(parseISO(invite.inviteDate), "yyyy")}
-													</p>
-												</div>
-											</div>
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600">Terms Accepted:</p>
+                    <Badge
+                      variant={
+                        selectedWorker.serviceAgreement.termsAccepted
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {selectedWorker.serviceAgreement.termsAccepted
+                        ? "Yes"
+                        : "No"}
+                    </Badge>
+                  </div>
 
-											{/* Proposed Shift Rates */}
-											<div className="mb-4">
-												<h4 className="font-medium text-gray-900 mb-3">
-													Proposed Shift Rates
-												</h4>
-												<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-													{invite.proposedRates.shiftRates.map((rate) => {
-														const rateBand = getRateBandDetails(
-															rate.rateTimeBandId
-														);
-														return (
-															<div
-																key={rate._id}
-																className="bg-gray-100 p-3 rounded-lg border"
-															>
-																<div className="flex items-center justify-between">
-																	<span className="text-sm font-medium text-gray-700">
-																		{getRateBandName(rate.rateTimeBandId)}
-																	</span>
-																	<span className="text-sm font-montserrat-bold text-gray-900">
-																		${rate.hourlyRate}/hr
-																	</span>
-																</div>
-																{rateBand ? (
-																	<>
-																		{rateBand.startTime && rateBand.endTime && (
-																			<div className="text-xs text-gray-1000 mt-1">
-																				{formatTime(rateBand.startTime)} -{" "}
-																				{formatTime(rateBand.endTime)}
-																			</div>
-																		)}
-																		<div className="text-xs text-gray-1000 mt-1">
-																			Code: {rateBand.code}
-																		</div>
-																	</>
-																) : (
-																	<div className="text-xs text-gray-1000 mt-1">
-																		ID: {String(rate.rateTimeBandId).slice(-8)}
-																	</div>
-																)}
-															</div>
-														);
-													})}
-												</div>
-											</div>
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600">Joined Date:</p>
+                    <p className="font-medium">
+                      {format(
+                        parseISO(selectedWorker.joinedDate),
+                        "dd/MM/yyyy"
+                      )}
+                    </p>
+                  </div>
 
-											{/* Notes and Response */}
-											<div className="space-y-3">
-												{invite.notes && (
-													<div className="bg-primary-100 p-3 rounded-lg">
-														<p className="text-sm font-medium text-primary-700 mb-1">
-															Invitation Notes
-														</p>
-														<p className="text-sm text-primary-900">
-															{invite.notes}
-														</p>
-													</div>
-												)}
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600">Status:</p>
+                    <Badge className="bg-green-100 text-green-700">
+                      Active
+                    </Badge>
+                  </div>
+                </div>
+              </div>
 
-												{invite.status === "declined" && (
-													<div className="space-y-2">
-														{invite.responseDate && (
-															<div className="bg-red-50 p-3 rounded-lg">
-																<p className="text-sm font-medium text-red-700 mb-1">
-																	Declined on{" "}
-																	{format(
-																		parseISO(invite.responseDate),
-																		"MMMM dd, yyyy"
-																	)}
-																</p>
-																{invite.declineReason && (
-																	<p className="text-sm text-red-900">
-																		{invite.declineReason}
-																	</p>
-																)}
-															</div>
-														)}
-														{invite.adminNotes && (
-															<div className="bg-yellow-50 p-3 rounded-lg">
-																<p className="text-sm font-medium text-yellow-700 mb-1">
-																	Admin Notes
-																</p>
-																<p className="text-sm text-yellow-900">
-																	{invite.adminNotes}
-																</p>
-															</div>
-														)}
-													</div>
-												)}
-											</div>
-										</CardContent>
-									</Card>
-								))
-							)}
-						</CardContent>
-					</CollapsibleContent>
-				</Collapsible>
-			</Card>
-		</div>
-	);
+              {/* Proposed Shift Rates */}
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  Proposed Shift Rates
+                </h4>
+                <div className="space-y-2">
+                  {selectedWorker.serviceAgreement.shiftRates.map((rate) => (
+                    <div
+                      key={rate._id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {getRateBandName(rate.rateTimeBandId)}
+                        </p>
+                        {getRateBandCode(rate.rateTimeBandId) && (
+                          <p className="text-xs text-gray-500">
+                            Code: {getRateBandCode(rate.rateTimeBandId)}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-lg font-bold text-guardian">
+                        ${rate.hourlyRate}/hr
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Remove Worker Button */}
+              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                Remove Worker
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

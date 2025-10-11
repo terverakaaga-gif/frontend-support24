@@ -166,7 +166,7 @@ export default function ChatView() {
 
   const { currentConversation, messages, setCurrentConversation, onlineUsers } =
     useChatStore();
-
+  const [conversationsLoaded, setConversationsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [messageText, setMessageText] = useState("");
@@ -207,29 +207,38 @@ export default function ChatView() {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
+ useEffect(() => {
     const tokens = tokenStorage.getTokens();
-    if (tokens?.access?.token) {
+    if (tokens?.access?.token && !conversationsLoaded) { // Only load if not already loaded
       connect(tokens.access.token);
       loadConversations(tokens.access.token).finally(() => {
         setIsLoadingConversations(false);
+        setConversationsLoaded(true); // Mark as loaded
       });
-
-      if (conversationId) {
-        const conversation = chatConversations.find(
-          (conv) => conv._id === conversationId
-        );
-        if (conversation) {
-          setCurrentConversation(conversation);
-        }
-      }
     }
 
     return () => {
       cleanupSocketListeners();
     };
-  }, [conversationId]);
+  }, [conversationsLoaded]);
 
+  // This useEffect now solely handles setting currentConversation after conversations are loaded
+  useEffect(() => {
+    if (conversationId && chatConversations.length > 0) {
+      const conversation = chatConversations.find(
+        (conv) => conv._id === conversationId
+      );
+      if (
+        conversation &&
+        (!currentConversation || currentConversation._id !== conversation._id)
+      ) {
+        setCurrentConversation(conversation);
+      }
+    }
+  }, [chatConversations, conversationId]);
+
+
+  // Load messages when currentConversation changes 
   useEffect(() => {
     const tokens = tokenStorage.getTokens();
     if (currentConversation && tokens?.access?.token) {
@@ -238,7 +247,7 @@ export default function ChatView() {
         setIsLoadingMessages(false);
       });
     }
-  }, [currentConversation, conversationId]);
+  }, [currentConversation]);
 
   useEffect(() => {
     if (conversationId && chatConversations.length > 0) {
@@ -416,7 +425,7 @@ export default function ChatView() {
   ).length;
 
   return (
-    <div className="min-h-screen p-10 bg-gray-100 font-montserrat space-y-8">
+    <div className="min-h-screen p-8 bg-gray-100 font-montserrat space-y-8">
       {/* Header */}
       <GeneralHeader
         title={

@@ -304,7 +304,7 @@ const ParticipantShifts = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="p-10">
+      <div className="p-8">
         {/* Header */}
         <GeneralHeader
           stickyTop={true} 

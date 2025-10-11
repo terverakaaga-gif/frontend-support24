@@ -313,7 +313,7 @@ const IncidentsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-10">
+    <div className="min-h-screen bg-gray-100 p-8">
       {/* Header */}
       <GeneralHeader
         title={

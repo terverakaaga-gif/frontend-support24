@@ -112,7 +112,7 @@ export default function ParticipantOrganizationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="p-10 space-y-6">
+      <div className="p-8 space-y-6">
         {/* Header */}
         <GeneralHeader
           title={pageTitles.participant["/participant/organizations"].title}

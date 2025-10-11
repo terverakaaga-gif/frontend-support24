@@ -396,7 +396,7 @@ export default function Register() {
         {/* Carousel Container */}
         <div className="flex flex-col justify-between w-full p-12 relative z-10">
           {/* Top Section with Carousel */}
-          <div className="flex-1 gap-10 flex flex-col justify-center items-center">
+          <div className="flex-1 gap-8 flex flex-col justify-center items-center">
             {/* Carousel Images */}
             <div className="w-full max-w-lg mb-8 relative">
               <div className="relative w-full h-80 overflow-hidden rounded-2xl">
