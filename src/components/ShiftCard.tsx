@@ -1,11 +1,6 @@
+import { Calendar, ClockCircle, MapPoint, User } from '@solar-icons/react';
 import React from 'react';
-import { 
-  MapPin, 
-  User,
-  Calendar,
-  Clock
-} from 'lucide-react';
-
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 interface ShiftCardProps {
   shift: any;
   onClick: () => void;
@@ -94,7 +89,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
             </div>
             
             <div className="flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-0">
-              <MapPin className="w-4 h-4 flex-shrink-0" />
+              <MapPoint className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">{shift.address}</span>
             </div>
           </div>
@@ -127,7 +122,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
     >
       {/* Header with Title and Status */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex justify-center items-start gap-1 flex-1 min-w-0">
+        <div className="flex items-start gap-1 flex-1 min-w-0">
           <h3 className="font-montserrat-semibold text-base mb-1">
             {shift.serviceTypeId.name}
           </h3>
@@ -142,16 +137,14 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
         
         {/* Avatar Stack */}
         <div className="flex -space-x-2 flex-shrink-0">
-          <img
-            src={`https://i.pravatar.cc/32?img=${Math.abs(parseInt(shift._id.slice(-4), 16)) % 10}`}
-            alt="Avatar"
-            className="w-8 h-8 rounded-full border-2 border-white"
-          />
-          <img
-            src={`https://i.pravatar.cc/32?img=${(Math.abs(parseInt(shift._id.slice(-4), 16)) + 1) % 10}`}
-            alt="Avatar"
-            className="w-8 h-8 rounded-full border-2 border-white"
-          />
+          <Avatar className="w-8 h-8 border-2 border-white">
+            <AvatarImage src={`https://i.pravatar.cc/32?img=${Math.abs(parseInt(shift._id.slice(-4), 16)) % 10}`} alt="Avatar" />
+            <AvatarFallback>?</AvatarFallback>
+          </Avatar>
+          <Avatar className="w-8 h-8 border-2 border-white">
+            <AvatarImage src={`https://i.pravatar.cc/32?img=${(Math.abs(parseInt(shift._id.slice(-4), 16)) + 1) % 10}`} alt="Avatar" />
+            <AvatarFallback>?</AvatarFallback>
+          </Avatar>
         </div>
       </div>
 
@@ -163,7 +156,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
           <span>{formatDate(shift.startTime)}</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Clock className="w-4 h-4" />
+          <ClockCircle className="w-4 h-4" />
           <span className="font-medium">Time:</span>
           <span>
             {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
@@ -183,7 +176,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
           </span>
         </div>
         <div className="bg-gray-100 rounded-full border border-gray-200 px-3 py-1.5 flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-0">
-          <MapPin className="w-4 h-4 flex-shrink-0" />
+          <MapPoint className="w-4 h-4 flex-shrink-0" />
           <span className="truncate font-montserrat-semibold">{shift.address}</span>
         </div>
       </div>

@@ -5,20 +5,20 @@ import {
   useGetSupportWorkerPerformance,
 } from "@/hooks/useAnalyticsHooks";
 import { useGetOrganizationInvites } from "@/hooks/useInviteHooks";
-import { CourseDown, CourseUp } from "@solar-icons/react";
-import { SupportWorker } from "@/types/user.types";
 import {
-  Clock,
-  Users,
-  DollarSign,
-  Star,
   Calendar,
-  ChevronRight,
-  MapPin,
+  Chart,
   CheckCircle,
-  XCircle,
+  ClockCircle,
+  CloseCircle,
+  CourseDown,
+  CourseUp,
+  DollarMinimalistic,
   Eye,
-} from "lucide-react";
+  Star,
+  UsersGroupTwoRounded,
+} from "@solar-icons/react";
+import { SupportWorker } from "@/types/user.types";
 import { useState, useMemo } from "react";
 import {
   Line,
@@ -30,166 +30,88 @@ import {
   ResponsiveContainer,
   ComposedChart,
 } from "recharts";
-import ShiftCard from "@/components/ShiftCard";
-import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
 import GeneralHeader from "@/components/GeneralHeader";
-import { pageTitles } from "@/constants/pageTitles";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Loader from "@/components/Loader";
 
-// Mock data for visualization when real data is unavailable
-const MOCK_OVERVIEW_DATA = {
-  workSummary: {
-    hoursWorked: { current: 2, trend: "up", percentageChange: 12.6 },
-    activeClients: 2,
-    earnings: { current: 500.0, trend: "up" },
-    upcomingShifts: [
-      {
-        _id: "1",
-        serviceType: "behaviorSupport",
-        participantName: "Jossy T",
-        startTime: new Date(2025, 8, 25, 9, 0).toISOString(),
-        endTime: new Date(2025, 8, 25, 10, 0).toISOString(),
-        address: "123 Main St, Anytown, Ca 12345",
-        status: "Upcoming",
-      },
-      {
-        _id: "2",
-        serviceType: "behaviorSupport",
-        participantName: "Jossy T",
-        startTime: new Date(2025, 8, 25, 9, 0).toISOString(),
-        endTime: new Date(2025, 8, 25, 10, 0).toISOString(),
-        address: "123 Main St, Anytown, Ca 12345",
-        status: "Upcoming",
-      },
-      {
-        _id: "3",
-        serviceType: "behaviorSupport",
-        participantName: "Jossy T",
-        startTime: new Date(2025, 8, 25, 9, 0).toISOString(),
-        endTime: new Date(2025, 8, 25, 10, 0).toISOString(),
-        address: "123 Main St, Anytown, Ca 12345",
-        status: "Upcoming",
-      },
-    ],
-  },
-  performanceMetrics: {
-    completionRate: 80,
-    onTimeRate: 95,
-    averageRating: 1.5,
-  },
-};
-
-const MOCK_PERFORMANCE_DATA = {
-  monthlyTrends: [
-    { month: "2025-01-01", completionRate: 35, onTimeRate: 30 },
-    { month: "2025-02-01", completionRate: 18, onTimeRate: 42 },
-    { month: "2025-03-01", completionRate: 48, onTimeRate: 28 },
-    { month: "2025-04-01", completionRate: 85, onTimeRate: 58 },
-    { month: "2025-05-01", completionRate: 62, onTimeRate: 32 },
-    { month: "2025-06-01", completionRate: 45, onTimeRate: 48 },
-    { month: "2025-07-01", completionRate: 38, onTimeRate: 35 },
-    { month: "2025-08-01", completionRate: 52, onTimeRate: 45 },
-  ],
-  availabilityComparison: { utilizationPercentage: 0.0 },
-};
-
-const MOCK_INVITATIONS = [
-  {
-    id: "1",
-    clientName: "Jane Smith",
-    serviceRequested: "Elderly Care",
-    date: "Sept 20, 2025",
-    location: "123 Main Street, AnyTown",
-    hourlyRate: "$35.000/hr",
-    status: "Pending",
-  },
-  {
-    id: "2",
-    clientName: "Jane Smith",
-    serviceRequested: "Elderly Care",
-    date: "Sept 20, 2025",
-    location: "123 Main Street, AnyTown",
-    hourlyRate: "$35.000/hr",
-    status: "Confirmed",
-  },
-  {
-    id: "3",
-    clientName: "Jane Smith",
-    serviceRequested: "Elderly Care",
-    date: "Sept 20, 2025",
-    location: "123 Main Street, AnyTown",
-    hourlyRate: "$35.000/hr",
-    status: "Completed",
-  },
-];
-
-const SERVICE_TYPE_LABELS = {
-  behaviorSupport: "Behavior Support",
-  personalCare: "Personal Care",
-  socialSupport: "Social Support",
-  transport: "Transport",
-  householdTasks: "Household Tasks",
-  mealPreparation: "Meal Preparation",
-  medicationSupport: "Medication Support",
-  mobilityAssistance: "Mobility Assistance",
-  therapySupport: "Therapy Support",
-  communityAccess: "Community Access",
-};
-
-// Simple stat card component matching design
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  trend,
-  additionalText,
-  trendDirection,
-}) {
+// Stat card component
+function StatCard({ title, value, icon: Icon, trend, trendDirection }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex items-center justify-between">
-        <div className="text-sm font-montserrat-semibold text-gray-600">
-          {title}
-        </div>
+    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm font-semibold text-gray-600">{title}</div>
         <div className="p-2 rounded-full bg-primary-300/20">
           <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
         </div>
       </div>
-      <div className="text-2xl font-montserrat-bold text-gray-900 mb-1">
+      <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
         {value}
       </div>
       {trend && (
         <div
-          className={`text-xs font-montserrat-semibold flex items-center ${
+          className={`text-xs font-semibold flex items-center gap-1 ${
             trendDirection === "up"
               ? "text-green-600"
               : trendDirection === "down"
               ? "text-red-600"
-              : "text-gray-1000"
+              : "text-gray-600"
           }`}
         >
-          {trendDirection === "up" && <CourseUp className="mr-1" />}
-          {trendDirection === "down" && <CourseDown className="mr-1" />}
+          {trendDirection === "up" && <CourseUp className="h-3 w-3" />}
+          {trendDirection === "down" && <CourseDown className="h-3 w-3" />}
           {trend}
         </div>
-      )}
-      {additionalText && (
-        <div className="text-sm text-gray-1000">{additionalText}</div>
       )}
     </div>
   );
 }
 
-// Performance chart component using Recharts
-function PerformanceChart({ overviewData, performanceData }) {
+// Performance chart component
+function PerformanceChart({
+  selectedOption,
+  onSelectedOptionChange,
+  customRange,
+  onCustomRangeChange,
+}) {
+  const dateRange =
+    selectedOption === "custom"
+      ? {
+          start: customRange.start.toISOString(),
+          end: customRange.end.toISOString(),
+        }
+      : selectedOption;
+
+  // Update hook calls
+  const { data: overviewData, isLoading: overviewLoading } =
+    useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: performanceData, isLoading: performanceLoading } =
+    useGetSupportWorkerPerformance(dateRange);
+
   const chartData = useMemo(() => {
-    const data =
-      performanceData?.monthlyTrends && performanceData.monthlyTrends.length > 0
-        ? performanceData.monthlyTrends
-        : MOCK_PERFORMANCE_DATA.monthlyTrends;
-    return data.map((trend) => ({
+    if (
+      !performanceData?.monthlyTrends ||
+      performanceData.monthlyTrends.length === 0
+    ) {
+      return [];
+    }
+
+    return performanceData.monthlyTrends.map((trend) => ({
       month: new Date(trend.month).toLocaleDateString("en-US", {
         month: "short",
       }),
@@ -199,50 +121,178 @@ function PerformanceChart({ overviewData, performanceData }) {
   }, [performanceData]);
 
   const metrics = {
-    completionRate:
-      overviewData?.performanceMetrics?.completionRate ||
-      MOCK_OVERVIEW_DATA.performanceMetrics.completionRate,
-    onTimeRate:
-      overviewData?.performanceMetrics?.onTimeRate ||
-      MOCK_OVERVIEW_DATA.performanceMetrics.onTimeRate,
-    utilizationRate:
-      performanceData?.availabilityComparison?.utilizationPercentage ||
-      MOCK_PERFORMANCE_DATA.availabilityComparison.utilizationPercentage,
-    percentageChange:
-      overviewData?.workSummary?.hoursWorked?.percentageChange ||
-      MOCK_OVERVIEW_DATA.workSummary.hoursWorked.percentageChange,
+    completionRate: overviewData?.performanceMetrics?.completionRate || 0,
+    percentageChange: Math.abs(
+      overviewData?.workSummary?.hoursWorked?.percentageChange || 0
+    ),
+    hasIncrease:
+      (overviewData?.workSummary?.hoursWorked?.percentageChange || 0) > 0,
   };
 
+  const isLoading = overviewLoading || performanceLoading;
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+          <div className="h-64 bg-gray-100 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Performance Overview
+          </h2>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <Select
+              value={selectedOption}
+              onValueChange={onSelectedOptionChange}
+            >
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Pick Date Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="quarter">This Quarter</SelectItem>
+                <SelectItem value="year">This Year</SelectItem>
+                <SelectItem value="custom">Custom Range</SelectItem>
+              </SelectContent>
+            </Select>
+            {selectedOption === "custom" && (
+              <>
+                <label className="text-sm font-medium text-gray-700">
+                  Start:
+                </label>
+                <input
+                  type="date"
+                  value={customRange.start.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    onCustomRangeChange({
+                      ...customRange,
+                      start: new Date(e.target.value),
+                    })
+                  }
+                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                />
+                <label className="text-sm font-medium text-gray-700">
+                  End:
+                </label>
+                <input
+                  type="date"
+                  value={customRange.end.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    onCustomRangeChange({
+                      ...customRange,
+                      end: new Date(e.target.value),
+                    })
+                  }
+                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                />
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+          <div className="text-center p-8">
+            <Chart className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+            <p className="text-sm font-medium">
+              No performance data available yet
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Complete shifts to see your performance trends
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">
+    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900">
           Performance Overview
         </h2>
-        <div className="flex items-center gap-3">
-          <Button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-100 bg-white">
-            Pick Date
-            <Calendar className="h-4 w-4" />
-          </Button>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Select value={selectedOption} onValueChange={onSelectedOptionChange}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Pick Date Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="custom">Custom Range</SelectItem>
+            </SelectContent>
+          </Select>
+          {selectedOption === "custom" && (
+            <>
+              <label className="text-sm font-medium text-gray-700">
+                Start:
+              </label>
+              <input
+                type="date"
+                value={customRange.start.toISOString().split("T")[0]}
+                onChange={(e) =>
+                  onCustomRangeChange({
+                    ...customRange,
+                    start: new Date(e.target.value),
+                  })
+                }
+                className="border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+              <label className="text-sm font-medium text-gray-700">End:</label>
+              <input
+                type="date"
+                value={customRange.end.toISOString().split("T")[0]}
+                onChange={(e) =>
+                  onCustomRangeChange({
+                    ...customRange,
+                    end: new Date(e.target.value),
+                  })
+                }
+                className="border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+            </>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center gap-8 mb-6">
+      <div className="flex flex-wrap items-center gap-4 md:gap-8 mb-6">
         <div className="flex gap-3 items-center">
-          <div className="text-2xl font-montserrat-bold">
+          <div className="text-2xl md:text-3xl font-bold text-gray-900">
             {metrics.completionRate}%
           </div>
-          <div className="text-green-600 bg-green-600/10 rounded-lg px-2 py-1 text-sm font-medium flex items-center mt-1">
-            <span className="mr-1">↑</span> {metrics.percentageChange}%
-          </div>
+          {metrics.percentageChange > 0 && (
+            <div
+              className={`${
+                metrics.hasIncrease
+                  ? "text-green-600 bg-green-600/10"
+                  : "text-red-600 bg-red-600/10"
+              } rounded-lg px-2 py-1 text-sm font-medium flex items-center`}
+            >
+              <span className="mr-1">{metrics.hasIncrease ? "↑" : "↓"}</span>
+              {metrics.percentageChange.toFixed(1)}%
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Recharts Implementation */}
       <ResponsiveContainer width="100%" height={250}>
         <ComposedChart
           data={chartData}
-          margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+          margin={{ top: 20, right: 10, left: -20, bottom: 5 }}
         >
           <CartesianGrid
             strokeDasharray="3 3"
@@ -288,13 +338,9 @@ function PerformanceChart({ overviewData, performanceData }) {
         </ComposedChart>
       </ResponsiveContainer>
 
-      {/* Legend */}
-      <div className="flex justify-center gap-8 text-sm mt-4">
+      <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-sm mt-4">
         <div className="flex items-center">
-          <div
-            className="w-4 h-3 rounded mr-2"
-            style={{ backgroundColor: "#0D2BEC" }}
-          ></div>
+          <div className="w-4 h-3 rounded mr-2 bg-[#0D2BEC]"></div>
           <span className="text-gray-600">Completion Rate</span>
         </div>
         <div className="flex items-center">
@@ -306,61 +352,92 @@ function PerformanceChart({ overviewData, performanceData }) {
   );
 }
 
-// Upcoming Shifts Component
-// function UpcomingShifts({ shifts = [] }) {
-//   const [selectedShift, setSelectedShift] = useState<any>(null);
-//   const displayShifts =
-//     shifts && shifts.length > 0
-//       ? shifts
-//       : MOCK_OVERVIEW_DATA.workSummary.upcomingShifts;
-
-//   return (
-//     <div className="bg-white rounded-lg border border-gray-200">
-//       {/* Shift Details Dialog */}
-//       <ShiftDetailsDialog
-//         shift={selectedShift}
-//         open={!!selectedShift}
-//         onOpenChange={(open) => !open && setSelectedShift(null)}
-//       />
-//       <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
-//         <h2 className="text-lg font-montserrat-semibold text-gray-900">Upcoming Shifts</h2>
-//         <Button className="text-status-pending hover:text-status-pending text-sm font-medium">
-//           View all →
-//         </Button>
-//       </div>
-
-//       <div className="p-6 space-y-4">
-//         {displayShifts.length > 0 ? (
-//           displayShifts.map((shift) => (
-//             <ShiftCard
-//               key={shift._id}
-//               shift={shift}
-//               onClick={() => setSelectedShift(shift)}
-//             />
-//           ))
-//         ) : (
-//           <p className="text-gray-1000">No upcoming shifts</p>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
 // Invitations Table Component
-function InvitationsTable({ invitations }) {
+function InvitationsTable({ invitations, isLoading }) {
+  const navigate = useNavigate();
+  const [entriesPerPage, setEntriesPerPage] = useState("5");
   const [currentPage, setCurrentPage] = useState(1);
-  const displayInvitations =
-    invitations && invitations.length > 0 ? invitations : MOCK_INVITATIONS;
+
+  if (isLoading) {
+    return (
+      <div className="bg-white mt-8 rounded-lg border border-gray-200">
+        <div className="p-4 md:p-6 border-b border-gray-200">
+          <div className="h-6 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+        </div>
+        <div className="p-8">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 bg-gray-100 rounded mb-3 animate-pulse"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!invitations || invitations.length === 0) {
+    return (
+      <div className="bg-white mt-8 rounded-lg border border-gray-200">
+        <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            All Invitations
+          </h2>
+        </div>
+        <div className="p-12 text-center text-gray-500">
+          <UsersGroupTwoRounded className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+          <p className="text-sm font-medium text-gray-600">
+            No invitations available
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            You'll see organization invitations here when they're sent to you
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const displayInvitations = invitations.map((org) => {
+    const workerData = org.workers?.find((w) => w.workerId);
+    const isConfirmed = workerData && workerData.joinedDate;
+
+    return {
+      id: org._id,
+      clientName: org.name,
+      serviceRequested: org.description || "Support Services",
+      date: formatDate(org.createdAt),
+      location: "Organization Network",
+      hourlyRate: workerData?.serviceAgreement?.baseHourlyRate
+        ? `$${workerData.serviceAgreement.baseHourlyRate.toFixed(2)}/hr`
+        : "N/A",
+      status: isConfirmed ? "Confirmed" : "Pending",
+    };
+  });
+
+  const totalPages = Math.ceil(
+    displayInvitations.length / parseInt(entriesPerPage)
+  );
+  const startIndex = (currentPage - 1) * parseInt(entriesPerPage);
+  const endIndex = startIndex + parseInt(entriesPerPage);
+  const currentInvitations = displayInvitations.slice(startIndex, endIndex);
 
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
-      <div className="p-6 border-b border-gray-200 flex justify-between items-center font-montserrat-semibold">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">
-          All Invitations
-        </h2>
+      <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
         <Button
+          onClick={()=>{navigate('/support-worker/organizations')}}
           variant="link"
-          className="text-status-pending hover:text-status-pending text-sm font-medium"
+          className="text-primary hover:text-primary/80 text-sm font-medium p-0"
         >
           View all →
         </Button>
@@ -369,76 +446,95 @@ function InvitationsTable({ invitations }) {
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-gray-200 bg-gray-100">
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+            <TableRow className="border-b border-gray-200 bg-white font-montserrat-semibold">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
                 Client Name
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden md:table-cell">
                 Service Requested
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden lg:table-cell">
                 Date
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden xl:table-cell">
                 Location
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
                 Hourly Rate
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
                 Status
               </TableHead>
+              <TableHead className="px-4 md:px-6 py-3"></TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-gray-200">
-            {displayInvitations.map((invitation) => (
-              <TableRow key={invitation.id} className="hover:bg-gray-100">
-                <TableCell className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full mr-3"></div>
+          <TableBody className="divide-y divide-gray-200 bg-white">
+            {currentInvitations.map((invitation) => (
+              <TableRow
+                key={invitation.id}
+                className="hover:bg-white transition-colors"
+              >
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
+                      {invitation.clientName.charAt(0).toUpperCase()}
+                    </div>
                     <span className="text-sm font-medium text-gray-900">
                       {invitation.clientName}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">
                   {invitation.serviceRequested}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
                   {invitation.date}
                 </TableCell>
-                <TableCell className="px-6 py-4 text-sm text-gray-600">
+                <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
                   {invitation.location}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {invitation.hourlyRate}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                       invitation.status === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : invitation.status === "Confirmed"
-                        ? "bg-primary-100 text-primary-800"
+                        ? "bg-blue-100 text-blue-800"
                         : "bg-green-100 text-green-800"
                     }`}
                   >
                     {invitation.status}
                   </span>
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-right">
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
                   {invitation.status === "Pending" ? (
                     <div className="flex gap-2 justify-end">
-                      <Button className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white hover:bg-primary-700">
+                      <Button
+                        size="sm"
+                        className="w-8 h-8 p-0 bg-primary hover:bg-primary/90"
+                        title="Accept"
+                      >
                         <CheckCircle className="h-4 w-4" />
                       </Button>
-                      <Button className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white hover:bg-red-700">
-                        <XCircle className="h-4 w-4" />
+                      <Button
+                        size="sm"
+                        className="w-8 h-8 p-0 bg-red-600 hover:bg-red-700"
+                        title="Decline"
+                      >
+                        <CloseCircle className="h-4 w-4" />
                       </Button>
                     </div>
                   ) : (
-                    <Button variant="outline" className="border-primary text-primary hover:text-white hover:bg-primary flex items-center gap-1">
-                      <Eye className="h-4 w-4" /> View
+                    <Button
+                      onClick={()=>{navigate(`/support-worker/organizations/${invitation.id}`)}}
+                      variant="outline"
+                      size="sm"
+                      className="border-primary text-primary hover:bg-primary hover:text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-1" /> View
                     </Button>
                   )}
                 </TableCell>
@@ -448,34 +544,54 @@ function InvitationsTable({ invitations }) {
         </Table>
       </div>
 
-      {/* Pagination */}
-      <div className="p-4 border-t border-gray-200 flex justify-between items-center">
+      <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <span>Showing</span>
-          <select className="border border-gray-200 rounded px-2 py-1">
-            <option>5 entries</option>
-            <option>10 entries</option>
-            <option>20 entries</option>
-          </select>
+          <Select value={entriesPerPage} onValueChange={setEntriesPerPage}>
+            <SelectTrigger className="w-20 h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+            </SelectContent>
+          </Select>
+          <span>entries</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button className="border-primary text-primary hover:text-white hover:bg-primary">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
             ‹
           </Button>
-          {[1, 2, 3, 4, 5].map((page) => (
-            <Button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${
-                currentPage === page
-                  ? "bg-primary text-white"
-                  : "border border-gray-200 hover:bg-gray-100"
-              }`}
-            >
-              {page}
-            </Button>
-          ))}
-          <Button className="border-primary text-primary hover:text-white hover:bg-primary">
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
+            (page) => (
+              <Button
+                key={page}
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 ${
+                  currentPage === page
+                    ? "bg-primary text-white hover:bg-primary/90"
+                    : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </Button>
+            )
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
             ›
           </Button>
         </div>
@@ -487,33 +603,26 @@ function InvitationsTable({ invitations }) {
 export default function SupportWorkerDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { data: propOverviewData } = useGetSupportWorkerOverview();
-  const { data: propPerformanceData } = useGetSupportWorkerPerformance();
-  const { data: propInvitations } = useGetOrganizationInvites();
-
-  console.log("SupportWorkerDashboard render", {
-    user,
-    propOverviewData,
-    propPerformanceData,
-    propInvitations,
+  const [selectedOption, setSelectedOption] = useState("month"); // Default to "This Month"
+  const [customRange, setCustomRange] = useState({
+    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+    end: new Date(),
   });
-  // Use prop data if available and not empty, otherwise use mock data
-  const overviewData =
-    propOverviewData && Object.keys(propOverviewData).length > 0
-      ? propOverviewData
-      : MOCK_OVERVIEW_DATA;
 
-  const performanceData =
-    propPerformanceData && Object.keys(propPerformanceData).length > 0
-      ? propPerformanceData
-      : MOCK_PERFORMANCE_DATA;
+  // Determine dateRange for hooks
+  const dateRange =
+    selectedOption === "custom"
+      ? {
+          start: customRange.start.toISOString(),
+          end: customRange.end.toISOString(),
+        }
+      : selectedOption;
 
-  const invitations =
-    propInvitations && propInvitations.length > 0
-      ? propInvitations
-      : MOCK_INVITATIONS;
+  const { data: overviewData, isLoading: overviewLoading } =
+    useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: invitations, isLoading: invitationsLoading } =
+    useGetOrganizationInvites();
 
-  const upcomingShifts = overviewData?.workSummary?.upcomingShifts || [];
   const getGreeting = () => {
     const hour = new Date().getHours();
     let greeting = "";
@@ -532,86 +641,178 @@ export default function SupportWorkerDashboard() {
     return greeting;
   };
 
-  return (
-    <div className="min-h-screen font-sans">
-      <div className="p-8">
-        {/* Header */}
+  const getTrendDirection = (trend) => {
+    if (!trend || trend === "stable") return "up";
+    return trend === "up" ? "up" : "down";
+  };
 
+  console.log("overviewData:", overviewData);
+
+  if (overviewLoading || invitationsLoading) {
+    return <Loader />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="">
         <GeneralHeader
           stickyTop={true}
           title={getGreeting()}
           subtitle="Here's a summary of your recent activities and performance"
           user={user}
           onLogout={logout}
-          onViewProfile={() => {
-            navigate(
-              Object.keys(pageTitles.supportWorker).find(
-                (key) =>
-                  pageTitles.supportWorker[key] ===
-                  pageTitles.supportWorker["/support-worker/profile"]
-              )
-            );
-          }}
+          onViewProfile={() => navigate("/support-worker/profile")}
         />
 
-        {/* Show alert if support worker hasn't completed onboarding */}
         {user &&
           user.role === "supportWorker" &&
-          (user as SupportWorker).verificationStatus?.onboardingComplete && (
-            <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+          (user as SupportWorker).verificationStatus?.onboardingComplete &&
+          !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
+            <div className="mb-6">
+              <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+            </div>
           )}
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Hours Worked"
-            value={`${overviewData.workSummary.hoursWorked.current}h`}
-            icon={Clock}
-            trend="From last Month"
-            trendDirection="up"
-            additionalText={undefined}
-          />
-          <StatCard
-            title="Active Clients"
-            value={overviewData.workSummary.activeClients}
-            icon={Users}
-            additionalText={undefined}
-            trend={"Currently Supporting"}
-            trendDirection={"down"}
-          />
-          <StatCard
-            title="Earnings"
-            value={`$${overviewData.workSummary.earnings.current.toFixed(2)}`}
-            icon={DollarSign}
-            trend="From last Month"
-            trendDirection="up"
-            additionalText={undefined}
-          />
-          <StatCard
-            title="Performance Ratings"
-            value={overviewData.performanceMetrics.averageRating.toFixed(1)}
-            icon={Star}
-            additionalText={undefined}
-            trend={`${overviewData.performanceMetrics.onTimeRate}% on time rate`}
-            trendDirection={"down"}
-          />
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Performance & Invitations */}
-          <div className="lg:col-span-2 space-y-6">
-            <PerformanceChart
-              overviewData={overviewData}
-              performanceData={performanceData}
+        {overviewLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 animate-pulse"
+              >
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
+                <div className="h-8 bg-gray-200 rounded w-2/3 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+            <StatCard
+              title="Hours Worked"
+              value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
+              icon={ClockCircle}
+              trend="From last Month"
+              trendDirection={getTrendDirection(
+                overviewData?.workSummary?.hoursWorked?.trend
+              )}
+            />
+            <StatCard
+              title="Active Clients"
+              value={overviewData?.workSummary?.activeClients || 0}
+              icon={UsersGroupTwoRounded}
+              trend="Currently Supporting"
+              trendDirection="stable"
+            />
+            <StatCard
+              title="Earnings"
+              value={`$${(
+                overviewData?.workSummary?.earnings?.current || 0
+              ).toFixed(2)}`}
+              icon={DollarMinimalistic}
+              trend="From last Month"
+              trendDirection={getTrendDirection(
+                overviewData?.workSummary?.earnings?.trend
+              )}
+            />
+            <StatCard
+              title="Performance Ratings"
+              value={(
+                overviewData?.performanceMetrics?.averageRating || 0
+              ).toFixed(1)}
+              icon={Star}
+              trend={`${
+                overviewData?.performanceMetrics?.onTimeRate || 0
+              }% on time rate`}
+              trendDirection="stable"
             />
           </div>
+        )}
 
-          {/* Right Column - Upcoming Shifts */}
-          <div>{/* <UpcomingShifts shifts={upcomingShifts} /> */}</div>
+        {/* Two columns layout for charts */}
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-6">
+          {/* Performance Chart */}
+          <PerformanceChart
+            selectedOption={selectedOption}
+            onSelectedOptionChange={setSelectedOption}
+            customRange={customRange}
+            onCustomRangeChange={setCustomRange}
+          />
+          {/* Upcoming Schedules */}
+          <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
+           <div className="flex justify-between items-center mb-6">
+             <h2 className="text-lg font-semibold text-gray-900">
+              Upcoming Schedules
+            </h2>
+            <Button onClick={() => { navigate('/support-worker/shifts') }} variant="link" className="ml-auto">
+              View All
+            </Button>
+           </div>
+            {overviewData.workSummary?.upcomingShifts.length > 0 ? (
+              <Table className="mt-4">
+                <TableBody className="divide-y divide-gray-200 bg-white">
+                  {overviewData.workSummary.upcomingShifts.map((shift) => (
+                    <TableRow
+                      key={shift.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {new Date(shift.startTime).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(shift.startTime).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}{" "}
+                          -{" "}
+                          {new Date(shift.endTime).toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
+                        {shift.clientName}
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
+                        {shift.location || "N/A"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+                <div className="text-center p-8">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-sm font-medium">
+                    No upcoming schedules
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Your upcoming shifts will appear here once scheduled
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <InvitationsTable invitations={invitations} />
+        {/* Invitations Table */}
+        <InvitationsTable
+          invitations={invitations}
+          isLoading={invitationsLoading}
+        />
       </div>
     </div>
   );
