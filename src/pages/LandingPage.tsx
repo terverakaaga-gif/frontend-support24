@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Menu, X, Star, ChevronDown, ChevronRight } from 'lucide-react';
+import React, { useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Menu, X, Star, ChevronDown, ChevronRight } from "lucide-react";
+import { CheckCircle, ClockCircle, CloseCircle, HamburgerMenu, ShieldCheck } from "@solar-icons/react";
 
 export default function Support24Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
   const { scrollY } = useScroll();
-  
+
   // Parallax effects
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const y2 = useTransform(scrollY, [0, 500], [0, -100]);
@@ -15,7 +16,7 @@ export default function Support24Landing() {
     initial: { opacity: 0, y: 40 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.6 }
+    transition: { duration: 0.6 },
   };
 
   const stagger = {
@@ -26,7 +27,7 @@ export default function Support24Landing() {
 
   return (
     <div className="min-h-screen bg-[#0a0e27] text-white relative overflow-hidden">
-      {/* Animated Background - Dark blue with flowing curves */}
+      {/* Animated Background - Dark primary with flowing curves */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Top left flowing curve */}
         <motion.div
@@ -35,7 +36,7 @@ export default function Support24Landing() {
         >
           <div className="w-full h-full bg-gradient-to-br from-primary/20 via-purple-600/10 to-transparent rounded-full blur-3xl" />
         </motion.div>
-        
+
         {/* Bottom right flowing curve */}
         <motion.div
           className="absolute -bottom-40 -right-40 w-[800px] h-[800px]"
@@ -54,15 +55,34 @@ export default function Support24Landing() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         >
           <div className="w-full h-full bg-gradient-to-r from-primary-500/10 to-purple-500/10 rounded-full blur-3xl" />
         </motion.div>
       </div>
 
-      {/* Header - Transparent with blur on scroll */}
-      <motion.header 
+      {/* Two long primary gradient long pointy triangle at the top left corner (using svg image) */}
+      <img
+        src="/new-res/gradient-triangle.svg"
+        alt=""
+        className="absolute top-10 left-0 "
+      />
+      <img
+        src="/new-res/gradient-triangle.svg"
+        alt=""
+        className="absolute top-56 left-0 "
+      />
+
+      {/* Gradient blue circle at top right */}
+      <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute top-24 right-0"
+      />
+
+       {/* Header - Transparent with blur on scroll */}
+      <motion.header
         className="fixed top-0 w-full z-50 transition-all duration-300"
         initial={{ backgroundColor: "rgba(10, 14, 39, 0)" }}
         style={{
@@ -75,10 +95,10 @@ export default function Support24Landing() {
             scrollY,
             [0, 100],
             ["blur(0px)", "blur(20px)"]
-          )
+          ),
         }}
       >
-        <nav className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
+        <nav className="px-8 lg:px-16 py-5">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <motion.div
@@ -86,28 +106,49 @@ export default function Support24Landing() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center"
             >
-              <span className="text-2xl font-montserrat-bold tracking-tight">
-                SUPPORT<span className="text-primary-500">24</span>
-              </span>
+              <img className="h-8 md:h-12" src="/new-res/support24logo-blk.svg" />
             </motion.div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">How it Works</a>
-              <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">FAQs</a>
-              <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">Contact Us</a>
+            <div className="hidden md:flex items-center gap-8 font-montserrat-semibold border border-primary-50/20 bg-primary-900/20 backdrop-blur-sm px-6 py-4 rounded-full">
+              <a
+                href="#"
+                className="text-sm text-gray-300 hover:text-white transition-colors"
+              >
+                How it Works
+              </a>
+              <a
+                href="#"
+                className="text-sm text-gray-300 hover:text-white transition-colors"
+              >
+                FAQs
+              </a>
+              <a
+                href="#"
+                className="text-sm text-gray-300 hover:text-white transition-colors"
+              >
+                Contact Us
+              </a>
+            </div>
               <motion.button
-                className="bg-primary hover:bg-primary-700 px-6 py-2.5 rounded-full text-sm font-medium transition-colors"
+              onClick={ ()=>{
+                // redirect to login page
+                window.location.href = "/login";
+              }}
+                className="hidden md:block bg-primary hover:bg-primary-700 w-[220px] px-6 py-4 rounded-xl text-sm font-montserrat-semibold transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Download App
+                {/* Download App */}
+                Login
               </motion.button>
-            </div>
 
             {/* Mobile menu button */}
-            <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <button
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <CloseCircle size={24} /> : <HamburgerMenu size={24} />}
             </button>
           </div>
         </nav>
@@ -117,45 +158,49 @@ export default function Support24Landing() {
       <section className="relative pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-5xl mx-auto relative z-10">
-            <motion.h1
-              className="text-5xl sm:text-6xl lg:text-7xl font-montserrat-bold mb-6 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              Support That Fits Your Life
-            </motion.h1>
-            
-            <motion.p
-              className="text-xl text-gray-300 mb-10 leading-relaxed max-w-4xl mx-auto"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              Support24 makes NDIS support effortless. Connect with verified workers, plan your activities, manage funds, and simplify your entire support care - all simplified
-            </motion.p>
+            <div className="text-center max-w-5xl mx-auto">
+              <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold mb-8 leading-tight">
+                <span className="relative inline-block italic font-montserrat-semibold">
+                  Support
+                  <img
+                    src="/new-res/zigzag-underline.svg"
+                    alt="signature underline"
+                    className="absolute -bottom-10 left-0 w-full"
+                  />
+                </span>{" "}
+                That Fits Your Life
+              </motion.h1>
 
-            <motion.div
-              className="flex flex-wrap justify-center gap-4 mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <motion.button
-                className="bg-primary hover:bg-primary-700 px-8 py-4 rounded-full font-medium flex items-center gap-3 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span>📱</span> Get Started
-              </motion.button>
-              <motion.button
-                className="bg-gray-800 hover:bg-gray-700 px-8 py-4 rounded-full font-medium flex items-center gap-3 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span>🍎</span> Get on iOS
-              </motion.button>
-            </motion.div>
+              <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                Support24 makes NDIS support effortless. Connect with verified
+                workers, plan your routine and access trusted care - all
+                simplified
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-4 mb-12">
+                
+              </div>
+
+              {/* Trust Badges */}
+              <div className="flex flex-wrap justify-center gap-8 text-sm mb-16 italic font-montserrat-semibold">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Verified Workers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>NDIS Approved</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Secure Platform</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ClockCircle className="w-4 h-4" />
+                  <span>24/7 Available</span>
+                </div>
+              </div>
+            </div>
 
             {/* Phone Mockup with Floating Cards */}
             <motion.div
@@ -168,7 +213,11 @@ export default function Support24Landing() {
               <motion.div
                 className="relative z-20"
                 animate={{ y: [0, -15, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <div className="bg-gradient-to-b from-primary-900 to-primary-900 rounded-[3rem] p-3 shadow-2xl border-4 border-gray-700">
                   <div className="bg-primary rounded-[2.5rem] p-6 h-[600px] flex flex-col">
@@ -178,24 +227,30 @@ export default function Support24Landing() {
                         <div className="w-8 h-8 bg-primary rounded-xl"></div>
                       </div>
                       <div className="text-left">
-                        <div className="font-montserrat-bold text-white text-lg">SUPPORT24</div>
-                        <div className="text-primary-200 text-sm">Your Care Hub</div>
+                        <div className="font-montserrat-bold text-white text-lg">
+                          SUPPORT24
+                        </div>
+                        <div className="text-primary-200 text-sm">
+                          Your Care Hub
+                        </div>
                       </div>
                     </div>
 
                     {/* Phone Content Boxes */}
                     <div className="space-y-3 flex-1">
-                      {['Schedule', 'Workers', 'Funds', 'Support'].map((item, i) => (
-                        <motion.div
-                          key={item}
-                          className="bg-primary-700/80 backdrop-blur-sm rounded-2xl p-4 text-left font-medium shadow-lg"
-                          initial={{ opacity: 0, x: -30 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.8 + i * 0.1 }}
-                        >
-                          {item}
-                        </motion.div>
-                      ))}
+                      {["Schedule", "Workers", "Funds", "Support"].map(
+                        (item, i) => (
+                          <motion.div
+                            key={item}
+                            className="bg-primary-700/80 backdrop-blur-sm rounded-2xl p-4 text-left font-medium shadow-lg"
+                            initial={{ opacity: 0, x: -30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.8 + i * 0.1 }}
+                          >
+                            {item}
+                          </motion.div>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
@@ -205,15 +260,21 @@ export default function Support24Landing() {
               {/* Top Left Card */}
               <motion.div
                 className="absolute -left-8 top-20 sm:-left-20 sm:top-24 z-10"
-                animate={{ 
+                animate={{
                   y: [0, -20, 0],
-                  rotate: [-5, -8, -5]
+                  rotate: [-5, -8, -5],
                 }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <div className="bg-gray-900/90 backdrop-blur-md rounded-2xl p-4 w-32 sm:w-40 shadow-2xl border border-gray-700">
                   <div className="w-10 h-10 bg-primary rounded-xl mb-2"></div>
-                  <div className="text-xs font-montserrat-semibold mb-1">NDIS</div>
+                  <div className="text-xs font-montserrat-semibold mb-1">
+                    NDIS
+                  </div>
                   <div className="text-[10px] text-gray-400">Funding</div>
                 </div>
               </motion.div>
@@ -221,15 +282,22 @@ export default function Support24Landing() {
               {/* Top Right Card */}
               <motion.div
                 className="absolute -right-8 top-32 sm:-right-20 sm:top-40 z-10"
-                animate={{ 
+                animate={{
                   y: [0, -15, 0],
-                  rotate: [5, 8, 5]
+                  rotate: [5, 8, 5],
                 }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                transition={{
+                  duration: 4.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5,
+                }}
               >
                 <div className="bg-gray-900/90 backdrop-blur-md rounded-2xl p-4 w-32 sm:w-40 shadow-2xl border border-gray-700">
                   <div className="w-10 h-10 bg-primary rounded-xl mb-2"></div>
-                  <div className="text-xs font-montserrat-semibold mb-1">Calendar</div>
+                  <div className="text-xs font-montserrat-semibold mb-1">
+                    Calendar
+                  </div>
                   <div className="text-[10px] text-gray-400">Schedule</div>
                 </div>
               </motion.div>
@@ -237,15 +305,22 @@ export default function Support24Landing() {
               {/* Bottom Left Card */}
               <motion.div
                 className="absolute -left-8 bottom-32 sm:-left-20 sm:bottom-40 z-10"
-                animate={{ 
+                animate={{
                   y: [0, 15, 0],
-                  rotate: [-3, -6, -3]
+                  rotate: [-3, -6, -3],
                 }}
-                transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                transition={{
+                  duration: 4.2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.3,
+                }}
               >
                 <div className="bg-gray-900/90 backdrop-blur-md rounded-2xl p-4 w-32 sm:w-40 shadow-2xl border border-gray-700">
                   <div className="w-10 h-10 bg-primary rounded-xl mb-2"></div>
-                  <div className="text-xs font-montserrat-semibold mb-1">Chat</div>
+                  <div className="text-xs font-montserrat-semibold mb-1">
+                    Chat
+                  </div>
                   <div className="text-[10px] text-gray-400">Messages</div>
                 </div>
               </motion.div>
@@ -253,15 +328,22 @@ export default function Support24Landing() {
               {/* Bottom Right Card */}
               <motion.div
                 className="absolute -right-8 bottom-20 sm:-right-20 sm:bottom-24 z-10"
-                animate={{ 
+                animate={{
                   y: [0, 18, 0],
-                  rotate: [3, 6, 3]
+                  rotate: [3, 6, 3],
                 }}
-                transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+                transition={{
+                  duration: 4.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.7,
+                }}
               >
                 <div className="bg-gray-900/90 backdrop-blur-md rounded-2xl p-4 w-32 sm:w-40 shadow-2xl border border-gray-700">
                   <div className="w-10 h-10 bg-primary rounded-xl mb-2"></div>
-                  <div className="text-xs font-montserrat-semibold mb-1">Progress</div>
+                  <div className="text-xs font-montserrat-semibold mb-1">
+                    Progress
+                  </div>
                   <div className="text-[10px] text-gray-400">Tracking</div>
                 </div>
               </motion.div>
@@ -284,10 +366,12 @@ export default function Support24Landing() {
         <div className="max-w-7xl mx-auto">
           <motion.div className="text-center mb-16" {...fadeInUp}>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-montserrat-bold mb-6">
-              Safe. Verified. <span className="italic text-primary-400">Reliable.</span>
+              Safe. Verified.{" "}
+              <span className="italic text-primary-400">Reliable.</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              The wellbeing comes first. Every support worker is thoroughly screened, and every interaction is secured
+              The wellbeing comes first. Every support worker is thoroughly
+              screened, and every interaction is secured
             </p>
             <motion.div
               className="mt-8"
@@ -305,10 +389,26 @@ export default function Support24Landing() {
           {/* Feature Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { title: 'Verified Support Workers', desc: 'All support workers undergo thorough background checks, verification processes, and skill assessments.', icon: '✓' },
-              { title: 'Insurance Transparency', desc: 'Complete coverage details with transparent policies to give you peace of mind.', icon: '🛡️' },
-              { title: 'Privacy Protected', desc: 'Your data is encrypted and secure. We prioritize your privacy above all else.', icon: '🔒' },
-              { title: 'Streamlined Booking', desc: 'Easy scheduling and payment processing for hassle-free care coordination.', icon: '💳' }
+              {
+                title: "Verified Support Workers",
+                desc: "All support workers undergo thorough background checks, verification processes, and skill assessments.",
+                icon: "✓",
+              },
+              {
+                title: "Insurance Transparency",
+                desc: "Complete coverage details with transparent policies to give you peace of mind.",
+                icon: "🛡️",
+              },
+              {
+                title: "Privacy Protected",
+                desc: "Your data is encrypted and secure. We prioritize your privacy above all else.",
+                icon: "🔒",
+              },
+              {
+                title: "Streamlined Booking",
+                desc: "Easy scheduling and payment processing for hassle-free care coordination.",
+                icon: "💳",
+              },
             ].map((feature, i) => (
               <motion.div
                 key={i}
@@ -320,8 +420,12 @@ export default function Support24Landing() {
                 whileHover={{ y: -5, scale: 1.02 }}
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-montserrat-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{feature.desc}</p>
+                <h3 className="text-xl font-montserrat-bold mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  {feature.desc}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -336,7 +440,8 @@ export default function Support24Landing() {
               Support24 is for everyone in The Care Journey
             </h2>
             <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Whether you are seeking support (providing care) or managing service, Support24 simplifies every part of the care process
+              Whether you are seeking support (providing care) or managing
+              service, Support24 simplifies every part of the care process
             </p>
           </motion.div>
 
@@ -354,10 +459,17 @@ export default function Support24Landing() {
                 <div className="bg-white rounded-[2.5rem] h-[700px] overflow-hidden">
                   {/* Calendar View Mockup */}
                   <div className="p-6 bg-gray-100">
-                    <div className="text-gray-900 font-montserrat-bold text-2xl mb-6">October 2024</div>
+                    <div className="text-gray-900 font-montserrat-bold text-2xl mb-6">
+                      October 2024
+                    </div>
                     <div className="grid grid-cols-7 gap-2 mb-4">
-                      {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-                        <div key={day} className="text-center text-gray-1000 text-sm font-medium">{day}</div>
+                      {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                        <div
+                          key={day}
+                          className="text-center text-gray-1000 text-sm font-medium"
+                        >
+                          {day}
+                        </div>
                       ))}
                     </div>
                     <div className="grid grid-cols-7 gap-2">
@@ -365,7 +477,9 @@ export default function Support24Landing() {
                         <motion.div
                           key={i}
                           className={`aspect-square rounded-xl flex items-center justify-center text-sm ${
-                            i % 7 === 0 ? 'bg-primary text-white font-montserrat-bold' : 'bg-white text-gray-700'
+                            i % 7 === 0
+                              ? "bg-primary text-white font-montserrat-bold"
+                              : "bg-white text-gray-700"
                           }`}
                           initial={{ opacity: 0, scale: 0.8 }}
                           whileInView={{ opacity: 1, scale: 1 }}
@@ -376,10 +490,14 @@ export default function Support24Landing() {
                         </motion.div>
                       ))}
                     </div>
-                    
+
                     {/* Event List */}
                     <div className="mt-6 space-y-3">
-                      {['Support Worker Visit', 'Physiotherapy Session', 'Community Event'].map((event, i) => (
+                      {[
+                        "Support Worker Visit",
+                        "Physiotherapy Session",
+                        "Community Event",
+                      ].map((event, i) => (
                         <motion.div
                           key={i}
                           className="bg-primary text-white p-4 rounded-2xl"
@@ -389,7 +507,9 @@ export default function Support24Landing() {
                           transition={{ delay: 0.5 + i * 0.1 }}
                         >
                           <div className="font-medium">{event}</div>
-                          <div className="text-sm text-primary-200">10:00 AM</div>
+                          <div className="text-sm text-primary-200">
+                            10:00 AM
+                          </div>
                         </motion.div>
                       ))}
                     </div>
@@ -404,8 +524,12 @@ export default function Support24Landing() {
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 <div className="bg-primary text-white p-4 rounded-2xl shadow-2xl w-48">
-                  <div className="font-montserrat-bold mb-1">Manage your Services and Providers</div>
-                  <div className="text-sm text-primary-100">Track and coordinate all care services</div>
+                  <div className="font-montserrat-bold mb-1">
+                    Manage your Services and Providers
+                  </div>
+                  <div className="text-sm text-primary-100">
+                    Track and coordinate all care services
+                  </div>
                 </div>
               </motion.div>
 
@@ -415,8 +539,12 @@ export default function Support24Landing() {
                 transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }}
               >
                 <div className="bg-primary text-white p-4 rounded-2xl shadow-2xl w-48">
-                  <div className="font-montserrat-bold mb-1">All your information and Resources</div>
-                  <div className="text-sm text-primary-100">Everything in one place</div>
+                  <div className="font-montserrat-bold mb-1">
+                    All your information and Resources
+                  </div>
+                  <div className="text-sm text-primary-100">
+                    Everything in one place
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -432,17 +560,38 @@ export default function Support24Landing() {
               All In One Place
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Comprehensive tools and support designed to give you complete control over your care journey
+              Comprehensive tools and support designed to give you complete
+              control over your care journey
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: 'Daily Routine', desc: 'Schedule and manage daily activities with ease', icon: '📅' },
-              { title: 'Create & Contrast', desc: 'Build detailed care plans and compare options', icon: '📝' },
-              { title: 'Camp & Schedules', desc: 'Organize group activities and appointments', icon: '🏕️' },
-              { title: 'Specialist Support', desc: 'Access to qualified healthcare professionals', icon: '👨‍⚕️' },
-              { title: 'Places of Mind', desc: 'Track wellness and mental health progress', icon: '🧘' }
+              {
+                title: "Daily Routine",
+                desc: "Schedule and manage daily activities with ease",
+                icon: "📅",
+              },
+              {
+                title: "Create & Contrast",
+                desc: "Build detailed care plans and compare options",
+                icon: "📝",
+              },
+              {
+                title: "Camp & Schedules",
+                desc: "Organize group activities and appointments",
+                icon: "🏕️",
+              },
+              {
+                title: "Specialist Support",
+                desc: "Access to qualified healthcare professionals",
+                icon: "👨‍⚕️",
+              },
+              {
+                title: "Places of Mind",
+                desc: "Track wellness and mental health progress",
+                icon: "🧘",
+              },
             ].map((tool, i) => (
               <motion.div
                 key={i}
@@ -454,7 +603,9 @@ export default function Support24Landing() {
                 whileHover={{ y: -5 }}
               >
                 <div className="text-4xl mb-4">{tool.icon}</div>
-                <h3 className="text-xl font-montserrat-bold mb-3">{tool.title}</h3>
+                <h3 className="text-xl font-montserrat-bold mb-3">
+                  {tool.title}
+                </h3>
                 <p className="text-gray-400 text-sm">{tool.desc}</p>
               </motion.div>
             ))}
@@ -469,13 +620,13 @@ export default function Support24Landing() {
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-montserrat-bold mb-8">
               Trusted by Thousands across Australia
             </h2>
-            
+
             {/* Stats */}
             <div className="flex flex-wrap justify-center gap-12 mb-12">
               {[
-                { value: '4.9', label: 'Average Rating' },
-                { value: '10,000+', label: 'Active Users' },
-                { value: '50,000+', label: 'Sessions Booked' }
+                { value: "4.9", label: "Average Rating" },
+                { value: "10,000+", label: "Active Users" },
+                { value: "50,000+", label: "Sessions Booked" },
               ].map((stat, i) => (
                 <motion.div
                   key={i}
@@ -484,7 +635,9 @@ export default function Support24Landing() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.2 }}
                 >
-                  <div className="text-5xl font-montserrat-bold text-primary-400">{stat.value}</div>
+                  <div className="text-5xl font-montserrat-bold text-primary-400">
+                    {stat.value}
+                  </div>
                   <div className="text-gray-400 mt-2">{stat.label}</div>
                 </motion.div>
               ))}
@@ -505,12 +658,22 @@ export default function Support24Landing() {
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-4 h-4 fill-primary-400 text-primary-400" />
+                    <Star
+                      key={j}
+                      className="w-4 h-4 fill-primary-400 text-primary-400"
+                    />
                   ))}
-                  <span className="ml-2 text-primary-400 font-montserrat-bold text-sm">5.0</span>
+                  <span className="ml-2 text-primary-400 font-montserrat-bold text-sm">
+                    5.0
+                  </span>
                 </div>
-                <p className="font-montserrat-semibold mb-3 text-lg">I love the service, can't say this enough!</p>
-                <p className="text-gray-400 text-sm mb-4">The booking process was seamless and the support workers are highly professional.</p>
+                <p className="font-montserrat-semibold mb-3 text-lg">
+                  I love the service, can't say this enough!
+                </p>
+                <p className="text-gray-400 text-sm mb-4">
+                  The booking process was seamless and the support workers are
+                  highly professional.
+                </p>
                 <div className="flex items-center gap-3 pt-4 border-t border-white/10">
                   <div className="w-10 h-10 bg-primary rounded-full"></div>
                   <div>
@@ -532,18 +695,19 @@ export default function Support24Landing() {
               Frequently Asked Questions
             </h2>
             <p className="text-xl text-gray-300">
-              Got questions about FAQ section, where we answer the most common queries about Support24
+              Got questions about FAQ section, where we answer the most common
+              queries about Support24
             </p>
           </motion.div>
 
           <div className="space-y-4">
             {[
-              'Where are support workers verified?',
-              'Can I use my NDIS funding with Support24?',
-              'Is Support24 free to join?',
-              'What about insurance coverage?',
-              'Can I book group activities or camps?',
-              'What devices are supported?'
+              "Where are support workers verified?",
+              "Can I use my NDIS funding with Support24?",
+              "Is Support24 free to join?",
+              "What about insurance coverage?",
+              "Can I book group activities or camps?",
+              "What devices are supported?",
             ].map((question, i) => (
               <motion.div
                 key={i}
@@ -557,7 +721,9 @@ export default function Support24Landing() {
                   className="w-full p-6 text-left flex justify-between items-center hover:bg-white/5 transition-colors"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 >
-                  <span className="font-montserrat-semibold text-lg">{question}</span>
+                  <span className="font-montserrat-semibold text-lg">
+                    {question}
+                  </span>
                   <motion.div
                     animate={{ rotate: openFaq === i ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
@@ -568,14 +734,16 @@ export default function Support24Landing() {
                 <motion.div
                   initial={false}
                   animate={{
-                    height: openFaq === i ? 'auto' : 0,
-                    opacity: openFaq === i ? 1 : 0
+                    height: openFaq === i ? "auto" : 0,
+                    opacity: openFaq === i ? 1 : 0,
                   }}
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden"
                 >
                   <div className="p-6 pt-0 text-gray-400">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua.
                   </div>
                 </motion.div>
               </motion.div>
@@ -605,7 +773,9 @@ export default function Support24Landing() {
                 Take Control of your Support Today
               </h2>
               <p className="text-xl text-primary-100 mb-10 max-w-3xl mx-auto leading-relaxed">
-                Join Support24 today and discover a simpler way to manage services, book support, and enjoy community connections—all from one complete platform
+                Join Support24 today and discover a simpler way to manage
+                services, book support, and enjoy community connections—all from
+                one complete platform
               </p>
 
               <div className="flex flex-wrap justify-center gap-4">
@@ -639,7 +809,8 @@ export default function Support24Landing() {
                 SUPPORT<span className="text-primary-500">24</span>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Support24 provides NDIS support management, making it easier to connect with verified workers and manage your care journey.
+                Support24 provides NDIS support management, making it easier to
+                connect with verified workers and manage your care journey.
               </p>
             </div>
 
@@ -647,9 +818,12 @@ export default function Support24Landing() {
             <div>
               <h3 className="font-montserrat-bold text-lg mb-4">Quick Links</h3>
               <ul className="space-y-3">
-                {['About', 'Pricing', 'Blog'].map(link => (
+                {["About", "Pricing", "Blog"].map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
+                    <a
+                      href="#"
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                    >
                       {link}
                     </a>
                   </li>
@@ -661,13 +835,18 @@ export default function Support24Landing() {
             <div>
               <h3 className="font-montserrat-bold text-lg mb-4">Legal</h3>
               <ul className="space-y-3">
-                {['Privacy Policy', 'Terms of Use', 'Guidelines'].map(link => (
-                  <li key={link}>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {["Privacy Policy", "Terms of Use", "Guidelines"].map(
+                  (link) => (
+                    <li key={link}>
+                      <a
+                        href="#"
+                        className="text-gray-400 hover:text-white transition-colors text-sm"
+                      >
+                        {link}
+                      </a>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
 
@@ -690,10 +869,10 @@ export default function Support24Landing() {
             <p className="text-sm text-gray-400">
               © 2024 Support24. All rights reserved.
             </p>
-            
+
             {/* Social Links */}
             <div className="flex gap-4">
-              {['Facebook', 'LinkedIn', 'Twitter'].map(social => (
+              {["Facebook", "LinkedIn", "Twitter"].map((social) => (
                 <motion.a
                   key={social}
                   href="#"
