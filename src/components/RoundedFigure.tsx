@@ -10,7 +10,7 @@ export const RoundedFigure = ({
   return (
     <motion.div
       animate={{ scale: [0, 1] }}
-      className="flex justify-center items-center space-x-3 rounded-full bg-white p-3 text-sm text-primary font-montserrat-semibold w-fit"
+      className="flex justify-center items-center space-x-3 rounded-full bg-white p-3 text-sm  text-primary font-montserrat-semibold w-fit"
     >
       <Icon />
       <span>{text}</span>

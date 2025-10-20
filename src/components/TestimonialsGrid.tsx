@@ -3,96 +3,96 @@ import { motion } from "framer-motion";
 
 export const testimonialData = [
   {
-    id: 2,
+    id: 1,
     title: "I love the service, can't say less",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
+    content: "Support24 has transformed how we manage daily support.",
+    userName: "Sarah Reves",
     userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    rating: 4.5,
+  },
+  {
+    id: 2,
+    title: "How are support workers verified?",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
+    userRole: "Practice Administrator",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     rating: 4.5,
   },
   {
     id: 3,
-    title: "How are support workers verified?",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
+    title: "I love the service, can't say less",
+    content: "Support24 has transformed how we manage daily support.",
+    userName: "Sarah Reves",
     userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    rating: 4.5,
+  },
+  {
+    id: 4,
+    title: "I love the service, can't say less",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
+    userRole: "Practice Administrator",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    rating: 4.5,
+  },
+  {
+    id: 5,
+    title: "How are support workers verified?",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
+    userRole: "Practice Administrator",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     rating: 4.5,
   },
   {
     id: 6,
     title: "I love the service, can't say less",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
     userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     rating: 4.5,
   },
-  {
-    id: 4,
-    title: "Amazing Service!!",
-    content: "Support24 has transformed how we manage daily support.",
-    userName: "Sarah Reyes",
-    userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    rating: 4.5,
-    hasVideo: true,
-    videoThumbnail:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
-  },
-  {
-    id: 5,
-    title: "Amazing Platform, Great Idea!",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
-    userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    rating: 4.5,
-  },
-
   {
     id: 7,
-    title: "Exceptional Support!",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
+    title: "I love the service, can't say less",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
     userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     rating: 4.5,
   },
   {
     id: 8,
-    title: "Reliable and Trustworthy",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
+    title: "Amazing Service!!",
+    content: "Support24 has transformed how we manage daily support.",
+    userName: "Sarah Reves",
     userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    rating: 4.5,
+    hasVideo: true,
+    videoThumbnail: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
+  },
+  {
+    id: 9,
+    title: "Amazing Platform, Great Idea!",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
+    userRole: "Practice Administrator",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     rating: 4.5,
   },
   {
-    id: 1,
-    title: "I love the service, can't say less",
-    content:
-      "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple – it's exactly what families like ours needed.",
-    userName: "Sarah Reyes",
+    id: 10,
+    title: "Amazing Platform, Great Idea!",
+    content: "Support24 has transformed how we manage daily support. The peace of mind knowing every worker is verified and the scheduling is so simple - it's exactly what families like ours needed.",
+    userName: "Sarah Reves",
     userRole: "Practice Administrator",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     rating: 4.5,
-    variant: "primary",
   },
 ];
 
