@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Menu, X, Star, ChevronDown, ChevronRight } from "lucide-react";
+import { Star, ChevronDown, ChevronRight } from "lucide-react";
 import {
   CheckCircle,
   ClockCircle,
-  CloseCircle,
-  HamburgerMenu,
-  InfoCircle,
-  Letter,
-  Phone,
   QuestionCircle,
   ShieldCheck,
 } from "@solar-icons/react";
@@ -16,19 +11,17 @@ import { InlineVectorText } from "@/components/InlineVectorText";
 import { Button } from "@/components/ui/button";
 import {
   ALL_IN_ONE_CARDS,
-  FEATURE_CARDS,
-  LANDINGPAGE_NAVS,
 } from "@/constants/landingpage";
-import { Link } from "react-router-dom";
 import { FeatureCard } from "@/components/FeatureCard";
 import { RoundedFigure } from "@/components/RoundedFigure";
 import {
   TestimonialCard,
   testimonialData,
 } from "@/components/TestimonialsGrid";
+import { LandingLayout } from "@/components/layouts/LandingLayout";
+import { SafeVerifiedReliableSection } from "@/components/SafeVerifiedReliableSection";
 
 export default function Support24Landing() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
   const { scrollY } = useScroll();
 
@@ -50,7 +43,7 @@ export default function Support24Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05030B] text-white relative overflow-hidden px-4 md:px-0">
+    <LandingLayout>
       {/* Animated Background - Dark primary with flowing curves */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Top left flowing curve */}
@@ -106,95 +99,6 @@ export default function Support24Landing() {
         alt=""
         className="absolute top-24 right-0 object-cover pointer-events-none"
       />
-
-      {/* Header - Transparent with blur on scroll */}
-      <motion.header
-        className="fixed top-0 w-full z-50 transition-all duration-300"
-        initial={{ backgroundColor: "rgba(10, 14, 39, 0)" }}
-        style={{
-          backgroundColor: useTransform(
-            scrollY,
-            [0, 100],
-            ["rgba(10, 14, 39, 0)", "rgba(10, 14, 39, 0.8)"]
-          ),
-          backdropFilter: useTransform(
-            scrollY,
-            [0, 100],
-            ["blur(0px)", "blur(20px)"]
-          ),
-        }}
-      >
-        <nav className="px-4 md:px-16 py-4 md:py-5">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center"
-            >
-              <img
-                className="h-8 md:h-12"
-                src="/new-res/support24logo-blk.svg"
-              />
-            </motion.div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8 font-montserrat-semibold border border-gray-50/20 bg-gradient-to-tr from-primary-900/20 to-transparent backdrop-blur-sm px-6 py-4 rounded-full">
-              {/* Navigation Links */}
-              {LANDINGPAGE_NAVS.map((nav, i) => (
-                <Link
-                  key={i + nav.name}
-                  to={nav.href}
-                  className="text-sm hover:text-primary transition-colors"
-                >
-                  {nav.name}
-                </Link>
-              ))}
-            </div>
-            <motion.button
-              onClick={() => {
-                // redirect to login page
-                window.location.href = "/login";
-              }}
-              className="hidden md:block bg-primary hover:bg-primary-700 w-[220px] px-6 py-4 rounded-xl text-sm font-montserrat-semibold transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {/* Download App */}
-              Login
-            </motion.button>
-
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <CloseCircle size={24} />
-              ) : (
-                <HamburgerMenu size={24} />
-              )}
-            </button>
-            {/* Mobile Menu */}
-            {mobileMenuOpen && (
-              <div className="absolute md:hidden top-full w-full right-0 bg-[#05030B]/90 drop-shadow-sm shadow-lg rounded-b-lg mt-2">
-                <ul className="flex flex-col p-4">
-                  {LANDINGPAGE_NAVS.map((nav, i) => (
-                    <li key={i + nav.name}>
-                      <Link
-                        to={nav.href}
-                        className="font-montserrat-semibold block px-4 py-2 text-sm hover:bg-gray-100"
-                      >
-                        {nav.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </nav>
-      </motion.header>
 
       {/* Hero Section */}
       <section className="relative pt-16 md:pt-28 px-4 md:px-8">
@@ -258,80 +162,7 @@ export default function Support24Landing() {
       </section>
 
       {/* Safe, Verified, Reliable Section */}
-      <section className="relative h-fit md:h-screen p-8 md:p-16 bg-gray-50/90 text-black">
-        {/* Vector Illustration Circle */}
-        <img
-          src="/new-res/gradient-ckr.svg"
-          alt="Vector Illustration"
-          className="absolute w-80 h-80 -top-14 -left-24 object-cover pointer-events-none opacity-80"
-        />
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 w-full mx-auto h-full">
-          <motion.div
-            className="col-span-full flex flex-col gap-3 md:col-span-2"
-            {...fadeInUp}
-          >
-            <RoundedFigure
-              icon={ShieldCheck}
-              text="Enterprise-Grade Security"
-            />
-            <div className="flex gap-1 items-center md:pt-36">
-              <motion.h1 className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
-                Safe. Verified.{" "}
-                <InlineVectorText className="italic" text="Reliable" y={-10} />.
-              </motion.h1>
-            </div>
-            <p className="text-xl max-w-3xl mx-auto leading-relaxed font-montserrat-semibold">
-              The wellbeing comes first. Every support worker is thoroughly
-              screened, and every interaction is secured
-            </p>
-            <motion.div
-              className="mt-8"
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <motion.button>
-                <Button className="p-8 font-montserrat-semibold transition-colors text-lg">
-                  Download App
-                </Button>
-              </motion.button>
-
-              {/* Verctor Arrow */}
-              <motion.div
-                className="mt-3 md:mt-16 md:ml-28 "
-                animate={{ x: [0, 10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-              >
-                <img src="/new-res/good-arrow.svg" />
-              </motion.div>
-            </motion.div>
-          </motion.div>
-
-          {/* Feature Cards Grid */}
-          <div className="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-3 ">
-            {FEATURE_CARDS.map((feature, i) => (
-              <motion.div
-                key={i + feature.footer}
-                className="overflow-hidden"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-              >
-                <FeatureCard
-                  title={feature.title}
-                  icon={feature.icon}
-                  content={feature.content}
-                  footer={feature.footer}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <SafeVerifiedReliableSection />
 
       {/* Care Journey Section with Phone */}
       <section className="h-fit md:h-screen relative py-12 md:py-16 px-4 md:px-6">
@@ -614,115 +445,6 @@ export default function Support24Landing() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative backdrop-blur-sm">
-        <div className="p-8 md:p-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
-            {/* Brand */}
-            <div className="sm:col-span-2 lg:col-span-1">
-              <div className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
-                <img
-                  className="h-8 md:h-12"
-                  src="/new-res/support24logo-blk.svg"
-                  alt="Support24 Logo"
-                />
-              </div>
-              <p className="font-montserrat-semibold text-sm leading-relaxed">
-                Support24 provides NDIS support management, making it easier to
-                connect with verified workers and manage your care journey.
-              </p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-montserrat-bold text-base md:text-lg mb-3 md:mb-4">
-                Quick Links
-              </h3>
-              <ul className="space-y-2 md:space-y-3 font-montserrat-semibold">
-                {["About", "Pricing", "Blog"].map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className=" hover:text-white transition-colors text-sm"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h3 className="font-montserrat-bold text-base md:text-lg mb-3 md:mb-4">
-                Legal
-              </h3>
-              <ul className="space-y-2 md:space-y-3 font-montserrat-semibold">
-                {["Privacy Policy", "Terms of Use", "Guidelines"].map(
-                  (link) => (
-                    <li key={link}>
-                      <a
-                        href="#"
-                        className=" hover:text-white transition-colors text-sm"
-                      >
-                        {link}
-                      </a>
-                    </li>
-                  )
-                )}
-              </ul>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h3 className="font-montserrat-bold text-base md:text-lg mb-3 md:mb-4">
-                Contact
-              </h3>
-              <ul className="space-y-2 md:space-y-3 text-sm font-montserrat-semibold">
-                <li className="flex items-center gap-2">
-                  <Letter className="w-4 h-4" /> help@support24.com.au
-                </li>
-                <li className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" /> (03) 1900 9800
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div className="border-t border-white/10 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs md:text-sm  text-center md:text-left">
-              © 2024 Support24. All rights reserved.
-            </p>
-
-            {/* Social Links in svgs */}
-            <div className="flex gap-3 md:gap-4">
-              <motion.a className="p-3 rounded-full bg-primary ">
-                <img
-                  src="/new-res/facebook.svg"
-                  alt="Facebook"
-                  className="w-5 h-5 md:w-6 md:h-6 hover:opacity-80 transition-opacity"
-                />
-              </motion.a>
-
-              <motion.a className="p-3 rounded-full bg-primary ">
-                <img
-                  src="/new-res/instagram.svg"
-                  alt="Instagram"
-                  className="w-5 h-5 md:w-6 md:h-6 hover:opacity-80 transition-opacity"
-                />
-              </motion.a>
-              <motion.a className="p-3 rounded-full bg-primary ">
-                <img
-                  src="/new-res/linkedin.svg"
-                  alt="LinkedIn"
-                  className="w-5 h-5 md:w-6 md:h-6 hover:opacity-80 transition-opacity"
-                />
-              </motion.a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </LandingLayout>
   );
 }
