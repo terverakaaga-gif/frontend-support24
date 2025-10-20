@@ -2,3 +2,8 @@ export { Navigation } from './Navigation';
 export { Footer } from './Footer';
 export { LandingLayout } from './LandingLayout';
 export { SafeVerifiedReliableSection } from '../SafeVerifiedReliableSection';
+export { AllInOneSection } from '../AllInOneSection';
+export { AllInOneCard } from '../AllInOneCard';
+export { TestimonialsSection } from '../TestimonialsSection';
+export { FAQSection } from '../FAQSection';
+export { CTASection } from '../CTASection';

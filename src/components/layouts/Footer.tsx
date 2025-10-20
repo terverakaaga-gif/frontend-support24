@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Letter, Phone } from "@solar-icons/react";
 
+
 interface FooterProps {
   className?: string;
 }
@@ -80,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                 </a>
               </li>
               <li className="flex items-center gap-2 text-gray-300">
-                <Phone className="w-4 h-4" /> 
+                <Phone className="w-4 h-4"  /> 
                 <a 
                   href="tel:+0319009800"
                   className="hover:text-white transition-colors"
@@ -95,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800/20 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs md:text-sm text-gray-400 text-center md:text-left">
-            © 2024 Support24. All rights reserved.
+            © {new Date().getFullYear()} Support24. All rights reserved.
           </p>
 
           {/* Social Links */}
