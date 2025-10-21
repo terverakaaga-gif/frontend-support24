@@ -64,7 +64,7 @@ const supportWorkerService = {
   
   // Get support worker details by ID (for participant view)
   getById: async (id: string): Promise<SupportWorker> => {
-    return await get<SupportWorker>(`/support-workers/${id}`);
+    return await get<SupportWorker>(`/users/workers/${id}`);
   }
 };
 

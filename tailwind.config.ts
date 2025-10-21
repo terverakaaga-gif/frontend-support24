@@ -18,6 +18,14 @@ export default {
       },
     },
     extend: {
+      screens:{
+        "xs": "320px",
+        "sm": "412px",
+        "md": "768px",
+        "lg": "1024px",
+        "xl": "1280px",
+        "2xl": "1536px",
+      },
       fontFamily: {
         sans: ["var(--font-montserrat)", "ui-sans-serif", "system-ui"],
         montserrat: ["var(--font-montserrat)"],
