@@ -3,7 +3,7 @@ import {  Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2,  ShieldCheck, } 
 import { BadgeCheck, Headset, Settings2 } from "lucide-react";
 
 export const LANDINGPAGE_NAVS = [
-  { name: "How it Works", href: "#how_it_works" },
+  { name: "How it Works", href: "/how-it-works" },
   { name: "Events", href: "#events" },
   { name: "Accommodation", href: "#accommodation" },
   { name: "FAQs", href: "#faqs" },
