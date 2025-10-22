@@ -37,11 +37,13 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center"
           >
+            <Link to="/"> 
             <img
               className="h-8 md:h-12"
               src="/new-res/support24logo-blk.svg"
               alt="Support24 Logo"
             />
+            </Link>
           </motion.div>
 
           {/* Desktop Navigation */}

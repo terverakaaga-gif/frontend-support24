@@ -5,13 +5,12 @@ import { CTASection } from '@/components/CTASection'
 // import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 // import { Star, ChevronRight } from "lucide-react";
-import {
-    CheckCircle,
-    ClockCircle,
-    ShieldCheck,
-} from "@solar-icons/react";
+
 import { InlineVectorText } from "@/components/InlineVectorText";
 import { Button } from "@/components/ui/button";
+import { ContactSection } from '@/components/ContactSection'
+import { WhySupport24Section } from '@/components/WhySupport24Section';
+import { GettingStartedSection } from '@/components/GettingStartedSection';
 
 
 
@@ -89,7 +88,7 @@ export const HowItWorks = () => {
 
             {/* Hero Section */}
             <section className="relative pt-16 my-16 md:pt-28 px-4 md:px-8">
-                <div className="max-w-7xl mx-auto">
+                <div className=" px-12 mx-auto">
                     <motion.div
                         className=" text-center"
                         initial={{ opacity: 0, x: -50 }}
@@ -101,8 +100,8 @@ export const HowItWorks = () => {
                             className="text-3xl md:text-5xl lg:text-7xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-white"
                             initial={{ opacity: 0, scale: 0.8, y: 50 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            transition={{ 
-                                duration: 1.2, 
+                            transition={{
+                                duration: 1.2,
                                 delay: 0.2,
                                 ease: [0.25, 0.46, 0.45, 0.94]
                             }}
@@ -110,8 +109,8 @@ export const HowItWorks = () => {
                             <motion.span
                                 initial={{ opacity: 0, x: -100, rotateX: -90 }}
                                 animate={{ opacity: 1, x: 0, rotateX: 0 }}
-                                transition={{ 
-                                    duration: 0.8, 
+                                transition={{
+                                    duration: 0.8,
                                     delay: 0.4,
                                     ease: "easeOut"
                                 }}
@@ -122,13 +121,13 @@ export const HowItWorks = () => {
                                 className="italic"
                                 initial={{ opacity: 0, y: 50, scale: 0.5, rotate: -10 }}
                                 animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-                                transition={{ 
-                                    duration: 1.0, 
+                                transition={{
+                                    duration: 1.0,
                                     delay: 0.6,
                                     ease: [0.34, 1.56, 0.64, 1]
                                 }}
-                                whileHover={{ 
-                                    scale: 1.05, 
+                                whileHover={{
+                                    scale: 1.05,
                                     y: -5,
                                     transition: { duration: 0.3 }
                                 }}
@@ -143,8 +142,8 @@ export const HowItWorks = () => {
                             <motion.span
                                 initial={{ opacity: 0, x: 100, rotateX: 90 }}
                                 animate={{ opacity: 1, x: 0, rotateX: 0 }}
-                                transition={{ 
-                                    duration: 0.8, 
+                                transition={{
+                                    duration: 0.8,
                                     delay: 0.8,
                                     ease: "easeOut"
                                 }}
@@ -216,7 +215,13 @@ export const HowItWorks = () => {
                     </div>
                 </div>
             </section>
+            {/* why support24 */}
+            <WhySupport24Section />
 
+            {/* getting started section */}
+            <GettingStartedSection />
+            {/* contact section */}
+            <ContactSection />
             {/* CTA Section */}
             <CTASection />
         </LandingLayout>

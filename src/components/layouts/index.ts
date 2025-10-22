@@ -7,3 +7,6 @@ export { AllInOneCard } from '../AllInOneCard';
 export { TestimonialsSection } from '../TestimonialsSection';
 export { FAQSection } from '../FAQSection';
 export { CTASection } from '../CTASection';
+export { ContactSection } from '../ContactSection';
+export { WhySupport24Section } from '../WhySupport24Section';
+export { GettingStartedSection } from '../GettingStartedSection';

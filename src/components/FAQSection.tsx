@@ -114,9 +114,9 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
           {faqData.map((faq, i) => (
             <motion.div
               key={i}
-              className={`bg-white border border-gray-300 rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 ${
+              className={`bg-white border border-gray-300 rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300  ${
                 openFaq === i
-                  ? "shadow-2xl shadow-primary/20 border-primary border-2 bg-blue-50 ring-4 ring-primary/10"
+                  ? "  ring-4 ring-primary/10 &quot;backdrop-blur-sm bg-white  rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl&quot; shadow-lg shadow-primary border-primary border-2"
                   : "shadow-sm hover:shadow-md hover:shadow-primary/10"
               }`}
               initial={{ opacity: 0, y: 20 }}
