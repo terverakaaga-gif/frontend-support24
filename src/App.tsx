@@ -72,6 +72,7 @@ import ProfileEditForm from "./components/layouts/ProfileEditForm";
 import SupportWorkerProfilePreview from "./pages/SupportWorkerProfilePreview";
 import SupportWorkerInvite from "./pages/SupportWorkerInvite";
 import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationDetailsPage";
+import { HowItWorks } from "./pages/HowItWorks";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,11 @@ const AppRoutes = () => {
         element={
           user ? <Navigate to={getDefaultRoute()} replace /> : <LandingPage />
         }
+      />
+      {/* How It Works Page */}
+      <Route
+        path="/how-it-works"
+        element={<HowItWorks />}
       />
 
       {/* Public routes */}
