@@ -18,7 +18,7 @@ export const PulseLoader = () => (
       <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
 	  {/* use my logo image */}
 	  <div className="absolute inset-0 flex items-center justify-center">
-		<img src="/favicon.svg" alt="Logo" className="w-6 h-6 animate-pulse" />
+		<img src="/favicon.svg" alt="Logo" className="w-6 h-6 animate-scale-in-infinite" />
 	  </div>
       {/* <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-primary rounded-full animate-pulse"></div> */}
     </div>

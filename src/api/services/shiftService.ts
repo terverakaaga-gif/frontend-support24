@@ -1,5 +1,5 @@
-import { get } from '../apiClient';
-import { Shift, ShiftStatus } from '../../entities/Shift';
+import { get, post } from '../apiClient';
+import { CreateShiftRequest, Shift, ShiftStatus } from '../../entities/Shift';
 
 // Interface for shift filters
 export interface ShiftFilters {
@@ -59,7 +59,14 @@ const shiftService = {
     // Use the correct API endpoint /shifts/:shiftId
     const response = await get<ShiftResponse>(`/shifts/${shiftIdRef}`);
     return response.shift;
+  },
+
+  // Post a new shift
+  createShift: async (data: CreateShiftRequest): Promise<Shift> => {
+    const response = await post<Shift>('/shifts', data);
+    return response;
   }
+
 };
 
 export default shiftService;
