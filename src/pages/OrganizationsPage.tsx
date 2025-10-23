@@ -112,7 +112,7 @@ export default function SupportWorkerOrganizationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto p-8">
+      <div className="p-8">
         {/* Header */}
         <GeneralHeader
           title={
@@ -190,10 +190,12 @@ export default function SupportWorkerOrganizationsPage() {
                 </div>
               </div>
               <div className="space-y-0.5">
-               <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
                   ${stats.averageRate.toFixed(2)}
                 </p>
-                  <p className="text-[8px] md:text-xs font-montserrat-bold">Per Hour</p>
+                <p className="text-[8px] md:text-xs font-montserrat-bold">
+                  Per Hour
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -209,10 +211,12 @@ export default function SupportWorkerOrganizationsPage() {
                 </div>
               </div>
               <div className="space-y-0.5">
-               <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
                   {stats.pendingInvitations}
                 </p>
-                  <p className="text-[8px] md:text-xs font-montserrat-bold">Awaiting Responses</p>
+                <p className="text-[8px] md:text-xs font-montserrat-bold">
+                  Awaiting Responses
+                </p>
               </div>
             </CardContent>
           </Card>

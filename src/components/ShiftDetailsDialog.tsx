@@ -9,16 +9,59 @@ import {
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
 
+interface UserInfo {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  profileImage: string;
+}
+
+interface ServiceType {
+  _id: string;
+  name: string;
+  code: string;
+  status: string;
+}
+
+interface Shift {
+  _id: string;
+  organizationId: string;
+  participantId: string | UserInfo;
+  workerId?: string | UserInfo;
+  isMultiWorkerShift: boolean;
+  serviceTypeId: ServiceType;
+  startTime: string;
+  endTime: string;
+  locationType: string;
+  address: string;
+  shiftType: string;
+  requiresSupervision: boolean;
+  specialInstructions?: string;
+  status: string;
+  shiftId: string;
+  recurrence?: {
+    pattern: string;
+  };
+  routineRequired?: boolean;
+  workerAssignments?: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ShiftDetailsDialogProps {
-  shift: any;
+  shift: Shift | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  viewMode?: "participant" | "worker"; // Add this to specify which view we're in
 }
 
 const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
   shift,
   open,
   onOpenChange,
+  viewMode = "worker", // Default to worker view
 }) => {
   const getStatusBadgeStyle = (status: string) => {
     switch (status.toLowerCase()) {
@@ -63,15 +106,44 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
   };
 
   if (!shift) return null;
-  
-  const participant: {
-    _id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    profileImage: string;
-  } = shift.participantId;
+
+  // Determine which user object to display based on view mode and what's populated
+  let userToDisplay: UserInfo | null = null;
+  let userLabel = "";
+
+  if (viewMode === "participant") {
+    // In participant view, show the worker
+    if (shift.workerId && typeof shift.workerId === "object") {
+      userToDisplay = shift.workerId;
+      userLabel = "Support Worker";
+    }
+  } else {
+    // In worker view, show the participant
+    if (shift.participantId && typeof shift.participantId === "object") {
+      userToDisplay = shift.participantId;
+      userLabel = "Participant";
+    }
+  }
+
+  // Fallback: try to find any populated user object
+  if (!userToDisplay) {
+    if (
+      typeof shift.participantId === "object" &&
+      shift.participantId !== null
+    ) {
+      userToDisplay = shift.participantId;
+      userLabel = "Participant";
+    } else if (shift.workerId && typeof shift.workerId === "object") {
+      userToDisplay = shift.workerId;
+      userLabel = "Support Worker";
+    }
+  }
+
+  // If still no valid user, show error
+  if (!userToDisplay) {
+    console.error("No valid user object found in shift data");
+    return null;
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -139,7 +211,9 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                 <MapPoint className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 mt-0.5" />
                 <div>
                   <p className="text-xs text-gray-1000 mb-1">
-                    In-person Service
+                    {shift.locationType === "inPerson"
+                      ? "In-person Service"
+                      : "Remote Service"}
                   </p>
                   <p className="text-sm font-montserrat-semibold text-gray-900">
                     {shift.address}
@@ -153,7 +227,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
               <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-2 sm:mb-3">
                 Shift Information
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-y-3 text-xs md:text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-y-3 text-xs md:text-sm">
                 <div className="flex justify-between items-center">
                   <p className="text-gray-1000">Shift ID:</p>
                   <p className="font-montserrat-semibold text-gray-900">
@@ -173,27 +247,26 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                   </p>
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className="text-gray-1000">Participant:</p>
-                 <div className="flex items-center gap-2">
-                  <Avatar>
-                    <AvatarImage
-                      src={participant.profileImage}
-                      alt={`${participant.firstName} ${participant.lastName}`}
-                      className="w-6 h-6 rounded-full object-cover"
-                    />
-                    <AvatarFallback
-                      className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-montserrat-semibold text-xs"
-                      delayMs={600}
-                    >
-                      {participant.firstName.charAt(0)}
-                      {participant.lastName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                   <p className="font-montserrat-semibold text-gray-900">
-                    {participant.firstName}{" "}
-                    {participant.lastName}
-                  </p>
-                 </div>
+                  <p className="text-gray-1000">{userLabel}:</p>
+                  <div className="flex items-center gap-2">
+                    <Avatar>
+                      <AvatarImage
+                        src={userToDisplay.profileImage}
+                        alt={`${userToDisplay.firstName} ${userToDisplay.lastName}`}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                      <AvatarFallback
+                        className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-montserrat-semibold text-xs"
+                        delayMs={600}
+                      >
+                        {userToDisplay.firstName.charAt(0)}
+                        {userToDisplay.lastName.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p className="font-montserrat-semibold text-gray-900">
+                      {userToDisplay.firstName} {userToDisplay.lastName}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -204,7 +277,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                 <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-2 sm:mb-3">
                   Special Instructions
                 </h3>
-                <div className="bg-primary-800/10 rounded-md p-2 sm:p-3">
+                <div className="bg-primary/10 rounded-md p-2 sm:p-3">
                   <p className="text-xs md:text-sm text-primary">
                     {shift.specialInstructions}
                   </p>

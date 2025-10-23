@@ -1,6 +1,7 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import shiftService, { ShiftFilters } from '../api/services/shiftService';
-import { Shift } from '../entities/Shift';
+import { CreateShiftRequest, Shift } from '../entities/Shift';
+import { toast } from 'sonner';
 
 // Keys for React Query
 export const shiftKeys = {
@@ -35,5 +36,26 @@ export const useGetShiftByShiftId = (shiftIdRef?: string): UseQueryResult<Shift>
     queryKey: shiftKeys.byShiftId(shiftIdRef || ''),
     queryFn: () => shiftService.getShiftByShiftId(shiftIdRef || ''),
     enabled: !!shiftIdRef,
+  });
+};
+
+/**
+ * Hook to create a new shift
+ */
+export const useCreateShift = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (data: CreateShiftRequest) => shiftService.createShift(data),
+    onSuccess: (newShift) => {
+      // Invalidate and refetch shifts
+      queryClient.invalidateQueries({ queryKey: shiftKeys.all });
+      toast.success('Shift created successfully!');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || 'Failed to create shift';
+      toast.error(errorMessage);
+      console.error('Create shift error:', error);
+    },
   });
 };

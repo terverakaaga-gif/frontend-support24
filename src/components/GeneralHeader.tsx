@@ -35,17 +35,17 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
           stickyTop ? "sticky top-0 z-10" : ""
         }`}
       >
-        {showBackButton && (
-          <Button
-            variant="ghost"
-            className="flex gap-3 items-center hover:bg-transparent hover:text-white"
-            onClick={() => window.history.back()}
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back
-          </Button>
-        )}
         <div>
+          {showBackButton && (
+            <Button
+              variant="ghost"
+              className="flex gap-3 items-center hover:bg-transparent hover:text-black"
+              onClick={() => window.history.back()}
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back
+            </Button>
+          )}
           <h1 className="text-2xl font-montserrat-bold text-gray-900">
             {title}
           </h1>

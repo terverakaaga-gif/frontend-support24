@@ -17,7 +17,6 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SetupChoicePage from "./pages/SetupChoicePage";
-import AdminDashboard from "./pages/AdminDashboard";
 import GuardianDashboard from "./pages/GuardianDashboard";
 import ParticipantDashboard from "./pages/ParticipantDashboard";
 import SupportWorkerDashboard from "./pages/SupportWorkerDashboard";
@@ -299,7 +298,7 @@ const AppRoutes = () => {
                 />
                  <Route
                   path="/organizations/:id"
-                  element={<OrganizationDetailsPage />}
+                  element={<ParticipantOrganizationDetailsPage />}
                 />
                 {/* <Route
                   path="/organizations/:id"
