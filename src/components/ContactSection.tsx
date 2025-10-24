@@ -43,11 +43,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   };
 
   return (
-    <section className={`relative py-16 md:py-24 px-6 md:px-12 bg-gradient-to-br from-white to-primary-200 ${className}`}>
+    <section className={`relative py-16 md:py-24 px-4 md:px-12 bg-gradient-to-br from-white to-primary-200 ${className}`}>
       {/* Background gradient overlay */}
       <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-blue-100/40 to-transparent pointer-events-none" />
       
-      <div className="px-12 mx-auto relative">
+      <div className="lg:px-12 px-4 mx-auto relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left Content */}
           <motion.div

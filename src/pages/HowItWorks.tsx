@@ -88,7 +88,7 @@ export const HowItWorks = () => {
 
             {/* Hero Section */}
             <section className="relative pt-16 my-16 md:pt-28 px-4 md:px-8">
-                <div className=" px-12 mx-auto">
+                <div className=" lg:px-12 px-4 mx-auto">
                     <motion.div
                         className=" text-center"
                         initial={{ opacity: 0, x: -50 }}
