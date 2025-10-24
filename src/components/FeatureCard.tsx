@@ -21,36 +21,36 @@ export const FeatureCard = ({
   title,
 }: FeatureCardProps) => {
   return (
-    <div className="h-full">
-    <div
-      className={`relative h-[32rem] w-full  p-6 sm:p-8 shadow-xl`}
-      style={{
-        backgroundImage: "url('/bg/bg.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <div className="h-full w-full">
+      
+    <div className={`relative h-full min-h-[390px] sm:min-h-[300px] lg:min-h-[320px] w-full p-5 sm:p-6  overflow-hidden`}>
+      {/* Background image */}
+      <img
+        src="/bg/bg.png"
+        alt="Background"
+        className="absolute inset-0 w-full h-full   z-0 "
+      />
+      
       {/* Inner content */}
-      <div className="flex flex-col h-full justify-between">
-        <div className="gap-y-4 flex flex-col ">
+      <div className="relative z-10 flex flex-col h-full justify-between p-5 sm:p-2">
+        <div className="gap-y-2 sm:gap-y-3 flex flex-col">
           {/* Icon */}
           {Icon && (
-            <div className="inline-flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center bg-primary rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
-              <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+            <div className="inline-flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center bg-primary rounded-lg sm:rounded-xl mb-2 sm:mb-3">
+              <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
           )}
 
           {/* Title */}
           {title && (
-            <h3 className="text-xl sm:text-2xl font-bold text-black mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black mb-1.5 sm:mb-2">
               {title}
             </h3>
           )}
 
           {/* Content */}
           {content && (
-            <div className="text-sm sm:text-[18px] text-black leading-10">
+            <div className="text-xs sm:text-sm lg:text-sm text-gray-700 leading-relaxed">
               {content}
             </div>
           )}
@@ -58,8 +58,8 @@ export const FeatureCard = ({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center gap-2 text-primary font-semibold text-sm sm:text-base mt-6">
-            <img src="/new-res/trending_up.svg" alt="Arrow" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-primary font-semibold text-xs sm:text-sm mt-3 sm:mt-4">
+            <img src="/new-res/trending_up.svg" alt="Arrow" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>{footer}</span>
           </div>
         )}

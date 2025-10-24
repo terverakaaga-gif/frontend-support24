@@ -22,63 +22,63 @@ export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionPr
   };
 
   return (
-    <section className={`relative p-8 md:p-16 bg-gray-50/90 text-black ${className}`}>
+    <section className={`relative px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:p-16 bg-gray-50/90 text-black ${className}`}>
       {/* Vector Illustration Circle */}
       <img
         src="/new-res/gradient-ckr.svg"
         alt="Vector Illustration"
-        className="absolute w-80 h-80 -top-14 -left-24 object-cover pointer-events-none opacity-80"
+        className="absolute w-60 h-60 md:w-80 md:h-80 -top-10 md:-top-14 -left-16 md:-left-24 object-cover pointer-events-none opacity-80"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 w-full mx-auto h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 w-full mx-auto max-w-7xl">
+        {/* Left Content Section */}
         <motion.div
-          className="col-span-full flex flex-col gap-3 md:col-span-2"
+          className="flex flex-col gap-4 sm:gap-5 lg:gap-6 justify-center text-center lg:text-left"
           {...fadeInUp}
         >
-          <RoundedFigure
-            icon={ShieldCheck}
-            text="Enterprise-Grade Security"
-          />
-          <div className="flex gap-1 items-center md:pt-36">
-            <motion.h1 className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
+          <div className="flex justify-center lg:justify-start">
+            <RoundedFigure
+              icon={ShieldCheck}
+              text="Enterprise-Grade Security"
+            />
+          </div>
+          <div className="flex gap-1 items-center justify-center lg:justify-start">
+            <motion.h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-montserrat-bold leading-tight">
               Safe. Verified.{" "}
               <InlineVectorText className="italic" text="Reliable" y={-10} />.
             </motion.h1>
           </div>
-          <p className="text-xl max-w-3xl mx-auto leading-relaxed font-montserrat-semibold">
-            The wellbeing comes first. Every support worker is thoroughly
-            screened, and every interaction is secured
+          <p className="text-sm sm:text-base md:text-lg leading-relaxed font-montserrat-medium text-gray-700 max-w-xl mx-auto lg:mx-0">
+            The wellbeing comes first. Every worker is carefully verified, every booking is protected, and every interaction is secured
           </p>
           <motion.div
-            className="mt-10"
+            className="mt-2 sm:mt-4 flex flex-col items-center lg:items-start"
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <motion.button>
-              <Button className="p-8 font-montserrat-semibold transition-colors text-lg">
-                Download App
-              </Button>
-            </motion.button>
+            <Button className="px-6 py-4 sm:px-8 sm:py-6 font-montserrat-semibold transition-colors text-sm sm:text-base w-full sm:w-auto">
+              Download App
+            </Button>
 
             {/* Vector Arrow */}
             <motion.div
-              className="mt-3 md:mt-40 md:ml-40"
+              className="mt-6 sm:mt-20 ml-0 sm:ml-40 hidden lg:block"
               animate={{ x: [0, 10, 0] }}
               transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
             >
-              <img src="/new-res/good-arrow.svg" alt="Arrow pointing to features" />
+              <img src="/new-res/good-arrow.svg" alt="Arrow pointing to features" className="w-28 sm:w-60" />
             </motion.div>
           </motion.div>
         </motion.div>
 
         {/* Feature Cards Grid */}
-        <div className="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="w-full grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
           {FEATURE_CARDS.map((feature, i) => (
             <motion.div
               key={i + feature.footer}
-              className="overflow-hidden"
+              className="w-full"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
