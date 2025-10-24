@@ -16,7 +16,6 @@ import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
-import { Plus, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { CreateIncidentDTO } from "@/types/incidents.types";
 import { Button } from "@/components/ui/button";
@@ -357,13 +356,13 @@ const IncidentsPage = () => {
         onLogout={logout}
         rightComponent={
           <>
-            <div className="flex items-center gap-4">
-              <div className="relative">
+            <div className="flex flex-wrap w-fit items-center gap-3 place-self-end">
+              <div className="relative max-w-fit md:max-w-[250px]">
                 <Magnifer className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
                   type="text"
                   placeholder="Search incidents...."
-                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-80"
+                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-[220px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -512,7 +511,8 @@ const IncidentsPage = () => {
         <div className="px-6 py-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              Showing <span className="font-montserrat-bold">{itemsPerPage}</span>{" "}
+              Showing{" "}
+              <span className="font-montserrat-bold">{itemsPerPage}</span>{" "}
               incidents
             </div>
             <div className="flex items-center gap-2">
@@ -728,7 +728,7 @@ const IncidentsPage = () => {
                 Select Shift
               </h2>
               <Button
-              variant="ghost"
+                variant="ghost"
                 onClick={() => setShowShiftModal(false)}
                 className="text-black hover:text-primary hover:bg-transparent"
               >
@@ -793,7 +793,9 @@ const IncidentsPage = () => {
                         </div>
                         <div className="mt-2 text-sm">
                           <p>
-                            <span className="font-montserrat-bold">Shift ID:</span>{" "}
+                            <span className="font-montserrat-bold">
+                              Shift ID:
+                            </span>{" "}
                             {shift.shiftId}
                           </p>
                           <p>
@@ -945,7 +947,9 @@ const IncidentsPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-montserrat-bold text-gray-900">View Incident</h2>
+              <h2 className="text-xl font-montserrat-bold text-gray-900">
+                View Incident
+              </h2>
               <Button
                 variant="ghost"
                 onClick={() => setViewModalOpen(false)}
@@ -1008,19 +1012,6 @@ const IncidentsPage = () => {
                 </div>
               </div>
 
-              <div>
-                <h4 className="text-sm font-montserrat-semibold text-gray-900 mb-2">
-                  Description
-                </h4>
-                <div className="text-sm text-gray-700 leading-relaxed bg-gray-100 rounded-lg p-4">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: selectedIncident.description,
-                    }}
-                  />
-                </div>
-              </div>
-
               <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -1055,6 +1046,19 @@ const IncidentsPage = () => {
                       {selectedIncident.shiftId || "SHIFT_68674636SV"}
                     </p>
                   </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-montserrat-semibold text-gray-900 mb-2">
+                  Description
+                </h4>
+                <div className="text-sm text-gray-700 leading-relaxed bg-gray-100 rounded-lg p-4">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: selectedIncident.description,
+                    }}
+                  />
                 </div>
               </div>
             </div>

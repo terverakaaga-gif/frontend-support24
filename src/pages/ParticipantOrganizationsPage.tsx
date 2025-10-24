@@ -18,10 +18,12 @@ import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
 import GeneralHeader from "@/components/GeneralHeader";
+import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
 
 export default function ParticipantOrganizationsPage() {
   const { user, logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -125,6 +127,21 @@ export default function ParticipantOrganizationsPage() {
               )
             );
           }}
+          rightComponent={
+            <>
+              <Button
+                variant="outline"
+                className="mr-4 rounded-full"
+                onClick={() => setSearchOpen(true)}
+              >
+                Invite Support Workers
+              </Button>
+              <SearchSupportWorkers
+                open={searchOpen}
+                onOpenChange={setSearchOpen}
+              />
+            </>
+          }
           onLogout={logout}
         />
 

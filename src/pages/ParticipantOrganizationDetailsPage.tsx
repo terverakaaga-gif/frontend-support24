@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,10 +21,24 @@ import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getWorkerEmail } from "@/constants/utils";
+import {
+  getWorkerDisplayName,
+  getWorkerInitials,
+  getWorkerPhone,
+  getWorkerProfileImage,
+  WorkerProfile,
+} from "@/lib/utils";
+import { organizationService } from "@/api/services/organizationService";
+import {
+  useGetOrganizationDetails,
+  useRemoveWorkerFromOrganization,
+} from "@/hooks/useOrganizationHooks";
 
 // Types
 interface RateTimeBand {
@@ -48,15 +62,6 @@ interface ServiceAgreement {
   distanceTravelRate: number;
   startDate: string;
   termsAccepted: boolean;
-}
-
-interface WorkerProfile {
-  _id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  profileImage?: string;
 }
 
 interface Worker {
@@ -99,58 +104,6 @@ interface Organization {
   updatedAt: string;
   __v: number;
 }
-
-// API service
-const organizationDetailService = {
-  getOrganization: async (id: string): Promise<Organization> => {
-    const response = await get<{ organizations: Organization[] }>(
-      "/organizations"
-    );
-    const organization = response.organizations.find((org) => org._id === id);
-    if (!organization) {
-      throw new Error("Organization not found");
-    }
-    return organization;
-  },
-};
-
-// Helper functions
-const getWorkerDisplayName = (workerId: string | WorkerProfile): string => {
-  if (typeof workerId === "string") {
-    return `Worker ${workerId.slice(-8)}`;
-  }
-  return `${workerId.firstName} ${workerId.lastName}`;
-};
-
-const getWorkerInitials = (workerId: string | WorkerProfile): string => {
-  if (typeof workerId === "string") {
-    return workerId.slice(0, 2).toUpperCase();
-  }
-  return `${workerId.firstName[0]}${workerId.lastName[0]}`.toUpperCase();
-};
-
-const getWorkerEmail = (workerId: string | WorkerProfile): string => {
-  if (typeof workerId === "string") {
-    return "Email not available";
-  }
-  return workerId.email;
-};
-
-const getWorkerPhone = (workerId: string | WorkerProfile): string => {
-  if (typeof workerId === "string") {
-    return "Phone not available";
-  }
-  return workerId.phone;
-};
-
-const getWorkerProfileImage = (
-  workerId: string | WorkerProfile
-): string | undefined => {
-  if (typeof workerId === "string") {
-    return undefined;
-  }
-  return workerId.profileImage;
-};
 
 const getShiftRateName = (code: string): string => {
   const shiftNames: { [key: string]: string } = {
@@ -199,16 +152,21 @@ export default function ParticipantOrganizationDetailsPage() {
     isLoading,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["organization-details", id],
-    queryFn: () => organizationDetailService.getOrganization(id!),
-    enabled: !!id,
-  });
+  } = useGetOrganizationDetails(id!);
 
   const activeWorkers = organization?.workers || [];
   const pendingInvites =
     organization?.pendingInvites.filter((inv) => inv.status === "pending") ||
     [];
+
+  const removeWorkerMutation = useRemoveWorkerFromOrganization();
+
+  const handleRemoveWorker = useCallback(
+    (workerId: string) => {
+      removeWorkerMutation.mutate({ organizationId: id!, workerId });
+    },
+    [id, removeWorkerMutation]
+  );
 
   if (error) {
     return (
@@ -275,7 +233,7 @@ export default function ParticipantOrganizationDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="w-full p-8">
+      <div className="w-full p-4 md:p-8">
         {/* Header */}
         <GeneralHeader
           showBackButton
@@ -298,34 +256,34 @@ export default function ParticipantOrganizationDetailsPage() {
         />
 
         {/* Tab Navigation */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-4 md:mb-6">
-          <Button
+        <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
+          <button
             onClick={() => setActiveTab("workers")}
-            className={`rounded-full font-montserrat-semibold px-4 py-2 text-xs md:text-base transition-all min-h-[44px] ${
+            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all w-fit ${
               activeTab === "workers"
                 ? "bg-primary-600 text-white hover:bg-primary-600"
                 : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Active Workers
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setActiveTab("invites")}
-            className={`rounded-full font-montserrat-semibold px-4 py-2 text-xs md:text-base transition-all min-h-[44px] ${
+            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all min-h-[44px] w-full sm:w-auto ${
               activeTab === "invites"
                 ? "bg-primary-600 text-white hover:bg-primary-600"
                 : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Pending Invites
-          </Button>
+          </button>
         </div>
 
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Workers/Invites List */}
           <div className="lg:col-span-2">
-            <h2 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">
+            <h2 className="text-sm md:text-lg font-bold text-gray-900 mb-3 md:mb-4">
               {activeTab === "workers"
                 ? `Active Workers (${activeWorkers.length})`
                 : `Pending Invites (${pendingInvites.length})`}
@@ -334,12 +292,12 @@ export default function ParticipantOrganizationDetailsPage() {
             {activeTab === "workers" ? (
               activeWorkers.length === 0 ? (
                 <Card className="border-0 shadow-sm">
-                  <CardContent className="p-6 md:p-12 text-center">
-                    <UsersGroupTwoRounded className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
-                    <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
+                  <CardContent className="p-4 md:p-12 text-center">
+                    <UsersGroupTwoRounded className="w-10 h-10 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                    <h3 className="text-sm md:text-xl font-montserrat-semibold text-gray-900 mb-2">
                       No workers found
                     </h3>
-                    <p className="text-sm md:text-base text-gray-600">
+                    <p className="text-xs md:text-base text-gray-600">
                       This organization doesn't have any active workers yet
                     </p>
                   </CardContent>
@@ -358,20 +316,20 @@ export default function ParticipantOrganizationDetailsPage() {
                       <CardContent className="p-3 md:p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                            <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
+                            <Avatar className="w-8 h-8 md:w-12 md:h-12 flex-shrink-0">
                               {getWorkerProfileImage(worker.workerId) ? (
                                 <AvatarImage
                                   src={getWorkerProfileImage(worker.workerId)}
                                 />
                               ) : (
-                                <AvatarFallback className="bg-primary-100 text-primary-600 font-montserrat-semibold text-sm md:text-base">
+                                <AvatarFallback className="bg-primary-100 text-primary-600 font-montserrat-semibold text-xs md:text-base">
                                   {getWorkerInitials(worker.workerId)}
                                 </AvatarFallback>
                               )}
                             </Avatar>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-0.5">
-                                <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
+                                <h3 className="font-montserrat-semibold text-gray-900 text-xs md:text-base truncate">
                                   {getWorkerDisplayName(worker.workerId)}
                                 </h3>
                                 <Badge className="bg-green-50 text-green-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
@@ -390,8 +348,8 @@ export default function ParticipantOrganizationDetailsPage() {
                               </p>
                             </div>
                           </div>
-                          <div className="text-right ml-2 md:ml-4">
-                            <p className="text-lg md:text-xl font-bold text-primary-600">
+                          <div className="text-right ml-2 md:ml-4 bg-primary/10 px-2 py-1 rounded-full">
+                            <p className="text-xs md:text-md font-bold text-primary-600">
                               ${worker.serviceAgreement.baseHourlyRate}/hr
                             </p>
                           </div>
@@ -403,12 +361,12 @@ export default function ParticipantOrganizationDetailsPage() {
               )
             ) : pendingInvites.length === 0 ? (
               <Card className="border-0 shadow-sm">
-                <CardContent className="p-6 md:p-12 text-center">
-                  <Letter className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
-                  <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
+                <CardContent className="p-4 md:p-12 text-center">
+                  <Letter className="w-10 h-10 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-sm md:text-xl font-montserrat-semibold text-gray-900 mb-2">
                     No pending invites
                   </h3>
-                  <p className="text-sm md:text-base text-gray-600">
+                  <p className="text-xs md:text-base text-gray-600">
                     There are no pending invitations for this organization.
                   </p>
                 </CardContent>
@@ -418,20 +376,19 @@ export default function ParticipantOrganizationDetailsPage() {
                 {pendingInvites.map((invite) => (
                   <Card
                     key={invite._id}
-                    
                     className="border-0 shadow-sm hover:shadow-md transition-all"
                   >
                     <CardContent className="p-3 md:p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                          <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
-                            <AvatarFallback className="bg-orange-100 text-orange-600 font-montserrat-semibold text-sm md:text-base">
+                          <Avatar className="w-8 h-8 md:w-12 md:h-12 flex-shrink-0">
+                            <AvatarFallback className="bg-orange-100 text-orange-600 font-montserrat-semibold text-xs md:text-base">
                               {getWorkerInitials(invite.workerId)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
+                              <h3 className="font-montserrat-semibold text-gray-900 text-xs md:text-base truncate">
                                 {getWorkerDisplayName(invite.workerId)}
                               </h3>
                               <Badge className="bg-orange-50 text-orange-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
@@ -451,7 +408,7 @@ export default function ParticipantOrganizationDetailsPage() {
                           </div>
                         </div>
                         <div className="text-right ml-2 md:ml-4">
-                          <p className="text-lg md:text-xl font-bold text-orange-600">
+                          <p className="text-sm md:text-xl font-bold text-orange-600">
                             ${invite.proposedRates.baseHourlyRate}/hr
                           </p>
                         </div>
@@ -493,13 +450,13 @@ export default function ParticipantOrganizationDetailsPage() {
                   <div className="p-3 md:p-4 space-y-3 md:space-y-4">
                     {/* Worker Info */}
                     <div className="text-center">
-                      <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
+                      <Avatar className="w-12 h-12 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
                         {getWorkerProfileImage(selectedWorker.workerId) ? (
                           <AvatarImage
                             src={getWorkerProfileImage(selectedWorker.workerId)}
                           />
                         ) : (
-                          <AvatarFallback className="bg-primary-100 text-primary-600 text-lg md:text-2xl font-montserrat-semibold">
+                          <AvatarFallback className="bg-primary-100 text-primary-600 text-base md:text-2xl font-montserrat-semibold">
                             {getWorkerInitials(selectedWorker.workerId)}
                           </AvatarFallback>
                         )}
@@ -612,9 +569,18 @@ export default function ParticipantOrganizationDetailsPage() {
                     </div>
 
                     {/* Remove Worker Button */}
-                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-montserrat-semibold text-sm md:text-base min-h-[44px]">
-                      Remove Worker
-                    </Button>
+                    {user?.role === "participant" && (
+                      <Button
+                        disabled={removeWorkerMutation.isPending}
+                        onClick={() =>
+                          handleRemoveWorker(selectedWorker.workerId._id as string)
+                        }
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-montserrat-semibold text-sm md:text-base min-h-[44px]"
+                      >
+                        Remove Worker{" "}
+                        {removeWorkerMutation.isPending ? "..." : ""}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -624,9 +590,12 @@ export default function ParticipantOrganizationDetailsPage() {
       </div>
 
       {/* Worker Details Modal - Mobile */}
-      {selectedWorker && (
-        <Dialog onOpenChange={setShowWorkerDetails}>
-          <DialogContent className="lg:hidden max-w-full w-full h-[90vh] p-0 rounded-t-2xl">
+      {showWorkerDetails && selectedWorker && (
+        <Dialog open={showWorkerDetails} onOpenChange={setShowWorkerDetails}>
+          <DialogClose>
+            <div className="fixed inset-0 bg-black/30" />
+          </DialogClose>
+          <DialogContent className="lg:hidden max-w-full w-[90vw] mx-auto h-[90vh] p-0 rounded-t-2xl">
             <DialogHeader className="p-3 md:p-4 border-b">
               <DialogTitle className="font-bold text-gray-900 text-sm md:text-base">
                 {getWorkerDisplayName(selectedWorker.workerId)}
@@ -635,13 +604,13 @@ export default function ParticipantOrganizationDetailsPage() {
             <div className="p-3 md:p-4 space-y-3 md:space-y-4 overflow-y-auto">
               {/* Worker Info */}
               <div className="text-center">
-                <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
+                <Avatar className="w-12 h-12 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
                   {getWorkerProfileImage(selectedWorker.workerId) ? (
                     <AvatarImage
                       src={getWorkerProfileImage(selectedWorker.workerId)}
                     />
                   ) : (
-                    <AvatarFallback className="bg-primary-100 text-primary-600 text-lg md:text-2xl font-montserrat-semibold">
+                    <AvatarFallback className="bg-primary-100 text-primary-600 text-base md:text-2xl font-montserrat-semibold">
                       {getWorkerInitials(selectedWorker.workerId)}
                     </AvatarFallback>
                   )}
@@ -744,9 +713,17 @@ export default function ParticipantOrganizationDetailsPage() {
               </div>
 
               {/* Remove Worker Button */}
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-montserrat-semibold text-sm md:text-base min-h-[44px]">
-                Remove Worker
-              </Button>
+              {user?.role === "participant" && (
+                <Button
+                  disabled={removeWorkerMutation.isPending}
+                  onClick={() =>
+                    handleRemoveWorker(selectedWorker.workerId._id as string)
+                  }
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-montserrat-semibold text-sm md:text-base min-h-[44px]"
+                >
+                  Remove Worker {removeWorkerMutation.isPending ? "..." : ""}
+                </Button>
+              )}
             </div>
           </DialogContent>
         </Dialog>

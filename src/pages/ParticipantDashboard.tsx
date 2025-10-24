@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import {
   Calendar as CalendarIcon,
   ClockCircle,
@@ -49,6 +49,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
 
 // Service type labels for display
 const SERVICE_TYPE_LABELS: Record<string, string> = {
@@ -159,7 +160,7 @@ function SpendingServiceChart({
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-montserrat-semibold text-gray-900">
-          Care Activity Overview
+          Monthly Spending Trend
         </h2>
         <div className="flex items-center gap-3">
           <Select value={period} onValueChange={setPeriod}>
@@ -171,7 +172,7 @@ function SpendingServiceChart({
               <SelectItem value="week">Week</SelectItem>
               <SelectItem value="month">Month</SelectItem>
               <SelectItem value="year">Year</SelectItem>
-              <SelectItem value="custom">Custom</SelectItem>
+              {/* <SelectItem value="custom">Custom</SelectItem> */}
             </SelectContent>
           </Select>
           {period === "custom" && (
@@ -286,7 +287,6 @@ function SpendingServiceChart({
   );
 }
 
-
 // Support Workers Table Component
 function SupportWorkersTable({ workers }: { workers: any[] }) {
   return (
@@ -397,11 +397,11 @@ function ServiceDistribution({ services }: { services: any[] }) {
     </div>
   );
 }
-
-export default function ParticipantDashboard() {
+function ParticipantDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [period, setPeriod] = useState<string>("month");
   const [dateRange, setDateRange] = useState<{
     from: Date | null;
@@ -501,6 +501,21 @@ export default function ParticipantDashboard() {
           onViewProfile={() => {
             navigate("/participant/profile");
           }}
+          rightComponent={
+            <>
+              <Button
+                variant="outline"
+                className="mr-4"
+                onClick={() => setSearchOpen(true)}
+              >
+                Search Support Workers
+              </Button>
+              <SearchSupportWorkers
+                open={searchOpen}
+                onOpenChange={setSearchOpen}
+              />
+            </>
+          }
         />
 
         {/* Stats */}
@@ -578,3 +593,5 @@ export default function ParticipantDashboard() {
     </div>
   );
 }
+
+export default memo(ParticipantDashboard);

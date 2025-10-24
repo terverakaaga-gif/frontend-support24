@@ -38,6 +38,14 @@ import { useCreateShift } from "@/hooks/useShiftHooks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useGetOrganizations } from "@/hooks/useOrganizationHooks";
+import {
+  getWorkerDisplayName,
+  getWorkerInitials,
+  getWorkerEmail,
+  getWorkerPhone,
+  getWorkerProfileImage,
+  filterValidWorkers,
+} from "@/lib/utils";
 
 // Types
 interface ShiftFormData {
@@ -109,7 +117,7 @@ export default function ShiftCreationDialog({
     useGetActiveServiceTypes();
   const createShiftMutation = useCreateShift();
   const { data: orgs = [], isLoading: orgsLoading } = useGetOrganizations();
-  const workers = orgs.length ? orgs[0].workers : [];
+  const workers = orgs.length ? filterValidWorkers(orgs[0].workers) : [];
 
   const [formData, setFormData] = useState<ShiftFormData>({
     organizationId: orgs[0]?._id || "",
@@ -369,7 +377,7 @@ export default function ShiftCreationDialog({
                 <SelectContent>
                   {serviceTypes.map((service) => (
                     <SelectItem key={service._id} value={service._id}>
-                      {service.displayName || service.name}
+                      {service.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -580,16 +588,16 @@ export default function ShiftCreationDialog({
                           id={worker.workerId._id}
                         />
                         <Avatar className="w-12 h-12">
-                          <AvatarImage src={worker.workerId.profileImage} />
-                          <AvatarFallback className="bg-primary-100 text-primary-600">
-                            {worker.workerId.firstName[0]}
-                            {worker.workerId.lastName[0]}
+                          <AvatarImage
+                            src={getWorkerProfileImage(worker.workerId)}
+                          />
+                          <AvatarFallback className="bg-primary-100 text-primary">
+                            {getWorkerInitials(worker.workerId)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <p className="font-montserrat-semibold">
-                            {worker.workerId.firstName}{" "}
-                            {worker.workerId.lastName}
+                            {getWorkerDisplayName(worker.workerId)}
                           </p>
                           <p className="text-sm text-gray-600">
                             Available for shift
@@ -627,15 +635,16 @@ export default function ShiftCreationDialog({
                         }
                       />
                       <Avatar className="w-12 h-12">
-                        <AvatarImage src={worker.workerId.profileImage} />
-                        <AvatarFallback className="bg-primary-100 text-primary-600">
-                          {worker.workerId.firstName[0]}
-                          {worker.workerId.lastName[0]}
+                        <AvatarImage
+                          src={getWorkerProfileImage(worker.workerId)}
+                        />
+                        <AvatarFallback className="bg-primary-100 text-primary">
+                          {getWorkerInitials(worker.workerId)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <p className="font-montserrat-semibold">
-                          {worker.workerId.firstName} {worker.workerId.lastName}
+                          {getWorkerDisplayName(worker.workerId)}
                         </p>
                         <p className="text-sm text-gray-600">
                           Available for shift
@@ -679,16 +688,16 @@ export default function ShiftCreationDialog({
                           id={worker.workerId._id}
                         />
                         <Avatar className="w-12 h-12">
-                          <AvatarImage src={worker.workerId.profileImage} />
-                          <AvatarFallback className="bg-primary-100 text-primary-600">
-                            {worker.workerId.firstName[0]}
-                            {worker.workerId.lastName[0]}
+                          <AvatarImage
+                            src={getWorkerProfileImage(worker.workerId)}
+                          />
+                          <AvatarFallback className="bg-primary-100 text-primary">
+                            {getWorkerInitials(worker.workerId)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <p className="font-montserrat-semibold">
-                            {worker.workerId.firstName}{" "}
-                            {worker.workerId.lastName}
+                            {getWorkerDisplayName(worker.workerId)}
                           </p>
                           <p className="text-sm text-gray-600">
                             Available for recurring shift
@@ -734,7 +743,7 @@ export default function ShiftCreationDialog({
                       {
                         serviceTypes.find(
                           (s) => s.name === formData.serviceTypeId
-                        )?.displayName
+                        )?.name
                       }
                     </p>
                   </div>
@@ -804,7 +813,7 @@ export default function ShiftCreationDialog({
                     <p className="text-xs text-gray-600 mb-1">
                       Special Instructions
                     </p>
-                    <p className="text-sm  bg-primary-600/5 text-primary p-3 rounded-lg">
+                    <p className="text-sm  bg-primary/10 text-primary p-3 rounded-lg">
                       {formData.specialInstructions}
                     </p>
                   </div>
@@ -829,16 +838,16 @@ export default function ShiftCreationDialog({
                             className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
                           >
                             <Avatar className="w-10 h-10">
-                              <AvatarImage src={worker.workerId.profileImage} />
-                              <AvatarFallback className="bg-primary-100 text-primary-600">
-                                {worker.workerId.firstName[0]}
-                                {worker.workerId.lastName[0]}
+                              <AvatarImage
+                                src={getWorkerProfileImage(worker.workerId)}
+                              />
+                              <AvatarFallback className="bg-primary-100 text-primary">
+                                {getWorkerInitials(worker.workerId)}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <p className="font-montserrat-semibold text-sm">
-                                {worker.workerId.firstName}{" "}
-                                {worker.workerId.lastName}
+                                {getWorkerDisplayName(worker.workerId)}
                               </p>
                             </div>
                           </div>
@@ -857,17 +866,15 @@ export default function ShiftCreationDialog({
                             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                               <Avatar className="w-10 h-10">
                                 <AvatarImage
-                                  src={worker.workerId.profileImage}
+                                  src={getWorkerProfileImage(worker.workerId)}
                                 />
-                                <AvatarFallback className="bg-primary-100 text-primary-600">
-                                  {worker.workerId.firstName[0]}
-                                  {worker.workerId.lastName[0]}
+                                <AvatarFallback className="bg-primary-100 text-primary">
+                                  {getWorkerInitials(worker.workerId)}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="font-montserrat-semibold text-sm">
-                                  {worker.workerId.firstName}{" "}
-                                  {worker.workerId.lastName}
+                                  {getWorkerDisplayName(worker.workerId)}
                                 </p>
                               </div>
                             </div>

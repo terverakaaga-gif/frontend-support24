@@ -21,8 +21,6 @@ import {
   ClockCircle,
   Dollar,
   BillList,
-  ArrowUp,
-  ArrowDown,
 } from "@solar-icons/react";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,12 +28,16 @@ import { useGetParticipantTimesheets } from "@/hooks/useTimesheetHooks";
 import {
   TimesheetClientFilters,
   Timesheet,
-  SERVICE_TYPE_LABELS,
 } from "@/entities/Timesheet";
 import Loader from "@/components/Loader";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  getWorkerDisplayName,
+  getWorkerInitials,
+  getWorkerProfileImage,
+} from "@/lib/utils";
 
 const ParticipantTimesheets: React.FC = () => {
   const { user, logout } = useAuth();
@@ -356,29 +358,17 @@ const ParticipantTimesheets: React.FC = () => {
                             <div className="flex items-center gap-3">
                               <Avatar className="w-8 h-8">
                                 <AvatarImage
-                                  src={
-                                    typeof timesheet.workerId === "object" &&
-                                    timesheet.workerId.profileImage
-                                      ? timesheet.workerId.profileImage
-                                      : undefined
-                                  }
-                                  alt={
-                                    typeof timesheet.workerId === "object"
-                                      ? getFullName(timesheet.workerId)
-                                      : timesheet.workerId
-                                  }
+                                  src={getWorkerProfileImage(
+                                    timesheet.workerId
+                                  )}
+                                  alt={getWorkerDisplayName(timesheet.workerId)}
                                 />
                                 <AvatarFallback>
-                                  {typeof timesheet.workerId === "object"
-                                    ? timesheet.workerId.firstName.charAt(0) +
-                                      timesheet.workerId.lastName.charAt(0)
-                                    : "W"}
+                                  {getWorkerInitials(timesheet.workerId)}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="text-sm text-gray-700 font-montserrat-semibold">
-                                {typeof timesheet.workerId === "object"
-                                  ? getFullName(timesheet.workerId)
-                                  : timesheet.workerId}
+                                {getWorkerDisplayName(timesheet.workerId)}
                               </span>
                             </div>
                           </TableCell>
