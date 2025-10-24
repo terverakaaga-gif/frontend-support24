@@ -62,7 +62,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         </motion.div>
 
         {/* Masonry-style testimonials grid */}
-        <div className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6 px-8">
+        <div className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6 lg:px-8 px-2">
           {testimonialData.map((testimonial) => (
             <TestimonialCard key={testimonial.id} testimonial={testimonial} />
           ))}

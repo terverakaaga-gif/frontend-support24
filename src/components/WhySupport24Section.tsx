@@ -39,8 +39,8 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
     ];
 
     return (
-        <section className={`relative py-16 md:py-24 px-6 md:px-12 ${className} bg-white`}>
-            <div className=" px-12 mx-auto flex flex-col items-center  gap-10">
+        <section className={`relative py-16 md:py-24 px-4 md:px-12 ${className} bg-white`}>
+            <div className=" lg:px-12 px-4 mx-auto flex flex-col items-center  gap-10">
 
                 <motion.div
                     className="w-full flex flex-col lg:flex-row items-start justify-between gap-12 lg:gap-24"
