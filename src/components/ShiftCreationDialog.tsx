@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -135,6 +135,16 @@ export default function ShiftCreationDialog({
     },
   });
 
+  // ensure that organizationId is set when orgs load
+  useMemo(() => {
+    if (orgs.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        organizationId: orgs[0]._id,
+      }));
+    }
+  }, [orgs]);
+
   const handleShiftTypeSelect = (type: string) => {
     setShiftTypeSelection(type);
     setFormData((prev) => ({
@@ -202,6 +212,12 @@ export default function ShiftCreationDialog({
 
   const handleSubmit = () => {
     // Prepare payload based on shift type
+
+    if (!formData.organizationId) {
+      toast.error("Organization is required to create a shift");
+      return;
+    }
+
     const payload: any = {
       organizationId: formData.organizationId,
       isMultiWorkerShift: formData.isMultiWorkerShift,
@@ -237,7 +253,7 @@ export default function ShiftCreationDialog({
         resetForm();
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Failed to create shift");
+        toast.error(error.response?.data?.error || "Failed to create shift");
       },
     });
   };

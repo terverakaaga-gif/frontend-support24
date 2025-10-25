@@ -316,7 +316,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {user?.firstName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div className="text-sm text-white font-montserrat-semibold">
+          <div className="text-sm text-white font-montserrat-semibold truncate">
             {user.email}
           </div>
           <div className="text-xs text-primary-300 capitalize font-montserrat">
@@ -347,7 +347,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <SheetTrigger asChild>
           <Button
             variant="ghost"
-            className="md:hidden absolute left-4 top-5 z-40 hover:bg-transparent hover:text-black"
+            className="md:hidden absolute left-2 top-3 z-40 hover:bg-transparent hover:text-black"
             
           >
             <HamburgerMenu />

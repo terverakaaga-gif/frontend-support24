@@ -36,6 +36,7 @@ const ShiftsPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const { data: shifts = [], isLoading, error, refetch } = useGetShifts();
+  console.log("Fetched shifts:", shifts);
 
   const getStatusCount = (status: string) => {
     if (status === "all") return shifts.length;
@@ -109,7 +110,7 @@ const ShiftsPage = () => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
                 />
               </div>
             </>
@@ -131,11 +132,11 @@ const ShiftsPage = () => {
             { key: "all", label: "All", bg: "bg-primary" },
             { key: "pending", label: "Pending", bg: "bg-orange-600" },
             { key: "confirmed", label: "Confirmed", bg: "bg-purple-600" },
-            { key: "in_progress", label: "In Progress", bg: "bg-yellow-600" },
+            { key: "inProgress", label: "In Progress", bg: "bg-yellow-600" },
             { key: "completed", label: "Completed", bg: "bg-green-600" },
             { key: "cancelled", label: "Cancelled", bg: "bg-red-600" },
           ].map(({ key, label, bg }) => (
-            <Button
+            <button
               key={key}
               onClick={() => {
                 setStatusFilter(key);
@@ -157,7 +158,7 @@ const ShiftsPage = () => {
               >
                 {getStatusCount(key)}
               </span>
-            </Button>
+            </button>
           ))}
         </div>
 
@@ -297,6 +298,8 @@ const ShiftsPage = () => {
 
         {/* Shift Details Dialog */}
         <ShiftDetailsDialog
+          viewMode="worker"
+          currentUserId={user._id}
           shift={selectedShift}
           open={!!selectedShift}
           onOpenChange={(open) => !open && setSelectedShift(null)}

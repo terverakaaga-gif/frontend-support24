@@ -131,7 +131,7 @@ export default function ParticipantOrganizationsPage() {
             <>
               <Button
                 variant="outline"
-                className="mr-4 rounded-full"
+                className="mr-4 rounded-full hover:bg-transparent hover:text-gray-600 text-xs truncate max-w-[120px] md:max-w-[200px]"
                 onClick={() => setSearchOpen(true)}
               >
                 Invite Support Workers

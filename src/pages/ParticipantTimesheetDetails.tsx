@@ -32,7 +32,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const ParticipantTimesheetDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const {user, logout} = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
     "details" | "expenses" | "payments"
@@ -167,9 +167,10 @@ const ParticipantTimesheetDetails: React.FC = () => {
       <div className=" p-6 md:p-8">
         {/* Header */}
         <GeneralHeader
-        showBackButton
-          title={pageTitles.participant["/participant/timesheets"].title.concat(' Details')}
-         
+          showBackButton
+          title={pageTitles.participant["/participant/timesheets"].title.concat(
+            " Details"
+          )}
           user={user}
           onViewProfile={() => {
             navigate(
@@ -185,33 +186,33 @@ const ParticipantTimesheetDetails: React.FC = () => {
         />
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex gap-2 mb-4 md:mb-6">
           <button
             onClick={() => setActiveTab("details")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "details"
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                ? "bg-primary text-white hover:bg-primary"
+                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Shift Details
           </button>
           <button
             onClick={() => setActiveTab("expenses")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "expenses"
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                ? "bg-primary text-white hover:bg-primary"
+                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Expenses ({timesheet.expenses.length})
           </button>
           <button
             onClick={() => setActiveTab("payments")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "payments"
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                ? "bg-primary text-white hover:bg-primary"
+                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Payment Breakdown
@@ -225,9 +226,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
             {/* Shift Details Tab */}
             {activeTab === "details" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-gray-900">
-                  Shift Information
-                </h2>
+               
 
                 <Card className="border-0 shadow-sm">
                   <CardContent className="p-6">

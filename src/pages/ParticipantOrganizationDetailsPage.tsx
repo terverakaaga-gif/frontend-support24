@@ -256,28 +256,29 @@ export default function ParticipantOrganizationDetailsPage() {
         />
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
+        <div className="flex gap-2 mb-4 md:mb-6">
           <button
             onClick={() => setActiveTab("workers")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all w-fit ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "workers"
-                ? "bg-primary-600 text-white hover:bg-primary-600"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+          ? "bg-primary text-white hover:bg-primary"
+          : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Active Workers
           </button>
           <button
             onClick={() => setActiveTab("invites")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all min-h-[44px] w-full sm:w-auto ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "invites"
-                ? "bg-primary-600 text-white hover:bg-primary-600"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+          ? "bg-primary text-white hover:bg-primary"
+          : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Pending Invites
           </button>
         </div>
+        
 
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">

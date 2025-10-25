@@ -1,13 +1,32 @@
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   MapPoint,
   Calendar,
   CloseCircle,
   ClockCircle,
+  CheckCircle,
+  CloseCircle as RejectIcon,
+  Document,
+  UsersGroupRounded,
 } from "@solar-icons/react";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useAcceptShift, useUpdateShiftStatus } from "@/hooks/useShiftHooks";
+import { useCreateTimesheet } from "@/hooks/useTimesheetHooks";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface UserInfo {
   _id: string;
@@ -25,12 +44,19 @@ interface ServiceType {
   status: string;
 }
 
+interface WorkerAssignment {
+  _id: string;
+  workerId: string | UserInfo;
+  status: string;
+}
+
 interface Shift {
   _id: string;
   organizationId: string;
   participantId: string | UserInfo;
   workerId?: string | UserInfo;
   isMultiWorkerShift: boolean;
+  workerAssignments?: WorkerAssignment[];
   serviceTypeId: ServiceType;
   startTime: string;
   endTime: string;
@@ -45,7 +71,6 @@ interface Shift {
     pattern: string;
   };
   routineRequired?: boolean;
-  workerAssignments?: any[];
   createdAt: string;
   updatedAt: string;
 }
@@ -54,19 +79,52 @@ interface ShiftDetailsDialogProps {
   shift: Shift | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  viewMode?: "participant" | "worker"; // Add this to specify which view we're in
+  viewMode?: "participant" | "worker";
+  currentUserId?: string;
+}
+
+interface TimesheetFormData {
+  actualStartTime: string;
+  actualEndTime: string;
+  distanceTravelKm: number;
+  notes: string;
+  expenses: Array<{
+    title: string;
+    description: string;
+    amount: number;
+    payer: "participant" | "supportWorker";
+  }>;
 }
 
 const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
   shift,
   open,
   onOpenChange,
-  viewMode = "worker", // Default to worker view
+  viewMode = "worker",
+  currentUserId,
 }) => {
-  const getStatusBadgeStyle = (status: string) => {
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [showTimesheetForm, setShowTimesheetForm] = useState(false);
+  const [timesheetFormData, setTimesheetFormData] = useState<TimesheetFormData>(
+    {
+      actualStartTime: "",
+      actualEndTime: "",
+      distanceTravelKm: 0,
+      notes: "",
+      expenses: [],
+    }
+  );
+
+  const acceptShiftMutation = useAcceptShift();
+  const useUpdateShiftStatusMutation = useUpdateShiftStatus();
+  const createTimesheetMutation = useCreateTimesheet();
+
+  const getStatusBadgeStyle = useCallback((status: string) => {
     switch (status.toLowerCase()) {
       case "confirmed":
-        return "bg-primary-50 text-primary border-primary-200";
+      case "accepted":
+        return "bg-green-50 text-green-700 border-green-200";
       case "pending":
         return "bg-orange-50 text-orange-600 border-orange-200";
       case "in_progress":
@@ -74,76 +132,276 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
       case "completed":
         return "bg-green-50 text-green-600 border-green-200";
       case "cancelled":
+      case "declined":
         return "bg-red-50 text-red-600 border-red-200";
       default:
         return "bg-gray-100 text-gray-600 border-gray-200";
     }
-  };
+  }, []);
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = useCallback((status: string) => {
     return (
       status.replace(/_/g, " ").charAt(0).toUpperCase() +
       status.replace(/_/g, " ").slice(1)
     );
-  };
+  }, []);
 
-  const formatTime = (dateString: string) => {
+  const formatTime = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     });
-  };
+  }, []);
 
-  const formatLongDate = (dateString: string) => {
+  const formatLongDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
     });
+  }, []);
+
+  // Check if current user is assigned to this shift
+  const getCurrentUserAssignment = useCallback(() => {
+    if (!shift || !currentUserId) return null;
+
+    // Check single worker shift
+    if (!shift.isMultiWorkerShift && shift.workerId) {
+      const workerId =
+        typeof shift.workerId === "object"
+          ? shift.workerId._id
+          : shift.workerId;
+      if (workerId === currentUserId) {
+        return { workerId: currentUserId, status: shift.status };
+      }
+    }
+
+    // Check multi-worker shift
+    if (shift.isMultiWorkerShift && shift.workerAssignments) {
+      const assignment = shift.workerAssignments.find((wa) => {
+        const workerId =
+          typeof wa.workerId === "object" ? wa.workerId._id : wa.workerId;
+        return workerId === currentUserId;
+      });
+      return assignment || null;
+    }
+
+    return null;
+  }, [shift, currentUserId]);
+
+  const userAssignment = getCurrentUserAssignment();
+  const isAssignedWorker = !!userAssignment;
+  const assignmentStatus = userAssignment?.status || shift?.status;
+
+  const handleAcceptShift = useCallback(() => {
+    if (!shift) return;
+
+    acceptShiftMutation.mutate(
+      { shiftId: shift._id, accept: true },
+      {
+        onSuccess: () => {
+          toast.success("Shift accepted successfully!");
+          onOpenChange(false);
+        },
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.error || "Failed to accept shift"
+          );
+        },
+      }
+    );
+  }, [shift]);
+
+  const handleCompleteShift = useCallback(() => {
+    if (!shift) return;
+    useUpdateShiftStatusMutation.mutate(
+      {
+        shiftId: shift._id,
+        status: "completed",
+      },
+      {
+        onSuccess: () => {
+          toast.success("Shift completed successfully!");
+          onOpenChange(false);
+        },
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.error || "Failed to complete shift"
+          );
+        },
+      }
+    );
+  }, [shift]);
+
+  const handleStartShift = useCallback(() => {
+    if (!shift) return;
+    useUpdateShiftStatusMutation.mutate(
+      {
+        shiftId: shift._id,
+        status: "inProgress",
+      },
+      {
+        onSuccess: () => {
+          toast.success("Shift started successfully!");
+          onOpenChange(false);
+        },
+        onError: (error: any) => {
+          toast.error(error.response?.data?.error || "Failed to start shift");
+        },
+      }
+    );
+  }, [shift]);
+
+  const handleRejectShift = useCallback(() => {
+    if (!shift) return;
+
+    if (!rejectReason.trim()) {
+      toast.error("Please provide a reason for rejecting the shift");
+      return;
+    }
+
+    acceptShiftMutation.mutate(
+      {
+        shiftId: shift._id,
+        accept: false,
+        declineReason: rejectReason,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Shift rejected successfully!");
+          setShowRejectReason(false);
+          setRejectReason("");
+          onOpenChange(false);
+        },
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.error || "Failed to reject shift"
+          );
+        },
+      }
+    );
+  }, [shift, rejectReason]);
+
+  const handleCreateTimesheet = useCallback(() => {
+    if (!shift) return;
+
+    const payload: any = {
+      shiftId: shift._id,
+      actualStartTime: timesheetFormData.actualStartTime,
+      actualEndTime: timesheetFormData.actualEndTime,
+      distanceTravelKm: timesheetFormData.distanceTravelKm,
+      notes: timesheetFormData.notes,
+    };
+
+    if (timesheetFormData.expenses.length > 0) {
+      payload.expenses = timesheetFormData.expenses;
+    }
+
+    createTimesheetMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success("Timesheet created successfully!");
+        setShowTimesheetForm(false);
+        setTimesheetFormData({
+          actualStartTime: "",
+          actualEndTime: "",
+          distanceTravelKm: 0,
+          notes: "",
+          expenses: [],
+        });
+        onOpenChange(false);
+      },
+      onError: (error: any) => {
+        
+        toast.error(
+          error.response?.data?.error || "Failed to create timesheet"
+        );
+      },
+    });
+  }, [!!shift, timesheetFormData]);
+
+  const addExpense = useCallback(() => {
+    setTimesheetFormData((prev) => ({
+      ...prev,
+      expenses: [
+        ...prev.expenses,
+        {
+          title: "",
+          description: "",
+          amount: 0,
+          payer: "supportWorker" as const,
+        },
+      ],
+    }));
+  }, []);
+
+  const updateExpense = useCallback(
+    (index: number, field: string, value: any) => {
+      setTimesheetFormData((prev) => ({
+        ...prev,
+        expenses: prev.expenses.map((expense, i) =>
+          i === index ? { ...expense, [field]: value } : expense
+        ),
+      }));
+    },
+    []
+  );
+
+  const removeExpense = (index: number) => {
+    setTimesheetFormData((prev) => ({
+      ...prev,
+      expenses: prev.expenses.filter((_, i) => i !== index),
+    }));
   };
 
   if (!shift) return null;
 
-  // Determine which user object to display based on view mode and what's populated
-  let userToDisplay: UserInfo | null = null;
-  let userLabel = "";
+  // Get participant info
+  const participantInfo =
+    typeof shift.participantId === "object" ? shift.participantId : null;
 
-  if (viewMode === "participant") {
-    // In participant view, show the worker
-    if (shift.workerId && typeof shift.workerId === "object") {
-      userToDisplay = shift.workerId;
-      userLabel = "Support Worker";
-    }
-  } else {
-    // In worker view, show the participant
-    if (shift.participantId && typeof shift.participantId === "object") {
-      userToDisplay = shift.participantId;
-      userLabel = "Participant";
-    }
-  }
+  // Get all workers involved
+  const getWorkersInfo = () => {
+    const workers: Array<{
+      user: UserInfo | null;
+      status: string;
+      id: string;
+    }> = [];
 
-  // Fallback: try to find any populated user object
-  if (!userToDisplay) {
-    if (
-      typeof shift.participantId === "object" &&
-      shift.participantId !== null
-    ) {
-      userToDisplay = shift.participantId;
-      userLabel = "Participant";
-    } else if (shift.workerId && typeof shift.workerId === "object") {
-      userToDisplay = shift.workerId;
-      userLabel = "Support Worker";
+    if (!shift.isMultiWorkerShift && shift.workerId) {
+      const workerData =
+        typeof shift.workerId === "object" ? shift.workerId : null;
+      workers.push({
+        user: workerData,
+        status: shift.status,
+        id:
+          typeof shift.workerId === "object"
+            ? shift.workerId._id
+            : shift.workerId,
+      });
+    } else if (shift.isMultiWorkerShift && shift.workerAssignments) {
+      shift.workerAssignments.forEach((wa) => {
+        const workerData = typeof wa.workerId === "object" ? wa.workerId : null;
+        workers.push({
+          user: workerData,
+          status: wa.status,
+          id: typeof wa.workerId === "object" ? wa.workerId._id : wa.workerId,
+        });
+      });
     }
-  }
 
-  // If still no valid user, show error
-  if (!userToDisplay) {
-    console.error("No valid user object found in shift data");
-    return null;
-  }
+    return workers;
+  };
+
+  const workers = getWorkersInfo();
+  const showActions =
+    viewMode === "worker" && isAssignedWorker && shift.status !== "cancelled";
+  const isPending = assignmentStatus === "pending";
+  const isCompleted = assignmentStatus === "completed";
+  const isInProgress = assignmentStatus === "inProgress";
+  const isConfirmed = assignmentStatus === "confirmed";
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -154,17 +412,19 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
             <CloseCircle className="w-5 h-5 sm:w-6 sm:h-6 text-gray-1000" />
           </Dialog.Close>
 
-          <div className="flex gap-2 mb-3 sm:mb-4 items-center">
+          <div className="flex gap-2 mb-3 sm:mb-4 items-center flex-wrap">
             <Dialog.Title className="text-lg sm:text-xl font-montserrat-semibold text-gray-900">
               {shift.serviceTypeId.name}
             </Dialog.Title>
-            <span
-              className={`px-2 py-1 sm:px-3 sm:py-1 text-xs font-montserrat-semibold border rounded-full ${getStatusBadgeStyle(
-                shift.status
-              )}`}
-            >
+            <Badge className={getStatusBadgeStyle(shift.status)}>
               {getStatusLabel(shift.status)}
-            </span>
+            </Badge>
+            {shift.isMultiWorkerShift && (
+              <Badge className="bg-blue-50 text-blue-700 border-blue-200">
+                <UsersGroupRounded className="w-3 h-3 mr-1" />
+                Multi-Worker
+              </Badge>
+            )}
           </div>
 
           <div className="space-y-4 sm:space-y-6">
@@ -227,7 +487,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
               <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-2 sm:mb-3">
                 Shift Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-y-3 text-xs md:text-sm">
+              <div className="space-y-3 text-xs md:text-sm">
                 <div className="flex justify-between items-center">
                   <p className="text-gray-1000">Shift ID:</p>
                   <p className="font-montserrat-semibold text-gray-900">
@@ -246,30 +506,98 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                     {shift.requiresSupervision ? "Yes" : "No"}
                   </p>
                 </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-1000">{userLabel}:</p>
-                  <div className="flex items-center gap-2">
-                    <Avatar>
-                      <AvatarImage
-                        src={userToDisplay.profileImage}
-                        alt={`${userToDisplay.firstName} ${userToDisplay.lastName}`}
-                        className="w-6 h-6 rounded-full object-cover"
-                      />
-                      <AvatarFallback
-                        className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-montserrat-semibold text-xs"
-                        delayMs={600}
-                      >
-                        {userToDisplay.firstName.charAt(0)}
-                        {userToDisplay.lastName.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
+              </div>
+            </div>
+
+            {/* Participant Information */}
+            {participantInfo && (
+              <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-3 sm:p-4">
+                <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-3">
+                  Participant
+                </h3>
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage
+                      src={participantInfo.profileImage}
+                      alt={`${participantInfo.firstName} ${participantInfo.lastName}`}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <AvatarFallback className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-montserrat-semibold">
+                      {participantInfo.firstName.charAt(0)}
+                      {participantInfo.lastName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
                     <p className="font-montserrat-semibold text-gray-900">
-                      {userToDisplay.firstName} {userToDisplay.lastName}
+                      {participantInfo.firstName} {participantInfo.lastName}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {participantInfo.email}
                     </p>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Workers Information */}
+            {workers.length > 0 && (
+              <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-3 sm:p-4">
+                <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-3">
+                  {shift.isMultiWorkerShift
+                    ? "Assigned Workers"
+                    : "Support Worker"}
+                </h3>
+                <div className="space-y-3">
+                  {workers.map((worker, index) => (
+                    <div
+                      key={worker.id}
+                      className="flex items-center gap-3 p-2 rounded-lg bg-gray-50"
+                    >
+                      {worker.user ? (
+                        <>
+                          <Avatar>
+                            <AvatarImage
+                              src={worker.user.profileImage}
+                              alt={`${worker.user.firstName} ${worker.user.lastName}`}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <AvatarFallback className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-montserrat-semibold">
+                              {worker.user.firstName.charAt(0)}
+                              {worker.user.lastName.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <p className="font-montserrat-semibold text-gray-900 text-sm">
+                              {worker.user.firstName} {worker.user.lastName}
+                              {worker.id === currentUserId && (
+                                <span className="ml-2 text-xs text-primary-600">
+                                  (You)
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {worker.user.email}
+                            </p>
+                          </div>
+                          <Badge className={getStatusBadgeStyle(worker.status)}>
+                            {getStatusLabel(worker.status)}
+                          </Badge>
+                        </>
+                      ) : (
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-600">
+                            Worker ID: {worker.id}
+                          </p>
+                          <Badge className={getStatusBadgeStyle(worker.status)}>
+                            {getStatusLabel(worker.status)}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Special Instructions */}
             {shift.specialInstructions && (
@@ -282,6 +610,324 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                     {shift.specialInstructions}
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* Action Buttons for Support Workers */}
+            {showActions && (
+              <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-4 sm:p-6">
+                <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-4">
+                  Shift Actions
+                </h3>
+
+                {isPending && !showRejectReason && (
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      onClick={handleAcceptShift}
+                      disabled={acceptShiftMutation.isPending}
+                      className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Accept Shift
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowRejectReason(true)}
+                      disabled={acceptShiftMutation.isPending}
+                      className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-600"
+                    >
+                      <RejectIcon className="w-4 h-4" />
+                      Decline Shift
+                    </Button>
+                  </div>
+                )}
+
+                {isConfirmed && !showRejectReason && (
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      onClick={handleStartShift}
+                      disabled={useUpdateShiftStatusMutation.isPending}
+                      className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+                    >
+                      <ClockCircle className="w-4 h-4" />
+                      Start Shift
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowRejectReason(true)}
+                      disabled={useUpdateShiftStatusMutation.isPending}
+                      className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-600"
+                    >
+                      <RejectIcon className="w-4 h-4" />
+                      Cancel Shift
+                    </Button>
+                  </div>
+                )}
+
+                {isInProgress && !showRejectReason && (
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      onClick={handleCompleteShift}
+                      disabled={useUpdateShiftStatusMutation.isPending}
+                      className="flex items-center gap-2 bg-primary-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Complete Shift
+                    </Button>
+                  </div>
+                )}
+
+                {isPending && showRejectReason && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="rejectReason" className="text-red-600">
+                        Reason for Rejection *
+                      </Label>
+                      <Textarea
+                        id="rejectReason"
+                        value={rejectReason}
+                        onChange={(e) => setRejectReason(e.target.value)}
+                        placeholder="Please provide a reason for rejecting this shift..."
+                        rows={3}
+                        className="border-red-300 focus:border-red-500"
+                      />
+                    </div>
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={handleRejectShift}
+                        disabled={
+                          acceptShiftMutation.isPending || !rejectReason.trim()
+                        }
+                        variant="destructive"
+                        className="flex items-center gap-2"
+                      >
+                        <RejectIcon className="w-4 h-4" />
+                        Confirm Rejection
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setShowRejectReason(false);
+                          setRejectReason("");
+                        }}
+                        disabled={acceptShiftMutation.isPending}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {isCompleted && !showTimesheetForm && (
+                  <Button
+                    onClick={() => setShowTimesheetForm(true)}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Document className="w-4 h-4" />
+                    Create Timesheet
+                  </Button>
+                )}
+
+                {isCompleted && showTimesheetForm && (
+                  <div className="space-y-4">
+                    <h4 className="font-montserrat-semibold text-gray-900">
+                      Create Timesheet
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="actualStartTime">
+                          Actual Start Time *
+                        </Label>
+                        <Input
+                          id="actualStartTime"
+                          type="datetime-local"
+                          value={timesheetFormData.actualStartTime}
+                          onChange={(e) =>
+                            setTimesheetFormData((prev) => ({
+                              ...prev,
+                              actualStartTime: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="actualEndTime">Actual End Time *</Label>
+                        <Input
+                          id="actualEndTime"
+                          type="datetime-local"
+                          value={timesheetFormData.actualEndTime}
+                          onChange={(e) =>
+                            setTimesheetFormData((prev) => ({
+                              ...prev,
+                              actualEndTime: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="distanceTravelKm">
+                        Distance Traveled (km)
+                      </Label>
+                      <Input
+                        id="distanceTravelKm"
+                        type="number"
+                        step="0.1"
+                        value={timesheetFormData.distanceTravelKm}
+                        onChange={(e) =>
+                          setTimesheetFormData((prev) => ({
+                            ...prev,
+                            distanceTravelKm: parseFloat(e.target.value) || 0,
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="notes">Notes</Label>
+                      <Textarea
+                        id="notes"
+                        value={timesheetFormData.notes}
+                        onChange={(e) =>
+                          setTimesheetFormData((prev) => ({
+                            ...prev,
+                            notes: e.target.value,
+                          }))
+                        }
+                        placeholder="Add any notes about the shift..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Label className="font-montserrat-semibold">
+                          Expenses
+                        </Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addExpense}
+                        >
+                          Add Expense
+                        </Button>
+                      </div>
+
+                      {timesheetFormData.expenses.map((expense, index) => (
+                        <div
+                          key={index}
+                          className="border rounded-lg p-3 space-y-3"
+                        >
+                          <div className="flex justify-between">
+                            <Label>Expense #{index + 1}</Label>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeExpense(index)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Title *</Label>
+                            <Input
+                              value={expense.title}
+                              onChange={(e) =>
+                                updateExpense(index, "title", e.target.value)
+                              }
+                              placeholder="Expense title"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Description</Label>
+                            <Input
+                              value={expense.description}
+                              onChange={(e) =>
+                                updateExpense(
+                                  index,
+                                  "description",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Expense description"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Amount *</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={expense.amount}
+                                onChange={(e) =>
+                                  updateExpense(
+                                    index,
+                                    "amount",
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Paid By *</Label>
+                              <Select
+                                value={expense.payer}
+                                onValueChange={(value) =>
+                                  updateExpense(index, "payer", value)
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select payer" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="supportWorker">
+                                    Support Worker
+                                  </SelectItem>
+                                  <SelectItem value="participant">
+                                    Participant
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                      <Button
+                        onClick={handleCreateTimesheet}
+                        disabled={
+                          createTimesheetMutation.isPending ||
+                          !timesheetFormData.actualStartTime ||
+                          !timesheetFormData.actualEndTime
+                        }
+                        className="flex items-center gap-2"
+                      >
+                        <Document className="w-4 h-4" />
+                        {createTimesheetMutation.isPending
+                          ? "Creating..."
+                          : "Submit Timesheet"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowTimesheetForm(false)}
+                        disabled={createTimesheetMutation.isPending}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

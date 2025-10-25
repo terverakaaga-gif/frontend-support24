@@ -187,6 +187,12 @@ const ParticipantShifts = () => {
 
   const { data: shifts = [], isLoading, error, refetch } = useGetShifts();
 
+  // Get count of shifts by status
+  const getStatusCount = (status: string) => {
+    if (status === "all") return shifts.length;
+    return shifts.filter((s: any) => s.status.toLowerCase() === status).length;
+  };
+
   // Calculate stats
   const stats = useMemo(() => {
     const now = new Date();
@@ -409,66 +415,36 @@ const ParticipantShifts = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <div className="flex gap-2 mb-6 overflow-x-auto">
           {[
-            {
-              key: "all",
-              label: "All",
-              count: shifts.length,
-              color: "bg-primary",
-            },
-            {
-              key: "pending",
-              label: "Pending",
-              count: stats.pending,
-              color: "bg-orange-600",
-            },
-            {
-              key: "confirmed",
-              label: "Confirmed",
-              count: stats.confirmed,
-              color: "bg-purple-600",
-            },
-            {
-              key: "in_progress",
-              label: "In Progress",
-              count: stats.inProgress,
-              color: "bg-yellow-600",
-            },
-            {
-              key: "completed",
-              label: "Completed",
-              count: stats.completed,
-              color: "bg-green-600",
-            },
-            {
-              key: "cancelled",
-              label: "Cancelled",
-              count: stats.cancelled,
-              color: "bg-red-600",
-            },
-          ].map(({ key, label, count, color }) => (
+            { key: "all", label: "All", bg: "bg-primary" },
+            { key: "pending", label: "Pending", bg: "bg-orange-600" },
+            { key: "confirmed", label: "Confirmed", bg: "bg-purple-600" },
+            { key: "in_progress", label: "In Progress", bg: "bg-yellow-600" },
+            { key: "completed", label: "Completed", bg: "bg-green-600" },
+            { key: "cancelled", label: "Cancelled", bg: "bg-red-600" },
+          ].map(({ key, label, bg }) => (
             <button
               key={key}
               onClick={() => {
                 setStatusFilter(key);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-full text-sm font-montserrat-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
+              className={`px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
                 statusFilter === key
-                  ? `${color} text-white shadow-lg`
+                  ? `${bg} text-white`
                   : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
               }`}
             >
               {label}
               <span
-                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                className={`px-1.5 py-0.5 rounded-full text-xs ${
                   statusFilter === key
-                    ? "bg-white text-gray-700"
-                    : "bg-gray-100"
+                    ? `${bg}/10 text-white`
+                    : `${bg} text-white`
                 }`}
               >
-                {count}
+                {getStatusCount(key)}
               </span>
             </button>
           ))}
@@ -805,6 +781,7 @@ const ParticipantShifts = () => {
         {/* Shift Details Dialog */}
         <ShiftDetailsDialog
           viewMode="participant"
+          currentUserId={user._id}
           shift={selectedShift}
           open={!!selectedShift}
           onOpenChange={(open) => !open && setSelectedShift(null)}

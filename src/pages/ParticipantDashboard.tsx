@@ -25,7 +25,6 @@ import { Progress } from "@/components/ui/progress";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
-// import { ConnectionsList } from "@/components/participant/ConnectionsList";
 import GeneralHeader from "@/components/GeneralHeader";
 import {
   useGetParticipantOverview,
@@ -33,9 +32,6 @@ import {
 } from "@/hooks/useAnalyticsHooks";
 import type { ServiceTypeInfo } from "@/entities/types";
 import Loader from "@/components/Loader";
-import ShiftCard from "@/components/ShiftCard";
-import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
-import { NotificationsList } from "@/components/NotificationsList";
 import { useNavigate } from "react-router-dom";
 import {
   Select,
@@ -505,10 +501,10 @@ function ParticipantDashboard() {
             <>
               <Button
                 variant="outline"
-                className="mr-4"
+                className="mr-4 rounded-full hover:bg-transparent hover:text-gray-600 text-xs truncate max-w-[120px] md:max-w-[200px]"
                 onClick={() => setSearchOpen(true)}
               >
-                Search Support Workers
+                Invite Support Workers
               </Button>
               <SearchSupportWorkers
                 open={searchOpen}

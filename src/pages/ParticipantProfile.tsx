@@ -1,36 +1,73 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
   Calendar,
-  Clock,
-  MapPin,
+  MapPoint,
   Phone,
-  Mail,
+  Letter,
   User,
-  AlertCircle,
-  Edit,
-  FileText,
-} from "lucide-react";
+  Pen2,
+  ClockCircle,
+  DangerCircle,
+  UserHeart,
+  Home,
+} from "@solar-icons/react";
 import { Participant } from "@/types/user.types";
 import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import EditableAvatar from "@/components/EditableAvatar";
+import { cn } from "@/lib/utils";
+
+// Stats Card Component
+function StatsCard({
+  stats,
+  title,
+  Icon,
+  subtitle,
+}: {
+  stats: { total: number; subtitle: string };
+  title: string;
+  Icon: any;
+  subtitle: string;
+}) {
+  return (
+    <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+      <CardContent className="p-4 sm:p-6 relative">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs md:text-sm font-montserrat-bold text-gray-600">
+              {title}
+            </p>
+            <p className="md:text-2xl text-3xl font-montserrat-bold text-gray-900 group-hover:text-primary transition-colors">
+              {stats.total}
+            </p>
+            <p className="text-xs text-gray-600 font-montserrat-semibold">
+              {subtitle}
+            </p>
+          </div>
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <Icon className="w-6 h-6 md:w-7 md:h-7 text-primary" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function ParticipantProfile() {
   const navigate = useNavigate();
-  const { data: profileData, isLoading, error, isError, refetch } = useProfile();
+  const {
+    data: profileData,
+    isLoading,
+    error,
+    isError,
+    refetch,
+  } = useProfile();
+  const [activeTab, setActiveTab] = useState("support");
 
   if (isLoading) {
     return <Loader type="pulse" />;
@@ -61,292 +98,330 @@ export default function ParticipantProfile() {
     navigate("/participant/profile/edit");
   };
 
-  // Mock data - replace with actual API calls
-  const upcomingAppointments: any[] = [];
-  const recentUpdates: any[] = [];
+  // Calculate stats from actual data
+  const stats = {
+    totalSessions: { total: 0, subtitle: "All time" },
+    upcomingSessions: { total: 0, subtitle: "Scheduled" },
+    supportNeeds: {
+      total: participant.supportNeeds?.length || 0,
+      subtitle: "Active needs",
+    },
+  };
+
+  const tabButtons = [
+    { id: "support", label: "Support Needs" },
+    { id: "personal", label: "Personal Info" },
+    { id: "address", label: "Address" },
+    { id: "emergency", label: "Emergency Contact" },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="px-8 py-6">
-        {/* Header Section */}
+      <div className="p-6 md:p-8">
+        {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">My Profile</h1>
+            <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
+              My Profile
+            </h1>
             <p className="text-gray-600">
               Manage your personal information and care preferences
             </p>
           </div>
           <Button
             onClick={handleEditProfile}
-            className="bg-primary hover:bg-primary-700 text-white shadow-md flex items-center gap-2"
+            className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <Edit className="h-4 w-4" />
+            <Pen2 className="w-5 h-5" />
             Edit Profile
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Summary Card */}
-          <Card className="lg:col-span-1 border-gray-200 hover:shadow-lg transition-all duration-200">
-            <CardHeader className="text-center pb-4">
-              <div className="flex justify-center mb-6">
+        {/* Profile Card with Avatar */}
+        <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+              <div className="flex justify-center">
                 <EditableAvatar />
               </div>
-              <CardTitle className="text-2xl text-gray-900">
-                {participant.firstName} {participant.lastName}
-              </CardTitle>
-              <CardDescription className="mt-2">
-                <Badge className="bg-primary text-white hover:bg-primary/90 shadow-sm">
-                  {participant.role.charAt(0).toUpperCase() + participant.role.slice(1)}
-                </Badge>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/5 transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Mail className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm text-gray-700">{participant.email}</span>
+
+              <div className="flex-1 space-y-3">
+                <div>
+                  <h2 className="text-2xl font-montserrat-bold text-gray-900">
+                    {participant.firstName} {participant.lastName}
+                  </h2>
+                  <Badge className="mt-2 bg-primary text-white hover:bg-primary/90">
+                    {participant.role.charAt(0).toUpperCase() +
+                      participant.role.slice(1)}
+                  </Badge>
                 </div>
-                {participant.phone && (
-                  <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/5 transition-colors">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Phone className="h-4 w-4 text-primary" />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary/5 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+                      <Letter className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-sm text-gray-700">{participant.phone}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-600 font-montserrat-semibold">
+                        Email
+                      </p>
+                      <p className="text-sm text-gray-900 truncate">
+                        {participant.email}
+                      </p>
+                    </div>
                   </div>
-                )}
-                {participant.address && (
-                  <div className="flex items-start gap-3 p-2 rounded-lg hover:bg-primary/5 transition-colors">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5">
-                      <MapPin className="h-4 w-4 text-primary" />
+
+                  {participant.phone && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary/5 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+                        <Phone className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-gray-600 font-montserrat-semibold">
+                          Phone
+                        </p>
+                        <p className="text-sm text-gray-900">
+                          {participant.phone}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-700">
-                      <div>{participant.address.street}</div>
-                      <div>{`${participant.address.city}, ${participant.address.state} ${participant.address.postalCode}`}</div>
-                      <div>{participant.address.country}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <StatsCard
+            stats={stats.totalSessions}
+            title="Total Sessions"
+            subtitle={stats.totalSessions.subtitle}
+            Icon={Calendar}
+          />
+          <StatsCard
+            stats={stats.upcomingSessions}
+            title="Upcoming Sessions"
+            subtitle={stats.upcomingSessions.subtitle}
+            Icon={ClockCircle}
+          />
+          <StatsCard
+            stats={stats.supportNeeds}
+            title="Support Needs"
+            subtitle={stats.supportNeeds.subtitle}
+            Icon={UserHeart}
+          />
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-6 overflow-x-auto">
+          {tabButtons.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-montserrat-semibold whitespace-nowrap transition-all duration-200",
+                activeTab === tab.id
+                  ? "bg-primary text-white shadow-lg"
+                  : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "support" && (
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-6 space-y-6">
+              <div>
+                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <UserHeart className="w-5 h-5 text-primary" />
+                  Support Needs
+                </h3>
+                {participant.supportNeeds &&
+                participant.supportNeeds.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {participant.supportNeeds.map((need, index) => (
+                      <Badge
+                        key={index}
+                        className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-sm"
+                      >
+                        {need.name}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                      <UserHeart className="w-8 h-8 text-gray-400" />
                     </div>
+                    <p className="text-gray-600 mb-3 font-montserrat-semibold">
+                      No support needs specified
+                    </p>
+                    <Button
+                      onClick={handleEditProfile}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Add Support Needs
+                    </Button>
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        )}
 
-              <Separator className="bg-gray-200" />
+        {activeTab === "personal" && (
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-6 space-y-6">
+              <div>
+                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-primary" />
+                  Personal Information
+                </h3>
 
-              {/* Emergency Contact */}
-              {participant.emergencyContact && (
-                <div className="pt-2">
-                  <h3 className="text-sm font-montserrat-semibold flex items-center gap-2 mb-3 text-primary">
-                    <AlertCircle className="h-4 w-4" />
-                    Emergency Contact
-                  </h3>
-                  <div className="bg-primary/5 rounded-lg p-3 space-y-2 text-sm border border-primary/10">
-                    <div className="flex justify-between">
-                      <span className="font-medium text-gray-600">Name:</span>
-                      <span className="text-gray-900">
-                        {participant.emergencyContact.name}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium text-gray-600">Relationship:</span>
-                      <span className="text-gray-900">
-                        {participant.emergencyContact.relationship}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium text-gray-600">Phone:</span>
-                      <span className="text-gray-900">
-                        {participant.emergencyContact.phone}
-                      </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 hover:bg-primary/5 transition-colors">
+                    <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
+                      Date of Birth
+                    </p>
+                    <p className="text-sm text-gray-900 font-medium">
+                      {participant.dateOfBirth
+                        ? formatDate(participant.dateOfBirth)
+                        : "Not provided"}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 hover:bg-primary/5 transition-colors">
+                    <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
+                      Gender
+                    </p>
+                    <p className="text-sm text-gray-900 font-medium">
+                      {participant.gender
+                        ? participant.gender.charAt(0).toUpperCase() +
+                          participant.gender.slice(1)
+                        : "Not provided"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "address" && (
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
+                <MapPoint className="w-5 h-5 text-primary" />
+                Address
+              </h3>
+
+              {participant.address ? (
+                <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                  <div className="space-y-2 text-sm text-gray-900">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                        <Home className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-montserrat-semibold text-gray-900">
+                          {participant.address.street}
+                        </p>
+                        <p className="text-gray-700">
+                          {participant.address.city},{" "}
+                          {participant.address.state}{" "}
+                          {participant.address.postalCode}
+                        </p>
+                        <p className="text-gray-700">
+                          {participant.address.country}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <MapPoint className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-gray-600 mb-3 font-montserrat-semibold">
+                    No address specified
+                  </p>
+                  <Button
+                    onClick={handleEditProfile}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Add Address
+                  </Button>
                 </div>
               )}
             </CardContent>
           </Card>
+        )}
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="bio" className="w-full">
-              <TabsList className="mb-6 bg-primary/5 border border-primary/10">
-                <TabsTrigger value="bio" className="data-[state=active]:bg-primary data-[state=active]:text-white">
-                  Bio & Support Needs
-                </TabsTrigger>
-                <TabsTrigger value="appointments" className="data-[state=active]:bg-primary data-[state=active]:text-white">
-                  Appointments
-                </TabsTrigger>
-                <TabsTrigger value="updates" className="data-[state=active]:bg-primary data-[state=active]:text-white">
-                  Progress Updates
-                </TabsTrigger>
-              </TabsList>
+        {activeTab === "emergency" && (
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
+                <DangerCircle className="w-5 h-5 text-primary" />
+                Emergency Contact
+              </h3>
 
-              {/* Bio and Support Needs */}
-              <TabsContent value="bio">
-                <Card className="border-gray-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="border-b border-gray-200">
-                    <CardTitle className="text-primary">About Me</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6 pt-6">
-                    {/* Support Needs */}
-                    <div>
-                      <h3 className="text-lg font-medium mb-3 text-gray-900">Support Needs</h3>
-                      {participant.supportNeeds && participant.supportNeeds.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {participant.supportNeeds.map((need, index) => (
-                            <Badge
-                              key={index}
-                              variant="outline"
-                              className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors"
-                            >
-                              {need.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 bg-gray-100 rounded-lg border border-gray-200">
-                          <p className="text-gray-1000 mb-2">No support needs specified</p>
-                          <Button onClick={handleEditProfile} variant="outline" size="sm">
-                            Add Support Needs
-                          </Button>
-                        </div>
-                      )}
+              {participant.emergencyContact ? (
+                <div className="bg-red-50 rounded-lg p-6 border-2 border-red-100">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-3 rounded-lg bg-white border border-red-100">
+                      <p className="text-xs text-red-600 font-montserrat-semibold mb-1">
+                        Name
+                      </p>
+                      <p className="text-sm text-gray-900 font-medium">
+                        {participant.emergencyContact.name}
+                      </p>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                        <h3 className="text-md font-medium mb-3 flex items-center text-primary">
-                          <User className="mr-2 h-4 w-4" />
-                          Personal Information
-                        </h3>
-                        <div className="space-y-3 text-sm">
-                          <div className="flex justify-between">
-                            <span className="font-medium text-gray-600">Date of Birth:</span>
-                            <span className="text-gray-900">
-                              {participant.dateOfBirth
-                                ? formatDate(participant.dateOfBirth)
-                                : "Not provided"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium text-gray-600">Gender:</span>
-                            <span className="text-gray-900">
-                              {participant.gender
-                                ? participant.gender.charAt(0).toUpperCase() +
-                                  participant.gender.slice(1)
-                                : "Not provided"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="p-3 rounded-lg bg-white border border-red-100">
+                      <p className="text-xs text-red-600 font-montserrat-semibold mb-1">
+                        Relationship
+                      </p>
+                      <p className="text-sm text-gray-900 font-medium">
+                        {participant.emergencyContact.relationship}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Appointments Tab */}
-              <TabsContent value="appointments">
-                <Card className="border-gray-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="border-b border-gray-200">
-                    <CardTitle className="text-primary">Upcoming Appointments</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    {upcomingAppointments.length > 0 ? (
-                      <div className="space-y-4">
-                        {upcomingAppointments.map((appointment) => (
-                          <div
-                            key={appointment.id}
-                            className="flex items-start p-4 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
-                          >
-                            <div className="p-3 rounded-full bg-primary/10 mr-4">
-                              <Calendar className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-medium text-gray-900">{appointment.service}</h3>
-                              <div className="text-sm text-gray-600 flex items-center mt-2">
-                                <Clock className="h-4 w-4 mr-1" />
-                                {new Date(appointment.date).toLocaleDateString("en-US", {
-                                  weekday: "long",
-                                  month: "long",
-                                  day: "numeric",
-                                })}
-                                , {appointment.time}
-                              </div>
-                              <div className="text-sm mt-2">
-                                <span className="font-medium text-gray-600">Support Worker:</span>
-                                <span className="text-primary ml-1">{appointment.supportWorker}</span>
-                              </div>
-                            </div>
-                            <Button size="sm" className="bg-primary hover:bg-primary-700 mt-2">
-                              View Details
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12 bg-gray-100 rounded-lg border border-gray-200">
-                        <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                          <Calendar className="w-6 h-6 text-primary/60" />
-                        </div>
-                        <p className="text-gray-1000">No upcoming appointments</p>
-                        <p className="text-sm text-gray-1000 mt-1">
-                          Schedule your next session with a support worker
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Progress Updates Tab */}
-              <TabsContent value="updates">
-                <Card className="border-gray-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="border-b border-gray-200">
-                    <CardTitle className="text-primary">Recent Progress Notes</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    {recentUpdates.length > 0 ? (
-                      <div className="space-y-4">
-                        {recentUpdates.map((update) => (
-                          <div
-                            key={update.id}
-                            className="p-4 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
-                          >
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <FileText className="h-4 w-4 text-primary" />
-                              </div>
-                              <span className="font-medium text-primary">{update.supportWorker}</span>
-                              <span className="text-sm text-gray-600 ml-auto">
-                                {new Date(update.date).toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                })}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-700 leading-relaxed bg-gray-100 p-3 rounded-lg border border-gray-200">
-                              {update.notes}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12 bg-gray-100 rounded-lg border border-gray-200">
-                        <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                          <FileText className="w-6 h-6 text-primary/60" />
-                        </div>
-                        <p className="text-gray-1000">No progress notes available</p>
-                        <p className="text-sm text-gray-1000 mt-1">
-                          Progress notes from your support workers will appear here
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+                    <div className="p-3 rounded-lg bg-white border border-red-100">
+                      <p className="text-xs text-red-600 font-montserrat-semibold mb-1">
+                        Phone
+                      </p>
+                      <p className="text-sm text-gray-900 font-medium">
+                        {participant.emergencyContact.phone}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <DangerCircle className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-gray-600 mb-3 font-montserrat-semibold">
+                    No emergency contact specified
+                  </p>
+                  <Button
+                    onClick={handleEditProfile}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Add Emergency Contact
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
