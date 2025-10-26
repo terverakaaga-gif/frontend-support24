@@ -43,9 +43,13 @@ export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionPr
             />
           </div>
           <div className="flex gap-1 items-center justify-center lg:justify-start">
-            <motion.h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-montserrat-bold leading-tight">
+            <motion.h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-montserrat-bold leading-tight">
               Safe. Verified.{" "}
-              <InlineVectorText className="italic" text="Reliable" y={-10} />.
+              <InlineVectorText 
+                className="italic" 
+                text="Reliable" 
+                imageClassName="bottom-0 sm:-bottom-3 w-[240px] translate-y-[35%] sm:translate-y-[45%]"
+              />.
             </motion.h1>
           </div>
           <p className="text-sm sm:text-base md:text-lg leading-relaxed font-montserrat-medium text-gray-700 max-w-xl mx-auto lg:mx-0">
@@ -58,7 +62,7 @@ export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionPr
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Button className="px-6 py-4 sm:px-8 sm:py-6 font-montserrat-semibold transition-colors text-sm sm:text-base w-full sm:w-auto">
+            <Button className="px-6 py-4 sm:px-8 sm:py-6 font-montserrat-semibold transition-colors text-sm sm:text-base  sm:w-auto">
               Download App
             </Button>
 

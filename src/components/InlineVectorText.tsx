@@ -18,7 +18,7 @@ export const InlineVectorText = ({
   className,
   imageSrc = "/new-res/zigzag-underline.svg",
   imageAlt = "signature underline",
-  imageClassName = "absolute -bottom-6 md:-bottom-10  left-0 w-full z-10",
+  imageClassName = "",
   spanClassName,
   x = 0,
   y = 0,
@@ -30,7 +30,7 @@ export const InlineVectorText = ({
   return (
     <span
       className={cn(
-        "relative inline-block italic  font-montserrat-semibold",
+        "relative inline-block italic font-montserrat-semibold",
         className,
         spanClassName
       )}
@@ -41,7 +41,10 @@ export const InlineVectorText = ({
           style={imgStyle}
           src={imageSrc}
           alt={imageAlt}
-          className={imageClassName}
+          className={cn(
+            "absolute left-0 w-full h-auto pointer-events-none",
+            imageClassName || "bottom-0 translate-y-[30%]"
+          )}
         />
       )}
     </span>

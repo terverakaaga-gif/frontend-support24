@@ -19,7 +19,15 @@ export const AllInOneSection: React.FC<AllInOneSectionProps> = ({
   };
 
   return (
-    <section className={`relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 lg:mt-40 mt-10 ${className}`}>
+    <section className={`relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 lg:mt-48 mt-20 ${className}`}>
+      {/* Decorative Shadows */}
+  <div className="absolute inset-0 pointer-events-none">
+    {/* Top-left glow */}
+    <div className="absolute top-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 -translate-y-1/3"></div>
+
+    {/* Bottom-left glow */}
+    <div className="absolute bottom-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3"></div>
+  </div>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div className="text-center mb-10 sm:mb-12 md:mb-16" {...fadeInUp}>
@@ -31,8 +39,12 @@ export const AllInOneSection: React.FC<AllInOneSectionProps> = ({
             <span className="text-white text-sm font-montserrat-medium">Everything You Need</span>
           </div>
           <motion.h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-montserrat-bold mb-4 sm:mb-6 leading-tight text-white">
-            <InlineVectorText className="italic" text="All in" y={-10} />{" "}
-            <span className="italic">One</span> Place
+            <InlineVectorText 
+              className="italic" 
+              text="All " 
+              imageClassName="bottom-0 sm:bottom-0 translate-y-[40%] sm:translate-y-[50%]"
+            />{" "}
+            <span className="italic"> </span> in One Place
           </motion.h1>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-4xl mx-auto leading-relaxed font-montserrat-medium text-gray-200">
             Comprehensive tools and support designed to give you complete
@@ -41,46 +53,49 @@ export const AllInOneSection: React.FC<AllInOneSectionProps> = ({
         </motion.div>
 
         {/* Cards Grid - Desktop: 4 cards top row + 1 centered bottom | Mobile: Stacked vertically */}
-        <div className="flex flex-col items-center gap-5 sm:gap-6 md:gap-8">
-          {/* Top Row - 4 Cards (stacked on mobile, grid on desktop) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 w-full">
-            {ALL_IN_ONE_CARDS.slice(0, 4).map((tool, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="w-full"
-              >
-                <AllInOneCard
-                  title={tool.title}
-                  content={tool.content}
-                  icon={tool.icon}
-                />
-              </motion.div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 w-full">
+          {/* First 4 Cards */}
+          {ALL_IN_ONE_CARDS.slice(0, 4).map((tool, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              whileHover={{ y: -5 }}
+              className="w-full"
+            >
+              <AllInOneCard
+                title={tool.title}
+                content={tool.content}
+                icon={tool.icon}
+              />
+            </motion.div>
+          ))}
 
-          {/* Bottom Row - 1 Centered Card */}
+          {/* 5th Card - Centered on mobile/tablet, spans from middle of column 2 to end of column 3 on desktop */}
           {ALL_IN_ONE_CARDS[4] && (
-            <div className="flex justify-center w-full">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                whileHover={{ y: -5 }}
-                className="w-full sm:max-w-md lg:max-w-lg"
-              >
-                <AllInOneCard
-                  title={ALL_IN_ONE_CARDS[4].title}
-                  content={ALL_IN_ONE_CARDS[4].content}
-                  icon={ALL_IN_ONE_CARDS[4].icon}
-                />
-              </motion.div>
+            <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            whileHover={{ y: -5 }}
+            className="
+              w-full 
+              sm:col-span-2 sm:mx-auto 
+              lg:col-span-1 lg:col-start-2 lg:col-end-4 
+              flex justify-center
+            "
+          >
+            <div className="w-full lg:max-w-[330px]">
+              <AllInOneCard
+                title={ALL_IN_ONE_CARDS[4].title}
+                content={ALL_IN_ONE_CARDS[4].content}
+                icon={ALL_IN_ONE_CARDS[4].icon}
+              />
             </div>
+          </motion.div>
           )}
         </div>
       </div>

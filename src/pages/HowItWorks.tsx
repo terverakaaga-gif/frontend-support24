@@ -97,7 +97,7 @@ export const HowItWorks = () => {
                     >
                         {/* Main Title */}
                         <motion.h1
-                            className="text-3xl md:text-5xl lg:text-7xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-white"
+                            className="text-3xl md:text-5xl lg:text-6xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-white"
                             initial={{ opacity: 0, scale: 0.8, y: 50 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             transition={{

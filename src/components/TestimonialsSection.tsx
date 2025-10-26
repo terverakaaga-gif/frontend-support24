@@ -26,9 +26,9 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           <RoundedFigure icon={Star} text="Real Impact Stories" />
         </div>
         
-        <motion.h1 className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-center">
+        <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-center">
           Trusted by Thousands, across{" "}
-          <InlineVectorText className="italic" text="Australia" />
+          <InlineVectorText className="italic" text="Australia" imageClassName="bottom-0 sm:-bottom-4 w-[300px]  translate-y-[35%] sm:translate-y-[45%]" />
         </motion.h1>
 
         <motion.div className="text-center mb-8 md:mb-12" {...fadeInUp}>
@@ -79,7 +79,7 @@ const TestimonialCard = ({ testimonial }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`bg-white border-gray-300 border rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow relative break-inside-avoid mb-6 ${
+      className={`relative rounded-2xl p-6 mb-6 break-inside-avoid backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-xl hover:shadow-primary/70 transition-all ${
         testimonial.hasVideo ? 'bg-gradient-to-br from-blue-900 to-purple-900 text-white' : ''
       }`}
     >
