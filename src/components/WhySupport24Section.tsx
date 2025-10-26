@@ -82,6 +82,7 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
                                 <InlineVectorText
                                     className="italic text-gray-900"
                                     text="Support24"
+                                    imageClassName=" sm:-bottom-20   translate-y-[35%] sm:translate-y-[45%]"
                                     y={-24} // Adjust line height space here
 
                                 />
