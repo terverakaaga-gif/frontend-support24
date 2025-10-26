@@ -67,9 +67,9 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
           {...fadeInUp}
         >
           <RoundedFigure icon={QuestionCircle} text="FAQs" />
-          <motion.h1 className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
-            Frequently Asked <br /> <br />
-            <InlineVectorText className="italic" text="Questions" />
+          <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
+            Frequently Asked <br /> <br className="sm:block hidden"/>
+            <InlineVectorText className="italic" text="Questions" imageClassName="-bottom-2 sm:-bottom-2 w-[230px]  translate-y-[35%] sm:translate-y-[45%]" />
           </motion.h1>
 
           <p className="text-xl font-montserrat-semibold leading-relaxed">

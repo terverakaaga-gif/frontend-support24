@@ -43,9 +43,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   };
 
   return (
-    <section className={`relative py-16 md:py-24 px-4 md:px-12 bg-gradient-to-br from-white to-primary-200 ${className}`}>
-      {/* Background gradient overlay */}
-      <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-blue-100/40 to-transparent pointer-events-none" />
+    <section className={`relative py-16 md:py-24 px-4 md:px-12 bg-white ${className}`}>
+      {/* 💎 Bottom-right glow */}
+      <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-primary/30 blur-[180px] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
+
       
       <div className="lg:px-12 px-4 mx-auto relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -83,7 +84,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
-                <InlineVectorText className="italic text-gray-900" text="Today" y={-20} />
+                <InlineVectorText className="italic text-gray-900" imageClassName=" sm:-bottom-10   translate-y-[35%] sm:translate-y-[45%]" text="Today" y={-20} />
               </motion.span>
             </motion.h1>
 
@@ -122,7 +123,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
           {/* Right Content - Contact Form */}
           <motion.div
-            className="bg-white rounded-3xl p-8 md:px-10 md:py-20 shadow-md border border-gray-100"
+            className=" rounded-3xl p-8 md:px-10 md:py-20 "
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

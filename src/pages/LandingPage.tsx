@@ -100,7 +100,7 @@ export default function Support24Landing() {
         <div className="text-center max-w-5xl mx-auto">
           {/* Animated Title */}
           <motion.h1 
-            className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight"
+            className="text-6xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -110,7 +110,9 @@ export default function Support24Landing() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <InlineVectorText className="italic text-white" text="Support" />
+              <InlineVectorText className="italic text-white" text="Support"
+              imageClassName="bottom-0 sm:-bottom-4 w-[200px] translate-y-[35%] sm:translate-y-[45%]"
+              />
             </motion.span>{" "}
             <motion.span
               initial={{ opacity: 0, y: 30 }}
@@ -243,8 +245,12 @@ export default function Support24Landing() {
       <section className="h-fit md:h-screen relative py-12 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div className="text-center mb-16" {...fadeInUp}>
-           <motion.h1 className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
-              <InlineVectorText className="italic" text="Support24" y={10} /> is
+           <motion.h1 className="text-4xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-relaxed">
+              <InlineVectorText 
+                className="italic" 
+                text="Support24" 
+                imageClassName="-bottom-1 sm:-bottom-4 lg:w-[270px] w-[200px]  translate-y-[35%] sm:translate-y-[45%]"
+              /> is
               for everyone in The Care Journey
             </motion.h1>
             <p className="text-xl max-w-3xl mx-auto leading-relaxed font-montserrat-semibold">

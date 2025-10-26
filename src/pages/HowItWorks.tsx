@@ -97,7 +97,7 @@ export const HowItWorks = () => {
                     >
                         {/* Main Title */}
                         <motion.h1
-                            className="text-3xl md:text-5xl lg:text-7xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-white"
+                            className="text-3xl md:text-5xl lg:text-6xl font-montserrat-bold mb-6 md:mb-8 leading-10 text-white "
                             initial={{ opacity: 0, scale: 0.8, y: 50 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             transition={{
@@ -114,11 +114,12 @@ export const HowItWorks = () => {
                                     delay: 0.4,
                                     ease: "easeOut"
                                 }}
+                                className="inline leading-[inherit]"
                             >
                                 How Support24{" "}
                             </motion.span>
                             <motion.span
-                                className="italic"
+                                className="italic inline leading-[inherit]"
                                 initial={{ opacity: 0, y: 50, scale: 0.5, rotate: -10 }}
                                 animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                                 transition={{
@@ -131,13 +132,21 @@ export const HowItWorks = () => {
                                     y: -5,
                                     transition: { duration: 0.3 }
                                 }}
+                                                            
                             >
-                                <InlineVectorText className="font-thin text-white" text="Enhances" y={-24} />
+                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-20   translate-y-[35%] sm:translate-y-[45%]"  text="Enhances" y={-24} />
                             </motion.span>{" "}
+                            Your Care
                             <motion.br
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.8 }}
+                            />
+                            <motion.br
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3, delay: 0.8 }}
+                                className=" hidden sm:block "
                             />
                             <motion.span
                                 initial={{ opacity: 0, x: 100, rotateX: 90 }}
@@ -147,8 +156,9 @@ export const HowItWorks = () => {
                                     delay: 0.8,
                                     ease: "easeOut"
                                 }}
+                                className="inline leading-[inherit]"
                             >
-                                Your Care Journey Step by Step
+                                 Journey Step by Step
                             </motion.span>
                         </motion.h1>
 
@@ -179,13 +189,14 @@ export const HowItWorks = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.8 }}
+                                className="flex justify-center sm:justify-start"
                             >
                                 <motion.div
                                     whileHover={{ scale: 1.05, y: -2 }}
                                     whileTap={{ scale: 0.95 }}
                                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                                 >
-                                    <Button className="bg-primary text-xl hover:bg-primary-700 text-white px-8 py-4  font-montserrat-semibold flex items-center gap-3">
+                                    <Button className="bg-primary text-xl hover:bg-primary-700 text-white px-8 py-4 sm:px-12 sm:py-6  font-montserrat-semibold flex items-center gap-3">
                                         How it Works
                                         <motion.div
                                             animate={{ x: [0, 5, 0] }}
