@@ -244,7 +244,21 @@ export default function Support24Landing() {
 
       {/* Care Journey Section with Phone */}
       <section className=" bg-[#05030B] relative py-12 md:py-16 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
+
+        {/* Two long primary gradient long pointy triangle at the top left corner (using svg image) */}
+      
+      <img
+        src="/new-res/gradient-triangle.svg"
+        alt=""
+        className="absolute -top-20 -left-28 object-cover pointer-events-none"
+      />
+         {/* Gradient blue circle at top right */}
+      <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute top-24 right-0 object-cover pointer-events-none"
+      />
+        <div className="max-w-5xl mx-auto">
           <motion.div className="text-center mb-16" {...fadeInUp}>
            <motion.h1 className="text-4xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-relaxed">
               <InlineVectorText 

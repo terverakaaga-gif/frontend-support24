@@ -23,10 +23,20 @@ export const AllInOneSection: React.FC<AllInOneSectionProps> = ({
       {/* Decorative Shadows */}
   <div className="absolute inset-0 pointer-events-none">
     {/* Top-left glow */}
-    <div className="absolute top-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 -translate-y-1/3"></div>
+    {/* <div className="absolute top-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 -translate-y-1/3"></div> */}
+    <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute -top-20 -left-10 w-[500px] h-[300px] object-cover pointer-events-none -translate-x-1/3 -translate-y-1/3"
+      />
 
     {/* Bottom-left glow */}
-    <div className="absolute bottom-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3"></div>
+    {/* <div className="absolute bottom-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3"></div> */}
+    <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute -bottom-10 -left-10 w-[500px] h-[300px] object-cover pointer-events-none   -translate-x-1/3 translate-y-1/3"
+      />
   </div>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
