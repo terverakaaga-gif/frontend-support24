@@ -73,6 +73,7 @@ import SupportWorkerProfilePreview from "./pages/SupportWorkerProfilePreview";
 import SupportWorkerInvite from "./pages/SupportWorkerInvite";
 import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationDetailsPage";
 import { HowItWorks } from "./pages/HowItWorks";
+import ComingSoon from "./pages/coming-soon";
 
 const queryClient = new QueryClient();
 
@@ -111,6 +112,11 @@ const AppRoutes = () => {
       <Route
         path="/how-it-works"
         element={<HowItWorks />}
+      />
+      {/* Coming Soon Page */}
+      <Route
+        path="/coming-soon"
+        element={<ComingSoon />}
       />
 
       {/* Public routes */}

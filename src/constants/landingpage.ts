@@ -4,11 +4,11 @@ import { BadgeCheck, Headset, Settings2 } from "lucide-react";
 
 export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works" },
-  { name: "Events", href: "#events" },
-  { name: "Accommodation", href: "#accommodation" },
-  { name: "Marketplace", href: "#marketplace" },
-  { name: "FAQs", href: "#faqs" },
-  { name: "Contact Us", href: "#contact_us" },
+  { name: "Events", href: "/coming-soon" },
+  { name: "Accommodation", href: "/coming-soon" },
+  { name: "Marketplace", href: "/coming-soon" },
+  { name: "FAQs", href: "/coming-soon" },
+  { name: "Contact Us", href: "/coming-soon" },
 ] as const;
 
 export const FEATURE_CARDS = [
