@@ -19,14 +19,24 @@ export const AllInOneSection: React.FC<AllInOneSectionProps> = ({
   };
 
   return (
-    <section className={`relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 lg:mt-48 mt-20 ${className}`}>
+    <section className={`relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-[#05030B] lg:pt-48 pt-20 ${className}`}>
       {/* Decorative Shadows */}
   <div className="absolute inset-0 pointer-events-none">
     {/* Top-left glow */}
-    <div className="absolute top-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 -translate-y-1/3"></div>
+    {/* <div className="absolute top-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 -translate-y-1/3"></div> */}
+    <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute -top-20 -left-10 w-[500px] h-[300px] object-cover pointer-events-none -translate-x-1/3 -translate-y-1/3"
+      />
 
     {/* Bottom-left glow */}
-    <div className="absolute bottom-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3"></div>
+    {/* <div className="absolute bottom-10 left-10 w-[500px] h-[300px] bg-primary/30 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3"></div> */}
+    <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute -bottom-10 -left-10 w-[500px] h-[300px] object-cover pointer-events-none   -translate-x-1/3 translate-y-1/3"
+      />
   </div>
       <div className="max-w-7xl mx-auto">
         {/* Header */}

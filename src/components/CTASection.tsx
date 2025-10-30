@@ -18,7 +18,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
   };
 
   return (
-    <section className={`relative min-h-fit p-6 md:p-8 lg:p-16 bg-gray-50 text-black ${className}`}>
+    <section className={`relative min-h-fit p-2 md:p-8 lg:p-16 bg-gray-50 text-black ${className}`}>
       <motion.div
         className=""
         initial={{ opacity: 0, scale: 0.95 }}
@@ -42,21 +42,21 @@ export const CTASection: React.FC<CTASectionProps> = ({
           <div className="relative flex flex-col md:flex-row gap-3">
             {/* Left Content */}
             <div className="flex-1 p-8 md:p-16 flex flex-col justify-center">
-              <motion.h1 className="text-2xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
+              <motion.h1 className="text-2xl md:text-4xl lg:text-4xl font-montserrat-bold mb-6 md:mb-0 leading-tight">
                 Take Control of{" "}
                 <InlineVectorText className="italic" text="your" y={-24} imageClassName="-bottom-8 sm:-bottom-10 w-[200px]  translate-y-[35%] sm:translate-y-[45%]" />{" "}
-                Support <br className="mb-12" />
+                <br className="mb-12" /> Support  {" "}
                 <span>Today</span>
               </motion.h1>
               
-              <p className="text-lg md:text-2xl font-montserrat-semibold max-w-xl my-8 leading-loose tracking-wide">
+              <p className="text-lg md:text-xl font-montserrat-medium max-w-xl my-4 lg:my-8 leading-loose tracking-wide">
                 Join Support24 and discover a simpler way to manage routines,
                 book support, and enjoy community programs with complete
                 confidence
               </p>
 
               {/* Download Buttons */}
-              <div className="flex flex-wrap md:self-start justify-center gap-4 mb-12">
+              <div className="flex  md:self-start justify-center gap-4 lg:mb-12 mb-2">
                 <Button className="flex gap-1 items-center p-6">
                   <img src="/new-res/apple-icon.svg" alt="apple-logo" />
                   <div className="flex flex-col items-center justify-center">
@@ -78,11 +78,11 @@ export const CTASection: React.FC<CTASectionProps> = ({
             </div>
 
             {/* Right Image */}
-            <motion.div className="max-w-md p-8 md:p-16" {...fadeInUp}>
+            <motion.div className="max-w-md px-8 py-4 md:px-16 md:py-16" {...fadeInUp}>
               <img
                 src="/new-res/Ratio.png"
                 alt="Ratio Illustration"
-                className="w-full max-w-sm md:max-w-md lg:max-w-lg mx-auto"
+                className="w-full max-w-sm md:max-w-md lg:max-w-xl mx-auto"
               />
             </motion.div>
           </div>

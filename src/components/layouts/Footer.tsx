@@ -9,9 +9,15 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
   return (
-    <footer className={`bg-[#05030B] text-white border-t border-gray-800/20 ${className}`}>
-      <div className="p-8 md:p-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
+    <footer className={` bg-[#05030B] text-white relative overflow-hidden ${className}`}>
+       {/* Gradient blue circle at top right */}
+       <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute top-0 right-0  object-cover pointer-events-none"
+      />
+      <div className="p-8 md:p-16 border-t border-gray-800/20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 ">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
@@ -94,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800/20 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-gray-600/90 pt-6 md:pt-8 flex flex-col md:flex-row justify-between mt-10 items-center gap-4">
           <p className="text-xs md:text-sm text-gray-400 text-center md:text-left">
             © {new Date().getFullYear()} Support24. All rights reserved.
           </p>

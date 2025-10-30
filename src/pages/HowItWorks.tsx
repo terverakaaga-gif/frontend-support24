@@ -38,7 +38,7 @@ export const HowItWorks = () => {
                     className="absolute -top-40 -left-40 w-[800px] h-[800px] "
                     style={{ y: y1 }}
                 >
-                    <div className="w-full h-full bg-gradient-to-br from-primary/20 via-purple-600/10 to-transparent rounded-full blur-3xl" />
+                    <div className="w-full h-full bg-[#05030B] rounded-full blur-3xl" />
                 </motion.div>
 
                 {/* Bottom right flowing curve */}
@@ -97,7 +97,7 @@ export const HowItWorks = () => {
                     >
                         {/* Main Title */}
                         <motion.h1
-                            className="text-3xl md:text-5xl lg:text-6xl font-montserrat-bold mb-6 md:mb-8 leading-10 text-white "
+                            className="text-3xl md:text-5xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-relaxed text-white "
                             initial={{ opacity: 0, scale: 0.8, y: 50 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             transition={{
@@ -134,7 +134,7 @@ export const HowItWorks = () => {
                                 }}
                                                             
                             >
-                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-20   translate-y-[35%] sm:translate-y-[45%]"  text="Enhances" y={-24} />
+                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-16 -bottom-10  w-[230px]  translate-y-[35%] sm:translate-y-[45%]"  text="Enhances" y={-24} />
                             </motion.span>{" "}
                             Your Care
                             <motion.br
@@ -148,7 +148,7 @@ export const HowItWorks = () => {
                                 transition={{ duration: 0.3, delay: 0.8 }}
                                 className=" hidden sm:block "
                             />
-                            <motion.span
+                            {/* <motion.span
                                 initial={{ opacity: 0, x: 100, rotateX: 90 }}
                                 animate={{ opacity: 1, x: 0, rotateX: 0 }}
                                 transition={{
@@ -156,15 +156,15 @@ export const HowItWorks = () => {
                                     delay: 0.8,
                                     ease: "easeOut"
                                 }}
-                                className="inline leading-[inherit]"
+                                className="inline leading-[inherit] "
                             >
                                  Journey Step by Step
-                            </motion.span>
+                            </motion.span> */}
                         </motion.h1>
 
 
                     </motion.div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center lg:mt-16 mt-4">
                         {/* Left Content */}
                         <motion.div
                             className="text-left"
@@ -176,7 +176,7 @@ export const HowItWorks = () => {
 
                             {/* Description */}
                             <motion.p
-                                className="text-lg md:text-3xl text-white/90 mb-8 font-montserrat-medium leading-relaxed"
+                                className="text-lg md:text-2xl text-white/90 mb-8 font-montserrat-medium leading-relaxed"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.6 }}
@@ -196,7 +196,7 @@ export const HowItWorks = () => {
                                     whileTap={{ scale: 0.95 }}
                                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                                 >
-                                    <Button className="bg-primary text-xl hover:bg-primary-700 text-white px-8 py-4 sm:px-12 sm:py-6  font-montserrat-semibold flex items-center gap-3">
+                                    <Button className="bg-primary text-xl hover:bg-primary-700 text-white px-8 py-4 sm:px-10 sm:py-6  font-montserrat-semibold flex items-center gap-3">
                                         How it Works
                                         <motion.div
                                             animate={{ x: [0, 5, 0] }}
