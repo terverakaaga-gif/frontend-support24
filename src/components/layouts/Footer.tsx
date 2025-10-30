@@ -10,6 +10,12 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
   return (
     <footer className={` bg-[#05030B] text-white relative overflow-hidden ${className}`}>
+       {/* Gradient blue circle at top right */}
+       <img
+        src="/new-res/gradient-ckr.svg"
+        alt=""
+        className="absolute top-0 right-0  object-cover pointer-events-none"
+      />
       <div className="p-8 md:p-16 border-t border-gray-800/20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 ">
           {/* Brand */}
