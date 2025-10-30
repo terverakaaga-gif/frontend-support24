@@ -6,6 +6,7 @@ export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works" },
   { name: "Events", href: "#events" },
   { name: "Accommodation", href: "#accommodation" },
+  { name: "Marketplace", href: "#marketplace" },
   { name: "FAQs", href: "#faqs" },
   { name: "Contact Us", href: "#contact_us" },
 ] as const;

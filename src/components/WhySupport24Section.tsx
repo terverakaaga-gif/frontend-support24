@@ -39,7 +39,7 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
     ];
 
     return (
-        <section className={`relative py-16 md:py-24 px-4 md:px-12 ${className} bg-white`}>
+        <section className={`relative py-16 md:py-24 px-4 md:px-8 ${className} bg-white`}>
             <div className=" lg:px-12 px-4 mx-auto flex flex-col items-center  gap-10">
 
                 <motion.div
@@ -82,7 +82,7 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
                                 <InlineVectorText
                                     className="italic text-gray-900"
                                     text="Support24"
-                                    imageClassName=" sm:-bottom-20   translate-y-[35%] sm:translate-y-[45%]"
+                                    imageClassName=" sm:-bottom-20 -bottom-12  w-[230px]  translate-y-[35%] sm:translate-y-[45%]"
                                     y={-24} // Adjust line height space here
 
                                 />
@@ -93,7 +93,7 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
                     </div>
 
                     {/* RIGHT SIDE */}
-                    <div className="flex flex-col gap-6 flex-1 max-w-xl">
+                    <div className="flex flex-col gap-6 flex-1 max-w-4xl">
                         {/* Paragraph */}
                         <motion.p
                             className="text-lg md:text-xl lg:text-3xl text-gray-900 leading-relaxed font-montserrat"
@@ -117,7 +117,7 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
                                 whileTap={{ scale: 0.97 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <Button className="bg-primary hover:bg-primary-700 text-white py-5 px-8 rounded-xl text-xl font-montserrat shadow-md">
+                                <Button className="bg-primary hover:bg-primary-700 text-white py-7 px-8 rounded-xl text-xl font-montserrat-semibold shadow-md">
                                     Download App
                                 </Button>
                             </motion.div>

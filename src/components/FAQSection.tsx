@@ -68,11 +68,11 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
         >
           <RoundedFigure icon={QuestionCircle} text="FAQs" />
           <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight">
-            Frequently Asked <br /> <br className="sm:block hidden"/>
+            Frequently Asked  <br className="sm:block hidden"/>
             <InlineVectorText className="italic" text="Questions" imageClassName="-bottom-2 sm:-bottom-2 w-[230px]  translate-y-[35%] sm:translate-y-[45%]" />
           </motion.h1>
 
-          <p className="text-xl font-montserrat-semibold leading-relaxed">
+          <p className="text-xl font-montserrat-medium leading-relaxed">
             Welcome to our FAQ section, where we address common queries about
             support24
           </p>
@@ -85,8 +85,8 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
             />
             
             {/* Search Input Overlay */}
-            <div className="absolute bottom-20 left-40 -right-8">
-              <div className="bg-white rounded-xl shadow-lg p-4 flex items-center gap-3">
+            <div className="absolute lg:bottom-20 bottom-10 lg:left-40 left-10 lg:-right-8 right-0">
+              <div className="bg-white rounded-xl shadow-lg p-1 md:p-4 flex items-center gap-3">
                 <Input
                   type="text"
                   placeholder="Type your question........"
@@ -102,7 +102,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                     console.log("Searching for:", searchQuery);
                   }}
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-2 h-2 md:w-4 md:h-4" />
                 </Button>
               </div>
             </div>
@@ -116,7 +116,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
               key={i}
               className={`bg-white border border-gray-300 rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300  ${
                 openFaq === i
-                  ? "  ring-4 ring-primary/10 &quot;backdrop-blur-sm bg-white  rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl&quot; shadow-lg shadow-primary border-primary border-2"
+                  ? "   backdrop-blur-sm bg-white  rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl&quot; shadow-lg shadow-[#0D2BEC]/60 border-[#0D2BEC] border-2"
                   : "shadow-sm hover:shadow-md hover:shadow-primary/10"
               }`}
               initial={{ opacity: 0, y: 20 }}
@@ -128,7 +128,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                 className="w-full p-4 md:p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
               >
-                <span className="font-montserrat-bold text-lg pr-4 text-gray-900">
+                <span className="font-montserrat-bold text-xl pr-4 text-gray-900">
                   {faq.question}
                 </span>
                 <motion.div
@@ -153,7 +153,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="p-4 md:p-6 pt-0 font-montserrat-semibold text-sm md:text-base text-gray-700">
+                <div className="p-4 md:p-6 pt-0 font-montserrat-medium text-sm md:text-base text-gray-700">
                   {faq.answer}
                 </div>
               </motion.div>
@@ -166,7 +166,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
       <img
         src="/new-res/gradient-ckr.svg"
         alt="Vector Illustration"
-        className="absolute w-96 h-96 bottom-0 right-24 object-cover pointer-events-none opacity-80"
+        className="absolute w-80 h-80 -bottom-16 -right-24 object-cover pointer-events-none opacity-80"
       />
     </section>
   );

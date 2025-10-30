@@ -19,7 +19,7 @@ export const AllInOneSection: React.FC<AllInOneSectionProps> = ({
   };
 
   return (
-    <section className={`relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 lg:mt-48 mt-20 ${className}`}>
+    <section className={`relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-[#05030B] lg:pt-48 pt-20 ${className}`}>
       {/* Decorative Shadows */}
   <div className="absolute inset-0 pointer-events-none">
     {/* Top-left glow */}

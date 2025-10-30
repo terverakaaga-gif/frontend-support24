@@ -48,7 +48,7 @@ export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionPr
               <InlineVectorText 
                 className="italic" 
                 text="Reliable" 
-                imageClassName="bottom-0 sm:-bottom-3 w-[240px] translate-y-[35%] sm:translate-y-[45%]"
+                imageClassName="bottom-0 sm:-bottom-1 w-[200px] translate-y-[35%] sm:translate-y-[45%]"
               />.
             </motion.h1>
           </div>

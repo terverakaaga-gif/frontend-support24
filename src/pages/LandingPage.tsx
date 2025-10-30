@@ -47,7 +47,7 @@ export default function Support24Landing() {
           className="absolute -top-40 -left-40 w-[800px] h-[800px] "
           style={{ y: y1 }}
         >
-          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-purple-600/10 to-transparent rounded-full blur-3xl" />
+          <div className="w-full h-full bg-[#05030B] rounded-full blur-3xl" />
         </motion.div>
 
         {/* Bottom right flowing curve */}
@@ -80,12 +80,12 @@ export default function Support24Landing() {
       <img
         src="/new-res/gradient-triangle.svg"
         alt=""
-        className="absolute top-10 -left-28 object-cover pointer-events-none"
+        className="absolute -top-16 -left-28 object-cover pointer-events-none"
       />
       <img
         src="/new-res/gradient-triangle.svg"
         alt=""
-        className="absolute top-56 -left-28 object-cover pointer-events-none"
+        className="absolute -top-52 -left-28 object-cover pointer-events-none"
       />
 
       {/* Gradient blue circle at top right */}
@@ -96,11 +96,11 @@ export default function Support24Landing() {
       />
 
       {/* Hero Section */}
-      <section className="relative pt-16 mt-16 md:pt-28 px-4 md:px-8 ">
+      <section className="relative pt-16 mt-16 md:pt-28 px-4 md:px-8 text-6xl md:text-4xl lg:text-5xl  mb-6 md:mb-8 leading-tight">
         <div className="text-center max-w-5xl mx-auto">
           {/* Animated Title */}
           <motion.h1 
-            className="text-6xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight"
+            className="text-5xl md:text-5xl lg:text-5xl leading-relaxed"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -110,14 +110,15 @@ export default function Support24Landing() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <InlineVectorText className="italic text-white" text="Support"
-              imageClassName="bottom-0 sm:-bottom-4 w-[200px] translate-y-[35%] sm:translate-y-[45%]"
+              <InlineVectorText className="italic text-white " text="Support"
+              imageClassName="-bottom-1 sm:-bottom-4 w-[200px] translate-y-[35%] sm:translate-y-[45%]"
               />
-            </motion.span>{" "}
+            </motion.span>{"  "}
             <motion.span
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
+              className="font-montserrat-bold "
             >
             That Fits Your Life
             </motion.span>
@@ -125,7 +126,7 @@ export default function Support24Landing() {
 
           {/* Animated Description */}
           <motion.p 
-            className="text-xl text-white my-10 font-montserrat-semibold"
+            className="text-xl md:text-2xl lg:text-2xl text-white md:my-10 my-6 font-montserrat-medium"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -136,7 +137,7 @@ export default function Support24Landing() {
 
           {/* Animated Download Buttons */}
           <motion.div 
-            className="flex flex-wrap justify-center gap-4 mb-12"
+            className="flex  justify-center gap-4 mb-12"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
@@ -214,7 +215,7 @@ export default function Support24Landing() {
 
         {/* Animated Phone Mockup with Floating Cards */}
         <motion.div 
-          className="w-full max-w-5xl mx-auto px-8"
+          className="w-full max-w-5xl mx-auto px-8 -mb-8"
           initial={{ opacity: 0, scale: 0.8, y: 100 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 1.4, ease: "easeOut" }}
@@ -242,18 +243,18 @@ export default function Support24Landing() {
       <SafeVerifiedReliableSection />
 
       {/* Care Journey Section with Phone */}
-      <section className="h-fit md:h-screen relative py-12 md:py-16 px-4 md:px-6">
+      <section className=" bg-[#05030B] relative py-12 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div className="text-center mb-16" {...fadeInUp}>
            <motion.h1 className="text-4xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-relaxed">
               <InlineVectorText 
                 className="italic" 
                 text="Support24" 
-                imageClassName="-bottom-1 sm:-bottom-4 lg:w-[270px] w-[200px]  translate-y-[35%] sm:translate-y-[45%]"
+                imageClassName="-bottom-1 sm:-bottom-3 lg:w-[270px] w-[200px]  translate-y-[35%] sm:translate-y-[45%]"
               /> is
-              for everyone in The Care Journey
+              for Everyone in The Care Journey
             </motion.h1>
-            <p className="text-xl max-w-3xl mx-auto leading-relaxed font-montserrat-semibold">
+            <p className="text-xl md:text-2xl lg:text-2xl max-w-3xl mx-auto leading-relaxed font-montserrat-medium">
               Whether you are seeking support (providing care) or managing
               service, Support24 simplifies every part of the care process
             </p>

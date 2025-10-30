@@ -32,7 +32,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         </motion.h1>
 
         <motion.div className="text-center mb-8 md:mb-12" {...fadeInUp}>
-          <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-8 md:mb-12">
+          <div className="flex  justify-center gap-6 md:gap-12 mb-8 md:mb-12">
             {[
               { value: "4.9", label: "Average Rating" },
               { value: "15,000+", label: "Active Users" },
@@ -62,7 +62,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         </motion.div>
 
         {/* Masonry-style testimonials grid */}
-        <div className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6 lg:px-8 px-2">
+        <div className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6 lg:px-8 ">
           {testimonialData.map((testimonial) => (
             <TestimonialCard key={testimonial.id} testimonial={testimonial} />
           ))}
@@ -79,7 +79,7 @@ const TestimonialCard = ({ testimonial }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`relative rounded-2xl p-6 mb-6 break-inside-avoid backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-xl hover:shadow-primary/70 transition-all ${
+      className={`relative rounded-2xl p-6 mb-6 break-inside-avoid backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-xl hover:shadow-[#0D2BEC]/10 transition-all ${
         testimonial.hasVideo ? 'bg-gradient-to-br from-blue-900 to-purple-900 text-white' : ''
       }`}
     >
@@ -88,7 +88,7 @@ const TestimonialCard = ({ testimonial }) => {
         <div className={`px-3 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-medium w-fit ${
           testimonial.hasVideo 
             ? 'bg-white/20 text-white' 
-            : 'bg-primary-600 text-white'
+            : 'bg-[#0D2BEC] text-white'
         }`}>
           <Star className="w-4 h-4 fill-current" />
           <span>{testimonial.rating}</span>

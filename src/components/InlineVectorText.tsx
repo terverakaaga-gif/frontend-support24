@@ -30,7 +30,7 @@ export const InlineVectorText = ({
   return (
     <span
       className={cn(
-        "relative inline-block italic font-montserrat-semibold",
+        "relative inline-block italic font-montserrat-medium",
         className,
         spanClassName
       )}
