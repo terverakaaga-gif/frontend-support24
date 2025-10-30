@@ -29,7 +29,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
         ),
       }}
     >
-      <nav className="px-4 md:px-16 py-4 md:py-5">
+      <nav className="px-4 sm:px-6 md:px-8 xl:px-16 py-4 md:py-5">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <motion.div
@@ -39,7 +39,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
           >
             <Link to="/"> 
             <img
-              className="h-8 md:h-12"
+              className="h-8 sm:h-10 xl:h-12"
               src="/new-res/support24logo-blk.svg"
               alt="Support24 Logo"
             />
@@ -47,7 +47,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8 font-montserrat-semibold border border-gray-50/20 bg-gradient-to-tr from-primary-900/20 to-transparent backdrop-blur-sm px-6 py-4 rounded-full">
+          <div className="hidden xl:flex items-center gap-8 font-montserrat-semibold border border-gray-50/20 bg-gradient-to-tr from-primary-900/20 to-transparent backdrop-blur-sm px-6 py-4 rounded-full">
             {/* Navigation Links */}
             {LANDINGPAGE_NAVS.map((nav, i) => (
               <Link
@@ -65,16 +65,16 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
             onClick={() => {
               window.location.href = "/login";
             }}
-            className="hidden md:block bg-primary hover:bg-primary-700 w-[220px] px-6 py-4 rounded-xl text-sm font-montserrat-semibold transition-colors"
+            className="hidden xl:block bg-primary hover:bg-primary-700 w-[220px] px-6 py-4 rounded-xl text-sm font-montserrat-semibold transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Login
           </motion.button>
 
-          {/* Mobile menu button */}
+          {/* Mobile/Tablet menu button */}
           <button
-            className="md:hidden"
+            className="xl:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -84,15 +84,15 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
             )}
           </button>
 
-          {/* Mobile Menu */}
+          {/* Mobile/Tablet Menu */}
           {mobileMenuOpen && (
-            <div className="absolute md:hidden top-full w-full right-0 bg-[#05030B]/95 drop-shadow-sm shadow-lg rounded-b-lg mt-2 border border-gray-800/20">
-              <ul className="flex flex-col p-4">
+            <div className="absolute xl:hidden top-full left-0 w-full bg-[#05030B]/95 backdrop-blur-md drop-shadow-sm shadow-lg rounded-b-lg mt-2 border border-gray-800/20">
+              <ul className="flex flex-col p-4 sm:p-6">
                 {LANDINGPAGE_NAVS.map((nav, i) => (
                   <li key={i + nav.name}>
                     <Link
                       to={nav.href}
-                      className="font-montserrat-semibold block px-4 py-2 text-sm hover:bg-gray-100/10 text-white hover:text-primary transition-colors"
+                      className="font-montserrat-semibold block px-4 py-3 text-sm sm:text-base hover:bg-gray-100/10 text-white hover:text-primary transition-colors rounded-lg"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {nav.name}
@@ -105,7 +105,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
                       window.location.href = "/login";
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full bg-primary hover:bg-primary-700 px-6 py-3 rounded-xl text-sm font-montserrat-semibold transition-colors"
+                    className="w-full bg-primary hover:bg-primary-700 px-6 py-4 rounded-xl text-sm sm:text-base font-montserrat-semibold transition-colors"
                   >
                     Login
                   </button>
