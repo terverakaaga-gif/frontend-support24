@@ -11,6 +11,7 @@ import {
   CloseCircle,
   AltArrowLeft,
   AltArrowRight,
+  CheckCircle,
 } from "@solar-icons/react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -71,8 +72,11 @@ const IncidentsPage = () => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [resolveModalOpen, setResolveModalOpen] = useState(false);
+  const [resolvePreviewModalOpen, setResolvePreviewModalOpen] = useState(false);
   const [showShiftModal, setShowShiftModal] = useState(false);
   const [shiftSearchTerm, setShiftSearchTerm] = useState("");
+  const [resolutionNote, setResolutionNote] = useState("");
 
   // Create incident form state
   const [incidentForm, setIncidentForm] = useState({
@@ -127,6 +131,31 @@ const IncidentsPage = () => {
     onError: (error) => {
       toast.error("Failed to create incident");
       console.error("Error creating incident:", error);
+    },
+  });
+
+  // Resolve incident mutation
+  const resolveIncidentMutation = useMutation({
+    mutationFn: ({
+      id,
+      resolutionNote,
+      resolvedBy,
+    }: {
+      id: string;
+      resolutionNote: string;
+      resolvedBy: string;
+    }) => incidentService.resolveIncident(id, { resolutionNote, resolvedBy }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
+      toast.success("Incident resolved successfully");
+      setResolvePreviewModalOpen(false);
+      setResolveModalOpen(false);
+      setResolutionNote("");
+      setSelectedIncident(null);
+    },
+    onError: (error) => {
+      toast.error("Failed to resolve incident");
+      console.error("Error resolving incident:", error);
     },
   });
 
@@ -234,6 +263,12 @@ const IncidentsPage = () => {
     setViewModalOpen(true);
   };
 
+  const handleResolveIncident = (incident) => {
+    setSelectedIncident(incident);
+    setResolutionNote("");
+    setResolveModalOpen(true);
+  };
+
   const handleCreateIncident = () => {
     setIncidentForm({
       title: "",
@@ -269,7 +304,26 @@ const IncidentsPage = () => {
       urlLinks: incidentForm.urlLinks,
     };
 
-    // createIncidentMutation.mutate(submitData);
+    createIncidentMutation.mutate(submitData);
+  };
+
+  const handleReviewResolution = () => {
+    if (!resolutionNote.trim()) {
+      toast.error("Please provide resolution notes");
+      return;
+    }
+    setResolveModalOpen(false);
+    setResolvePreviewModalOpen(true);
+  };
+
+  const handleConfirmResolution = () => {
+    if (selectedIncident && user?._id) {
+      resolveIncidentMutation.mutate({
+        id: selectedIncident._id,
+        resolutionNote,
+        resolvedBy: user._id,
+      });
+    }
   };
 
   const handleShiftSelect = (shift) => {
@@ -333,24 +387,10 @@ const IncidentsPage = () => {
         onViewProfile={() => {
           navigate(
             user.role === "supportWorker"
-              ? Object.keys(pageTitles.supportWorker).find(
-                  (key) =>
-                    key !== "/support-worker/incidents" &&
-                    pageTitles.supportWorker[key] ===
-                      pageTitles.supportWorker["/support-worker/profile"]
-                )
+              ? "/support-worker/profile"
               : user.role === "participant"
-              ? Object.keys(pageTitles.participant).find(
-                  (key) =>
-                    key !== "/participant/incidents" &&
-                    pageTitles.participant[key] ===
-                      pageTitles.participant["/participant/profile"]
-                )
-              : Object.keys(pageTitles.admin).find(
-                  (key) =>
-                    key !== "/admin/incidents" &&
-                    pageTitles.admin[key] === pageTitles.admin["/admin/profile"]
-                )
+              ? "/participant/profile"
+              : "/admin/profile"
           );
         }}
         onLogout={logout}
@@ -383,36 +423,32 @@ const IncidentsPage = () => {
       />
 
       {/* Filters */}
-      <div className="rounded-t-lg border border-gray-200 border-b-0">
-        <div className="flex items-center gap-3">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All Status">All Status</SelectItem>
-              <SelectItem value="Opened">Opened</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Resolved">Resolved</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="flex items-center gap-3">
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All Status">All Status</SelectItem>
+            <SelectItem value="Opened">Opened</SelectItem>
+            <SelectItem value="Pending">Pending</SelectItem>
+            <SelectItem value="Resolved">Resolved</SelectItem>
+          </SelectContent>
+        </Select>
 
-          <Select value={severityFilter} onValueChange={setSeverityFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Severity" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All Severity">All Severity</SelectItem>
-              <SelectItem value="Low">Low</SelectItem>
-              <SelectItem value="Medium">Medium</SelectItem>
-              <SelectItem value="High">High</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={severityFilter} onValueChange={setSeverityFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Severity" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All Severity">All Severity</SelectItem>
+            <SelectItem value="Low">Low</SelectItem>
+            <SelectItem value="Medium">Medium</SelectItem>
+            <SelectItem value="High">High</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-
       {/* Table */}
-
       <div className="bg-white rounded-b-lg border border-gray-200 overflow-hidden my-3">
         <Table>
           <TableHeader>
@@ -494,13 +530,25 @@ const IncidentsPage = () => {
                   </span>
                 </TableCell>
                 <TableCell className="px-6 py-4">
-                  <Button
-                    onClick={() => handleViewIncident(incident)}
-                    className="text-primary bg-white border border-primary hover:text-white hover:bg-primary flex items-center gap-2 text-sm font-montserrat-bold"
-                  >
-                    <Eye className="h-4 w-4" />
-                    View
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => handleViewIncident(incident)}
+                      className="text-primary bg-white border border-primary hover:text-white hover:bg-primary flex items-center gap-2 text-sm font-montserrat-bold"
+                    >
+                      <Eye className="h-4 w-4" />
+                      View
+                    </Button>
+                    {user.role === "admin" &&
+                      incident.status !== "RESOLVED" && (
+                        <Button
+                          onClick={() => handleResolveIncident(incident)}
+                          className="text-green-600 bg-white border border-green-600 hover:text-white hover:bg-green-600 flex items-center gap-2 text-sm font-montserrat-bold"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                          Resolve
+                        </Button>
+                      )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -552,6 +600,220 @@ const IncidentsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Resolve Incident Dialog */}
+      {resolveModalOpen && selectedIncident && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-montserrat-semibold text-gray-900">
+                Resolve Incident
+              </h2>
+              <Button
+                variant="ghost"
+                onClick={() => setResolveModalOpen(false)}
+                className="text-black hover:bg-transparent hover:text-primary"
+              >
+                <CloseCircle size={24} />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Incident Summary */}
+              <div className="bg-primary-100 rounded-lg p-4 border border-primary-200">
+                <h3 className="text-sm font-medium text-primary-800 mb-3">
+                  Incident Summary
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-montserrat-semibold text-primary-900">
+                      {selectedIncident.title}
+                    </h4>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityBadgeStyle(
+                        selectedIncident.severity
+                      )}`}
+                    >
+                      {selectedIncident.severity}
+                    </span>
+                  </div>
+                  <div className="text-sm text-primary-700 space-y-1">
+                    <p>
+                      <span className="font-medium">Reported By:</span>{" "}
+                      {selectedIncident.reportedBy?.firstName}{" "}
+                      {selectedIncident.reportedBy?.lastName}
+                    </p>
+                    <p>
+                      <span className="font-medium">Reported On:</span>{" "}
+                      {formatDate(selectedIncident.createdAt)}
+                    </p>
+                    {selectedIncident.shiftId && (
+                      <p>
+                        <span className="font-medium">Shift ID:</span>{" "}
+                        {selectedIncident.shiftId}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Resolution Notes */}
+              <div>
+                <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
+                  Resolution Notes *
+                </label>
+                <div className="quill-wrapper">
+                  <ReactQuill
+                    theme="snow"
+                    value={resolutionNote}
+                    onChange={setResolutionNote}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    placeholder="Describe how this incident was resolved, steps taken, and any follow-up actions. Use the formatting tools above to structure your resolution notes."
+                    style={{ height: "200px", marginBottom: "50px" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <Button
+                onClick={() => setResolveModalOpen(false)}
+                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-montserrat-bold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleReviewResolution}
+                className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-montserrat-bold"
+              >
+                Review Resolution
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Resolve Preview Dialog */}
+      {resolvePreviewModalOpen && selectedIncident && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-montserrat-bold text-gray-900">
+                Review Resolution
+              </h2>
+              <Button
+                variant="ghost"
+                onClick={() => setResolvePreviewModalOpen(false)}
+                className="text-black hover:text-primary-600 hover:bg-transparent"
+              >
+                <CloseCircle size={24} />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Incident Details */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                  Incident Being Resolved
+                </h3>
+                <div className="bg-gray-100 rounded-lg p-4 border">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-montserrat-semibold text-gray-900">
+                      {selectedIncident.title}
+                    </h4>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityBadgeStyle(
+                        selectedIncident.severity
+                      )}`}
+                    >
+                      {selectedIncident.severity}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p>
+                      Reported by {selectedIncident.reportedBy?.firstName}{" "}
+                      {selectedIncident.reportedBy?.lastName}
+                    </p>
+                    <p>Reported on {formatDate(selectedIncident.createdAt)}</p>
+                    {selectedIncident.shiftId && (
+                      <p>Shift ID: {selectedIncident.shiftId}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Resolution Notes Preview */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                  Resolution Notes
+                </h3>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                  <div
+                    className="prose prose-sm max-w-none text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: resolutionNote }}
+                  />
+                </div>
+              </div>
+
+              {/* Resolver Information */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                  Resolver Information
+                </h3>
+                <div className="bg-gray-100 rounded-lg p-4 border">
+                  <div className="flex items-center gap-2">
+                    <Avatar className="w-10 h-10 rounded-full">
+                      <AvatarImage
+                        src={
+                          user?.profileImage || `https://i.pravatar.cc/40?img=5`
+                        }
+                        alt="Resolver"
+                      />
+                      <AvatarFallback>
+                        {user?.firstName?.charAt(0)}
+                        {user?.lastName?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-montserrat-bold text-gray-900">
+                        {user?.firstName} {user?.lastName}
+                      </p>
+                      <p className="text-xs text-gray-1000">({user?.role})</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Resolved on {formatDate(new Date().toISOString())},{" "}
+                    {formatTime(new Date().toISOString())}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <Button
+                onClick={() => {
+                  setResolvePreviewModalOpen(false);
+                  setResolveModalOpen(true);
+                }}
+                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-montserrat-bold"
+              >
+                Back to Edit
+              </Button>
+              <Button
+                onClick={handleConfirmResolution}
+                disabled={resolveIncidentMutation.isPending}
+                className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-montserrat-bold disabled:opacity-50 flex items-center gap-2"
+              >
+                <CheckCircle className="h-4 w-4" />
+                {resolveIncidentMutation.isPending
+                  ? "Resolving..."
+                  : "Resolve Incident"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create Incident Dialog */}
       {user.role === "supportWorker" && createModalOpen && (
@@ -620,9 +882,9 @@ const IncidentsPage = () => {
                       <SelectValue placeholder="Select severity" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Low">Low</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="LOW">Low</SelectItem>
+                      <SelectItem value="MEDIUM">Medium</SelectItem>
+                      <SelectItem value="HIGH">High</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -650,19 +912,6 @@ const IncidentsPage = () => {
                   </div>
                 </div>
               </div>
-
-              {/* <div>
-                <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
-                  Reported Against
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter name"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  value={incidentForm.reportedAgainst}
-                  onChange={(e) => setIncidentForm({ ...incidentForm, reportedAgainst: e.target.value })}
-                />
-              </div> */}
 
               <div>
                 <label className="block text-sm font-montserrat-bold text-gray-900 mb-2">
@@ -892,22 +1141,6 @@ const IncidentsPage = () => {
               {/* Details Grid */}
               <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                 <div className="grid grid-cols-2 gap-4">
-                  {/* <div>
-                    <p className="text-xs font-montserrat-bold text-gray-1000 mb-2">Reported Against</p>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={`https://i.pravatar.cc/32?img=7`}
-                        alt="Reported Against"
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div>
-                        <p className="text-sm font-montserrat-bold text-gray-900">
-                          {incidentForm.reportedAgainst || "Michael Hishen"}
-                        </p>
-                        <p className="text-xs text-gray-1000">Michaels Foundation</p>
-                      </div>
-                    </div>
-                  </div> */}
                   <div>
                     <p className="text-xs mb-1 text-gray-1000 font-montserrat-semibold">
                       Shift ID

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   MapPoint,
@@ -17,9 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useAcceptShift, useUpdateShiftStatus } from "@/hooks/useShiftHooks";
-import { useCreateTimesheet } from "@/hooks/useTimesheetHooks";
-import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -27,6 +25,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useAcceptShift, useUpdateShiftStatus } from "@/hooks/useShiftHooks";
+import { useCreateTimesheet } from "@/hooks/useTimesheetHooks";
+import { toast } from "sonner";
+import { Spinner } from "./Spinner";
 
 interface UserInfo {
   _id: string;
@@ -96,6 +98,14 @@ interface TimesheetFormData {
   }>;
 }
 
+const TIMESHEET_DURATIONS = [
+  { value: 0, label: "Same as shift" },
+  { value: 1, label: "+1 Hour" },
+  { value: 2, label: "+2 Hours" },
+  { value: 3, label: "+3 Hours" },
+  { value: 4, label: "+4 Hours" },
+];
+
 const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
   shift,
   open,
@@ -115,10 +125,24 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
       expenses: [],
     }
   );
+  const [useCustomTimes, setUseCustomTimes] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(0);
 
   const acceptShiftMutation = useAcceptShift();
   const useUpdateShiftStatusMutation = useUpdateShiftStatus();
   const createTimesheetMutation = useCreateTimesheet();
+
+  // Initialize timesheet times when shift changes or form is opened
+  useEffect(() => {
+    if (shift && showTimesheetForm && !timesheetFormData.actualStartTime) {
+      setTimesheetFormData((prev) => ({
+        ...prev,
+        actualStartTime: shift.startTime,
+        actualEndTime: shift.endTime,
+      }));
+      setSelectedDuration(0);
+    }
+  }, [shift, showTimesheetForm, timesheetFormData.actualStartTime]);
 
   const getStatusBadgeStyle = useCallback((status: string) => {
     switch (status.toLowerCase()) {
@@ -127,7 +151,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
         return "bg-green-50 text-green-700 border-green-200";
       case "pending":
         return "bg-orange-50 text-orange-600 border-orange-200";
-      case "in_progress":
+      case "inprogress":
         return "bg-purple-50 text-purple-600 border-purple-200";
       case "completed":
         return "bg-green-50 text-green-600 border-green-200";
@@ -164,11 +188,32 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
     });
   }, []);
 
-  // Check if current user is assigned to this shift
+  const formatDateTimeLocal = useCallback((dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }, []);
+
+  const getMinDateTime = useCallback(() => {
+    if (!shift) return "";
+    // Allow 5 minutes before shift start time
+    const shiftStart = new Date(shift.startTime);
+    const minTime = new Date(shiftStart.getTime() - 5 * 60 * 1000);
+    return formatDateTimeLocal(minTime.toISOString());
+  }, [shift, formatDateTimeLocal]);
+
+  const getMaxDateTime = useCallback(() => {
+    // Allow up to current time
+    return formatDateTimeLocal(new Date().toISOString());
+  }, [formatDateTimeLocal]);
+
   const getCurrentUserAssignment = useCallback(() => {
     if (!shift || !currentUserId) return null;
 
-    // Check single worker shift
     if (!shift.isMultiWorkerShift && shift.workerId) {
       const workerId =
         typeof shift.workerId === "object"
@@ -179,7 +224,6 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
       }
     }
 
-    // Check multi-worker shift
     if (shift.isMultiWorkerShift && shift.workerAssignments) {
       const assignment = shift.workerAssignments.find((wa) => {
         const workerId =
@@ -196,6 +240,64 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
   const isAssignedWorker = !!userAssignment;
   const assignmentStatus = userAssignment?.status || shift?.status;
 
+  const isParticipant =
+    currentUserId && typeof shift?.participantId === "object"
+      ? shift.participantId._id === currentUserId
+      : shift?.participantId === currentUserId;
+
+  const calculateTimesheetEndTime = (
+    startTime: string,
+    additionalHours: number
+  ) => {
+    if (!shift) return "";
+
+    if (additionalHours === 0) {
+      return shift.endTime;
+    }
+
+    const shiftStart = new Date(shift.startTime);
+    const shiftEnd = new Date(shift.endTime);
+    const shiftDurationMs = shiftEnd.getTime() - shiftStart.getTime();
+    const additionalMs = additionalHours * 60 * 60 * 1000;
+
+    const actualStart = new Date(startTime || shift.startTime);
+    const newEndTime = new Date(
+      actualStart.getTime() + shiftDurationMs + additionalMs
+    );
+
+    return newEndTime.toISOString();
+  };
+
+  const handleDurationSelect = (hours: number) => {
+    setSelectedDuration(hours);
+    if (!shift) return;
+
+    const startTime = timesheetFormData.actualStartTime || shift.startTime;
+    const endTime = calculateTimesheetEndTime(startTime, hours);
+
+    setTimesheetFormData((prev) => ({
+      ...prev,
+      actualStartTime: startTime,
+      actualEndTime: endTime,
+    }));
+  };
+
+  const toggleCustomTimes = useCallback(
+    (checked: boolean) => {
+      setUseCustomTimes(checked);
+      if (!checked && shift) {
+        // Reset to default shift times when unchecking
+        setTimesheetFormData((prev) => ({
+          ...prev,
+          actualStartTime: shift.startTime,
+          actualEndTime: shift.endTime,
+        }));
+        setSelectedDuration(0);
+      }
+    },
+    [shift]
+  );
+
   const handleAcceptShift = useCallback(() => {
     if (!shift) return;
 
@@ -207,13 +309,11 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
           onOpenChange(false);
         },
         onError: (error: any) => {
-          toast.error(
-            error.response?.data?.error || "Failed to accept shift"
-          );
+          toast.error(error.response?.data?.error || "Failed to accept shift");
         },
       }
     );
-  }, [shift]);
+  }, [shift, acceptShiftMutation, onOpenChange]);
 
   const handleCompleteShift = useCallback(() => {
     if (!shift) return;
@@ -234,7 +334,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
         },
       }
     );
-  }, [shift]);
+  }, [shift, useUpdateShiftStatusMutation, onOpenChange]);
 
   const handleStartShift = useCallback(() => {
     if (!shift) return;
@@ -253,7 +353,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
         },
       }
     );
-  }, [shift]);
+  }, [shift, useUpdateShiftStatusMutation, onOpenChange]);
 
   const handleRejectShift = useCallback(() => {
     if (!shift) return;
@@ -277,21 +377,46 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
           onOpenChange(false);
         },
         onError: (error: any) => {
-          toast.error(
-            error.response?.data?.error || "Failed to reject shift"
-          );
+          toast.error(error.response?.data?.error || "Failed to reject shift");
         },
       }
     );
-  }, [shift, rejectReason]);
+  }, [shift, rejectReason, acceptShiftMutation, onOpenChange]);
+
+  const handleCancelShift = useCallback(() => {
+    if (!shift) return;
+
+    if (!rejectReason.trim()) {
+      toast.error("Please provide a reason for cancelling the shift");
+      return;
+    }
+    useUpdateShiftStatusMutation.mutate(
+      {
+        shiftId: shift._id,
+        status: "cancelled",
+        declineReason: rejectReason,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Shift cancelled successfully!");
+          setShowRejectReason(false);
+          setRejectReason("");
+          onOpenChange(false);
+        },
+        onError: (error: any) => {
+          toast.error(error.response?.data?.error || "Failed to cancel shift");
+        },
+      }
+    );
+  }, [shift, rejectReason, useUpdateShiftStatusMutation, onOpenChange]);
 
   const handleCreateTimesheet = useCallback(() => {
     if (!shift) return;
 
     const payload: any = {
       shiftId: shift._id,
-      actualStartTime: timesheetFormData.actualStartTime,
-      actualEndTime: timesheetFormData.actualEndTime,
+      actualStartTime: timesheetFormData.actualStartTime || shift.startTime,
+      actualEndTime: timesheetFormData.actualEndTime || shift.endTime,
       distanceTravelKm: timesheetFormData.distanceTravelKm,
       notes: timesheetFormData.notes,
     };
@@ -311,16 +436,17 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
           notes: "",
           expenses: [],
         });
+        setUseCustomTimes(false);
+        setSelectedDuration(0);
         onOpenChange(false);
       },
       onError: (error: any) => {
-        
         toast.error(
           error.response?.data?.error || "Failed to create timesheet"
         );
       },
     });
-  }, [!!shift, timesheetFormData]);
+  }, [shift, timesheetFormData, createTimesheetMutation, onOpenChange]);
 
   const addExpense = useCallback(() => {
     setTimesheetFormData((prev) => ({
@@ -358,11 +484,9 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
 
   if (!shift) return null;
 
-  // Get participant info
   const participantInfo =
     typeof shift.participantId === "object" ? shift.participantId : null;
 
-  // Get all workers involved
   const getWorkersInfo = () => {
     const workers: Array<{
       user: UserInfo | null;
@@ -397,11 +521,13 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
 
   const workers = getWorkersInfo();
   const showActions =
-    viewMode === "worker" && isAssignedWorker && shift.status !== "cancelled";
+    (viewMode === "worker" && isAssignedWorker) ||
+    (viewMode === "participant" && isParticipant);
   const isPending = assignmentStatus === "pending";
   const isCompleted = assignmentStatus === "completed";
   const isInProgress = assignmentStatus === "inProgress";
   const isConfirmed = assignmentStatus === "confirmed";
+  const isCancelled = assignmentStatus === "cancelled";
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -613,112 +739,291 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
               </div>
             )}
 
-            {/* Action Buttons for Support Workers */}
-            {showActions && (
+            {/* Action Buttons */}
+            {showActions && !isCancelled && !isCompleted && (
               <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-4 sm:p-6">
                 <h3 className="text-sm font-montserrat-semibold text-gray-900 mb-4">
                   Shift Actions
                 </h3>
 
-                {isPending && !showRejectReason && (
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      onClick={handleAcceptShift}
-                      disabled={acceptShiftMutation.isPending}
-                      className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      Accept Shift
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowRejectReason(true)}
-                      disabled={acceptShiftMutation.isPending}
-                      className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-600"
-                    >
-                      <RejectIcon className="w-4 h-4" />
-                      Decline Shift
-                    </Button>
-                  </div>
+                {/* Worker Actions */}
+                {viewMode === "worker" && isAssignedWorker && (
+                  <>
+                    {/* Pending Status - Accept or Decline */}
+                    {isPending && !showRejectReason && (
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          onClick={handleAcceptShift}
+                          disabled={acceptShiftMutation.isPending}
+                          className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                        >
+                          {acceptShiftMutation.isPending ? (
+                            <>
+                              <Spinner />
+                              Accepting...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-4 h-4" />
+                              Accept Shift
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowRejectReason(true)}
+                          disabled={acceptShiftMutation.isPending}
+                          className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-50"
+                        >
+                          <RejectIcon className="w-4 h-4" />
+                          Decline Shift
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Confirmed Status - Start or Cancel */}
+                    {isConfirmed && !showRejectReason && (
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          onClick={handleStartShift}
+                          disabled={useUpdateShiftStatusMutation.isPending}
+                          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+                        >
+                          {useUpdateShiftStatusMutation.isPending ? (
+                            <>
+                              <Spinner />
+                              Starting...
+                            </>
+                          ) : (
+                            <>
+                              <ClockCircle className="w-4 h-4" />
+                              Start Shift
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowRejectReason(true)}
+                          disabled={useUpdateShiftStatusMutation.isPending}
+                          className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-50"
+                        >
+                          <RejectIcon className="w-4 h-4" />
+                          Cancel Shift
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* InProgress Status - Complete Shift */}
+                    {isInProgress && !showRejectReason && (
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          onClick={handleCompleteShift}
+                          disabled={useUpdateShiftStatusMutation.isPending}
+                          className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                        >
+                          {useUpdateShiftStatusMutation.isPending ? (
+                            <>
+                              <Spinner />
+                              Completing...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-4 h-4" />
+                              Complete Shift
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Rejection/Cancellation Form for Pending */}
+                    {isPending && showRejectReason && (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="rejectReason"
+                            className="text-red-600"
+                          >
+                            Reason for Declining *
+                          </Label>
+                          <Textarea
+                            id="rejectReason"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            placeholder="Please provide a reason for declining this shift..."
+                            rows={3}
+                            className="border-red-300 focus:border-red-500"
+                          />
+                        </div>
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={handleRejectShift}
+                            disabled={
+                              acceptShiftMutation.isPending ||
+                              !rejectReason.trim()
+                            }
+                            variant="destructive"
+                            className="flex items-center gap-2"
+                          >
+                            {acceptShiftMutation.isPending ? (
+                              <>
+                                <Spinner />
+                                Declining...
+                              </>
+                            ) : (
+                              <>
+                                <RejectIcon className="w-4 h-4" />
+                                Confirm Decline
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowRejectReason(false);
+                              setRejectReason("");
+                            }}
+                            disabled={acceptShiftMutation.isPending}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rejection/Cancellation Form for Confirmed */}
+                    {isConfirmed && showRejectReason && (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="cancelReason"
+                            className="text-red-600"
+                          >
+                            Reason for Cancellation *
+                          </Label>
+                          <Textarea
+                            id="cancelReason"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            placeholder="Please provide a reason for cancelling this shift..."
+                            rows={3}
+                            className="border-red-300 focus:border-red-500"
+                          />
+                        </div>
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={handleCancelShift}
+                            disabled={
+                              useUpdateShiftStatusMutation.isPending ||
+                              !rejectReason.trim()
+                            }
+                            variant="destructive"
+                            className="flex items-center gap-2"
+                          >
+                            {useUpdateShiftStatusMutation.isPending ? (
+                              <>
+                                <Spinner />
+                                Cancelling...
+                              </>
+                            ) : (
+                              <>
+                                <RejectIcon className="w-4 h-4" />
+                                Confirm Cancellation
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowRejectReason(false);
+                              setRejectReason("");
+                            }}
+                            disabled={useUpdateShiftStatusMutation.isPending}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
-                {isConfirmed && !showRejectReason && (
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      onClick={handleStartShift}
-                      disabled={useUpdateShiftStatusMutation.isPending}
-                      className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-                    >
-                      <ClockCircle className="w-4 h-4" />
-                      Start Shift
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowRejectReason(true)}
-                      disabled={useUpdateShiftStatusMutation.isPending}
-                      className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-600"
-                    >
-                      <RejectIcon className="w-4 h-4" />
-                      Cancel Shift
-                    </Button>
-                  </div>
-                )}
-
-                {isInProgress && !showRejectReason && (
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      onClick={handleCompleteShift}
-                      disabled={useUpdateShiftStatusMutation.isPending}
-                      className="flex items-center gap-2 bg-primary-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      Complete Shift
-                    </Button>
-                  </div>
-                )}
-
-                {isPending && showRejectReason && (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="rejectReason" className="text-red-600">
-                        Reason for Rejection *
-                      </Label>
-                      <Textarea
-                        id="rejectReason"
-                        value={rejectReason}
-                        onChange={(e) => setRejectReason(e.target.value)}
-                        placeholder="Please provide a reason for rejecting this shift..."
-                        rows={3}
-                        className="border-red-300 focus:border-red-500"
-                      />
-                    </div>
-                    <div className="flex gap-3">
-                      <Button
-                        onClick={handleRejectShift}
-                        disabled={
-                          acceptShiftMutation.isPending || !rejectReason.trim()
-                        }
-                        variant="destructive"
-                        className="flex items-center gap-2"
-                      >
-                        <RejectIcon className="w-4 h-4" />
-                        Confirm Rejection
-                      </Button>
+                {/* Participant Actions - Can only cancel */}
+                {viewMode === "participant" && isParticipant && (
+                  <>
+                    {!showRejectReason && (
                       <Button
                         variant="outline"
-                        onClick={() => {
-                          setShowRejectReason(false);
-                          setRejectReason("");
-                        }}
-                        disabled={acceptShiftMutation.isPending}
+                        onClick={() => setShowRejectReason(true)}
+                        className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-50"
                       >
-                        Cancel
+                        <RejectIcon className="w-4 h-4" />
+                        Cancel Shift
                       </Button>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-                {isCompleted && !showTimesheetForm && (
+                    {showRejectReason && (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="rejectReason"
+                            className="text-red-600"
+                          >
+                            Reason for Cancellation *
+                          </Label>
+                          <Textarea
+                            id="rejectReason"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            placeholder="Please provide a reason for cancelling this shift..."
+                            rows={3}
+                            className="border-red-300 focus:border-red-500"
+                          />
+                        </div>
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={handleCancelShift}
+                            disabled={
+                              useUpdateShiftStatusMutation.isPending ||
+                              !rejectReason.trim()
+                            }
+                            variant="destructive"
+                            className="flex items-center gap-2"
+                          >
+                            {useUpdateShiftStatusMutation.isPending ? (
+                              <>
+                                <Spinner />
+                                Cancelling...
+                              </>
+                            ) : (
+                              <>
+                                <RejectIcon className="w-4 h-4" />
+                                Confirm Cancellation
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowRejectReason(false);
+                              setRejectReason("");
+                            }}
+                            disabled={useUpdateShiftStatusMutation.isPending}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Timesheet Creation - Only for completed shifts and workers */}
+            {isCompleted && viewMode === "worker" && isAssignedWorker && (
+              <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-4 sm:p-6">
+                {!showTimesheetForm ? (
                   <Button
                     onClick={() => setShowTimesheetForm(true)}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
@@ -726,46 +1031,144 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                     <Document className="w-4 h-4" />
                     Create Timesheet
                   </Button>
-                )}
-
-                {isCompleted && showTimesheetForm && (
+                ) : (
                   <div className="space-y-4">
                     <h4 className="font-montserrat-semibold text-gray-900">
                       Create Timesheet
                     </h4>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="actualStartTime">
-                          Actual Start Time *
-                        </Label>
-                        <Input
-                          id="actualStartTime"
-                          type="datetime-local"
-                          value={timesheetFormData.actualStartTime}
-                          onChange={(e) =>
-                            setTimesheetFormData((prev) => ({
-                              ...prev,
-                              actualStartTime: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="actualEndTime">Actual End Time *</Label>
-                        <Input
-                          id="actualEndTime"
-                          type="datetime-local"
-                          value={timesheetFormData.actualEndTime}
-                          onChange={(e) =>
-                            setTimesheetFormData((prev) => ({
-                              ...prev,
-                              actualEndTime: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="customTimes"
+                        checked={useCustomTimes}
+                        onCheckedChange={toggleCustomTimes}
+                      />
+                      <Label htmlFor="customTimes" className="cursor-pointer">
+                        Use different times from shift schedule
+                      </Label>
                     </div>
+
+                    {!useCustomTimes ? (
+                      <div className="space-y-3">
+                        <Label className="font-montserrat-semibold">
+                          Timesheet Duration
+                        </Label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {TIMESHEET_DURATIONS.map((duration) => (
+                            <Button
+                              key={duration.value}
+                              type="button"
+                              size="sm"
+                              variant={
+                                selectedDuration === duration.value
+                                  ? "default"
+                                  : "outline"
+                              }
+                              onClick={() =>
+                                handleDurationSelect(duration.value)
+                              }
+                              className="w-full"
+                            >
+                              {duration.label}
+                            </Button>
+                          ))}
+                        </div>
+                        {timesheetFormData.actualStartTime &&
+                          timesheetFormData.actualEndTime && (
+                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                              <p className="text-sm text-blue-900">
+                                <span className="font-montserrat-semibold">
+                                  Start:
+                                </span>{" "}
+                                {formatTime(timesheetFormData.actualStartTime)}
+                              </p>
+                              <p className="text-sm text-blue-900 mt-1">
+                                <span className="font-montserrat-semibold">
+                                  End:
+                                </span>{" "}
+                                {formatTime(timesheetFormData.actualEndTime)}
+                              </p>
+                              <p className="text-sm text-blue-900 mt-1">
+                                <span className="font-montserrat-semibold">
+                                  Duration:
+                                </span>{" "}
+                                {Math.round(
+                                  (new Date(
+                                    timesheetFormData.actualEndTime
+                                  ).getTime() -
+                                    new Date(
+                                      timesheetFormData.actualStartTime
+                                    ).getTime()) /
+                                    60000
+                                )}{" "}
+                                mins
+                              </p>
+                            </div>
+                          )}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="actualStartTime">
+                            Actual Start Time *
+                          </Label>
+                          <Input
+                            id="actualStartTime"
+                            type="datetime-local"
+                            min={getMinDateTime()}
+                            max={getMaxDateTime()}
+                            value={formatDateTimeLocal(
+                              timesheetFormData.actualStartTime
+                            )}
+                            onChange={(e) => {
+                              const newStartTime = new Date(
+                                e.target.value
+                              ).toISOString();
+                              setTimesheetFormData((prev) => ({
+                                ...prev,
+                                actualStartTime: newStartTime,
+                              }));
+                              const endTime = calculateTimesheetEndTime(
+                                newStartTime,
+                                selectedDuration
+                              );
+                              setTimesheetFormData((prev) => ({
+                                ...prev,
+                                actualEndTime: endTime,
+                              }));
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="actualEndTime">
+                            Actual End Time *
+                          </Label>
+                          <Input
+                            id="actualEndTime"
+                            type="datetime-local"
+                            min={
+                              timesheetFormData.actualStartTime
+                                ? formatDateTimeLocal(
+                                    timesheetFormData.actualStartTime
+                                  )
+                                : getMinDateTime()
+                            }
+                            max={getMaxDateTime()}
+                            value={formatDateTimeLocal(
+                              timesheetFormData.actualEndTime
+                            )}
+                            onChange={(e) =>
+                              setTimesheetFormData((prev) => ({
+                                ...prev,
+                                actualEndTime: new Date(
+                                  e.target.value
+                                ).toISOString(),
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="distanceTravelKm">
@@ -913,14 +1316,32 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                         }
                         className="flex items-center gap-2"
                       >
-                        <Document className="w-4 h-4" />
-                        {createTimesheetMutation.isPending
-                          ? "Creating..."
-                          : "Submit Timesheet"}
+                        {createTimesheetMutation.isPending ? (
+                          <>
+                            <Spinner />
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <Document className="w-4 h-4" />
+                            Submit Timesheet
+                          </>
+                        )}
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => setShowTimesheetForm(false)}
+                        onClick={() => {
+                          setShowTimesheetForm(false);
+                          setTimesheetFormData({
+                            actualStartTime: "",
+                            actualEndTime: "",
+                            distanceTravelKm: 0,
+                            notes: "",
+                            expenses: [],
+                          });
+                          setUseCustomTimes(false);
+                          setSelectedDuration(0);
+                        }}
                         disabled={createTimesheetMutation.isPending}
                       >
                         Cancel

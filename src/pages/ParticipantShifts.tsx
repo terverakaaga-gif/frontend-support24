@@ -201,7 +201,7 @@ const ParticipantShifts = () => {
       confirmed: shifts.filter((s) => s.status === "confirmed").length,
       pending: shifts.filter((s) => s.status === "pending").length,
       completed: shifts.filter((s) => s.status === "completed").length,
-      inProgress: shifts.filter((s) => s.status.toLowerCase() === "in_progress")
+      inProgress: shifts.filter((s) => s.status.toLowerCase() === "inprogress")
         .length,
       cancelled: shifts.filter((s) => s.status === "cancelled").length,
       thisWeek: shifts.filter((s) => isThisWeek(s.startTime)).length,
@@ -211,7 +211,7 @@ const ParticipantShifts = () => {
 
   // Filter shifts
   const filteredShifts = useMemo(() => {
-    return shifts.filter((shift) => {
+    const filtered = shifts.filter((shift) => {
       const matchesStatus =
         statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
 
@@ -224,6 +224,30 @@ const ParticipantShifts = () => {
         shift.address?.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesStatus && matchesSearch;
+    });
+
+    // Sort shifts: recent first for pending, confirmed, and in-progress
+    return filtered.sort((a, b) => {
+      const aStatus = a.status.toLowerCase();
+      const bStatus = b.status.toLowerCase();
+      const recentStatuses = ["pending", "confirmed", "inprogress"];
+
+      // If both shifts have status that should show recent first
+      if (
+        recentStatuses.includes(aStatus) &&
+        recentStatuses.includes(bStatus)
+      ) {
+        return (
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        );
+      }
+
+      // If only one has the recent status, prioritize it
+      if (recentStatuses.includes(aStatus)) return -1;
+      if (recentStatuses.includes(bStatus)) return 1;
+
+      // For other statuses, sort by start time (most recent first)
+      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
     });
   }, [shifts, statusFilter, searchQuery]);
 
@@ -249,7 +273,7 @@ const ParticipantShifts = () => {
         bg: "bg-orange-600",
         lightBg: "bg-orange-50",
       },
-      in_progress: {
+      inProgress: {
         icon: <ClockCircle className="w-3 h-3" />,
         color: "text-yellow-600",
         bg: "bg-yellow-600",
@@ -420,7 +444,7 @@ const ParticipantShifts = () => {
             { key: "all", label: "All", bg: "bg-primary" },
             { key: "pending", label: "Pending", bg: "bg-orange-600" },
             { key: "confirmed", label: "Confirmed", bg: "bg-purple-600" },
-            { key: "in_progress", label: "In Progress", bg: "bg-yellow-600" },
+            { key: "inprogress", label: "In Progress", bg: "bg-yellow-600" },
             { key: "completed", label: "Completed", bg: "bg-green-600" },
             { key: "cancelled", label: "Cancelled", bg: "bg-red-600" },
           ].map(({ key, label, bg }) => (

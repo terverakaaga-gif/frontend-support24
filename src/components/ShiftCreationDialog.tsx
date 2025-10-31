@@ -32,22 +32,36 @@ import {
   Repeat,
   User,
   UsersGroupRounded,
+  AddCircle,
+  CloseCircle,
+  ListCheck,
+  Refresh,
 } from "@solar-icons/react";
 import { useGetActiveServiceTypes } from "@/hooks/useServiceTypeHooks";
 import { useCreateShift } from "@/hooks/useShiftHooks";
+import { useGetRoutines, useCreateRoutine } from "@/hooks/useRoutineHooks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useGetOrganizations } from "@/hooks/useOrganizationHooks";
 import {
   getWorkerDisplayName,
   getWorkerInitials,
-  getWorkerEmail,
-  getWorkerPhone,
   getWorkerProfileImage,
   filterValidWorkers,
 } from "@/lib/utils";
 
 // Types
+interface RoutineTask {
+  title: string;
+  description: string;
+}
+
+interface Routine {
+  name: string;
+  description: string;
+  tasks: RoutineTask[];
+}
+
 interface ShiftFormData {
   organizationId: string;
   isMultiWorkerShift: boolean;
@@ -65,6 +79,8 @@ interface ShiftFormData {
     pattern: "none" | "daily" | "weekly" | "biweekly" | "monthly";
     occurrences?: number;
   };
+  routine?: Routine;
+  routineId?: string;
 }
 
 const SHIFT_TYPES = [
@@ -101,6 +117,13 @@ const LOCATION_TYPES = [
   { value: "virtual", label: "Virtual" },
 ];
 
+const SHIFT_DURATIONS = [
+  { value: 1, label: "1 Hour" },
+  { value: 2, label: "2 Hours" },
+  { value: 3, label: "3 Hours" },
+  { value: 4, label: "4 Hours" },
+];
+
 interface ShiftCreationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -112,10 +135,17 @@ export default function ShiftCreationDialog({
 }: ShiftCreationDialogProps) {
   const [step, setStep] = useState(1);
   const [shiftTypeSelection, setShiftTypeSelection] = useState<string>("");
+  const [routineOption, setRoutineOption] = useState<
+    "none" | "create" | "select"
+  >("none");
 
   const { data: serviceTypes = [], isLoading: loadingServiceTypes } =
     useGetActiveServiceTypes();
+  const { data: existingRoutines, isLoading: loadingRoutines } =
+    useGetRoutines();
+  console.log("Existing Routines:  ", existingRoutines);
   const createShiftMutation = useCreateShift();
+  const createRoutineMutation = useCreateRoutine();
   const { data: orgs = [], isLoading: orgsLoading } = useGetOrganizations();
   const workers = orgs.length ? filterValidWorkers(orgs[0].workers) : [];
 
@@ -134,6 +164,20 @@ export default function ShiftCreationDialog({
       pattern: "none",
     },
   });
+
+  // Get minimum datetime (current time)
+  const getMinDateTime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
+  // Calculate end time based on duration
+  const calculateEndTime = (startTime: string, hours: number) => {
+    const start = new Date(startTime);
+    start.setHours(start.getHours() + 1 + hours);
+    return start.toISOString().slice(0, 16);
+  };
 
   // ensure that organizationId is set when orgs load
   useMemo(() => {
@@ -161,6 +205,13 @@ export default function ShiftCreationDialog({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleDurationSelect = (hours: number) => {
+    if (formData.startTime) {
+      const endTime = calculateEndTime(formData.startTime, hours);
+      handleInputChange("endTime", endTime);
+    }
+  };
+
   const handleWorkerToggle = (workerId: string) => {
     setFormData((prev) => {
       const currentWorkers = prev.workerIds || [];
@@ -172,6 +223,83 @@ export default function ShiftCreationDialog({
           : [...currentWorkers, workerId],
       };
     });
+  };
+
+  // Routine management
+  const handleRoutineOptionChange = (option: "none" | "create" | "select") => {
+    setRoutineOption(option);
+
+    if (option === "create") {
+      setFormData((prev) => ({
+        ...prev,
+        routine: {
+          name: "",
+          description: "",
+          tasks: [{ title: "", description: "" }],
+        },
+        routineId: undefined,
+      }));
+    } else if (option === "select") {
+      setFormData((prev) => ({
+        ...prev,
+        routine: undefined,
+        routineId: "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        routine: undefined,
+        routineId: undefined,
+      }));
+    }
+  };
+
+  const handleRoutineChange = (field: keyof Routine, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      routine: {
+        ...prev.routine!,
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleTaskChange = (
+    index: number,
+    field: keyof RoutineTask,
+    value: string
+  ) => {
+    setFormData((prev) => {
+      const tasks = [...(prev.routine?.tasks || [])];
+      tasks[index] = { ...tasks[index], [field]: value };
+      return {
+        ...prev,
+        routine: {
+          ...prev.routine!,
+          tasks,
+        },
+      };
+    });
+  };
+
+  const addTask = () => {
+    setFormData((prev) => ({
+      ...prev,
+      routine: {
+        ...prev.routine!,
+        tasks: [...prev.routine!.tasks, { title: "", description: "" }],
+      },
+    }));
+  };
+
+  const removeTask = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      routine: {
+        ...prev.routine!,
+        tasks: prev.routine!.tasks.filter((_, i) => i !== index),
+      },
+    }));
   };
 
   const validateStep = () => {
@@ -210,11 +338,42 @@ export default function ShiftCreationDialog({
     setStep((prev) => prev - 1);
   };
 
-  const handleSubmit = () => {
-    // Prepare payload based on shift type
-
+  const handleSubmit = async () => {
     if (!formData.organizationId) {
       toast.error("Organization is required to create a shift");
+      return;
+    }
+
+    // Create routine first if the option is "create"
+    let routineId = formData.routineId;
+
+    if (routineOption === "create" && formData.routine) {
+      if (
+        !formData.routine.name ||
+        !formData.routine.description ||
+        formData.routine.tasks.some((t) => !t.title || !t.description)
+      ) {
+        toast.error("Please fill in all routine fields");
+        return;
+      }
+
+      try {
+        const routineResponse = await createRoutineMutation.mutateAsync(
+          formData.routine
+        );
+        // The response is already a Routine object, not wrapped in {data: ...}
+        routineId = routineResponse.routineId || routineResponse._id;
+
+        console.log("Routine created successfully:", routineResponse);
+        console.log("Using routine ID:", routineId);
+      } catch (error: any) {
+        console.error("Routine creation error:", error);
+        // The error is already handled by the mutation's onError
+        // Just return to stop shift creation
+        return;
+      }
+    } else if (routineOption === "select" && !formData.routineId) {
+      toast.error("Please select a routine");
       return;
     }
 
@@ -230,6 +389,10 @@ export default function ShiftCreationDialog({
       specialInstructions: formData.specialInstructions,
       requiresSupervision: formData.requiresSupervision,
     };
+
+    if (routineId) {
+      payload.routineId = routineId;
+    }
 
     // Add worker/workers based on type
     if (formData.isMultiWorkerShift) {
@@ -253,7 +416,12 @@ export default function ShiftCreationDialog({
         resetForm();
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.error || "Failed to create shift");
+        console.error("Shift creation error:", error);
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Failed to create shift";
+        toast.error(errorMessage);
       },
     });
   };
@@ -261,6 +429,7 @@ export default function ShiftCreationDialog({
   const resetForm = () => {
     setStep(1);
     setShiftTypeSelection("");
+    setRoutineOption("none");
     setFormData({
       organizationId: orgs[0]._id || "",
       isMultiWorkerShift: false,
@@ -300,6 +469,16 @@ export default function ShiftCreationDialog({
     if (hours === 0) return `${minutes}m`;
     if (minutes === 0) return `${hours}h`;
     return `${hours}h ${minutes}m`;
+  };
+
+  const getSelectedRoutine = () => {
+    if (routineOption === "create" && formData.routine) {
+      return formData.routine;
+    }
+    if (routineOption === "select" && formData.routineId) {
+      return existingRoutines.find((r) => r.routineId === formData.routineId);
+    }
+    return null;
   };
 
   return (
@@ -400,7 +579,7 @@ export default function ShiftCreationDialog({
               </Select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="startTime" className="font-montserrat-semibold">
                   Start Time *
@@ -409,24 +588,58 @@ export default function ShiftCreationDialog({
                   className="py-3"
                   id="startTime"
                   type="datetime-local"
+                  min={getMinDateTime()}
                   value={formData.startTime}
-                  onChange={(e) =>
-                    handleInputChange("startTime", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleInputChange("startTime", e.target.value);
+                    handleInputChange("endTime", "");
+                  }}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="endTime" className="font-montserrat-semibold">
-                  End Time *
-                </Label>
-                <Input
-                  id="endTime"
-                  type="datetime-local"
-                  value={formData.endTime}
-                  onChange={(e) => handleInputChange("endTime", e.target.value)}
-                />
-              </div>
+              {formData.startTime && (
+                <div className="space-y-2">
+                  <Label className="font-montserrat-semibold">
+                    Select Shift Duration *
+                  </Label>
+                  <div className="grid grid-cols-4 gap-3">
+                    {SHIFT_DURATIONS.map((duration) => (
+                      <Button
+                        key={duration.value}
+                        type="button"
+                        variant={
+                          formData.endTime ===
+                          calculateEndTime(formData.startTime, duration.value)
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => handleDurationSelect(duration.value)}
+                        className="w-full"
+                      >
+                        {duration.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {formData.endTime && (
+                <div className="p-4 bg-primary-50 border border-primary-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-montserrat-semibold text-gray-700">
+                        End Time
+                      </p>
+                      <p className="text-lg font-montserrat-bold text-primary">
+                        {formatDateTime(formData.endTime)}
+                      </p>
+                    </div>
+                    <Badge className="bg-primary text-white">
+                      Duration: {getShiftDuration()}
+                    </Badge>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -543,7 +756,7 @@ export default function ShiftCreationDialog({
                 htmlFor="specialInstructions"
                 className="font-montserrat-semibold"
               >
-                Special Instructions
+                Special Instructions *
               </Label>
               <Textarea
                 id="specialInstructions"
@@ -555,7 +768,8 @@ export default function ShiftCreationDialog({
                 rows={4}
               />
             </div>
-            <div className="flex items-center space-x-2">
+
+            {/* <div className="flex items-center space-x-2">
               <Checkbox
                 className="w-6 h-6 border-double"
                 id="supervision"
@@ -567,6 +781,241 @@ export default function ShiftCreationDialog({
               <Label htmlFor="supervision" className="cursor-pointer">
                 This shift requires supervision
               </Label>
+            </div> */}
+
+            {/* Routine Section */}
+            <div className="border-t pt-6 space-y-4">
+              <div className="space-y-3">
+                <Label className="font-montserrat-semibold text-base">
+                  Routine Options
+                </Label>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Button
+                    type="button"
+                    variant={routineOption === "none" ? "default" : "outline"}
+                    onClick={() => handleRoutineOptionChange("none")}
+                    className="w-full h-auto py-4 flex-col gap-2"
+                  >
+                    <CloseCircle className="w-5 h-5" />
+                    <span className="text-sm">No Routine</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant={routineOption === "create" ? "default" : "outline"}
+                    onClick={() => handleRoutineOptionChange("create")}
+                    className="w-full h-auto py-4 flex-col gap-2"
+                  >
+                    <AddCircle className="w-5 h-5" />
+                    <span className="text-sm">Create New</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant={routineOption === "select" ? "default" : "outline"}
+                    onClick={() => handleRoutineOptionChange("select")}
+                    className="w-full h-auto py-4 flex-col gap-2"
+                  >
+                    <ListCheck className="w-5 h-5" />
+                    <span className="text-sm">Select Existing</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Create New Routine */}
+              {routineOption === "create" && (
+                <Card className="bg-white">
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-montserrat-bold text-lg flex items-center gap-2">
+                        <ListCheck className="w-5 h-5 text-primary" />
+                        Create Routine
+                      </h3>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-montserrat-semibold">
+                        Routine Name *
+                      </Label>
+                      <Input
+                        placeholder="e.g., Morning Personal Care Routine"
+                        value={formData.routine?.name || ""}
+                        onChange={(e) =>
+                          handleRoutineChange("name", e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-montserrat-semibold">
+                        Description *
+                      </Label>
+                      <Textarea
+                        placeholder="Describe the routine..."
+                        value={formData.routine?.description || ""}
+                        onChange={(e) =>
+                          handleRoutineChange("description", e.target.value)
+                        }
+                        rows={2}
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="font-montserrat-semibold">
+                        Tasks *
+                      </Label>
+                      {formData.routine?.tasks.map((task, index) => (
+                        <Card key={index} className="bg-gray-50">
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-montserrat-semibold text-gray-600">
+                                Task {index + 1}
+                              </span>
+                              {formData.routine!.tasks.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeTask(index)}
+                                >
+                                  <CloseCircle className="w-4 h-4 text-red-500" />
+                                </Button>
+                              )}
+                            </div>
+                            <Input
+                              placeholder="Task title"
+                              value={task.title}
+                              onChange={(e) =>
+                                handleTaskChange(index, "title", e.target.value)
+                              }
+                            />
+                            <Textarea
+                              placeholder="Task description"
+                              value={task.description}
+                              onChange={(e) =>
+                                handleTaskChange(
+                                  index,
+                                  "description",
+                                  e.target.value
+                                )
+                              }
+                              rows={2}
+                            />
+                          </CardContent>
+                        </Card>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addTask}
+                        className="w-full gap-2"
+                      >
+                        <AddCircle className="w-4 h-4" />
+                        Add Task
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Select Existing Routine */}
+              {routineOption === "select" && (
+                <div className="space-y-3">
+                  <Label className="font-montserrat-semibold">
+                    Select a Routine *
+                  </Label>
+
+                  {loadingRoutines ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Refresh className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  ) : existingRoutines.length === 0 ? (
+                    <Card className="bg-white">
+                      <CardContent className="p-6 text-center">
+                        <ListCheck className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-600">No routines available</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Create your first routine to get started
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <RadioGroup
+                      value={formData.routineId}
+                      onValueChange={(value) =>
+                        handleInputChange("routineId", value)
+                      }
+                    >
+                      <div className="space-y-3">
+                        {existingRoutines.map((routine) => (
+                          <Card
+                            key={routine.routineId}
+                            className={cn(
+                              "cursor-pointer transition-all duration-200",
+                              formData.routineId === routine.routineId &&
+                                "border-2 border-primary"
+                            )}
+                            onClick={() =>
+                              handleInputChange("routineId", routine.routineId)
+                            }
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex items-start gap-3">
+                                <RadioGroupItem
+                                  value={routine.routineId}
+                                  id={routine.routineId}
+                                  className="mt-1"
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h4 className="font-montserrat-semibold">
+                                      {routine.name}
+                                    </h4>
+                                    {formData.routineId ===
+                                      routine.routineId && (
+                                      <CheckCircle className="w-5 h-5 text-primary" />
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-gray-600 mb-2">
+                                    {routine.description}
+                                  </p>
+                                  <Badge variant="outline" className="text-xs">
+                                    {routine.tasks.length} task
+                                    {routine.tasks.length !== 1 ? "s" : ""}
+                                  </Badge>
+                                </div>
+                              </div>
+
+                              {/* Show tasks preview when selected */}
+                              {formData.routineId === routine.routineId && (
+                                <div className="mt-4 pt-4 border-t space-y-2">
+                                  <p className="text-xs font-montserrat-semibold text-gray-600 mb-2">
+                                    Tasks Preview:
+                                  </p>
+                                  {routine.tasks.map((task, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="text-sm bg-gray-50 p-2 rounded"
+                                    >
+                                      <p className="font-montserrat-semibold">
+                                        {idx + 1}. {task.title}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {task.description}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </RadioGroup>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -758,7 +1207,7 @@ export default function ShiftCreationDialog({
                     <p className="text-sm text-gray-600">
                       {
                         serviceTypes.find(
-                          (s) => s.name === formData.serviceTypeId
+                          (s) => s._id === formData.serviceTypeId
                         )?.name
                       }
                     </p>
@@ -786,13 +1235,19 @@ export default function ShiftCreationDialog({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 pt-2">
+                <div className="flex items-center gap-2 pt-2 flex-wrap">
                   <Badge className="bg-primary text-white">
                     Duration: {getShiftDuration()}
                   </Badge>
                   <Badge variant="outline">{formData.locationType}</Badge>
                   {formData.requiresSupervision && (
                     <Badge variant="outline">Requires Supervision</Badge>
+                  )}
+                  {routineOption !== "none" && (
+                    <Badge className="bg-green-500 text-white">
+                      <ListCheck className="w-3 h-3 mr-1" />
+                      With Routine
+                    </Badge>
                   )}
                 </div>
 
@@ -829,13 +1284,81 @@ export default function ShiftCreationDialog({
                     <p className="text-xs text-gray-600 mb-1">
                       Special Instructions
                     </p>
-                    <p className="text-sm  bg-primary/10 text-primary p-3 rounded-lg">
+                    <p className="text-sm bg-primary/10 text-primary p-3 rounded-lg">
                       {formData.specialInstructions}
                     </p>
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* Routine Details in Review */}
+            {routineOption !== "none" &&
+              (() => {
+                const selectedRoutine = getSelectedRoutine();
+                if (!selectedRoutine) return null;
+
+                return (
+                  <Card className="bg-white">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-center gap-2">
+                        <ListCheck className="w-5 h-5 text-primary" />
+                        <h4 className="font-montserrat-bold text-lg">
+                          Routine Details
+                        </h4>
+                        {routineOption === "create" && (
+                          <Badge variant="outline" className="ml-auto">
+                            New Routine
+                          </Badge>
+                        )}
+                        {routineOption === "select" && (
+                          <Badge variant="outline" className="ml-auto">
+                            Existing Routine
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs text-gray-600 mb-1">
+                            Routine Name
+                          </p>
+                          <p className="font-montserrat-semibold">
+                            {selectedRoutine.name}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 mb-1">
+                            Description
+                          </p>
+                          <p className="text-sm text-gray-700">
+                            {selectedRoutine.description}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 mb-2">
+                            Tasks ({selectedRoutine.tasks.length})
+                          </p>
+                          <div className="space-y-2">
+                            {selectedRoutine.tasks.map((task, index) => (
+                              <div
+                                key={index}
+                                className="p-3 bg-gray-50 rounded-lg"
+                              >
+                                <p className="font-montserrat-semibold text-sm">
+                                  {index + 1}. {task.title}
+                                </p>
+                                <p className="text-xs text-gray-600 mt-1">
+                                  {task.description}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
 
             <Card>
               <CardContent className="p-6">
@@ -846,7 +1369,9 @@ export default function ShiftCreationDialog({
                   {shiftTypeSelection === "multiple" ? (
                     <>
                       {formData.workerIds?.map((workerId) => {
-                        const worker = workers.find((w) => w._id === workerId);
+                        const worker = workers.find(
+                          (w) => w.workerId._id === workerId
+                        );
                         if (!worker) return null;
                         return (
                           <div
@@ -875,7 +1400,7 @@ export default function ShiftCreationDialog({
                       {formData.workerId &&
                         (() => {
                           const worker = workers.find(
-                            (w) => w._id === formData.workerId
+                            (w) => w.workerId._id === formData.workerId
                           );
                           if (!worker) return null;
                           return (
@@ -909,7 +1434,9 @@ export default function ShiftCreationDialog({
           <Button
             variant="outline"
             onClick={step === 1 ? () => onOpenChange(false) : handleBack}
-            disabled={createShiftMutation.isPending}
+            disabled={
+              createShiftMutation.isPending || createRoutineMutation.isPending
+            }
           >
             <AltArrowLeft className="w-5 h-5 mr-2" />
             {step === 1 ? "Cancel" : "Back"}
@@ -927,11 +1454,16 @@ export default function ShiftCreationDialog({
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={createShiftMutation.isPending}
+              disabled={
+                createShiftMutation.isPending || createRoutineMutation.isPending
+              }
               className="gap-2"
             >
-              {createShiftMutation.isPending ? (
-                <>Creating Shift...</>
+              {createShiftMutation.isPending ||
+              createRoutineMutation.isPending ? (
+                <>
+                  <Refresh className="w-5 h-5 animate-spin" /> Creating...
+                </>
               ) : (
                 <>
                   <CheckCircle className="w-5 h-5" />

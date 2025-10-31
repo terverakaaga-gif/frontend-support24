@@ -263,22 +263,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
-
-            {/* Additional Support Worker Navigation Sections */}
-            {/* <div className="mt-8 space-y-1">
-              <NavItem
-                to="/support-worker/analytics"
-                icon={<BarChart3  className="w-6 h-6" />}
-                label="Analytics"
-                active={isActive("/support-worker/analytics")}
-              />
-              <NavItem
-                to="/support-worker/settings"
-                icon={<Settings  className="w-6 h-6" />}
-                label="Account Settings"
-                active={isActive("/support-worker/settings")}
-              />
-            </div> */}
           </>
         );
       default:
@@ -323,8 +307,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {user.role === "supportWorker" ? "Support Worker" : user.role}
           </div>
           <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 text-white/80 hover:text-white hover:bg-orange-700 mt-3 font-montserrat-semibold"
+            className="w-full justify-start gap-2 items-center justify-center bg-red-600 text-white/80 hover:text-white hover:bg-red-700 mt-3 font-montserrat-semibold"
             onClick={() => logout()}
           >
             <Logout />
@@ -337,18 +320,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex min-h-screen">
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto">
+      {/* Desktop Sidebar - Only show on large screens (1024px+) */}
+      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto">
         <Sidebar />
       </aside>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile & Tablet Sidebar - Show toggle button up to large screens */}
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
-            className="md:hidden absolute left-2 top-2 z-40 hover:bg-transparent hover:text-black"
-            
+            className="lg:hidden absolute left-2 top-2 z-40 hover:bg-transparent hover:text-black"
           >
             <HamburgerMenu />
           </Button>

@@ -330,34 +330,33 @@ export default function SupportWorkerOrganizationDetailsPage() {
           onLogout={logout}
         />
         {/* Tab Navigation */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-4 md:mb-6">
-          <Button
+        <div className="flex gap-2 mb-4 md:mb-6">
+          <button
             onClick={() => setActiveTab("workers")}
-            className={`rounded-full font-montserrat-semibold px-4 py-2 text-xs md:text-base transition-all min-h-[44px] ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "workers"
-                ? "bg-primary-600 text-white hover:bg-primary-600"
+                ? "bg-primary text-white hover:bg-primary"
                 : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Active Workers
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setActiveTab("invites")}
-            className={`rounded-full font-montserrat-semibold px-4 py-2 text-xs md:text-base transition-all min-h-[44px] ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "invites"
-                ? "bg-primary-600 text-white hover:bg-primary-600"
+                ? "bg-primary text-white hover:bg-primary"
                 : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Pending Invites
-          </Button>
+          </button>
         </div>
-
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Workers List */}
           <div className="lg:col-span-2">
-            <h2 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">
+            <h2 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
               {activeTab === "workers"
                 ? `Active Workers (${filteredWorkers.length})`
                 : `Pending Invites (${pendingInvites.length})`}
@@ -425,7 +424,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                             </div>
                           </div>
                           <div className="text-right ml-2 md:ml-4">
-                            <p className="text-lg md:text-xl font-bold text-primary-600">
+                            <p className="text-md font-montserrat-bold bg-primary/10 p-1 text-primary-600 rounded-full">
                               ${worker.serviceAgreement.baseHourlyRate}/hr
                             </p>
                           </div>
@@ -484,7 +483,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                           </div>
                         </div>
                         <div className="text-right ml-2 md:ml-4">
-                          <p className="text-lg md:text-xl font-bold text-orange-600">
+                          <p className="text-lg md:text-xl font-montserrat-bold text-orange-600">
                             ${invite.proposedRates.baseHourlyRate}/hr
                           </p>
                         </div>
@@ -510,7 +509,6 @@ export default function SupportWorkerOrganizationDetailsPage() {
               <Card className="border-0 shadow-sm sticky top-6">
                 <CardContent className="p-0">
                   <div className="p-3 md:p-4 border-b flex items-center justify-between">
-                    
                     <Button
                       variant="ghost"
                       size="sm"
@@ -535,7 +533,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <h4 className="font-bold text-gray-900 text-sm md:text-base mb-1">
+                      <h4 className="font-montserrat-bold text-gray-900 text-sm md:text-base mb-1">
                         {getWorkerDisplayName(selectedWorker.workerId)}
                       </h4>
                       <p className="text-xs md:text-sm text-gray-600 mb-0.5">
@@ -556,7 +554,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                           <span className="text-gray-600">
                             Base Hourly Rate:
                           </span>
-                          <span className="font-bold text-primary-600">
+                          <span className="font-montserrat-bold text-primary-600">
                             ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
                           </span>
                         </div>
@@ -627,7 +625,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                                 <span className="font-medium text-gray-900 text-xs md:text-sm">
                                   {getRateBandName(rate.rateTimeBandId)}
                                 </span>
-                                <span className="font-bold text-primary-600 text-xs md:text-sm">
+                                <span className="font-montserrat-bold text-primary-600 text-xs md:text-sm">
                                   ${rate.hourlyRate}/hr
                                 </span>
                               </div>
@@ -653,7 +651,6 @@ export default function SupportWorkerOrganizationDetailsPage() {
       {selectedWorker && (
         <Dialog open={showWorkerDetails} onOpenChange={setShowWorkerDetails}>
           <DialogContent className="lg:hidden max-w-full w-[90vw] mx-auto h-[90vh] p-0 rounded-t-2xl">
-          
             <div className="p-3 md:p-4 space-y-3 md:space-y-4 overflow-y-auto">
               {/* Worker Info */}
               <div className="text-center">
@@ -668,7 +665,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <h4 className="font-bold text-gray-900 text-sm md:text-base mb-1">
+                <h4 className="font-montserrat-bold text-gray-900 text-sm md:text-base mb-1">
                   {getWorkerDisplayName(selectedWorker.workerId)}
                 </h4>
                 <p className="text-xs md:text-sm text-gray-600 mb-0.5">
@@ -687,7 +684,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                 <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Base Hourly Rate:</span>
-                    <span className="font-bold text-primary-600">
+                    <span className="font-montserrat-bold text-primary-600">
                       ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
                     </span>
                   </div>
@@ -751,7 +748,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
                         <span className="font-medium text-gray-900 text-xs md:text-sm">
                           {getRateBandName(rate.rateTimeBandId)}
                         </span>
-                        <span className="font-bold text-primary-600 text-xs md:text-sm">
+                        <span className="font-montserrat-bold text-primary-600 text-xs md:text-sm">
                           ${rate.hourlyRate}/hr
                         </span>
                       </div>

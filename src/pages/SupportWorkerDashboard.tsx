@@ -51,7 +51,16 @@ import {
 import Loader from "@/components/Loader";
 
 // Stat card component
-function StatCard({ title, value, icon: Icon, trend, trendDirection }) {
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  trend?: string;
+  trendDirection?: "up" | "down" | "neutral" | "stable";
+}
+
+function StatCard({ title, value, icon: Icon, trend, trendDirection }:StatCardProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
       <div className="flex items-center justify-between mb-3">
@@ -435,7 +444,9 @@ function InvitationsTable({ invitations, isLoading }) {
       <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
         <Button
-          onClick={()=>{navigate('/support-worker/organizations')}}
+          onClick={() => {
+            navigate("/support-worker/organizations");
+          }}
           variant="link"
           className="text-primary hover:text-primary/80 text-sm font-medium p-0"
         >
@@ -529,7 +540,11 @@ function InvitationsTable({ invitations, isLoading }) {
                     </div>
                   ) : (
                     <Button
-                      onClick={()=>{navigate(`/support-worker/organizations/${invitation.id}`)}}
+                      onClick={() => {
+                        navigate(
+                          `/support-worker/organizations/${invitation.id}`
+                        );
+                      }}
                       variant="outline"
                       size="sm"
                       className="border-primary text-primary hover:bg-primary hover:text-white"
@@ -691,7 +706,7 @@ export default function SupportWorkerDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <StatCard
               title="Hours Worked"
-              value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
+              value={`${overviewData?.workSummary?.hoursWorked?.current.toFixed(2) || 0}h`}
               icon={ClockCircle}
               trend="From last Month"
               trendDirection={getTrendDirection(
@@ -700,7 +715,7 @@ export default function SupportWorkerDashboard() {
             />
             <StatCard
               title="Active Clients"
-              value={overviewData?.workSummary?.activeClients || 0}
+              value={overviewData?.workSummary?.activeClients.toFixed(0) || 0}
               icon={UsersGroupTwoRounded}
               trend="Currently Supporting"
               trendDirection="stable"
@@ -708,8 +723,8 @@ export default function SupportWorkerDashboard() {
             <StatCard
               title="Earnings"
               value={`$${(
-                overviewData?.workSummary?.earnings?.current || 0
-              ).toFixed(2)}`}
+                overviewData?.workSummary?.earnings?.current.toFixed(2) || 0
+              )}`}
               icon={DollarMinimalistic}
               trend="From last Month"
               trendDirection={getTrendDirection(
@@ -719,8 +734,8 @@ export default function SupportWorkerDashboard() {
             <StatCard
               title="Performance Ratings"
               value={(
-                overviewData?.performanceMetrics?.averageRating || 0
-              ).toFixed(1)}
+                overviewData?.performanceMetrics?.averageRating.toFixed(2) || 0
+              )}
               icon={Star}
               trend={`${
                 overviewData?.performanceMetrics?.onTimeRate || 0
@@ -741,14 +756,20 @@ export default function SupportWorkerDashboard() {
           />
           {/* Upcoming Schedules */}
           <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
-           <div className="flex justify-between items-center mb-6">
-             <h2 className="text-lg font-semibold text-gray-900">
-              Upcoming Schedules
-            </h2>
-            <Button onClick={() => { navigate('/support-worker/shifts') }} variant="link" className="ml-auto">
-              View All
-            </Button>
-           </div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Upcoming Schedules
+              </h2>
+              <Button
+                onClick={() => {
+                  navigate("/support-worker/shifts");
+                }}
+                variant="link"
+                className="ml-auto"
+              >
+                View All
+              </Button>
+            </div>
             {overviewData.workSummary?.upcomingShifts.length > 0 ? (
               <Table className="mt-4">
                 <TableBody className="divide-y divide-gray-200 bg-white">
@@ -758,29 +779,10 @@ export default function SupportWorkerDashboard() {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <TableCell className="px-4 md:px-6 py-3 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {new Date(shift.startTime).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {new Date(shift.startTime).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}{" "}
-                          -{" "}
-                          {new Date(shift.endTime).toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </div>
+                       {new Date(shift.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
                         {shift.clientName}
@@ -796,9 +798,7 @@ export default function SupportWorkerDashboard() {
               <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
                 <div className="text-center p-8">
                   <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                  <p className="text-sm font-medium">
-                    No upcoming schedules
-                  </p>
+                  <p className="text-sm font-medium">No upcoming schedules</p>
                   <p className="text-xs text-gray-400 mt-1">
                     Your upcoming shifts will appear here once scheduled
                   </p>
