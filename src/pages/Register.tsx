@@ -60,15 +60,6 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  // If user is already logged in and verified, log them out
-  useEffect(() => {
-    if (user && user.isEmailVerified && !isLoggingOut) {
-      setIsLoggingOut(true);
-      logout();
-    }
-  }, [user, logout, isLoggingOut]);
 
   // Onboarding slides data
   const onboardingSlides = [
@@ -137,23 +128,14 @@ export default function Register() {
 
   useEffect(() => {
     if (register.isSuccess) {
-      navigate(`/otp-verify?email=${encodeURIComponent(form.getValues("email"))}&userId=${register.data.userId}`);
+      navigate(
+        `/otp-verify?email=${encodeURIComponent(
+          form.getValues("email")
+        )}&userId=${register.data.userId}`
+      );
     }
   }, [register.isSuccess, navigate, form]);
 
-  // Show loading state while logging out existing user
-  if (isLoggingOut) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-600 font-montserrat-semibold">
-            Logging out...
-          </p>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
       {/* Left side - Registration Form */}
