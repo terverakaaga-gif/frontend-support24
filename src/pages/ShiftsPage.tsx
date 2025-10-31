@@ -43,27 +43,50 @@ const ShiftsPage = () => {
     return shifts.filter((s: any) => s.status.toLowerCase() === status).length;
   };
 
-  const filteredShifts = shifts.filter((shift: any) => {
-    const matchesStatus =
-      statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
-    const matchesSearch =
-      searchQuery === "" ||
-      shift.serviceTypeId.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      (typeof shift.participantId === "object" &&
-        shift.participantId.firstName &&
-        shift.participantId.firstName
+  const filteredShifts = shifts
+    .filter((shift: any) => {
+      const matchesStatus =
+        statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
+      const matchesSearch =
+        searchQuery === "" ||
+        shift.serviceTypeId.name
           .toLowerCase()
-          .includes(searchQuery.toLowerCase())) ||
-      (typeof shift.participantId === "object" &&
-        shift.participantId.lastName &&
-        shift.participantId.lastName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())) ||
-      shift.address.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+          .includes(searchQuery.toLowerCase()) ||
+        (typeof shift.participantId === "object" &&
+          shift.participantId.firstName &&
+          shift.participantId.firstName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (typeof shift.participantId === "object" &&
+          shift.participantId.lastName &&
+          shift.participantId.lastName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        shift.address.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesSearch;
+    })
+    .sort((a: any, b: any) => {
+      const aStatus = a.status.toLowerCase();
+      const bStatus = b.status.toLowerCase();
+      const recentStatuses = ["pending", "confirmed", "inprogress"];
+
+      // If both shifts have status that should show recent first
+      if (
+        recentStatuses.includes(aStatus) &&
+        recentStatuses.includes(bStatus)
+      ) {
+        return (
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        );
+      }
+
+      // If only one has the recent status, prioritize it
+      if (recentStatuses.includes(aStatus)) return -1;
+      if (recentStatuses.includes(bStatus)) return 1;
+
+      // For other statuses, sort by start time (most recent first)
+      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    });
 
   const totalPages = Math.ceil(filteredShifts.length / itemsPerPage);
   const paginatedShifts = filteredShifts.slice(
@@ -132,7 +155,7 @@ const ShiftsPage = () => {
             { key: "all", label: "All", bg: "bg-primary" },
             { key: "pending", label: "Pending", bg: "bg-orange-600" },
             { key: "confirmed", label: "Confirmed", bg: "bg-purple-600" },
-            { key: "inProgress", label: "In Progress", bg: "bg-yellow-600" },
+            { key: "inprogress", label: "In Progress", bg: "bg-yellow-600" },
             { key: "completed", label: "Completed", bg: "bg-green-600" },
             { key: "cancelled", label: "Cancelled", bg: "bg-red-600" },
           ].map(({ key, label, bg }) => (

@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import { useLogin } from "@/hooks/useAuthHooks";
+import { Eye, EyeClosed } from "@solar-icons/react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -27,10 +28,21 @@ const formSchema = z.object({
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuth();
   const login = useLogin();
   const [showPassword, setShowPassword] = useState(false);
   const [savePassword, setSavePassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // If user is already logged in and tries to access login page, log them out
+  useEffect(() => {
+    if (user && !isLoggingOut) {
+      setIsLoggingOut(true);
+      logout();
+    }
+  }, [user, logout, isLoggingOut]);
 
   // Onboarding slides data
   const onboardingSlides = [
@@ -55,7 +67,7 @@ export default function Login() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % onboardingSlides.length);
-    }, 5000); // Change slide every 5 seconds
+    }, 5000);
 
     return () => clearInterval(timer);
   }, [onboardingSlides.length]);
@@ -74,27 +86,40 @@ export default function Login() {
         email: values.email,
         password: values.password,
       });
-      // Auth context will handle redirects via ProtectedRoute component
+
+      // After successful login, check for return URL
+      const returnUrl = sessionStorage.getItem("returnUrl");
+      if (returnUrl) {
+        sessionStorage.removeItem("returnUrl");
+        navigate(returnUrl, { replace: true });
+      }
+      // Navigation is handled by useLogin hook if no returnUrl
     } catch (error) {
-      // Error is handled by the API client
       console.error("Login failed:", error);
     }
   }
-
-  // Demo account logins for development
-  const handleDemoLogin = (email: string, password: string = "password") => {
-    form.setValue("email", email);
-    form.setValue("password", password);
-    form.handleSubmit(onSubmit)();
-  };
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
+  // Show loading state while logging out existing user
+  if (isLoggingOut) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-600 font-montserrat-semibold">
+            Logging out...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen w-full bg-[#FDFDFD]">
+    <div className="flex min-h-screen w-full bg-gray-50">
       {/* Left side - Onboarding Carousel */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
@@ -133,7 +158,6 @@ export default function Login() {
             </div>
             {/* Slide Indicators */}
             <div className="self-start flex items-center gap-4">
-              {/* Slide Indicators */}
               <div className="flex gap-2">
                 {onboardingSlides.map((_, index) => (
                   <button
@@ -151,13 +175,13 @@ export default function Login() {
 
             {/* Carousel Content */}
             <motion.div
-              key={currentSlide} // Key prop to trigger re-animation
+              key={currentSlide}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5 }}
               className="max-w-md self-start"
             >
-              <h2 className="text-3xl font-montserrat-bold font-montserrat-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-montserrat-bold text-gray-900 mb-4">
                 {currentSlide === 0 && (
                   <>
                     Effortless NDIS{" "}
@@ -194,7 +218,6 @@ export default function Login() {
               >
                 Skip
               </button>
-              {/* Next Button */}
               <Button
                 className="bg-primary-600 font-montserrat-semibold hover:bg-primary-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
                 onClick={() =>
@@ -223,14 +246,14 @@ export default function Login() {
         className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
       >
         {/* Logo */}
-		<motion.div
-		  initial={{ y: -20, opacity: 0 }}
-		  animate={{ y: 0, opacity: 1 }}
-		  transition={{ delay: 0.4, duration: 0.5 }}
-		  className="flex justify-center items-center w-full mb-28"
-		>
-		  <img src="/logo.svg" alt="Support 24" className="h-12" />
-		</motion.div>
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="flex justify-center items-center w-full mb-28"
+        >
+          <img src="/logo.svg" alt="Support 24" className="h-12" />
+        </motion.div>
 
         {/* Form Container */}
         <motion.div
@@ -297,7 +320,7 @@ export default function Login() {
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         >
                           {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
+                            <EyeClosed className="h-5 w-5" />
                           ) : (
                             <Eye className="h-5 w-5" />
                           )}
@@ -315,7 +338,9 @@ export default function Login() {
                   <Checkbox
                     id="savePassword"
                     checked={savePassword}
-                    onCheckedChange={checked => setSavePassword(checked === true)}
+                    onCheckedChange={(checked) =>
+                      setSavePassword(checked === true)
+                    }
                     className="border-gray-300 data-[state=checked]:bg-primary-600 data-[state=checked]:border-primary-600"
                   />
                   <label
@@ -366,35 +391,6 @@ export default function Login() {
               Create account
             </Link>
           </div>
-
-          {/* Demo accounts section - uncomment for development */}
-          {/* {process.env.NODE_ENV !== 'production' && (
-            <div className="pt-6">
-              <p className="text-center text-sm text-gray-600 mb-4">
-                Demo Accounts
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="rounded-lg border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all"
-                  onClick={() => handleDemoLogin("timiayanlola@outlook.com", "workerPro23!")}
-                  disabled={login.isPending}
-                >
-                  Support Worker
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="rounded-lg border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all"
-                  onClick={() => handleDemoLogin("timiayanlola@outlook.com", "participantPro23!")}
-                  disabled={login.isPending}
-                >
-                  Participant
-                </Button>
-              </div>
-            </div>
-          )} */}
         </motion.div>
       </motion.div>
     </div>

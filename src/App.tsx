@@ -64,21 +64,18 @@ import ResetPassword from "./pages/ResetPassword";
 import Converations from "./pages/Conversations";
 import { ChatProvider } from "./contexts/ChatContext";
 import IncidentsPage from "./pages/IncidentsPage";
-import CreateIncidentPage from "./pages/CreateIncidentPage";
-import IncidentDetailsPage from "./pages/IncidentDetailsPage";
-import ResolveIncidentPage from "./pages/ResolveIncidentPage";
 import ProfileEditForm from "./components/layouts/ProfileEditForm";
 import SupportWorkerProfilePreview from "./pages/SupportWorkerProfilePreview";
 import SupportWorkerInvite from "./pages/SupportWorkerInvite";
 import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationDetailsPage";
 import { HowItWorks } from "./pages/HowItWorks";
+import OTPVerification from "./pages/OTPVerificationPage";
 import ComingSoon from "./pages/coming-soon";
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   const { user } = useAuth();
-  const location = useLocation();
 
   // Helper to redirect to the appropriate dashboard based on user role
   const getDefaultRoute = () => {
@@ -107,51 +104,21 @@ const AppRoutes = () => {
           user ? <Navigate to={getDefaultRoute()} replace /> : <LandingPage />
         }
       />
+
       {/* How It Works Page */}
-      <Route
-        path="/how-it-works"
-        element={<HowItWorks />}
-      />
+      <Route path="/how-it-works" element={<HowItWorks />} />
       {/* Coming Soon Page */}
       <Route
         path="/coming-soon"
         element={<ComingSoon />}
       />
 
-      {/* Public routes */}
-      <Route
-        path="/login"
-        element={user ? <Navigate to={getDefaultRoute()} replace /> : <Login />}
-      />
-
-      <Route
-        path="/register"
-        element={
-          user && user.isEmailVerified ? (
-            <Navigate to={getDefaultRoute()} replace />
-          ) : (
-            <Register />
-          )
-        }
-      />
-
-      {/* Password reset routes */}
-      <Route
-        path="/forgot-password"
-        element={
-          user ? (
-            <Navigate to={getDefaultRoute()} replace />
-          ) : (
-            <ForgotPassword />
-          )
-        }
-      />
-      <Route
-        path="/reset-password"
-        element={
-          user ? <Navigate to={getDefaultRoute()} replace /> : <ResetPassword />
-        }
-      />
+      {/* Public routes - these handle their own logout logic */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/otp-verify" element={<OTPVerification />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Setup Choice Page - for newly registered support workers */}
       <Route
@@ -161,7 +128,7 @@ const AppRoutes = () => {
             <Navigate to="/login" replace />
           ) : user.role !== "supportWorker" ? (
             <Navigate to={getDefaultRoute()} replace />
-          ) : (user as SupportWorker).verificationStatus
+          ) : !(user as SupportWorker).verificationStatus
               ?.profileSetupComplete ? (
             <Navigate to="/support-worker" replace />
           ) : (
@@ -249,14 +216,7 @@ const AppRoutes = () => {
                   element={<ServiceTypeDetailPage />}
                 />
                 <Route path="/incidents" element={<IncidentsPage />} />
-                <Route
-                  path="/incidents/:id/resolve"
-                  element={<ResolveIncidentPage />}
-                />
-                <Route
-                  path="/incidents/:id"
-                  element={<IncidentDetailsPage />}
-                />
+
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:workerId" element={<ChatView />} />
               </Routes>
@@ -273,10 +233,7 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="/" element={<GuardianDashboard />} />
                 <Route path="/incidents" element={<IncidentsPage />} />
-                <Route
-                  path="/incidents/:id"
-                  element={<IncidentDetailsPage />}
-                />
+
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:workerId" element={<ChatView />} />
               </Routes>
@@ -308,7 +265,7 @@ const AppRoutes = () => {
                   path="/organizations"
                   element={<ParticipantOrganizationsPage />}
                 />
-                 <Route
+                <Route
                   path="/organizations/:id"
                   element={<ParticipantOrganizationDetailsPage />}
                 />
@@ -322,14 +279,7 @@ const AppRoutes = () => {
                   element={<ParticipantTimesheetDetails />}
                 />
                 <Route path="/incidents" element={<IncidentsPage />} />
-                <Route
-                  path="/incidents/:id"
-                  element={<IncidentDetailsPage />}
-                />
-                <Route
-                  path="/incidents/create"
-                  element={<CreateIncidentPage />}
-                />
+
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:workerId" element={<ChatView />} />
               </Routes>
@@ -363,14 +313,6 @@ const AppRoutes = () => {
                   element={<SupportWorkerTimesheetDetails />}
                 />
                 <Route path="/incidents" element={<IncidentsPage />} />
-                <Route
-                  path="/incidents/:id"
-                  element={<IncidentDetailsPage />}
-                />
-                <Route
-                  path="/incidents/create"
-                  element={<CreateIncidentPage />}
-                />
 
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:workerId" element={<ChatView />} />

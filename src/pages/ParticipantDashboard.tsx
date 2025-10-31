@@ -1,6 +1,7 @@
 import { useState, useMemo, memo } from "react";
 import {
   Calendar as CalendarIcon,
+  ChatDots,
   ClockCircle,
   CloseCircle,
   CourseDown,
@@ -46,6 +47,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Service type labels for display
 const SERVICE_TYPE_LABELS: Record<string, string> = {
@@ -285,83 +294,84 @@ function SpendingServiceChart({
 
 // Support Workers Table Component
 function SupportWorkersTable({ workers }: { workers: any[] }) {
+  const navigate = useNavigate();
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
         <h2 className="text-lg font-montserrat-semibold text-gray-900">
           Top Support Workers
         </h2>
-        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+        <Button variant="link" onClick={()=>navigate('/participant/organizations')} className="text-status-pending hover:text-status-pending text-sm font-medium">
           View all →
-        </button>
+        </Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-100">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Worker Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Service Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Hours This Month
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Rating
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {workers.map((worker) => (
-              <tr key={worker.workerId} className="hover:bg-gray-100">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <Avatar className="h-8 w-8 mr-3">
-                      <AvatarFallback className="bg-primary-100 text-primary-700">
-                        {worker.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm font-medium text-gray-900">
-                      {worker.name}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  Multiple Services
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {worker.hours} hours
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">
-                      {worker.rating > 0 ? worker.rating.toFixed(1) : "New"}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Active
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100">
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Worker Name
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Service Type
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Hours This Month
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Rating
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Status
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {workers.map((worker) => (
+            <TableRow key={worker.workerId}>
+              <TableCell>
+                <div className="flex items-center">
+                  <Avatar className="h-8 w-8 mr-3">
+                    <AvatarFallback className="bg-primary-100 text-primary-700">
+                      {worker.name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-gray-900">
+                    {worker.name}
                   </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100">
-                    Message
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              </TableCell>
+              <TableCell className="text-sm text-gray-600">
+                Multiple Services
+              </TableCell>
+              <TableCell className="text-sm text-gray-600">
+                {worker.hours} hours
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium">
+                    {worker.rating > 0 ? worker.rating.toFixed(1) : "New"}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Active
+                </span>
+              </TableCell>
+              <TableCell className="text-right">
+                <button
+                  onClick={() => navigate("/participant/chats")}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100"
+                >
+                  Message
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

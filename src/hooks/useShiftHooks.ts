@@ -124,11 +124,13 @@ export const useUpdateShiftStatus = () => {
     mutationFn: ({
       shiftId,
       status,
+      declineReason
     }: {
       shiftId: string;
       status: "confirmed" | "inProgress" | "completed" | "cancelled";
+      declineReason?: string;
     }) => {
-      return patch(`/shifts/${shiftId}`, { status });
+      return patch(`/shifts/${shiftId}`, { status, declineReason });
     },
     onSuccess: (data, variables) => {
       // Invalidate and refetch shifts
