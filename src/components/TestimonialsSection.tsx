@@ -132,7 +132,7 @@ const TestimonialCard = ({ testimonial, index }) => {
           />
           <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
-              <div className="w-0 h-0 border-t-6 sm:border-t-8 border-t-transparent border-l-8 sm:border-l-12 border-l-primary-600 border-b-6 sm:border-b-8 border-b-transparent ml-1"></div>
+              <div className="w-0 h-0 border-t-[6px] sm:border-t-[8px] border-t-transparent border-l-[10px] sm:border-l-[14px] border-l-primary-600 border-b-[6px] sm:border-b-[8px] border-b-transparent ml-1"></div>
             </div>
           </div>
         </div>
