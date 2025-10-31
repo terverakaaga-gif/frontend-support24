@@ -36,6 +36,7 @@ import { useGetRateTimeBands } from "@/hooks/useRateTimeBandHooks";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "../Spinner";
 
 const bioSchema = z.object({
   bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
@@ -649,7 +650,7 @@ export function SupportWorkerSetup({
                         <div className="flex justify-end pt-4">
                           <Button
                             type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white px-8"
+                            className="bg-primary hover:bg-primary-700 text-white px-8"
                             disabled={formData.languages.length === 0}
                           >
                             Next
@@ -766,14 +767,14 @@ export function SupportWorkerSetup({
                             type="button"
                             variant="outline"
                             onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
+                            className="border-primary text-primary hover:bg-primary-700"
                           >
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
                           </Button>
                           <Button
                             type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white"
+                            className="bg-primary hover:bg-primary-700 text-white"
                           >
                             Next
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -998,7 +999,7 @@ export function SupportWorkerSetup({
                             type="button"
                             variant="outline"
                             onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
+                            className="border-primary text-primary hover:bg-primary-700"
                           >
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
@@ -1131,14 +1132,14 @@ export function SupportWorkerSetup({
                             type="button"
                             variant="outline"
                             onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
+                            className="border-primary text-primary hover:bg-primary-700"
                           >
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
                           </Button>
                           <Button
                             type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white"
+                            className="bg-primary hover:bg-primary-700 text-white"
                           >
                             Next
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -1286,7 +1287,10 @@ export function SupportWorkerSetup({
                             className="bg-primary hover:bg-primary/90 text-white"
                           >
                             {isOnboarding || isSubmitting ? (
-                              "Completing Setup..."
+                              <>
+                              <Spinner/>
+                              <span className="ml-2">Submitting...</span>
+                              </>
                             ) : (
                               <>
                                 Complete Setup

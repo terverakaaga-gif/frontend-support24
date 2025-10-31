@@ -288,9 +288,10 @@ const ShiftsPage = () => {
                     setCurrentPage((prev) => Math.max(1, prev - 1))
                   }
                   disabled={currentPage === 1}
-                  className="p-2 rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                  className="border-gray-200 border"
+                  variant="outline"
                 >
-                  <AltArrowLeft className="w-4 h-4" />
+                  Previous
                 </Button>
                 {[...Array(totalPages)].map((_, idx) => (
                   <Button
@@ -310,9 +311,10 @@ const ShiftsPage = () => {
                     setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                  className="border-gray-200"
+                  variant="outline"
                 >
-                  <AltArrowRight className="w-4 h-4" />
+                  Next
                 </Button>
               </div>
             )}

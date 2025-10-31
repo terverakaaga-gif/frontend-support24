@@ -118,10 +118,10 @@ const LOCATION_TYPES = [
 ];
 
 const SHIFT_DURATIONS = [
-  { value: 1, label: "1 Hour" },
-  { value: 2, label: "2 Hours" },
+  { value: 2, label: "2 Hour" },
   { value: 3, label: "3 Hours" },
   { value: 4, label: "4 Hours" },
+  { value: 8, label: "8 Hours" },
 ];
 
 interface ShiftCreationDialogProps {
@@ -143,7 +143,6 @@ export default function ShiftCreationDialog({
     useGetActiveServiceTypes();
   const { data: existingRoutines, isLoading: loadingRoutines } =
     useGetRoutines();
-  console.log("Existing Routines:  ", existingRoutines);
   const createShiftMutation = useCreateShift();
   const createRoutineMutation = useCreateRoutine();
   const { data: orgs = [], isLoading: orgsLoading } = useGetOrganizations();

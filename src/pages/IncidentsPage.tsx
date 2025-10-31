@@ -39,6 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Spinner } from "@/components/Spinner";
 
 const IncidentsPage = () => {
   const { user, logout } = useAuth();
@@ -452,26 +453,26 @@ const IncidentsPage = () => {
       <div className="bg-white rounded-b-lg border border-gray-200 overflow-hidden my-3">
         <Table>
           <TableHeader>
-            <TableRow className="font-montserrat-semibold">
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+            <TableRow className="border-b border-gray-100 font-montserrat-semibold uppercase hover:bg-transparent">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 INCIDENT REPORT
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 REPORTED BY
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 DATE
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 TIME
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 SEVERITY
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 STATUS
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs text-black">
                 ACTIONS
               </TableHead>
             </TableRow>
@@ -567,9 +568,10 @@ const IncidentsPage = () => {
               <Button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+                className="border-gray-200"
+                variant="outline"
               >
-                <AltArrowLeft className="h-4 w-4" />
+                Previous
               </Button>
               {Array.from(
                 { length: Math.min(totalPages, 5) },
@@ -578,10 +580,10 @@ const IncidentsPage = () => {
                 <Button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`px-4 py-1 text-sm rounded ${
+                  className={`px-4 py-1 text-sm rounded  h-9 min-w-[36px] ${
                     currentPage === page
                       ? "bg-primary-600 text-white"
-                      : "border border-gray-300 hover:bg-gray-100"
+                      : " hover:bg-gray-100"
                   }`}
                 >
                   {page}
@@ -592,9 +594,10 @@ const IncidentsPage = () => {
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+                className="border-gray-200"
+                variant="outline"
               >
-                <AltArrowRight className="h-4 w-4" />
+                Next
               </Button>
             </div>
           </div>
@@ -614,7 +617,7 @@ const IncidentsPage = () => {
                 onClick={() => setResolveModalOpen(false)}
                 className="text-black hover:bg-transparent hover:text-primary"
               >
-                <CloseCircle size={24} />
+                <CloseCircle className="w-12 h-12" />
               </Button>
             </div>
 
@@ -707,7 +710,7 @@ const IncidentsPage = () => {
                 onClick={() => setResolvePreviewModalOpen(false)}
                 className="text-black hover:text-primary-600 hover:bg-transparent"
               >
-                <CloseCircle size={24} />
+                <CloseCircle className="w-12 h-12" />
               </Button>
             </div>
 
@@ -828,7 +831,7 @@ const IncidentsPage = () => {
                 onClick={() => setCreateModalOpen(false)}
                 className="text-black hover:bg-transparent hover:text-primary"
               >
-                <CloseCircle size={24} />
+                <CloseCircle className="w-12 h-12" />
               </Button>
             </div>
 
@@ -981,7 +984,7 @@ const IncidentsPage = () => {
                 onClick={() => setShowShiftModal(false)}
                 className="text-black hover:text-primary hover:bg-transparent"
               >
-                <CloseCircle size={24} />
+                <CloseCircle className="w-12 h-12" />
               </Button>
             </div>
 
@@ -1080,7 +1083,7 @@ const IncidentsPage = () => {
                 onClick={() => setReviewModalOpen(false)}
                 className="text-black hover:text-primary-600 hover:bg-transparent"
               >
-                <CloseCircle size={24} />
+                <CloseCircle className="w-12 h-12" />
               </Button>
             </div>
 
@@ -1168,7 +1171,12 @@ const IncidentsPage = () => {
                 disabled={createIncidentMutation.isPending}
                 className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-montserrat-bold disabled:opacity-50"
               >
-                {createIncidentMutation.isPending ? "Saving..." : "Save"}
+                {createIncidentMutation.isPending ? (
+                  <>
+                    <Spinner/>
+                    <span className="ml-2">Saving...</span>
+                  </>
+                ) : "Save"}
               </Button>
             </div>
           </div>
@@ -1188,7 +1196,7 @@ const IncidentsPage = () => {
                 onClick={() => setViewModalOpen(false)}
                 className="text-black hover:text-primary-600 hover:bg-transparent"
               >
-                <CloseCircle size={24} />
+                <CloseCircle className="w-12 h-12" />
               </Button>
             </div>
 

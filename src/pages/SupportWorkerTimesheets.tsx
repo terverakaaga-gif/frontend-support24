@@ -439,7 +439,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             handlePageChange(timesheetData.pagination.page - 1)
                           }
                           disabled={timesheetData.pagination.page <= 1}
-                          className="border-gray-200 h-9"
+                          className="border-gray-200"
                         >
                           Previous
                         </Button>
@@ -494,7 +494,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             handlePageChange(timesheetData.pagination.page + 1)
                           }
                           disabled={!timesheetData.pagination.hasMore}
-                          className="border-gray-200 h-9"
+                          className="border-gray-200"
                         >
                           Next
                         </Button>

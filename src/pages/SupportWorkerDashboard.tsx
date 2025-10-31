@@ -60,7 +60,13 @@ interface StatCardProps {
   trendDirection?: "up" | "down" | "neutral" | "stable";
 }
 
-function StatCard({ title, value, icon: Icon, trend, trendDirection }:StatCardProps) {
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  trendDirection,
+}: StatCardProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
       <div className="flex items-center justify-between mb-3">
@@ -448,7 +454,6 @@ function InvitationsTable({ invitations, isLoading }) {
             navigate("/support-worker/organizations");
           }}
           variant="link"
-          className="text-primary hover:text-primary/80 text-sm font-medium p-0"
         >
           View all →
         </Button>
@@ -458,22 +463,22 @@ function InvitationsTable({ invitations, isLoading }) {
         <Table>
           <TableHeader>
             <TableRow className="border-b border-gray-200 bg-white font-montserrat-semibold">
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
                 Client Name
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden md:table-cell">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden md:table-cell">
                 Service Requested
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden lg:table-cell">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden lg:table-cell">
                 Date
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden xl:table-cell">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden xl:table-cell">
                 Location
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
                 Hourly Rate
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
                 Status
               </TableHead>
               <TableHead className="px-4 md:px-6 py-3"></TableHead>
@@ -574,15 +579,15 @@ function InvitationsTable({ invitations, isLoading }) {
           </Select>
           <span>entries</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
-            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            className="border-gray-200"
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
-            ‹
+            Previous
           </Button>
           {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
             (page) => (
@@ -590,7 +595,7 @@ function InvitationsTable({ invitations, isLoading }) {
                 key={page}
                 size="sm"
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 ${
+                className={` ${
                   currentPage === page
                     ? "bg-primary text-white hover:bg-primary/90"
                     : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
@@ -603,11 +608,11 @@ function InvitationsTable({ invitations, isLoading }) {
           <Button
             variant="outline"
             size="sm"
-            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            className="border-gray-200"
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
-            ›
+            Next
           </Button>
         </div>
       </div>
@@ -667,6 +672,8 @@ export default function SupportWorkerDashboard() {
     return <Loader />;
   }
 
+  console.log("user data: ", user);
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="">
@@ -681,10 +688,10 @@ export default function SupportWorkerDashboard() {
 
         {user &&
           user.role === "supportWorker" &&
-          (user as SupportWorker).verificationStatus?.onboardingComplete &&
+          !(user as SupportWorker).verificationStatus?.onboardingComplete &&
           !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
             <div className="mb-6">
-              <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+              <ProfileSetupAlert />
             </div>
           )}
 
@@ -706,7 +713,9 @@ export default function SupportWorkerDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <StatCard
               title="Hours Worked"
-              value={`${overviewData?.workSummary?.hoursWorked?.current.toFixed(2) || 0}h`}
+              value={`${
+                overviewData?.workSummary?.hoursWorked?.current.toFixed(2) || 0
+              }h`}
               icon={ClockCircle}
               trend="From last Month"
               trendDirection={getTrendDirection(
@@ -722,9 +731,9 @@ export default function SupportWorkerDashboard() {
             />
             <StatCard
               title="Earnings"
-              value={`$${(
+              value={`$${
                 overviewData?.workSummary?.earnings?.current.toFixed(2) || 0
-              )}`}
+              }`}
               icon={DollarMinimalistic}
               trend="From last Month"
               trendDirection={getTrendDirection(
@@ -733,9 +742,9 @@ export default function SupportWorkerDashboard() {
             />
             <StatCard
               title="Performance Ratings"
-              value={(
+              value={
                 overviewData?.performanceMetrics?.averageRating.toFixed(2) || 0
-              )}
+              }
               icon={Star}
               trend={`${
                 overviewData?.performanceMetrics?.onTimeRate || 0
@@ -779,7 +788,7 @@ export default function SupportWorkerDashboard() {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <TableCell className="px-4 md:px-6 py-3 whitespace-nowrap">
-                       {new Date(shift.date).toLocaleDateString("en-US", {
+                        {new Date(shift.date).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                         })}
