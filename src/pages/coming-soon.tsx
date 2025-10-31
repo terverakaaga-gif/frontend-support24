@@ -121,7 +121,7 @@ export default function Support24Landing() {
               ease: "easeInOut"
             }}
           >
-            <img src="/images/coming-soon.png" alt="Phone Mockup" />
+            <img src="/images/coming-soon.png" className="lg:w-full lg:h-full w-[600px]   object-cover" alt="Phone Mockup" />
           </motion.div>
         </motion.div>
 
