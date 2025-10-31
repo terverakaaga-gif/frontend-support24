@@ -35,9 +35,9 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           <motion.div className="text-center mb-8 md:mb-12 w-full" {...fadeInUp}>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-12 mb-8 md:mb-12">
               {[
-                { value: "4.9", label: "Average Rating" },
-                { value: "15,000+", label: "Active Users" },
-                { value: "50,000+", label: "Successful Booking" },
+                { value: "4.5", label: "Average Rating" },
+                { value: "2,000+", label: "Active Users" },
+                { value: "10,000+", label: "Successful Booking" },
               ].map((stat, i) => (
                 <motion.div
                   key={i}
@@ -123,7 +123,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       </h3>
 
       {/* Video Thumbnail (if applicable) */}
-      {testimonial.hasVideo && (
+      {/* {testimonial.hasVideo && (
         <div className="mb-4 relative rounded-lg overflow-hidden flex-shrink-0">
           <img
             src={testimonial.videoThumbnail}
@@ -136,7 +136,7 @@ const TestimonialCard = ({ testimonial, index }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Content */}
       <p className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow ${
@@ -147,11 +147,11 @@ const TestimonialCard = ({ testimonial, index }) => {
 
       {/* User Info */}
       <div className="flex items-center gap-3 mt-auto">
-        <img
+        {/* <img
           src={testimonial.avatar}
           alt={testimonial.userName}
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
-        />
+        /> */}
         <div>
           <p className={`text-sm sm:text-base font-semibold ${
             testimonial.hasVideo ? 'text-white' : 'text-gray-900'

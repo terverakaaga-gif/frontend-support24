@@ -131,7 +131,7 @@ export default function Support24Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            Support24 makes NDIS support effortless. Connect with verified
+            Support24 makes NDIS and Agecare support effortless. Connect with verified
             workers, plan your routine and access trusted care - all simplified
           </motion.p>
 
@@ -182,7 +182,6 @@ export default function Support24Landing() {
           >
             {[
               { icon: ShieldCheck, text: "Verified Workers" },
-              { icon: CheckCircle, text: "NDIS Approved" },
               { icon: ShieldCheck, text: "Secure Platform" },
               { icon: ClockCircle, text: "24/7 Available" }
             ].map((badge, index) => (

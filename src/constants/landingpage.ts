@@ -6,7 +6,7 @@ export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works" },
   { name: "Events", href: "/coming-soon" },
   { name: "Accommodation", href: "/coming-soon" },
-  { name: "Marketplace", href: "/coming-soon" },
+  { name: "Find jobs", href: "/coming-soon" },
   { name: "FAQs", href: "/coming-soon" },
   { name: "Contact Us", href: "/coming-soon" },
 ] as const;
@@ -36,7 +36,7 @@ export const FEATURE_CARDS = [
   {
     title: "Protected Booking",
     content:
-      "Every appointment is secured with verified workers and encrypted transactions, gibing you confidence from start to finish.",
+      "Every appointment is secured with verified workers and encrypted transactions, giving you confidence from start to finish.",
     icon: Calendar,
     footer: "100% booking protection",
   },
@@ -46,7 +46,7 @@ export const ALL_IN_ONE_CARDS = [
   {
     title: "Daily Routine",
     content:
-      "Create and share some routine so support is consistent and clear everyday",
+      "Create and share routines so support is consistent and clear everyday",
     icon: CalendarAdd,
   },
   {
