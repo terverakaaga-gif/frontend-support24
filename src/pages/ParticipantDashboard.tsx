@@ -528,7 +528,7 @@ function ParticipantDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Active Workers"
-            value={overviewData?.careOverview?.activeWorkers?.toString() || "0"}
+            value={overviewData?.careOverview?.activeWorkers?.toPrecision(1) || "0"}
             icon={UsersGroupTwoRounded}
             additionalText="Supporting your care"
             trend={undefined}
@@ -537,7 +537,7 @@ function ParticipantDashboard() {
           <StatCard
             title="Care Hours"
             value={`${
-              overviewData?.careOverview?.totalCareHours?.current || 0
+              overviewData?.careOverview?.totalCareHours?.current.toFixed(2) || 0
             }h`}
             icon={ClockCircle}
             trend={`${Math.abs(
