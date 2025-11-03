@@ -42,7 +42,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               {["About", "Pricing", "Blog"].map((link) => (
                 <li key={link}>
                   <a
-                    href="#"
+                    href={link === "Blog" ? "https://blog.support24.com.au/" : "#"}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
                     {link}

@@ -6,7 +6,7 @@ export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works" },
   { name: "Events", href: "/coming-soon" },
   { name: "Accommodation", href: "/coming-soon" },
-  { name: "Marketplace", href: "/coming-soon" },
+  { name: "Find Jobs", href: "/coming-soon" },
   { name: "FAQs", href: "/coming-soon" },
   { name: "Contact Us", href: "/coming-soon" },
 ] as const;
@@ -15,7 +15,7 @@ export const FEATURE_CARDS = [
   {
     title: "Verified Support Workers",
     content:
-      "Every support worker undergoes comprehensive police checks. references verification, and skills assessment before joining our platform.",
+      "Support worker are verified.  This includes elegibility requirements, police checks, and references before joining our platform.",
     icon: ShieldCheck,
     footer: "100% verification rate",
   },
@@ -24,7 +24,7 @@ export const FEATURE_CARDS = [
     content:
       "All insurance documentation is verified and displayed clearly. Worker coverage details are updated in real-time for your peace of mind.",
     icon: CheckCircle,
-    footer: "$20M coverage",
+    footer: " Adequate coverage",
   },
   {
     title: "Privacy Protected",
@@ -46,7 +46,7 @@ export const ALL_IN_ONE_CARDS = [
   {
     title: "Daily Routine",
     content:
-      "Create and share some routine so support is consistent and clear everyday",
+      "Create and share routines so support is consistent and clear everyday",
     icon: CalendarAdd,
   },
   {

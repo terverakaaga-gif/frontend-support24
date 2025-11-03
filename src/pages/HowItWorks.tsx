@@ -134,7 +134,7 @@ export const HowItWorks = () => {
                                 }}
                                                             
                             >
-                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-16 -bottom-10  w-[230px]  translate-y-[35%] sm:translate-y-[45%]"  text="Enhances" y={-24} />
+                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-16 -bottom-11  w-[230px]  translate-y-[35%] sm:translate-y-[45%]"  text="Enhances" y={-24} />
                             </motion.span>{" "}
                             Your Care
                             <motion.br

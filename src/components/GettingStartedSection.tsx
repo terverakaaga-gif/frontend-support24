@@ -84,7 +84,7 @@ export const GettingStartedSection: React.FC<GettingStartedSectionProps> = ({
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <InlineVectorText className="italic text-white" imageClassName=" sm:-bottom-10   translate-y-[35%] sm:translate-y-[45%]" text="Easy" y={-20} />
+              <InlineVectorText className="italic text-white" imageClassName=" sm:-bottom-10 -bottom-7  w-[230px]  translate-y-[35%] sm:translate-y-[45%]" text="Easy" y={-20} />
             </motion.span>
           </motion.h1>
 
