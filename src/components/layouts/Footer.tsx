@@ -111,6 +111,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              href="https://facebook.com/support244"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src="/new-res/facebook.svg"
@@ -123,6 +126,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              href="https://instagram.com/support244"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src="/new-res/instagram.svg"
@@ -135,6 +141,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              href="https://www.linkedin.com/company/support244/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src="/new-res/linkedin.svg"
