@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
   return (
-    <footer className={` bg-[#05030B] text-white relative overflow-hidden ${className}`}>
+    <footer id="contact" className={` bg-[#05030B] text-white relative overflow-hidden scroll-mt-20 ${className}`}>
        {/* Gradient blue circle at top right */}
        {/* <img
         src="/new-res/gradient-ckr.svg"

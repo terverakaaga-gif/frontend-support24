@@ -7,8 +7,8 @@ export const LANDINGPAGE_NAVS = [
   { name: "Events", href: "/coming-soon" },
   { name: "Accommodation", href: "/coming-soon" },
   { name: "Find Jobs", href: "/coming-soon" },
-  { name: "FAQs", href: "/coming-soon" },
-  { name: "Contact Us", href: "/coming-soon" },
+  { name: "FAQs", href: "/#faq" },
+  { name: "Contact Us", href: "/#contact" },
 ] as const;
 
 export const FEATURE_CARDS = [

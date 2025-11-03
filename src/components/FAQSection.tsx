@@ -52,7 +52,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
   ];
 
   return (
-    <section className={`relative min-h-fit p-6 md:p-8 lg:p-16 bg-gray-50/95 text-black ${className}`}>
+    <section id="faq" className={`relative min-h-fit p-6 md:p-8 lg:p-16 bg-gray-50/95 text-black scroll-mt-20 ${className}`}>
       {/* Vector Illustration Circle */}
       <img
         src="/new-res/gradient-ckr.svg"
