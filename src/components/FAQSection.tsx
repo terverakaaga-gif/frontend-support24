@@ -27,23 +27,23 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
   const faqData = [
     {
       question: "How are support workers verified?",
-      answer: "All workers complete police and reference check and meet regular screening standard. We verify and display insurance documentation for transparency."
+      answer: "All workers meets elegibility criteria, police checks before joining our platform."
     },
     {
       question: "Can I use my NDIS funding with Support24?",
-      answer: "Yes, Support24 is fully NDIS compliant and works with all NDIS funding types. You can use your plan funding to access our services."
+      answer: "Yes, Support24 works with all NDIS funding types. You can use your plan funding to access our services."
     },
     {
       question: "Is Support24 free to join?",
-      answer: "Yes, joining Support24 is completely free for participants. Support workers pay a small platform fee only when they complete shifts."
+      answer: "Yes, joining Support24 is currently free for participants, Support cordinators and Support workers."
     },
     {
       question: "What about insurance coverage?",
-      answer: "All support workers on our platform are fully insured with comprehensive public liability and professional indemnity insurance."
+      answer: "All support workers on our platform are fully insured with professional cover."
     },
     {
       question: "Can I book group activities or camps?",
-      answer: "Absolutely! We offer a wide range of group activities, community programs, and camps designed to connect and inspire participants."
+      answer: "Absolutely! the platform offers a wide range of group activities, community programs, and camps designed to connect and inspire participants."
     },
     {
       question: "What devices are supported?",
@@ -52,7 +52,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
   ];
 
   return (
-    <section className={`relative min-h-fit p-6 md:p-8 lg:p-16 bg-gray-50/95 text-black ${className}`}>
+    <section id="faq" className={`relative min-h-fit p-6 md:p-8 lg:p-16 bg-gray-50/95 text-black scroll-mt-20 ${className}`}>
       {/* Vector Illustration Circle */}
       <img
         src="/new-res/gradient-ckr.svg"

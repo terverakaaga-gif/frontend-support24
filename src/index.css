@@ -92,6 +92,10 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   @font-face {
     font-family: "Montserrat";
     src: url("/fonts/Montserrat/static/Montserrat-Regular.ttf")

@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
   return (
-    <footer className={` bg-[#05030B] text-white relative overflow-hidden ${className}`}>
+    <footer id="contact" className={` bg-[#05030B] text-white relative overflow-hidden scroll-mt-20 ${className}`}>
        {/* Gradient blue circle at top right */}
        {/* <img
         src="/new-res/gradient-ckr.svg"
@@ -42,7 +42,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               {["About", "Pricing", "Blog"].map((link) => (
                 <li key={link}>
                   <a
-                    href="#"
+                    href={link === "Blog" ? "https://blog.support24.com.au/" : "#"}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
                     {link}
@@ -111,6 +111,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              href="https://facebook.com/support244"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src="/new-res/facebook.svg"
@@ -123,6 +126,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              href="https://instagram.com/support244"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src="/new-res/instagram.svg"
@@ -135,6 +141,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              href="https://www.linkedin.com/company/support244/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src="/new-res/linkedin.svg"

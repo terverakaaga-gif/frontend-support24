@@ -111,7 +111,7 @@ export default function Support24Landing() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <InlineVectorText className="italic text-white " text="Support"
-              imageClassName="-bottom-1 sm:-bottom-4 w-[200px] translate-y-[35%] sm:translate-y-[45%]"
+              imageClassName="bottom-0 sm:-bottom-4 lg:w-[200px] w-[180px] translate-y-[35%] sm:translate-y-[45%]"
               />
             </motion.span>{"  "}
             <motion.span
@@ -182,8 +182,9 @@ export default function Support24Landing() {
           >
             {[
               { icon: ShieldCheck, text: "Verified Workers" },
+              // { icon: CheckCircle, text: "NDIS Approved" },
               { icon: ShieldCheck, text: "Secure Platform" },
-              { icon: ClockCircle, text: "24/7 Available" }
+              { icon: ClockCircle, text: "24/7 Availability" }
             ].map((badge, index) => (
               <motion.div
                 key={index}
@@ -230,7 +231,7 @@ export default function Support24Landing() {
               ease: "easeInOut"
             }}
           >
-            <img src="/new-res/hero-illustration.svg" alt="Phone Mockup" />
+            <img src="/new-res/illustration.png" alt="Phone Mockup" />
           </motion.div>
         </motion.div>
 
@@ -263,13 +264,13 @@ export default function Support24Landing() {
               <InlineVectorText 
                 className="italic" 
                 text="Support24" 
-                imageClassName="-bottom-1 sm:-bottom-3 lg:w-[270px] w-[200px]  translate-y-[35%] sm:translate-y-[45%]"
+                imageClassName="-bottom-1 sm:-bottom-6 lg:w-[270px] w-[150px]  translate-y-[35%] sm:translate-y-[45%]"
               /> is
               for Everyone in The Care Journey
             </motion.h1>
             <p className="text-xl md:text-2xl lg:text-2xl max-w-3xl mx-auto leading-relaxed font-montserrat-medium">
               Whether you are seeking support (providing care) or managing
-              service, Support24 simplifies every part of the care process
+              care plans, Support24 simplifies every part of the care process
             </p>
           </motion.div>
 

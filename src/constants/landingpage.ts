@@ -7,15 +7,15 @@ export const LANDINGPAGE_NAVS = [
   { name: "Events", href: "/coming-soon" },
   { name: "Accommodation", href: "/coming-soon" },
   { name: "Find jobs", href: "/coming-soon" },
-  { name: "FAQs", href: "/coming-soon" },
-  { name: "Contact Us", href: "/coming-soon" },
+  { name: "FAQs", href: "/#faq" },
+  { name: "Contact Us", href: "/#contact" },
 ] as const;
 
 export const FEATURE_CARDS = [
   {
     title: "Verified Support Workers",
     content:
-      "Every support worker undergoes comprehensive police checks. references verification, and skills assessment before joining our platform.",
+      "Support worker are verified.  This includes elegibility requirements, police checks, and references before joining our platform.",
     icon: ShieldCheck,
     footer: "100% verification rate",
   },
@@ -24,7 +24,7 @@ export const FEATURE_CARDS = [
     content:
       "All insurance documentation is verified and displayed clearly. Worker coverage details are updated in real-time for your peace of mind.",
     icon: CheckCircle,
-    footer: "$20M coverage",
+    footer: " Adequate coverage",
   },
   {
     title: "Privacy Protected",

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CloseCircle, HamburgerMenu } from "@solar-icons/react";
 import { LANDINGPAGE_NAVS } from "@/constants/landingpage";
 
@@ -11,6 +11,28 @@ interface NavigationProps {
 export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const location = useLocation();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Check if this is a hash link
+    if (href.startsWith("/#")) {
+      e.preventDefault();
+      const id = href.substring(2); // Remove '/#'
+      
+      // If we're not on the landing page, navigate there first
+      if (location.pathname !== "/") {
+        window.location.href = href;
+        return;
+      }
+      
+      // Otherwise, scroll to the element
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      setMobileMenuOpen(false);
+    }
+  };
 
   return (
     <motion.header
@@ -53,6 +75,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
               <Link
                 key={i + nav.name}
                 to={nav.href}
+                onClick={(e) => handleNavClick(e, nav.href)}
                 className="text-sm hover:text-primary transition-colors"
               >
                 {nav.name}
@@ -92,8 +115,8 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
                   <li key={i + nav.name}>
                     <Link
                       to={nav.href}
+                      onClick={(e) => handleNavClick(e, nav.href)}
                       className="font-montserrat-semibold block px-4 py-3 text-sm sm:text-base hover:bg-gray-100/10 text-white hover:text-primary transition-colors rounded-lg"
-                      onClick={() => setMobileMenuOpen(false)}
                     >
                       {nav.name}
                     </Link>
