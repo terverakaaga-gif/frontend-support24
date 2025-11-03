@@ -1,52 +1,56 @@
 import { get, post, put } from "../apiClient";
 import {
-	SupportWorker,
-	Availability,
-	Experience,
-	VerificationStatus,
-	Rating,
-	IPagination,
+  SupportWorker,
+  Availability,
+  Experience,
+  VerificationStatus,
+  Rating,
+  IPagination,
 } from "../../types/user.types";
 
 export interface ISearchSupportWorkers {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	skills: string[];
-	hourlyRate: {
-		baseRate: number;
-	};
-	ratings: Rating;
-	serviceAreas: string[];
-	languages: string[];
-	verificationStatus: VerificationStatus;
-	isInUserOrganization: boolean;
+  _id: string;
+  firstName: string;
+  lastName: string;
+  skills: {
+    _id: string;
+    name: string;
+    code: string;
+  }[];
+  hourlyRate: {
+    baseRate: number;
+  };
+  ratings: Rating;
+  serviceAreas: string[];
+  languages: string[];
+  verificationStatus: VerificationStatus;
+  isInUserOrganization: boolean;
 }
 
 export interface ISearchSupportWorkersResponse {
-	workers: ISearchSupportWorkers[];
-	pagination: IPagination;
+  workers: ISearchSupportWorkers[];
+  pagination: IPagination;
 }
 
 export interface ISearchSupportWorkerResponse {
-	worker: SupportWorker;
+  worker: SupportWorker;
 }
 
 // Service for participants
 export class ParticipantService {
-	endpoint = "workers";
+  endpoint = "workers";
 
-	async getSupportWorkers(): Promise<ISearchSupportWorkersResponse> {
-		return await get<ISearchSupportWorkersResponse>(`${this.endpoint}/search`);
-	}
+  async getSupportWorkers(): Promise<ISearchSupportWorkersResponse> {
+    return await get<ISearchSupportWorkersResponse>(`${this.endpoint}/search`);
+  }
 
-	async getSupportWorkerProfile(
-		id: string
-	): Promise<ISearchSupportWorkerResponse> {
-		return await get<ISearchSupportWorkerResponse>(
-			`${this.endpoint}/${id}/profile`
-		);
-	}
+  async getSupportWorkerProfile(
+    id: string
+  ): Promise<ISearchSupportWorkerResponse> {
+    return await get<ISearchSupportWorkerResponse>(
+      `${this.endpoint}/${id}/profile`
+    );
+  }
 }
 
 export const participantService = new ParticipantService();

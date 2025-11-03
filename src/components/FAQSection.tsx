@@ -116,7 +116,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
               key={i}
               className={`bg-white border border-gray-300 rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300  ${
                 openFaq === i
-                  ? "   backdrop-blur-sm bg-white  rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl&quot; shadow-lg shadow-[#0D2BEC]/60 border-[#0D2BEC] border-2"
+                  ? "   backdrop-blur-sm bg-white  rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl&quot; shadow-lg shadow-[#0D2BEC]/30 border-[#0D2BEC] border-2"
                   : "shadow-sm hover:shadow-md hover:shadow-primary/10"
               }`}
               initial={{ opacity: 0, y: 20 }}

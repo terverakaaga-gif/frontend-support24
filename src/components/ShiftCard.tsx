@@ -1,28 +1,52 @@
-import { Calendar, ClockCircle, MapPoint, User } from '@solar-icons/react';
-import React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import {
+  ArrowRightUp,
+  Calendar,
+  ClockCircle,
+  MapPoint,
+  User,
+} from "@solar-icons/react";
+import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+
 interface ShiftCardProps {
   shift: any;
   onClick: () => void;
-  viewMode?: 'grid' | 'list';
+  viewMode?: "grid" | "list";
 }
 
-const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid' }) => {
+const ShiftCard: React.FC<ShiftCardProps> = ({
+  shift,
+  onClick,
+  viewMode = "grid",
+}) => {
+  const { user } = useAuth();
+
+  const participant: {
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    profileImage: string;
+  } = shift.participantId;
+
   const getStatusBadgeStyle = (status: string) => {
     switch (status.toLowerCase()) {
       case "confirmed":
-        return "bg-primary-100 text-primary border border-primary-200";
+        return "bg-primary-100/70 text-primary border-primary-200";
       case "pending":
-        return "bg-orange-50 text-orange-600 border border-orange-200";
+        return "bg-orange-100/70 text-orange-600 border-orange-200";
       case "in progress":
       case "in_progress":
-        return "bg-purple-50 text-purple-600 border border-purple-200";
+        return "bg-purple-100/70 text-purple-600 border-purple-200";
       case "completed":
-        return "bg-green-50 text-green-600 border border-green-200";
+        return "bg-green-100/70 text-green-600 border-green-200";
       case "cancelled":
-        return "bg-red-50 text-red-600 border border-red-200";
+        return "bg-red-100/70 text-red-600 border-red-200";
       default:
-        return "bg-gray-100 text-gray-600 border border-gray-200";
+        return "bg-gray-100 text-gray-600 border-gray-200";
     }
   };
 
@@ -58,56 +82,57 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
     return `${diff.toFixed(1)}hr duration`;
   };
 
-  if (viewMode === 'list') {
+  if (viewMode === "list") {
     return (
       <div
-        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
         onClick={onClick}
       >
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row md:items-start items-center justify-between gap-2 sm:gap-4">
           {/* Left Section - Service Info */}
-          <div className="flex-shrink-0 min-w-0">
-            <h3 className="font-montserrat-semibold text-gray-900 text-base mb-1">
-              {shift.serviceTypeId.name}
-            </h3>
-            <div className="flex items-center gap-2 text-sm text-gray-1000">
-              <span>{formatDate(shift.startTime)}</span>
-              <span>•</span>
+          <div className="flex-shrink-0 min-w-0 w-full sm:w-auto">
+            <div className="flex items-start gap-1 flex-1 min-w-0 mb-3">
+              <h3 className="font-montserrat-semibold text-xs mt-1.5">
+                {shift.serviceTypeId.name}
+              </h3>
+              <span
+                className={`inline-flex px-2 sm:px-3 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusBadgeStyle(
+                  shift.status
+                )}`}
+              >
+                {getStatusLabel(shift.status)}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2 text-xs md:text-sm text-gray-1000">
+              <span>Date: {formatDate(shift.startTime)}</span>
+              <span>|</span>
               <span>
-                {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
+                Time: {formatTime(shift.startTime)} -{" "}
+                {formatTime(shift.endTime)}
               </span>
             </div>
           </div>
 
           {/* Middle Section - User & Location */}
-          <div className="flex items-center gap-6 flex-1 min-w-0">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <User className="w-4 h-4 flex-shrink-0" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 flex-1 min-w-0 w-full sm:w-auto">
+            <div className="flex items-center gap-1 sm:gap-2 text-xs md:text-sm">
+              <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
               <span className="truncate">
-                {shift.participantId?.firstName} {shift.participantId?.lastName}
+                {participant.firstName} {participant.lastName}
               </span>
             </div>
-            
-            <div className="flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-0">
-              <MapPoint className="w-4 h-4 flex-shrink-0" />
+
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 flex-1 min-w-0">
+              <MapPoint className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
               <span className="truncate">{shift.address}</span>
             </div>
           </div>
 
           {/* Right Section - Status & Action */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <span
-              className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusBadgeStyle(
-                shift.status
-              )}`}
-            >
-              {getStatusLabel(shift.status)}
-            </span>
-            <button className="bg-primary hover:bg-primary-700 text-white p-2 rounded-full transition-colors">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.33333 10.6667L10.6667 5.33333M10.6667 5.33333H5.33333M10.6667 5.33333V10.6667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end">
+            <Button className="bg-primary w-6 h-6 hover:bg-primary-700 text-white p-1.5 sm:p-2 rounded-full transition-colors">
+              <ArrowRightUp className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
@@ -117,67 +142,75 @@ const ShiftCard: React.FC<ShiftCardProps> = ({ shift, onClick, viewMode = 'grid'
   // Grid View
   return (
     <div
-      className="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 md:p-5 hover:shadow-md transition-shadow cursor-pointer"
       onClick={onClick}
     >
       {/* Header with Title and Status */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-start mb-3 sm:mb-4">
         <div className="flex items-start gap-1 flex-1 min-w-0">
-          <h3 className="font-montserrat-semibold text-base mb-1">
+          <h3 className="font-montserrat-semibold text-xs mt-1.5">
             {shift.serviceTypeId.name}
           </h3>
           <span
-            className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusBadgeStyle(
+            className={`inline-flex px-2 sm:px-3 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusBadgeStyle(
               shift.status
             )}`}
           >
             {getStatusLabel(shift.status)}
           </span>
         </div>
-        
+
         {/* Avatar Stack */}
-        <div className="flex -space-x-2 flex-shrink-0">
-          <Avatar className="w-8 h-8 border-2 border-white">
-            <AvatarImage src={`https://i.pravatar.cc/32?img=${Math.abs(parseInt(shift._id.slice(-4), 16)) % 10}`} alt="Avatar" />
-            <AvatarFallback>?</AvatarFallback>
+        <div className="flex -space-x-1 sm:-space-x-2 flex-shrink-0">
+          <Avatar className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white">
+            <AvatarImage src={participant.profileImage} alt="Avatar" />
+            <AvatarFallback>
+              {participant.firstName.charAt(0)}
+              {participant.lastName.charAt(0)}
+            </AvatarFallback>
           </Avatar>
-          <Avatar className="w-8 h-8 border-2 border-white">
-            <AvatarImage src={`https://i.pravatar.cc/32?img=${(Math.abs(parseInt(shift._id.slice(-4), 16)) + 1) % 10}`} alt="Avatar" />
-            <AvatarFallback>?</AvatarFallback>
+          <Avatar className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white">
+            <AvatarImage src={user.profileImage} alt="Avatar" />
+            <AvatarFallback>
+              {user.firstName.charAt(0)}
+              {user.lastName.charAt(0)}
+            </AvatarFallback>
           </Avatar>
         </div>
       </div>
 
       {/* Date and Time Info */}
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Calendar className="w-4 h-4" />
-          <span className="font-medium">Date:</span>
+      <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
+        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
+          <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="font-montserrat-semibold">Date:</span>
           <span>{formatDate(shift.startTime)}</span>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <ClockCircle className="w-4 h-4" />
-          <span className="font-medium">Time:</span>
+        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
+          <ClockCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="font-montserrat-semibold">Time:</span>
           <span>
             {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
           </span>
-          <span className="text-gray-400">
+          <span className="text-gray-400 text-xs">
             ({calculateDuration(shift.startTime, shift.endTime)})
           </span>
         </div>
       </div>
 
       {/* Participant and Location Pills */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <div className="bg-gray-100 rounded-full border border-gray-200 px-3 py-1.5 flex items-center gap-2 text-sm text-gray-700">
-          <User className="w-4 h-4 flex-shrink-0" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-wrap">
+        <div className="bg-gray-100 rounded-full border border-gray-200 px-2 sm:px-3 py-1 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-700 w-fit sm:w-auto">
+          <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
           <span className="truncate font-montserrat-semibold">
             {shift.participantId?.firstName} {shift.participantId?.lastName}
           </span>
         </div>
-        <div className="bg-gray-100 rounded-full border border-gray-200 px-3 py-1.5 flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-0">
-          <MapPoint className="w-4 h-4 flex-shrink-0" />
-          <span className="truncate font-montserrat-semibold">{shift.address}</span>
+        <div className="bg-gray-100 rounded-full border border-gray-200 px-2 sm:px-3 py-1 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 flex-1 min-w-0 w-fit sm:w-auto">
+          <MapPoint className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="truncate font-montserrat-semibold">
+            {shift.address}
+          </span>
         </div>
       </div>
     </div>

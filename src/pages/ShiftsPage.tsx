@@ -22,6 +22,8 @@ import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const ShiftsPage = () => {
   const { user, logout } = useAuth();
@@ -34,33 +36,57 @@ const ShiftsPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const { data: shifts = [], isLoading, error, refetch } = useGetShifts();
+  console.log("Fetched shifts:", shifts);
 
   const getStatusCount = (status: string) => {
     if (status === "all") return shifts.length;
     return shifts.filter((s: any) => s.status.toLowerCase() === status).length;
   };
 
-  const filteredShifts = shifts.filter((shift: any) => {
-    const matchesStatus =
-      statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
-    const matchesSearch =
-      searchQuery === "" ||
-      shift.serviceTypeId.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      (typeof shift.participantId === "object" &&
-        shift.participantId.firstName &&
-        shift.participantId.firstName
+  const filteredShifts = shifts
+    .filter((shift: any) => {
+      const matchesStatus =
+        statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
+      const matchesSearch =
+        searchQuery === "" ||
+        shift.serviceTypeId.name
           .toLowerCase()
-          .includes(searchQuery.toLowerCase())) ||
-      (typeof shift.participantId === "object" &&
-        shift.participantId.lastName &&
-        shift.participantId.lastName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())) ||
-      shift.address.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+          .includes(searchQuery.toLowerCase()) ||
+        (typeof shift.participantId === "object" &&
+          shift.participantId.firstName &&
+          shift.participantId.firstName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (typeof shift.participantId === "object" &&
+          shift.participantId.lastName &&
+          shift.participantId.lastName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        shift.address.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesSearch;
+    })
+    .sort((a: any, b: any) => {
+      const aStatus = a.status.toLowerCase();
+      const bStatus = b.status.toLowerCase();
+      const recentStatuses = ["pending", "confirmed", "inprogress"];
+
+      // If both shifts have status that should show recent first
+      if (
+        recentStatuses.includes(aStatus) &&
+        recentStatuses.includes(bStatus)
+      ) {
+        return (
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        );
+      }
+
+      // If only one has the recent status, prioritize it
+      if (recentStatuses.includes(aStatus)) return -1;
+      if (recentStatuses.includes(bStatus)) return 1;
+
+      // For other statuses, sort by start time (most recent first)
+      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    });
 
   const totalPages = Math.ceil(filteredShifts.length / itemsPerPage);
   const paginatedShifts = filteredShifts.slice(
@@ -95,6 +121,23 @@ const ShiftsPage = () => {
           subtitle="Manage your care schedule and track upcoming appointments"
           user={user}
           onLogout={logout}
+          rightComponent={
+            <>
+              <div className="flex-1 relative max-w-[150px] md:max-w-md">
+                <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search shifts here...."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                />
+              </div>
+            </>
+          }
           onViewProfile={() => {
             navigate(
               Object.keys(pageTitles.participant).find(
@@ -107,12 +150,12 @@ const ShiftsPage = () => {
         />
 
         {/* Filters */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <div className="flex gap-2 mb-6 overflow-x-auto">
           {[
             { key: "all", label: "All", bg: "bg-primary" },
             { key: "pending", label: "Pending", bg: "bg-orange-600" },
             { key: "confirmed", label: "Confirmed", bg: "bg-purple-600" },
-            { key: "in_progress", label: "In Progress", bg: "bg-yellow-600" },
+            { key: "inprogress", label: "In Progress", bg: "bg-yellow-600" },
             { key: "completed", label: "Completed", bg: "bg-green-600" },
             { key: "cancelled", label: "Cancelled", bg: "bg-red-600" },
           ].map(({ key, label, bg }) => (
@@ -122,7 +165,7 @@ const ShiftsPage = () => {
                 setStatusFilter(key);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
+              className={`px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
                 statusFilter === key
                   ? `${bg} text-white`
                   : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
@@ -132,8 +175,8 @@ const ShiftsPage = () => {
               <span
                 className={`px-1.5 py-0.5 rounded-full text-xs ${
                   statusFilter === key
-                    ? "bg-white text-gray-700"
-                    : "bg-gray-100"
+                    ? `${bg}/10 text-white`
+                    : `${bg} text-white`
                 }`}
               >
                 {getStatusCount(key)}
@@ -144,42 +187,31 @@ const ShiftsPage = () => {
 
         {/* Search and View Toggle */}
         <div className="flex gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search shifts here...."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
           <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setViewMode("grid")}
               className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
                 viewMode === "grid"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-white rounded-r-none"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <Widget size={24} />
               Grid
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => setViewMode("list")}
               className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
                 viewMode === "list"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-white rounded-l-none"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <List size={24} />
               List
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -251,17 +283,18 @@ const ShiftsPage = () => {
             {/* Pagination Controls */}
             {totalPages > 1 && (
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(1, prev - 1))
                   }
                   disabled={currentPage === 1}
-                  className="p-2 rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                  className="border-gray-200 border"
+                  variant="outline"
                 >
-                  <AltArrowLeft className="w-4 h-4" />
-                </button>
+                  Previous
+                </Button>
                 {[...Array(totalPages)].map((_, idx) => (
-                  <button
+                  <Button
                     key={idx}
                     onClick={() => setCurrentPage(idx + 1)}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
@@ -271,17 +304,18 @@ const ShiftsPage = () => {
                     }`}
                   >
                     {idx + 1}
-                  </button>
+                  </Button>
                 ))}
-                <button
+                <Button
                   onClick={() =>
                     setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                  className="border-gray-200"
+                  variant="outline"
                 >
-                  <AltArrowRight className="w-4 h-4" />
-                </button>
+                  Next
+                </Button>
               </div>
             )}
           </div>
@@ -289,6 +323,8 @@ const ShiftsPage = () => {
 
         {/* Shift Details Dialog */}
         <ShiftDetailsDialog
+          viewMode="worker"
+          currentUserId={user._id}
           shift={selectedShift}
           open={!!selectedShift}
           onOpenChange={(open) => !open && setSelectedShift(null)}

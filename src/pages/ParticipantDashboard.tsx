@@ -1,14 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import {
-  Clock,
-  Calendar,
-  Users,
+  Calendar as CalendarIcon,
+  ChatDots,
+  ClockCircle,
+  CloseCircle,
+  CourseDown,
+  CourseUp,
+  DollarMinimalistic,
   Star,
-  XCircle,
-  DollarSign,
-} from "lucide-react";
-import { CourseDown, CourseUp } from "@solar-icons/react";
+  UsersGroupTwoRounded,
+} from "@solar-icons/react";
 import {
   Line,
   Bar,
@@ -22,8 +23,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useAuth } from "@/contexts/AuthContext";
-import { ConnectionsList } from "@/components/participant/ConnectionsList";
+import { format } from "date-fns";
 import GeneralHeader from "@/components/GeneralHeader";
 import {
   useGetParticipantOverview,
@@ -31,10 +33,28 @@ import {
 } from "@/hooks/useAnalyticsHooks";
 import type { ServiceTypeInfo } from "@/entities/types";
 import Loader from "@/components/Loader";
-import ShiftCard from "@/components/ShiftCard";
-import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
-import { NotificationsList } from "@/components/NotificationsList";
 import { useNavigate } from "react-router-dom";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SelectContent } from "@radix-ui/react-select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Service type labels for display
 const SERVICE_TYPE_LABELS: Record<string, string> = {
@@ -123,7 +143,14 @@ function StatCard({
 }
 
 // Spending & Service Activity Chart Component
-function SpendingServiceChart({ spendingData, serviceData }: any) {
+function SpendingServiceChart({
+  spendingData,
+  serviceData,
+  period,
+  setPeriod,
+  dateRange,
+  setDateRange,
+}: any) {
   const chartData = useMemo(() => {
     // Combine spending and service data for the chart
     const months = spendingData?.map((item: any) => item.label) || [];
@@ -138,13 +165,68 @@ function SpendingServiceChart({ spendingData, serviceData }: any) {
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-montserrat-semibold text-gray-900">
-          Care Activity Overview
+          Monthly Spending Trend
         </h2>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-100 bg-white">
-            Pick Date
-            <Calendar className="h-4 w-4" />
-          </button>
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">Week</SelectItem>
+              <SelectItem value="month">Month</SelectItem>
+              <SelectItem value="year">Year</SelectItem>
+              {/* <SelectItem value="custom">Custom</SelectItem> */}
+            </SelectContent>
+          </Select>
+          {period === "custom" && (
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-[140px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.from
+                      ? format(dateRange.from, "PPP")
+                      : "Start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={dateRange.from}
+                    onSelect={(date) =>
+                      setDateRange((prev) => ({ ...prev, from: date }))
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-[140px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.to ? format(dateRange.to, "PPP") : "End date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={dateRange.to}
+                    onSelect={(date) =>
+                      setDateRange((prev) => ({ ...prev, to: date }))
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
         </div>
       </div>
 
@@ -210,135 +292,86 @@ function SpendingServiceChart({ spendingData, serviceData }: any) {
   );
 }
 
-// Upcoming Shifts Component
-function UpcomingShifts({ shifts = [] }: { shifts: any[] }) {
-  const [selectedShift, setSelectedShift] = useState<any>(null);
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      <ShiftDetailsDialog
-        shift={selectedShift}
-        open={!!selectedShift}
-        onOpenChange={(open) => !open && setSelectedShift(null)}
-      />
-      
-      <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">
-          Upcoming Shifts
-        </h2>
-        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
-          View all →
-        </button>
-      </div>
-
-      <div className="p-6 space-y-4">
-        {shifts.length > 0 ? (
-          shifts.slice(0, 3).map((shift, index) => (
-            <ShiftCard
-              key={shift._id || index}
-              shift={{
-                ...shift,
-                serviceType: "Personal Care",
-                participantName: shift.workerName || "Support Worker",
-                address: "Service Location",
-                status: "Upcoming",
-              }}
-              onClick={() => setSelectedShift(shift)}
-            />
-          ))
-        ) : (
-          <div className="text-center py-8">
-            <Calendar className="mx-auto h-12 w-12 mb-4 text-gray-400" />
-            <p className="text-gray-600 mb-4">No upcoming shifts scheduled</p>
-            <Button className="bg-primary hover:bg-primary-700 text-white">
-              Schedule a Shift
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // Support Workers Table Component
 function SupportWorkersTable({ workers }: { workers: any[] }) {
+  const navigate = useNavigate();
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
         <h2 className="text-lg font-montserrat-semibold text-gray-900">
-          Your Support Workers
+          Top Support Workers
         </h2>
-        <button className="text-status-pending hover:text-status-pending text-sm font-medium">
+        <Button variant="link" onClick={()=>navigate('/participant/organizations')} className="text-status-pending hover:text-status-pending text-sm font-medium">
           View all →
-        </button>
+        </Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-100">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Worker Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Service Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Hours This Month
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Rating
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {workers.map((worker) => (
-              <tr key={worker.workerId} className="hover:bg-gray-100">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <Avatar className="h-8 w-8 mr-3">
-                      <AvatarFallback className="bg-primary-100 text-primary-700">
-                        {worker.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm font-medium text-gray-900">
-                      {worker.name}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  Multiple Services
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {worker.hours} hours
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">
-                      {worker.rating > 0 ? worker.rating.toFixed(1) : "New"}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Active
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100">
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Worker Name
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Service Type
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Hours This Month
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Rating
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Status
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {workers.map((worker) => (
+            <TableRow key={worker.workerId}>
+              <TableCell>
+                <div className="flex items-center">
+                  <Avatar className="h-8 w-8 mr-3">
+                    <AvatarFallback className="bg-primary-100 text-primary-700">
+                      {worker.name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-gray-900">
+                    {worker.name}
                   </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100">
-                    Message
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              </TableCell>
+              <TableCell className="text-sm text-gray-600">
+                Multiple Services
+              </TableCell>
+              <TableCell className="text-sm text-gray-600">
+                {worker.hours} hours
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium">
+                    {worker.rating > 0 ? worker.rating.toFixed(1) : "New"}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Active
+                </span>
+              </TableCell>
+              <TableCell className="text-right">
+                <button
+                  onClick={() => navigate("/participant/chats")}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100"
+                >
+                  Message
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -370,22 +403,36 @@ function ServiceDistribution({ services }: { services: any[] }) {
     </div>
   );
 }
-
-export default function ParticipantDashboard() {
+function ParticipantDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch analytics data
+  const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [period, setPeriod] = useState<string>("month");
+  const [dateRange, setDateRange] = useState<{
+    from: Date | null;
+    to: Date | null;
+  }>({
+    from: null,
+    to: null,
+  });
+
+  // Fetch analytics data - now reactive to period and dateRange
   const {
     data: overviewData,
     isLoading: overviewLoading,
     error: overviewError,
-  } = useGetParticipantOverview("month", true);
+  } = useGetParticipantOverview(
+    period === "custom" ? { period: "custom", dateRange } : period,
+    true
+  );
   const {
     data: serviceData,
     isLoading: serviceLoading,
     error: serviceError,
-  } = useGetParticipantServices("month");
+  } = useGetParticipantServices(
+    period === "custom" ? { period: "custom", dateRange } : period
+  );
 
   // Format data
   const spendingTrendData = overviewData?.financialSummary?.spendingTrend || [];
@@ -418,10 +465,10 @@ export default function ParticipantDashboard() {
 
   if (overviewError || serviceError) {
     return (
-      <div className="container py-6 space-y-8">
+      <div className="p-8 space-y-8">
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <XCircle className="mx-auto h-12 w-12 text-red-500" />
+            <CloseCircle className="mx-auto h-12 w-12 text-red-500" />
             <p className="mt-4 text-muted-foreground">
               Failed to load dashboard data
             </p>
@@ -438,14 +485,18 @@ export default function ParticipantDashboard() {
   }
 
   // Calculate trend directions
-  const careHoursTrend = overviewData?.careOverview?.totalCareHours?.trend === "up" ? "up" : 
-                         overviewData?.careOverview?.totalCareHours?.trend === "down" ? "down" : null;
+  const careHoursTrend =
+    overviewData?.careOverview?.totalCareHours?.trend === "up"
+      ? "up"
+      : overviewData?.careOverview?.totalCareHours?.trend === "down"
+      ? "down"
+      : null;
   const budgetUsed = overviewData?.financialSummary?.budgetUtilization || 0;
   const budgetTrend = budgetUsed > 80 ? "up" : budgetUsed > 50 ? null : "down";
 
   return (
-    <div className="min-h-screen font-sans">
-      <div className="p-10">
+    <div className="min-h-screen font-montserrat bg-gray-100">
+      <div className="p-8">
         {/* Header */}
         <GeneralHeader
           stickyTop={true}
@@ -456,37 +507,63 @@ export default function ParticipantDashboard() {
           onViewProfile={() => {
             navigate("/participant/profile");
           }}
+          rightComponent={
+            <>
+              <Button
+                variant="outline"
+                className="mr-4 rounded-full hover:bg-transparent hover:text-gray-600 text-xs truncate max-w-[120px] md:max-w-[200px]"
+                onClick={() => setSearchOpen(true)}
+              >
+                Invite Support Workers
+              </Button>
+              <SearchSupportWorkers
+                open={searchOpen}
+                onOpenChange={setSearchOpen}
+              />
+            </>
+          }
         />
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Active Workers"
-            value={overviewData?.careOverview?.activeWorkers?.toString() || "0"}
-            icon={Users}
+            value={overviewData?.careOverview?.activeWorkers?.toPrecision(1) || "0"}
+            icon={UsersGroupTwoRounded}
             additionalText="Supporting your care"
             trend={undefined}
             trendDirection={undefined}
           />
           <StatCard
             title="Care Hours"
-            value={`${overviewData?.careOverview?.totalCareHours?.current || 0}h`}
-            icon={Clock}
-            trend={`${Math.abs(overviewData?.careOverview?.totalCareHours?.percentageChange || 0)}% from last month`}
+            value={`${
+              overviewData?.careOverview?.totalCareHours?.current.toFixed(2) || 0
+            }h`}
+            icon={ClockCircle}
+            trend={`${Math.abs(
+              overviewData?.careOverview?.totalCareHours?.percentageChange || 0
+            )}% from last month`}
             trendDirection={careHoursTrend}
             additionalText={undefined}
           />
           <StatCard
             title="Monthly Expenses"
-            value={`$${overviewData?.financialSummary?.currentMonthExpenses?.toFixed(2) || "0.00"}`}
-            icon={DollarSign}
+            value={`$${
+              overviewData?.financialSummary?.currentMonthExpenses?.toFixed(
+                2
+              ) || "0.00"
+            }`}
+            icon={DollarMinimalistic}
             trend={`${budgetUsed}% of budget used`}
             trendDirection={budgetTrend}
             additionalText={undefined}
           />
           <StatCard
             title="Service Quality"
-            value={`${overviewData?.performanceMetrics?.averageRating?.toFixed(1) || "5.0"}`}
+            value={`${
+              overviewData?.performanceMetrics?.averageRating?.toFixed(1) ||
+              "5.0"
+            }`}
             icon={Star}
             additionalText="Average rating"
             trend={undefined}
@@ -499,50 +576,28 @@ export default function ParticipantDashboard() {
           {/* Left Column - Charts & Service Distribution */}
           <div className="lg:col-span-2 space-y-6">
             <SpendingServiceChart
+              period={period}
+              setPeriod={setPeriod}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
               spendingData={spendingTrendData}
               serviceData={serviceTrendData}
             />
+          </div>
+
+          {/* Right Column - Distribution */}
+          <div>
             {serviceDistribution.length > 0 && (
               <ServiceDistribution services={serviceDistribution} />
             )}
-          </div>
-
-          {/* Right Column - Upcoming Shifts */}
-          <div>
-            <UpcomingShifts shifts={upcomingShifts} />
           </div>
         </div>
 
         {/* Support Workers Table */}
         {topWorkers.length > 0 && <SupportWorkersTable workers={topWorkers} />}
-
-        {/* Additional Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-          {/* Recent Notifications */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900">
-                Recent Notifications
-              </h2>
-            </div>
-            <div className="p-6">
-              <NotificationsList notifications={[]} />
-            </div>
-          </div>
-
-          {/* My Connections */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900">
-                My Connections
-              </h2>
-            </div>
-            <div className="p-6">
-              <ConnectionsList />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
 }
+
+export default memo(ParticipantDashboard);

@@ -23,10 +23,11 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { useRegister } from "@/hooks/useAuthHooks";
+import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z
   .object({
-	phone: z.string(),
+    phone: z.string(),
     firstName: z.string().min(2, { message: "First name is required." }),
     lastName: z.string().min(2, { message: "Last name is required." }),
     email: z.string().email({ message: "Please enter a valid email." }),
@@ -39,7 +40,9 @@ const formSchema = z
       .regex(/[a-z]/, {
         message: "Password must contain at least one lowercase letter.",
       })
-      .regex(/[0-9]/, { message: "Password must contain at least one number." }),
+      .regex(/[0-9]/, {
+        message: "Password must contain at least one number.",
+      }),
     confirmPassword: z.string(),
     role: z.enum(["participant", "guardian", "supportWorker"], {
       required_error: "Please select a role.",
@@ -52,6 +55,7 @@ const formSchema = z
 
 export default function Register() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const register = useRegister();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -80,7 +84,7 @@ export default function Register() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % onboardingSlides.length);
-    }, 5000); // Change slide every 5 seconds
+    }, 5000);
 
     return () => clearInterval(timer);
   }, [onboardingSlides.length]);
@@ -108,7 +112,6 @@ export default function Register() {
         role: values.role,
         phone: values.phone,
       });
-      // Redirect is handled by the hook
     } catch (error) {
       console.error("Registration failed:", error);
     }
@@ -123,8 +126,18 @@ export default function Register() {
     setShowConfirmPassword((prev) => !prev);
   };
 
+  useEffect(() => {
+    if (register.isSuccess) {
+      navigate(
+        `/otp-verify?email=${encodeURIComponent(
+          form.getValues("email")
+        )}&userId=${register.data.userId}`
+      );
+    }
+  }, [register.isSuccess, navigate, form]);
+
   return (
-    <div className="flex min-h-screen w-full bg-[#FDFDFD]">
+    <div className="flex min-h-screen w-full bg-gray-50">
       {/* Left side - Registration Form */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
@@ -204,27 +217,27 @@ export default function Register() {
                 />
               </div>
 
-			  {/* Phone Field */}
-			  <FormField
-				control={form.control}
-				name="phone"
-				render={({ field }) => (
-				  <FormItem>
-					<FormLabel className="text-gray-700 font-montserrat-semibold">
-					  Phone Number
-					</FormLabel>
-					<FormControl>
-					  <Input
-						placeholder="e.g 0412345678"
-						type="tel"
-						className="h-12 px-4 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-						{...field}
-					  />
-					</FormControl>
-					<FormMessage className="text-red-500 text-sm" />
-				  </FormItem>
-				)}
-			  />
+              {/* Phone Field */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-montserrat-semibold">
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g 0412345678"
+                        type="tel"
+                        className="h-12 px-4 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
 
               {/* Email Field */}
               <FormField

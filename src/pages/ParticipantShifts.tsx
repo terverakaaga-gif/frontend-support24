@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useGetShifts } from "@/hooks/useShiftHooks";
 import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
+  AddCircle,
   AltArrowLeft,
   AltArrowRight,
   ArrowRightUp,
@@ -28,13 +29,10 @@ import {
   DangerCircle,
   DollarMinimalistic,
   Eye,
-  History2,
   List,
   Magnifer,
   MapPoint,
-  PlayCircle,
   Repeat,
-  StationMinimalistic,
   User,
   UserHeart,
   UsersGroupRounded,
@@ -44,8 +42,9 @@ import { ClipboardCheck } from "lucide-react";
 import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { pageTitles } from "@/constants/pageTitles";
+import ShiftCreationDialog from "@/components/ShiftCreationDialog";
 
 // Date formatting utilities
 const formatDate = (dateString) => {
@@ -130,8 +129,53 @@ const getShiftDuration = (startTime, endTime) => {
   return `${hours}h ${minutes}m`;
 };
 
+// Stats Card component
+function StatsCard({
+  stats,
+  title,
+  Icon,
+  subtitle,
+}: {
+  stats: { total: number; thisWeek: number };
+  title: string;
+  Icon: any;
+  subtitle: string;
+}) {
+  return (
+    <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+      <CardContent className="p-4 sm:p-6 relative">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs md:text-sm font-montserrat-bold">{title}</p>
+            <p className="md:text-2xl text-3xl font-montserrat-bold text-gray-900 group-hover:text-primary-600 transition-colors">
+              {stats.total}
+            </p>
+            <p className="text-xs text-gray-1000 font-montserrat-semibold">
+              {subtitle}
+            </p>
+          </div>
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transi  tion-transform duration-300">
+            {" "}
+            {/* Smaller icon container */}
+            <Icon className="w-6 h-6 md:w-7 md:h-7 text-primary" />{" "}
+            {/* Responsive icon size */}
+          </div>
+        </div>
+        <div className="mt-3 sm:mt-4 flex items-center gap-1 text-xs md:text-sm">
+          {" "}
+          {/* Smaller text and margin */}
+          <CourseUp className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
+          <span className="text-green-600 font-medium">
+            {stats.thisWeek} this week
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 const ParticipantShifts = () => {
-  const {user,logout} = useAuth()
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
@@ -139,8 +183,15 @@ const ParticipantShifts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedShift, setSelectedShift] = useState<any>(null);
+  const [showCreateShiftDialog, setShowCreateShiftDialog] = useState(false);
 
   const { data: shifts = [], isLoading, error, refetch } = useGetShifts();
+
+  // Get count of shifts by status
+  const getStatusCount = (status: string) => {
+    if (status === "all") return shifts.length;
+    return shifts.filter((s: any) => s.status.toLowerCase() === status).length;
+  };
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -150,7 +201,7 @@ const ParticipantShifts = () => {
       confirmed: shifts.filter((s) => s.status === "confirmed").length,
       pending: shifts.filter((s) => s.status === "pending").length,
       completed: shifts.filter((s) => s.status === "completed").length,
-      inProgress: shifts.filter((s) => s.status.toLowerCase() === "in_progress")
+      inProgress: shifts.filter((s) => s.status.toLowerCase() === "inprogress")
         .length,
       cancelled: shifts.filter((s) => s.status === "cancelled").length,
       thisWeek: shifts.filter((s) => isThisWeek(s.startTime)).length,
@@ -160,7 +211,7 @@ const ParticipantShifts = () => {
 
   // Filter shifts
   const filteredShifts = useMemo(() => {
-    return shifts.filter((shift) => {
+    const filtered = shifts.filter((shift) => {
       const matchesStatus =
         statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
 
@@ -173,6 +224,30 @@ const ParticipantShifts = () => {
         shift.address?.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesStatus && matchesSearch;
+    });
+
+    // Sort shifts: recent first for pending, confirmed, and in-progress
+    return filtered.sort((a, b) => {
+      const aStatus = a.status.toLowerCase();
+      const bStatus = b.status.toLowerCase();
+      const recentStatuses = ["pending", "confirmed", "inprogress"];
+
+      // If both shifts have status that should show recent first
+      if (
+        recentStatuses.includes(aStatus) &&
+        recentStatuses.includes(bStatus)
+      ) {
+        return (
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        );
+      }
+
+      // If only one has the recent status, prioritize it
+      if (recentStatuses.includes(aStatus)) return -1;
+      if (recentStatuses.includes(bStatus)) return 1;
+
+      // For other statuses, sort by start time (most recent first)
+      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
     });
   }, [shifts, statusFilter, searchQuery]);
 
@@ -198,7 +273,7 @@ const ParticipantShifts = () => {
         bg: "bg-orange-600",
         lightBg: "bg-orange-50",
       },
-      in_progress: {
+      inProgress: {
         icon: <ClockCircle className="w-3 h-3" />,
         color: "text-yellow-600",
         bg: "bg-yellow-600",
@@ -304,187 +379,96 @@ const ParticipantShifts = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="p-8">
+      <div className="p-6 md:p-8">
         {/* Header */}
         <GeneralHeader
-          stickyTop={true} 
+          stickyTop={true}
           title={pageTitles.participant["/participant/shifts"].title}
           subtitle="Manage your care schedule and track upcoming appointments"
           user={user}
           onLogout={logout}
-          onViewProfile={()=>{navigate(Object.keys(pageTitles.participant).find(key => pageTitles.participant[key] === pageTitles.participant["/participant/profile"]))}} />
+          onViewProfile={() => {
+            navigate(
+              Object.keys(pageTitles.participant).find(
+                (key) =>
+                  pageTitles.participant[key] ===
+                  pageTitles.participant["/participant/profile"]
+              )
+            );
+          }}
+          rightComponent={
+            <Button
+              onClick={() => setShowCreateShiftDialog(true)}
+              className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <AddCircle className="w-5 h-5" />
+              Create Shift
+            </Button>
+          }
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            {/* <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary-600/10" /> */}
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-montserrat-bold">
-                    Total Shifts
-                  </p>
-                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-                    {stats.total}
-                  </p>
-                  <p className="text-xs text-gray-1000 font-montserrat-semibold">All time</p>
-                </div>
-                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Calendar className="w-7 h-7 text-primary" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center gap-1 text-sm">
-                <CourseUp className="w-4 h-4 text-green-500" />
-                <span className="text-green-600 font-medium">
-                  {stats.thisWeek} this week
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard
+            stats={{ total: stats.total, thisWeek: stats.thisWeek }}
+            title="Total Shifts"
+            subtitle="All time"
+            Icon={DollarMinimalistic}
+          />
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            {/* <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10" /> */}
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-montserrat-bold">
-                    Upcoming
-                  </p>
-                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                    {stats.upcoming}
-                  </p>
-                  <p className="text-xs text-gray-1000 font-montserrat-semibold">Future shifts</p>
-                </div>
-                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <CalendarMark className="w-7 h-7 text-primary" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center gap-1 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-green-600 font-medium">
-                  {stats.confirmed} confirmed
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard
+            stats={{ total: stats.upcoming, thisWeek: stats.thisWeek }}
+            title="Upcoming Shifts"
+            subtitle="Scheduled"
+            Icon={CalendarMark}
+          />
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            {/* <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-600/10" /> */}
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-montserrat-bold">
-                    Active Now
-                  </p>
-                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                    {stats.inProgress}
-                  </p>
-                  <p className="text-xs text-gray-1000 font-montserrat-semibold">In progress</p>
-                </div>
-                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <UserHeart className="w-7 h-7 text-primary" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center gap-1 text-sm">
-                <StationMinimalistic className="w-4 h-4 text-green-500" />
-                <span className="text-green-600 font-medium">Live updates</span>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard
+            stats={{ total: stats.inProgress, thisWeek: stats.thisWeek }}
+            title="Active Shifts"
+            subtitle="In Progress"
+            Icon={UserHeart}
+          />
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            {/* <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10" /> */}
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-montserrat-bold">
-                    Completed
-                  </p>
-                  <p className="text-3xl font-montserrat-bold text-gray-900 group-hover:text-green-600 transition-colors">
-                    {stats.completed}
-                  </p>
-                  <p className="text-xs text-gray-1000 font-montserrat-semibold">
-                    {stats.total > 0
-                      ? Math.round((stats.completed / stats.total) * 100)
-                      : 0}
-                    % completion rate
-                  </p>
-                </div>
-                <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <History2 className="w-7 h-7 text-primary" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center gap-1 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-green-600 font-medium">
-                  {stats.total - stats.cancelled} successful
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard
+            stats={{ total: stats.completed, thisWeek: stats.thisWeek }}
+            title="Completed Shifts"
+            subtitle="Completed"
+            Icon={ClipboardCheck}
+          />
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <div className="flex gap-2 mb-6 overflow-x-auto">
           {[
-            {
-              key: "all",
-              label: "All",
-              count: shifts.length,
-              color: "bg-primary",
-            },
-            {
-              key: "pending",
-              label: "Pending",
-              count: stats.pending,
-              color: "bg-orange-600",
-            },
-            {
-              key: "confirmed",
-              label: "Confirmed",
-              count: stats.confirmed,
-              color: "bg-purple-600",
-            },
-            {
-              key: "in_progress",
-              label: "In Progress",
-              count: stats.inProgress,
-              color: "bg-yellow-600",
-            },
-            {
-              key: "completed",
-              label: "Completed",
-              count: stats.completed,
-              color: "bg-green-600",
-            },
-            {
-              key: "cancelled",
-              label: "Cancelled",
-              count: stats.cancelled,
-              color: "bg-red-600",
-            },
-          ].map(({ key, label, count, color }) => (
+            { key: "all", label: "All", bg: "bg-primary" },
+            { key: "pending", label: "Pending", bg: "bg-orange-600" },
+            { key: "confirmed", label: "Confirmed", bg: "bg-purple-600" },
+            { key: "inprogress", label: "In Progress", bg: "bg-yellow-600" },
+            { key: "completed", label: "Completed", bg: "bg-green-600" },
+            { key: "cancelled", label: "Cancelled", bg: "bg-red-600" },
+          ].map(({ key, label, bg }) => (
             <button
               key={key}
               onClick={() => {
                 setStatusFilter(key);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-full text-sm font-montserrat-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
+              className={`px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
                 statusFilter === key
-                  ? `${color} text-white shadow-lg`
+                  ? `${bg} text-white`
                   : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
               }`}
             >
               {label}
               <span
-                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                className={`px-1.5 py-0.5 rounded-full text-xs ${
                   statusFilter === key
-                    ? "bg-white text-gray-700"
-                    : "bg-gray-100"
+                    ? `${bg}/10 text-white`
+                    : `${bg} text-white`
                 }`}
               >
-                {count}
+                {getStatusCount(key)}
               </span>
             </button>
           ))}
@@ -534,9 +518,9 @@ const ParticipantShifts = () => {
         {/* Shifts Grid/List */}
         <div
           className={cn(
-            "gap-6 mb-6",
+            "gap-4 sm:gap-6 mb-4 sm:mb-6", // Smaller gaps and margins
             viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" // Adjusted grid for small screens
               : "flex flex-col"
           )}
         >
@@ -554,35 +538,33 @@ const ParticipantShifts = () => {
                 <CardContent
                   className={cn("p-0", viewMode === "list" && "flex w-full")}
                 >
-                  {/* <div
-                    className={cn(
-                      statusInfo.bg,
-                      viewMode === "grid" ? "h-2 w-full" : "w-2 h-full"
-                    )}
-                  /> */}
-
                   <div
                     className={cn(
-                      "p-5",
-                      viewMode === "list" && "flex-1 flex items-center gap-6"
+                      "p-4 sm:p-5", // Reduced padding
+                      viewMode === "list" &&
+                        "flex-1 flex items-center gap-4 sm:gap-6" // Smaller gap
                     )}
                   >
                     <div
                       className={cn(
-                        "space-y-3",
+                        "space-y-2 sm:space-y-3", // Smaller spacing
                         viewMode === "list" &&
-                          "flex-1 space-y-0 flex items-center gap-6"
+                          "flex-1 space-y-0 flex items-center gap-4 sm:gap-6"
                       )}
                     >
                       <div className={cn(viewMode === "list" && "flex-1")}>
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-montserrat-semibold text-gray-900 text-lg group-hover:text-primary transition-colors">
+                        <div className="flex items-center justify-between mb-1 sm:mb-2">
+                          {" "}
+                          {/* Smaller margin */}
+                          <h3 className="font-montserrat-semibold text-gray-900 text-base sm:text-lg group-hover:text-primary transition-colors">
+                            {" "}
+                            {/* Responsive text size */}
                             {shift.serviceTypeId?.name || "Unknown Service"}
                           </h3>
                           {viewMode === "grid" && (
                             <Badge
                               className={cn(
-                                "gap-1",
+                                "gap-1 text-xs", // Smaller text
                                 statusInfo.lightBg,
                                 statusInfo.color
                               )}
@@ -599,18 +581,23 @@ const ParticipantShifts = () => {
 
                       <div
                         className={cn(
-                          "space-y-2",
-                          viewMode === "list" && "min-w-[200px]"
+                          "space-y-1 sm:space-y-2", // Smaller spacing
+                          viewMode === "list" &&
+                            "min-w-[180px] sm:min-w-[200px]" // Adjusted min-width
                         )}
                       >
-                        <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="w-4 h-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                          {" "}
+                          {/* Smaller text */}
+                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                           <span className="font-medium text-gray-900">
                             {formatDate(shift.startTime)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <ClockCircle className="w-4 h-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                          {" "}
+                          {/* Smaller text */}
+                          <ClockCircle className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                           <span>
                             {formatTime(shift.startTime)} -{" "}
                             {formatTime(shift.endTime)}
@@ -622,14 +609,19 @@ const ParticipantShifts = () => {
                       </div>
 
                       <div
-                        className={cn(viewMode === "list" && "min-w-[250px]")}
+                        className={cn(
+                          viewMode === "list" &&
+                            "min-w-[200px] sm:min-w-[250px]"
+                        )} // Adjusted min-width
                       >
                         {renderWorkerInfo(shift)}
                       </div>
 
                       {shift.address && (
-                        <div className="flex items-start gap-2 text-sm text-gray-600">
-                          <MapPoint className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600">
+                          {" "}
+                          {/* Smaller text */}
+                          <MapPoint className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                           <span className="line-clamp-2">{shift.address}</span>
                         </div>
                       )}
@@ -653,7 +645,7 @@ const ParticipantShifts = () => {
                         <div className="flex items-center gap-2">
                           <Badge
                             className={cn(
-                              "gap-1",
+                              "gap-1 text-xs", // Smaller text
                               statusInfo.lightBg,
                               statusInfo.color
                             )}
@@ -667,7 +659,7 @@ const ParticipantShifts = () => {
 
                     <div
                       className={cn(
-                        "flex items-center justify-end pt-3 border-t border-gray-100",
+                        "flex items-center justify-end pt-2 sm:pt-3 border-t border-gray-100", // Smaller padding
                         viewMode === "list" && "pt-0 border-t-0"
                       )}
                     >
@@ -675,15 +667,16 @@ const ParticipantShifts = () => {
                         onClick={() => setSelectedShift(shift)}
                         variant="default"
                         size="sm"
-                        className="gap-2 rounded-full font-montserrat-semibold"
+                        className="gap-2 rounded-full font-montserrat-semibold h-9 sm:h-10" // Smaller height on small screens
                       >
                         {viewMode === "grid" ? (
                           <>
-                            <Eye size={24} />
+                            <Eye size={20} className="sm:w-6 sm:h-6" />{" "}
+                            {/* Smaller icon */}
                             View Details
                           </>
                         ) : (
-                          <ArrowRightUp size={24} />
+                          <ArrowRightUp size={20} className="sm:w-6 sm:h-6" />
                         )}
                       </Button>
                     </div>
@@ -804,8 +797,15 @@ const ParticipantShifts = () => {
           </Card>
         )}
 
+        <ShiftCreationDialog
+          open={showCreateShiftDialog}
+          onOpenChange={setShowCreateShiftDialog}
+        />
+
         {/* Shift Details Dialog */}
         <ShiftDetailsDialog
+          viewMode="participant"
+          currentUserId={user._id}
           shift={selectedShift}
           open={!!selectedShift}
           onOpenChange={(open) => !open && setSelectedShift(null)}

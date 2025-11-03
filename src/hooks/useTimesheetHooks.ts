@@ -1,5 +1,5 @@
 // api/hooks/useTimesheetHooks.ts
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { timesheetService } from '../api/services/timesheetService';
 import { 
   ProcessedTimesheetData, 
@@ -8,6 +8,8 @@ import {
   TimesheetFilters,
   TimesheetSummary 
 } from '../entities/Timesheet';
+import { post } from '@/api/apiClient';
+import { toast } from 'sonner';
 
 // Query keys for cache management
 export const timesheetKeys = {
@@ -177,5 +179,26 @@ export const useGetOrganizationTimesheets = (
     },
     enabled: enabled && !!organizationId && !!allTimesheetsQuery.data,
     staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+/**
+ * Hook to create a new timesheet
+ */
+export const useCreateTimesheet = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (data: any) => post('/timesheets', data),
+    onSuccess: () => {
+      // Invalidate and refetch timesheets
+      queryClient.invalidateQueries({ queryKey: timesheetKeys.all });
+      toast.success('Timesheet created successfully!');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || 'Failed to create timesheet';
+      toast.error(errorMessage);
+      console.error('Create timesheet error:', error);
+    },
   });
 };

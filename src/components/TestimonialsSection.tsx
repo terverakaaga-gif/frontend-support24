@@ -123,7 +123,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       </h3>
 
       {/* Video Thumbnail (if applicable) */}
-      {testimonial.hasVideo && (
+      {/* {testimonial.hasVideo && (
         <div className="mb-4 relative rounded-lg overflow-hidden flex-shrink-0">
           <img
             src={testimonial.videoThumbnail}
@@ -136,7 +136,7 @@ const TestimonialCard = ({ testimonial, index }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Content */}
       <p className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow ${

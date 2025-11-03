@@ -10,23 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Eye,
   Magnifer,
@@ -34,19 +20,13 @@ import {
   ClockCircle,
   Dollar,
   BillList,
-  ArrowUp,
-  ArrowDown,
-  CourseUp,
-  CourseDown,
 } from "@solar-icons/react";
-import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetWorkerTimesheets } from "@/hooks/useTimesheetHooks";
 import {
   TimesheetClientFilters,
   Timesheet,
-  SERVICE_TYPE_LABELS,
 } from "@/entities/Timesheet";
 import Loader from "@/components/Loader";
 import GeneralHeader from "@/components/GeneralHeader";
@@ -459,7 +439,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             handlePageChange(timesheetData.pagination.page - 1)
                           }
                           disabled={timesheetData.pagination.page <= 1}
-                          className="border-gray-200 h-9"
+                          className="border-gray-200"
                         >
                           Previous
                         </Button>
@@ -514,7 +494,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             handlePageChange(timesheetData.pagination.page + 1)
                           }
                           disabled={!timesheetData.pagination.hasMore}
-                          className="border-gray-200 h-9"
+                          className="border-gray-200"
                         >
                           Next
                         </Button>
