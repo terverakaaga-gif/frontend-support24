@@ -300,22 +300,22 @@ const TimesheetDetail: React.FC = () => {
                     {/* Shift and Time Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">Shift Information</h3>
+                        <h3 className="text-sm font-montserrat-semibold text-muted-foreground">Shift Information</h3>
                         <div className="bg-muted/30 p-4 rounded-lg space-y-4">
                           <div>
-                            <p className="text-sm font-medium mb-1">Shift ID</p>
+                            <p className="text-sm font-montserrat-semibold mb-1">Shift ID</p>
                             <p className="text-sm font-mono">{timesheet.shiftIdRef}</p>
                           </div>
                           
                           <div>
-                            <p className="text-sm font-medium mb-1">Service Type</p>
+                            <p className="text-sm font-montserrat-semibold mb-1">Service Type</p>
                             <p className="text-sm">
                               {timesheet.shiftId.serviceTypeId?.name || 'N/A'}
                             </p>
                           </div>
                           
                           <div>
-                            <p className="text-sm font-medium mb-1">Date</p>
+                            <p className="text-sm font-montserrat-semibold mb-1">Date</p>
                             <p className="text-sm">
                               {formatDateWithDay(timesheet.actualStartTime)}
                             </p>
@@ -324,10 +324,10 @@ const TimesheetDetail: React.FC = () => {
                       </div>
                       
                       <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">Time Information</h3>
+                        <h3 className="text-sm font-montserrat-semibold text-muted-foreground">Time Information</h3>
                         <div className="bg-muted/30 p-4 rounded-lg space-y-4">
                           <div>
-                            <p className="text-sm font-medium mb-1">Scheduled Time</p>
+                            <p className="text-sm font-montserrat-semibold mb-1">Scheduled Time</p>
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-muted-foreground" />
                               <p className="text-sm">
@@ -340,7 +340,7 @@ const TimesheetDetail: React.FC = () => {
                           </div>
                           
                           <div>
-                            <p className="text-sm font-medium mb-1">Actual Time</p>
+                            <p className="text-sm font-montserrat-semibold mb-1">Actual Time</p>
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-muted-foreground" />
                               <p className="text-sm">
@@ -354,7 +354,7 @@ const TimesheetDetail: React.FC = () => {
                           
                           {timesheet.extraTime > 0 && (
                             <div>
-                              <p className="text-sm font-medium mb-1">Extra Time</p>
+                              <p className="text-sm font-montserrat-semibold mb-1">Extra Time</p>
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-primary-500" />
                                 <p className="text-sm text-primary-700">
@@ -366,7 +366,7 @@ const TimesheetDetail: React.FC = () => {
                           
                           {timesheet.distanceTravelKm > 0 && (
                             <div>
-                              <p className="text-sm font-medium mb-1">Travel Distance</p>
+                              <p className="text-sm font-montserrat-semibold mb-1">Travel Distance</p>
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 text-muted-foreground" />
                                 <p className="text-sm">
@@ -384,7 +384,7 @@ const TimesheetDetail: React.FC = () => {
                     
                     {/* Notes */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-muted-foreground">Worker Notes</h3>
+                      <h3 className="text-sm font-montserrat-semibold text-muted-foreground">Worker Notes</h3>
                       <div className="bg-muted/30 p-4 rounded-lg">
                         {timesheet.notes ? (
                           <p className="text-sm whitespace-pre-wrap">{timesheet.notes}</p>
@@ -397,7 +397,7 @@ const TimesheetDetail: React.FC = () => {
                     {/* Rejection Reason (if applicable) */}
                     {timesheet.status === 'rejected' && timesheet.rejectionReason && (
                       <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">Rejection Reason</h3>
+                        <h3 className="text-sm font-montserrat-semibold text-muted-foreground">Rejection Reason</h3>
                         <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
                           <p className="text-sm text-red-800">{timesheet.rejectionReason}</p>
                         </div>
@@ -408,7 +408,7 @@ const TimesheetDetail: React.FC = () => {
                 
                 <TabsContent value="expenses" className="pt-4">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-muted-foreground">Claimed Expenses</h3>
+                    <h3 className="text-sm font-montserrat-semibold text-muted-foreground">Claimed Expenses</h3>
                     
                     {timesheet.expenses.length === 0 ? (
                       <div className="bg-muted/30 p-4 rounded-lg">
@@ -429,7 +429,7 @@ const TimesheetDetail: React.FC = () => {
                           <TableBody>
                             {timesheet.expenses.map((expense) => (
                               <TableRow key={expense._id}>
-                                <TableCell className="font-medium">{expense.title}</TableCell>
+                                <TableCell className="font-montserrat-semibold">{expense.title}</TableCell>
                                 <TableCell>{expense.description}</TableCell>
                                 <TableCell>
                                   <Badge variant={expense.payer === 'participant' ? 'default' : 'secondary'}>
@@ -456,13 +456,13 @@ const TimesheetDetail: React.FC = () => {
                               </TableRow>
                             ))}
                             <TableRow>
-                              <TableCell colSpan={3} className="text-right font-medium">
+                              <TableCell colSpan={3} className="text-right font-montserrat-semibold">
                                 <div className="space-y-1">
                                   <div>Participant Expenses: {formatCurrency(timesheet.participantExpensesTotal)}</div>
                                   <div>Worker Expenses: {formatCurrency(timesheet.workerExpensesTotal)}</div>
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right font-medium">
+                              <TableCell className="text-right font-montserrat-semibold">
                                 {formatCurrency(timesheet.totalExpenses)}
                               </TableCell>
                               <TableCell></TableCell>
@@ -476,7 +476,7 @@ const TimesheetDetail: React.FC = () => {
                 
                 <TabsContent value="calculations" className="pt-4">
                   <div className="space-y-6">
-                    <h3 className="text-sm font-medium text-muted-foreground">Rate Calculations</h3>
+                    <h3 className="text-sm font-montserrat-semibold text-muted-foreground">Rate Calculations</h3>
                     
                     <div className="rounded-md border">
                       <Table>
@@ -491,7 +491,7 @@ const TimesheetDetail: React.FC = () => {
                         <TableBody>
                           {timesheet.rateCalculations.map((calc) => (
                             <TableRow key={calc._id}>
-                              <TableCell className="font-medium">
+                              <TableCell className="font-montserrat-semibold">
                                 <div>
                                   <div>{calc.name}</div>
                                   <div className="text-xs text-muted-foreground">
@@ -514,25 +514,25 @@ const TimesheetDetail: React.FC = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Subtotal (Labor):</span>
-                          <span className="text-sm font-medium">{formatCurrency(timesheet.subtotal)}</span>
+                          <span className="text-sm font-montserrat-semibold">{formatCurrency(timesheet.subtotal)}</span>
                         </div>
                         {timesheet.distanceTravelAmount > 0 && (
                           <div className="flex justify-between items-center">
                             <span className="text-sm">Travel ({timesheet.distanceTravelKm} km):</span>
-                            <span className="text-sm font-medium">{formatCurrency(timesheet.distanceTravelAmount)}</span>
+                            <span className="text-sm font-montserrat-semibold">{formatCurrency(timesheet.distanceTravelAmount)}</span>
                           </div>
                         )}
                         {/* <div className="flex justify-between items-center">
                           <span className="text-sm">Expenses:</span>
-                          <span className="text-sm font-medium">{formatCurrency(timesheet.totalExpenses)}</span>
+                          <span className="text-sm font-montserrat-semibold">{formatCurrency(timesheet.totalExpenses)}</span>
                         </div> */}
                         <Separator className="my-2" />
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Total Amount:</span>
+                          <span className="text-sm font-montserrat-semibold">Total Amount:</span>
                           <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
                         </div>
                         {/* <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Grand Total:</span>
+                          <span className="text-sm font-montserrat-semibold">Grand Total:</span>
                           <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
                         </div> */}
                       </div>
@@ -632,7 +632,7 @@ const TimesheetDetail: React.FC = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-medium">{getFullName(timesheet.participantId)}</h3>
+                  <h3 className="font-montserrat-semibold">{getFullName(timesheet.participantId)}</h3>
                   <p className="text-sm text-muted-foreground">{timesheet.organizationId.name}</p>
                 </div>
               </div>
@@ -685,7 +685,7 @@ const TimesheetDetail: React.FC = () => {
                   </Avatar>
                 )}
                 <div>
-                  <h3 className="font-medium">{typeof timesheet.workerId === 'object' ? getFullName(timesheet.workerId) : timesheet.workerId}</h3>
+                  <h3 className="font-montserrat-semibold">{typeof timesheet.workerId === 'object' ? getFullName(timesheet.workerId) : timesheet.workerId}</h3>
                   <p className="text-sm text-muted-foreground">Support Worker</p>
                 </div>
               </div>
@@ -724,36 +724,36 @@ const TimesheetDetail: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Labor:</span>
-                  <span className="text-sm font-medium">{formatCurrency(timesheet.subtotal)}</span>
+                  <span className="text-sm font-montserrat-semibold">{formatCurrency(timesheet.subtotal)}</span>
                 </div>
                 
                 {timesheet.distanceTravelAmount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Travel:</span>
-                    <span className="text-sm font-medium">{formatCurrency(timesheet.distanceTravelAmount)}</span>
+                    <span className="text-sm font-montserrat-semibold">{formatCurrency(timesheet.distanceTravelAmount)}</span>
                   </div>
                 )}
                 
                 {/* <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Expenses:</span>
-                  <span className="text-sm font-medium">{formatCurrency(timesheet.totalExpenses)}</span>
+                  <span className="text-sm font-montserrat-semibold">{formatCurrency(timesheet.totalExpenses)}</span>
                 </div> */}
                 
                 <Separator />
                 
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Total:</span>
+                  <span className="text-sm font-montserrat-semibold">Total:</span>
                   <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.totalAmount)}</span>
                 </div>
                 
                 {/* <div className="flex justify-between">
-                  <span className="text-sm font-medium">Grand Total:</span>
+                  <span className="text-sm font-montserrat-semibold">Grand Total:</span>
                   <span className="text-base font-montserrat-bold text-green-700">{formatCurrency(timesheet.grandTotal)}</span>
                 </div> */}
                 
                 {/* <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Status:</span>
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-montserrat-semibold">
                     {timesheet.isPaid ? (
                       <span className="text-green-600">Paid</span>
                     ) : (

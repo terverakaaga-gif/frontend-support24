@@ -31,7 +31,7 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
     <>
       {/* Desktop view */}
       <header
-        className={`hidden md:flex items-center justify-between mb-3 ${
+        className={`hidden md:flex items-center justify-between mb-12 ${
           stickyTop ? "sticky top-0 z-10" : ""
         }`}
       >
@@ -55,7 +55,7 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
             </p>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 mb-3">
           {rightComponent && rightComponent}
           <ProfileAvatar
             user={user}

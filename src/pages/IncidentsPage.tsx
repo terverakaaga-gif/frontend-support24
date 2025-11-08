@@ -403,7 +403,7 @@ const IncidentsPage = () => {
                 <Input
                   type="text"
                   placeholder="Search incidents...."
-                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-primary-500 focus:border-transparent w-[220px]"
+                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-[220px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -412,7 +412,7 @@ const IncidentsPage = () => {
               {user.role === "supportWorker" && (
                 <Button
                   onClick={handleCreateIncident}
-                  className="bg-primary hover:bg-primary-700 text-white px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+                  className="bg-primary hover:bg-primary-700  shadow-lg hover:shadow-xl transition-all duration-300  text-white px-4 py-2.5 rounded-lg flex items-center gap-2"
                 >
                   <AddCircle className="h-8 w-8 white" />
                   <span>Create Incident</span>
@@ -624,7 +624,7 @@ const IncidentsPage = () => {
             <div className="p-6 space-y-6">
               {/* Incident Summary */}
               <div className="bg-primary-100 rounded-lg p-4 border border-primary-200">
-                <h3 className="text-sm font-medium text-primary-800 mb-3">
+                <h3 className="text-sm font-montserrat-semibold text-primary-800 mb-3">
                   Incident Summary
                 </h3>
                 <div className="space-y-2">
@@ -642,17 +642,17 @@ const IncidentsPage = () => {
                   </div>
                   <div className="text-sm text-primary-700 space-y-1">
                     <p>
-                      <span className="font-medium">Reported By:</span>{" "}
+                      <span className="font-montserrat-semibold">Reported By:</span>{" "}
                       {selectedIncident.reportedBy?.firstName}{" "}
                       {selectedIncident.reportedBy?.lastName}
                     </p>
                     <p>
-                      <span className="font-medium">Reported On:</span>{" "}
+                      <span className="font-montserrat-semibold">Reported On:</span>{" "}
                       {formatDate(selectedIncident.createdAt)}
                     </p>
                     {selectedIncident.shiftId && (
                       <p>
-                        <span className="font-medium">Shift ID:</span>{" "}
+                        <span className="font-montserrat-semibold">Shift ID:</span>{" "}
                         {selectedIncident.shiftId}
                       </p>
                     )}
@@ -717,7 +717,7 @@ const IncidentsPage = () => {
             <div className="p-6 space-y-6">
               {/* Incident Details */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
                   Incident Being Resolved
                 </h3>
                 <div className="bg-gray-100 rounded-lg p-4 border">
@@ -748,7 +748,7 @@ const IncidentsPage = () => {
 
               {/* Resolution Notes Preview */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
                   Resolution Notes
                 </h3>
                 <div className="bg-green-50 rounded-lg p-4 border border-green-200">
@@ -761,7 +761,7 @@ const IncidentsPage = () => {
 
               {/* Resolver Information */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
                   Resolver Information
                 </h3>
                 <div className="bg-gray-100 rounded-lg p-4 border">

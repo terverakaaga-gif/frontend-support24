@@ -72,3 +72,26 @@ export const filterValidWorkers = <T extends { workerId: string | WorkerProfile 
 ): T[] => {
   return items.filter(item => item.workerId !== null && item.workerId !== undefined);
 };
+
+ // Password requirements checker
+  export const getPasswordRequirements = (len:number,char:string) => {
+    const requirements = [
+      {
+        text: "At least 8 characters",
+        met: len >= 8,
+      },
+      {
+        text: "At least 1 uppercase",
+        met: /[A-Z]/.test(char),
+      },
+      {
+        text: "At least 1 lowercase",
+        met: /[a-z]/.test(char),
+      },
+      {
+        text: "At least 1 special character",
+        met: /[!@#$%^&*(),.?":{}|<>]/.test(char),
+      },
+    ];
+    return requirements;
+  };

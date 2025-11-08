@@ -205,6 +205,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/participant/organizations")}
             />
             <NavItem
+              to="/participant/find-support-workers"
+              icon={<UsersGroupRounded className="w-6 h-6" />}
+              label="Support Workers"
+              active={isActive("/participant/find-support-workers")}
+            />
+            <NavItem
               to="/participant/timesheets"
               icon={<ClipboardList className="w-6 h-6" />}
               label="My Timesheets"
@@ -307,7 +313,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {user.role === "supportWorker" ? "Support Worker" : user.role}
           </div>
           <Button
-            className="w-full justify-start gap-2 items-center justify-center bg-red-600 text-white/80 hover:text-white hover:bg-red-700 mt-3 font-montserrat-semibold"
+            className="w-full gap-2 items-center justify-center bg-red-600 text-white/80 hover:text-white hover:bg-red-700 mt-3 font-montserrat-semibold"
             onClick={() => logout()}
           >
             <Logout />
@@ -321,7 +327,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="flex min-h-screen">
       {/* Desktop Sidebar - Only show on large screens (1024px+) */}
-      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto">
+      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto rounded-xl m-4 mb-0">
         <Sidebar />
       </aside>
 
@@ -368,7 +374,7 @@ const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
   <Link
     to={to}
     className={cn(
-      "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors relative",
+      "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-montserrat-semibold transition-colors relative",
       active
         ? "bg-primary text-white"
         : "text-white/80 hover:bg-primary-700 hover:text-white"

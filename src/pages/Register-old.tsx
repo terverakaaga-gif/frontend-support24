@@ -86,7 +86,7 @@
 //             <RegistrationForm onSubmit={handleRegistration} />
 //             <div className="mt-6 text-center text-sm text-muted-foreground">
 //               Have an account already?{" "}
-//               <a href="/login" className="text-guardian font-medium hover:underline">
+//               <a href="/login" className="text-guardian font-montserrat-semibold hover:underline">
 //                 Login here...
 //               </a>
 //             </div>
@@ -126,22 +126,22 @@
 //           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //             <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
 //               <Users className="h-8 w-8 text-white mb-2" />
-//               <h3 className="text-white font-medium">Connect</h3>
+//               <h3 className="text-white font-montserrat-semibold">Connect</h3>
 //               <p className="text-white/80 text-sm text-center">Find qualified care professionals</p>
 //             </div>
 //             <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
 //               <Calendar className="h-8 w-8 text-white mb-2" />
-//               <h3 className="text-white font-medium">Schedule</h3>
+//               <h3 className="text-white font-montserrat-semibold">Schedule</h3>
 //               <p className="text-white/80 text-sm text-center">Manage appointments easily</p>
 //             </div>
 //             <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
 //               <MessageSquare className="h-8 w-8 text-white mb-2" />
-//               <h3 className="text-white font-medium">Communicate</h3>
+//               <h3 className="text-white font-montserrat-semibold">Communicate</h3>
 //               <p className="text-white/80 text-sm text-center">Stay in touch with your team</p>
 //             </div>
 //             <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg border border-white/30 flex flex-col items-center">
 //               <Heart className="h-8 w-8 text-white mb-2" />
-//               <h3 className="text-white font-medium">Care</h3>
+//               <h3 className="text-white font-montserrat-semibold">Care</h3>
 //               <p className="text-white/80 text-sm text-center">Provide the best support possible</p>
 //             </div>
 //           </div>

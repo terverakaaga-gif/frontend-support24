@@ -257,13 +257,15 @@ export default function Conversations() {
         rightComponent={
           <>
             {/* Create New Chat Button (Direct or Group) */}
-            {user.role !== "supportWorker" && (<Button
-              onClick={() => setIsCreatingChat(true)}
-              className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-medium shadow-sm"
-            >
-              <Plus size={24} />
-              Create New Chat
-            </Button>)}
+            {user.role !== "supportWorker" && (
+              <Button
+                onClick={() => setIsCreatingChat(true)}
+                className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold  shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Plus size={24} />
+                Create New Chat
+              </Button>
+            )}
           </>
         }
       />
@@ -333,13 +335,10 @@ export default function Conversations() {
                     Try adjusting your search or filters
                   </p>
                   <Button
-                    onClick={() => {
-                      setIsCreatingChat(true);
-                      setChatType("group");
-                    }}
-                    className="bg-primary hover:bg-primary-700 shadow-sm text-sm md:text-base"
+                    onClick={() => setIsCreatingChat(true)}
+                    className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold  shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    <span className="mr-2">⊕</span>
+                    <Plus size={24} />
                     Start New Chat
                   </Button>
                 </div>
@@ -387,7 +386,7 @@ export default function Conversations() {
         </div>
 
         {/* Chat Creation Modal */}
-        {user.role !== 'supportWorker'  && isCreatingChat && (
+        {user.role !== "supportWorker" && isCreatingChat && (
           <ChatCreationModal
             isOpen={isCreatingChat}
             onClose={() => {

@@ -391,7 +391,7 @@ const BatchInvoicesManagement: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <label className="text-xs font-medium">Search</label>
+                <label className="text-xs font-montserrat-semibold">Search</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
@@ -405,7 +405,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
               {/* Status Filter */}
               <div className="space-y-2">
-                <label className="text-xs font-medium">Status</label>
+                <label className="text-xs font-montserrat-semibold">Status</label>
                 <Select
                   value={filters.status || 'all'}
                   onValueChange={(value) => handleFilterChange('status', value)}
@@ -425,7 +425,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
               {/* Start Date */}
               <div className="space-y-2">
-                <label className="text-xs font-medium">Start Date</label>
+                <label className="text-xs font-montserrat-semibold">Start Date</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -449,7 +449,7 @@ const BatchInvoicesManagement: React.FC = () => {
 
               {/* End Date */}
               <div className="space-y-2">
-                <label className="text-xs font-medium">End Date</label>
+                <label className="text-xs font-montserrat-semibold">End Date</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -535,7 +535,7 @@ const BatchInvoicesManagement: React.FC = () => {
                 <TableBody>
                   {filteredBatchInvoices.map((invoice) => (
                     <TableRow key={invoice._id}>
-                      <TableCell className="font-medium text-sm">
+                      <TableCell className="font-montserrat-semibold text-sm">
                         {invoice.batchNumber}
                       </TableCell>
                       {/* <TableCell>
@@ -544,7 +544,7 @@ const BatchInvoicesManagement: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{getFullName(invoice.workerId)}</p>
+                            <p className="font-montserrat-semibold text-sm">{getFullName(invoice.workerId)}</p>
                             <p className="text-xs text-gray-600">{invoice.workerId.email}</p>
                           </div>
                         </div>
@@ -552,7 +552,7 @@ const BatchInvoicesManagement: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{getFullName(invoice.participantId)}</p>
+                            <p className="font-montserrat-semibold text-sm">{getFullName(invoice.participantId)}</p>
                             <p className="text-xs text-gray-600">{invoice.participantId.email}</p>
                           </div>
                         </div>
@@ -572,7 +572,7 @@ const BatchInvoicesManagement: React.FC = () => {
                           {getEmailStatusBadge(invoice.sentToWorker, 'worker')}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium text-sm">
+                      <TableCell className="font-montserrat-semibold text-sm">
                         {formatCurrency(invoice.invoiceTotal)}
                       </TableCell>
                       {/* <TableCell>

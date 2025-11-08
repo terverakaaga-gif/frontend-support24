@@ -199,7 +199,7 @@ export function InviteDetails() {
 										<div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
 											<Calendar className="h-5 w-5 text-muted-foreground" />
 											<div>
-												<p className="text-sm font-medium">Invitation Date</p>
+												<p className="text-sm font-montserrat-semibold">Invitation Date</p>
 												<p className="text-sm text-muted-foreground">
 													{formatDate(inviteDetails.inviteDate)}
 												</p>
@@ -215,7 +215,7 @@ export function InviteDetails() {
 													<div className="flex items-center gap-3">
 														<Building className="h-5 w-5 text-muted-foreground" />
 														<div>
-															<p className="font-medium">
+															<p className="font-montserrat-semibold">
 																{inviteDetails.organizationName}
 															</p>
 															<p className="text-xs text-muted-foreground">
@@ -270,7 +270,7 @@ export function InviteDetails() {
 									<div className="space-y-4">
 										<div className="p-4 bg-muted/50 rounded-lg">
 											<div className="flex items-center justify-between mb-4">
-												<h3 className="font-medium">Base Hourly Rate</h3>
+												<h3 className="font-montserrat-semibold">Base Hourly Rate</h3>
 												<p className="text-lg font-montserrat-semibold text-green-600">
 													{formatCurrency(
 														inviteDetails.proposedRates.baseHourlyRate
@@ -278,7 +278,7 @@ export function InviteDetails() {
 												</p>
 											</div>
 											<Separator className="my-4" />
-											<h3 className="font-medium mb-4">Shift Rate Breakdown</h3>
+											<h3 className="font-montserrat-semibold mb-4">Shift Rate Breakdown</h3>
 											<div className="space-y-4">
 												{inviteDetails.proposedRates.shiftRates.map(
 													(rate: any) => (
@@ -287,7 +287,7 @@ export function InviteDetails() {
 															className="flex items-center justify-between p-3 border border-border rounded-md"
 														>
 															<div>
-																<p className="font-medium">
+																<p className="font-montserrat-semibold">
 																	{rate.rateTimeBandId.name}
 																</p>
 																{rate.rateTimeBandId.startTime &&
@@ -315,14 +315,14 @@ export function InviteDetails() {
 								<TabsContent value="notes" className="pt-4">
 									<div className="space-y-4">
 										<div className="p-4 bg-muted/50 rounded-lg">
-											<h3 className="font-medium mb-2">Participant Notes</h3>
+											<h3 className="font-montserrat-semibold mb-2">Participant Notes</h3>
 											<div className="p-4 bg-white rounded-md">
 												<p className="text-sm">{inviteDetails.notes}</p>
 											</div>
 										</div>
 
 										<div className="p-4 bg-muted/50 rounded-lg">
-											<h3 className="font-medium mb-2">Administrative Notes</h3>
+											<h3 className="font-montserrat-semibold mb-2">Administrative Notes</h3>
 											<div className="p-4 bg-white rounded-md">
 												<p className="text-sm text-muted-foreground italic">
 													No administrative notes added yet.

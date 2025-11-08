@@ -24,6 +24,7 @@ import {
 import { motion } from "framer-motion";
 import { useRegister } from "@/hooks/useAuthHooks";
 import { useAuth } from "@/contexts/AuthContext";
+import { getPasswordRequirements } from "@/lib/utils";
 
 const formSchema = z
   .object({
@@ -131,7 +132,7 @@ export default function Register() {
       navigate(
         `/otp-verify?email=${encodeURIComponent(
           form.getValues("email")
-        )}&userId=${register.data.userId}`
+        )}&userId=${register.data.userId}&register=true`
       );
     }
   }, [register.isSuccess, navigate, form]);
@@ -291,7 +292,32 @@ export default function Register() {
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage className="text-red-500 text-sm" />
+                    <FormMessage className="text-red-500 text-sm">
+                      <div className="space-y-2">
+                        {getPasswordRequirements(
+                          field.value.length,
+                          field.value
+                        ).map((req, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 text-sm"
+                          >
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                req.met ? "bg-green-500" : "bg-gray-300"
+                              }`}
+                            />
+                            <span
+                              className={
+                                req.met ? "text-green-600" : "text-gray-1000"
+                              }
+                            >
+                              {req.text}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -351,7 +377,7 @@ export default function Register() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="participant">Participant</SelectItem>
-                        <SelectItem value="guardian">Guardian</SelectItem>
+                        {/* <SelectItem value="guardian">Guardian</SelectItem> */}
                         <SelectItem value="supportWorker">
                           Support Worker
                         </SelectItem>

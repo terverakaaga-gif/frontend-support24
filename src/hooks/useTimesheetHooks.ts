@@ -193,12 +193,49 @@ export const useCreateTimesheet = () => {
     onSuccess: () => {
       // Invalidate and refetch timesheets
       queryClient.invalidateQueries({ queryKey: timesheetKeys.all });
-      toast.success('Timesheet created successfully!');
     },
     onError: (error: any) => {
       const errorMessage = error.response?.data?.message || 'Failed to create timesheet';
-      toast.error(errorMessage);
       console.error('Create timesheet error:', error);
     },
   });
 };
+
+/**
+ * Approve timesheets for review
+ * @param timesheetId string of timesheet ID to approve
+ */
+export const useApproveTimesheet = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (timesheetId: string) => 
+      post(`/timesheets/${timesheetId}/approve`, ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: timesheetKeys.all });
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.error || 'Failed to accept timesheets';
+      console.error('Accept timesheets error:', error, errorMessage);
+    },
+  });
+}
+
+/* Reject timesheets for review
+ * @param timesheetId string of timesheet ID to reject
+ */
+export const useRejectTimesheet = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (timesheetId: string) => 
+      post(`/timesheets/${timesheetId}/reject`, ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: timesheetKeys.all });
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.error || 'Failed to reject timesheets';
+      console.error('Reject timesheets error:', error, errorMessage);
+    },
+  });
+}

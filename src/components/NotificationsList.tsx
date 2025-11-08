@@ -51,9 +51,9 @@ export function NotificationsList({
 	return (
 		<Card>
 			<CardHeader className="pb-2 flex flex-row items-center justify-between">
-				{/* <CardTitle className="text-lg font-medium">Notifications</CardTitle> */}
+				{/* <CardTitle className="text-lg font-montserrat-semibold">Notifications</CardTitle> */}
 				{notifications.length > 0 && (
-					<span className="text-xs font-medium bg-guardian text-white px-2 py-1 rounded-full">
+					<span className="text-xs font-montserrat-semibold bg-guardian text-white px-2 py-1 rounded-full">
 						{notifications.filter((n) => n.time.includes("unread")).length}{" "}
 						unread
 					</span>
@@ -82,7 +82,7 @@ export function NotificationsList({
 									{getIcon(notification.type)}
 								</div>
 								<div className="flex-1">
-									<h4 className="text-sm font-medium">{notification.title}</h4>
+									<h4 className="text-sm font-montserrat-semibold">{notification.title}</h4>
 									<p className="text-xs text-muted-foreground">
 										{notification.description}
 									</p>

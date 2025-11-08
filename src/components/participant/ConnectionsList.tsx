@@ -109,13 +109,13 @@ export function ConnectionsList() {
 										</p>
 										<div className="text-sm">
 											<div className="mt-1">
-												<span className="font-medium">Languages:</span>{" "}
+												<span className="font-montserrat-semibold">Languages:</span>{" "}
 												{connection.languages
 													? connection.languages.join(", ")
 													: "Not specified"}
 											</div>
 											<div className="mt-1">
-												<span className="font-medium">Base Rate:</span> $
+												<span className="font-montserrat-semibold">Base Rate:</span> $
 												{connection.hourlyRate.baseRate}/hr
 											</div>
 										</div>

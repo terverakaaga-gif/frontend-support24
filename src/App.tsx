@@ -71,6 +71,7 @@ import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationD
 import { HowItWorks } from "./pages/HowItWorks";
 import OTPVerification from "./pages/OTPVerificationPage";
 import ComingSoon from "./pages/coming-soon";
+import SupportWorkersSearch from "./pages/SupportWorkersSearch";
 
 const queryClient = new QueryClient();
 
@@ -249,6 +250,7 @@ const AppRoutes = () => {
             <DashboardLayout>
               <Routes>
                 <Route path="/" element={<ParticipantDashboard />} />
+                <Route path="/find-support-workers" element={<SupportWorkersSearch />} />
                 <Route path="/profile" element={<ParticipantProfile />} />
                 <Route
                   path="/profile/:id"

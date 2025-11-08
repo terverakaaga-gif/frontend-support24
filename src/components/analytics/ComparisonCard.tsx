@@ -36,12 +36,12 @@ export function ComparisonCard({
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-sm font-montserrat-semibold text-muted-foreground">{title}</p>
             <div className="flex items-baseline gap-2">
               <p className="text-2xl font-montserrat-bold">{formattedCurrent}</p>
               <div 
                 className={cn(
-                  'flex items-center text-sm font-medium gap-1',
+                  'flex items-center text-sm font-montserrat-semibold gap-1',
                   trend === 'up' ? 'text-emerald-600' : 
                   trend === 'down' ? 'text-red-500' : 
                   'text-muted-foreground'

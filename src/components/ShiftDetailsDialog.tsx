@@ -339,7 +339,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
   const handleStartShift = useCallback(() => {
     if (!shift) return;
     // start shift if current date matches shift date
-    if (new Date().toDateString() !== new Date(shift.startTime).toDateString()) {
+    if (new Date().toDateString() < new Date(shift.startTime).toDateString()) {
       toast.error("You can only start the shift on its scheduled date");
       return;
     }

@@ -160,7 +160,7 @@ const CreateIncidentModal = ({
 		<form onSubmit={handleSubmit}>
 			<div className="p-6 space-y-4">
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
+					<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 						Title *
 					</label>
 					<input
@@ -175,7 +175,7 @@ const CreateIncidentModal = ({
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
+					<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 						Description *
 					</label>
 					<textarea
@@ -191,7 +191,7 @@ const CreateIncidentModal = ({
 
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
+						<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 							Severity *
 						</label>
 						<select
@@ -209,7 +209,7 @@ const CreateIncidentModal = ({
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
+						<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 							Shift *
 						</label>
 						<div className="flex gap-2">
@@ -238,7 +238,7 @@ const CreateIncidentModal = ({
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
+					<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 						Evidence (Optional)
 					</label>
 					<div className="flex items-center gap-4">
@@ -328,13 +328,13 @@ const CreateIncidentModal = ({
 
 				<div className="space-y-6">
 					<div className="bg-gray-100 rounded-lg p-4">
-						<h3 className="font-medium text-gray-900">{formData.title}</h3>
+						<h3 className="font-montserrat-semibold text-gray-900">{formData.title}</h3>
 						<p className="text-gray-600 mt-2">{formData.description}</p>
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">
 						<div>
-							<label className="block text-sm font-medium text-gray-1000 mb-1">
+							<label className="block text-sm font-montserrat-semibold text-gray-1000 mb-1">
 								Severity
 							</label>
 							<span
@@ -351,7 +351,7 @@ const CreateIncidentModal = ({
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium text-gray-1000 mb-1">
+							<label className="block text-sm font-montserrat-semibold text-gray-1000 mb-1">
 								Shift ID
 							</label>
 							<p className="text-gray-900">{formData.shiftId}</p>
@@ -360,11 +360,11 @@ const CreateIncidentModal = ({
 
 					{selectedShift && (
 						<div>
-							<label className="block text-sm font-medium text-gray-1000 mb-1">
+							<label className="block text-sm font-montserrat-semibold text-gray-1000 mb-1">
 								Shift Details
 							</label>
 							<div className="bg-gray-100 rounded-lg p-3">
-								<p className="text-sm font-medium text-gray-900">
+								<p className="text-sm font-montserrat-semibold text-gray-900">
 									{typeof selectedShift.participantId === "object" &&
 									selectedShift.participantId !== null
 										? `${selectedShift.participantId.firstName} ${selectedShift.participantId.lastName}`
@@ -380,7 +380,7 @@ const CreateIncidentModal = ({
 
 					{(selectedFiles.length > 0 || formData.urlLinks.length > 0) && (
 						<div>
-							<label className="block text-sm font-medium text-gray-1000 mb-1">
+							<label className="block text-sm font-montserrat-semibold text-gray-1000 mb-1">
 								Evidence Files
 							</label>
 							<div className="space-y-2">
@@ -436,7 +436,7 @@ const CreateIncidentModal = ({
 			<div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
 				<Check className="h-6 w-6 text-green-600" />
 			</div>
-			<h3 className="text-lg font-medium text-gray-900 mb-2">
+			<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
 				{isEditing
 					? "Incident Updated Successfully"
 					: "Incident Created Successfully"}
@@ -523,7 +523,7 @@ const CreateIncidentModal = ({
 												>
 													<div className="flex justify-between items-start">
 														<div>
-															<h3 className="font-medium text-gray-900">
+															<h3 className="font-montserrat-semibold text-gray-900">
 																{typeof shift.participantId === "object" &&
 																shift.participantId !== null
 																	? `${shift.participantId.firstName} ${shift.participantId.lastName}`
@@ -547,11 +547,11 @@ const CreateIncidentModal = ({
 													</div>
 													<div className="mt-2 text-sm">
 														<p>
-															<span className="font-medium">Shift ID:</span>{" "}
+															<span className="font-montserrat-semibold">Shift ID:</span>{" "}
 															{shift.shiftId}
 														</p>
 														<p>
-															<span className="font-medium">Time:</span>{" "}
+															<span className="font-montserrat-semibold">Time:</span>{" "}
 															{new Date(shift.startTime).toLocaleString()} -{" "}
 															{new Date(shift.endTime).toLocaleString()}
 														</p>

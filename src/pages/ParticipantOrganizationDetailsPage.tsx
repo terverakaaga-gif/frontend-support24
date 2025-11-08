@@ -417,7 +417,7 @@ export default function ParticipantOrganizationDetailsPage() {
                       {invite.notes && (
                         <div className="mt-2 md:mt-3 p-2 md:p-3 bg-gray-50 rounded-lg">
                           <p className="text-xs md:text-sm text-gray-600">
-                            <span className="font-medium">Notes:</span>{" "}
+                            <span className="font-montserrat-semibold">Notes:</span>{" "}
                             {invite.notes}
                           </p>
                         </div>
@@ -551,7 +551,7 @@ export default function ParticipantOrganizationDetailsPage() {
                               className="p-2 md:p-3 bg-gray-50 rounded-lg"
                             >
                               <div className="flex justify-between items-start mb-1">
-                                <span className="font-medium text-gray-900 text-xs md:text-sm">
+                                <span className="font-montserrat-semibold text-gray-900 text-xs md:text-sm">
                                   {getRateBandName(rate.rateTimeBandId)}
                                 </span>
                                 <span className="font-bold text-primary-600 text-xs md:text-sm">
@@ -696,7 +696,7 @@ export default function ParticipantOrganizationDetailsPage() {
                       className="p-2 md:p-3 bg-gray-50 rounded-lg"
                     >
                       <div className="flex justify-between items-start mb-1">
-                        <span className="font-medium text-gray-900 text-xs md:text-sm">
+                        <span className="font-montserrat-semibold text-gray-900 text-xs md:text-sm">
                           {getRateBandName(rate.rateTimeBandId)}
                         </span>
                         <span className="font-bold text-primary-600 text-xs md:text-sm">

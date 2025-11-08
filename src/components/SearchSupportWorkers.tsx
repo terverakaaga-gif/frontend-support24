@@ -138,7 +138,7 @@ export function SearchSupportWorkers({
           </DialogHeader>
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <p className="text-red-600 font-medium">
+              <p className="text-red-600 font-montserrat-semibold">
                 Failed to load support workers
               </p>
               <p className="text-sm text-muted-foreground mt-1">
@@ -264,7 +264,7 @@ export function SearchSupportWorkers({
                             {worker.verificationStatus.identityVerified && (
                               <>
                                 <span className="text-muted-foreground">•</span>
-                                <span className="text-green-600 text-xs font-medium">
+                                <span className="text-green-600 text-xs font-montserrat-semibold">
                                   ✓ Verified
                                 </span>
                               </>
@@ -293,14 +293,14 @@ export function SearchSupportWorkers({
                                 return (
                                   <span
                                     key={skillKey}
-                                    className="text-xs px-2 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200 inline-block font-medium"
+                                    className="text-xs px-2 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200 inline-block font-montserrat-semibold"
                                   >
                                     {skillName}
                                   </span>
                                 );
                               })}
                             {worker.skills.length > 3 && (
-                              <span className="text-xs px-2 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200 inline-block font-medium">
+                              <span className="text-xs px-2 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200 inline-block font-montserrat-semibold">
                                 +{worker.skills.length - 3} more
                               </span>
                             )}

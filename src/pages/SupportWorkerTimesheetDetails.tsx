@@ -78,7 +78,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
   const getStatusBadge = (status: string, isPaid: boolean) => {
     if (isPaid) {
       return (
-        <Badge className="bg-green-50 text-green-700 border-green-200 font-medium">
+        <Badge className="bg-green-50 text-green-700 border-green-200 font-montserrat-semibold">
           <CheckCircle className="w-3 h-3 mr-1" />
           Paid
         </Badge>
@@ -89,7 +89,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
       TIMESHEET_STATUS_CONFIG[status as keyof typeof TIMESHEET_STATUS_CONFIG];
     if (!config) {
       return (
-        <Badge className="bg-gray-100 text-gray-700 border-gray-200 font-medium">
+        <Badge className="bg-gray-100 text-gray-700 border-gray-200 font-montserrat-semibold">
           <ClockCircle className="w-3 h-3 mr-1" />
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
@@ -106,7 +106,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
       <Badge
         className={`${
           colorMap[status] || "bg-gray-100 text-gray-700 border-gray-200"
-        } font-medium`}
+        } font-montserrat-semibold`}
       >
         <ClockCircle className="w-3 h-3 mr-1" />
         {config.label}
@@ -403,7 +403,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                                   href={expense.receiptUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                                  className="text-sm text-primary-600 hover:text-primary-700 font-montserrat-semibold"
                                 >
                                   View Receipt →
                                 </a>
@@ -584,7 +584,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 rounded-full bg-primary-600 mt-2 flex-shrink-0"></div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-montserrat-semibold text-gray-900">
                             Timesheet Submitted
                           </p>
                           <p className="text-xs text-gray-600">
@@ -597,7 +597,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-green-600 mt-2 flex-shrink-0"></div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-montserrat-semibold text-gray-900">
                               Approved
                             </p>
                             <p className="text-xs text-gray-600">
@@ -616,7 +616,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-green-700 mt-2 flex-shrink-0"></div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-montserrat-semibold text-gray-900">
                               Payment Processed
                             </p>
                             <p className="text-xs text-gray-600">
@@ -630,7 +630,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-red-600 mt-2 flex-shrink-0"></div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-red-700">
+                            <p className="text-sm font-montserrat-semibold text-red-700">
                               Rejected
                             </p>
                             <p className="text-xs text-gray-600">
@@ -745,7 +745,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 rounded-full bg-primary-600 mt-2 flex-shrink-0"></div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-montserrat-semibold text-gray-900">
                       Timesheet Submitted
                     </p>
                     <p className="text-xs text-gray-600">
@@ -758,7 +758,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-green-600 mt-2 flex-shrink-0"></div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-montserrat-semibold text-gray-900">
                         Approved
                       </p>
                       <p className="text-xs text-gray-600">
@@ -777,7 +777,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-green-700 mt-2 flex-shrink-0"></div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-montserrat-semibold text-gray-900">
                         Payment Processed
                       </p>
                       <p className="text-xs text-gray-600">
@@ -791,7 +791,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-red-600 mt-2 flex-shrink-0"></div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-red-700">
+                      <p className="text-sm font-montserrat-semibold text-red-700">
                         Rejected
                       </p>
                       <p className="text-xs text-gray-600">

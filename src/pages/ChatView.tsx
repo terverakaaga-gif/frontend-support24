@@ -107,7 +107,7 @@ const MessageBubble = ({
         }`}
       >
         {!isOwnMessage && currentConversation.type === "group" && (
-          <span className="text-xs font-medium text-gray-600 mb-1 px-1">
+          <span className="text-xs font-montserrat-semibold text-gray-600 mb-1 px-1">
             {message.sender.firstName}
           </span>
         )}
@@ -487,7 +487,7 @@ export default function ChatView() {
             {user.role !== "supportWorker" && (
               <Button
                 onClick={() => setIsCreatingChat(true)}
-                className="w-full sm:w-auto h-10 sm:h-11 bg-primary hover:bg-primary-700 text-white font-medium shadow-sm text-sm sm:text-base"
+                className="w-full sm:w-auto h-10 sm:h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold shadow-sm text-sm sm:text-base"
               >
                 <Plus size={20} className="sm:w-6 sm:h-6" />
                 <span className="hidden sm:inline ml-2">Create New Chat</span>
@@ -675,7 +675,7 @@ export default function ChatView() {
                           isUserOnline(
                             getOtherMember(currentConversation)!._id
                           ) ? (
-                            <span className="text-green-600 font-medium flex items-center gap-1">
+                            <span className="text-green-600 font-montserrat-semibold flex items-center gap-1">
                               <span className="h-2 w-2 bg-green-500 rounded-full"></span>
                               Online
                             </span>
@@ -759,7 +759,7 @@ export default function ChatView() {
                     {/* Date Divider */}
                     <div className="flex items-center justify-center my-6">
                       <div className="bg-white px-4 py-1.5 rounded-full shadow-sm border border-gray-200">
-                        <span className="text-xs font-medium text-gray-600">
+                        <span className="text-xs font-montserrat-semibold text-gray-600">
                           Today
                         </span>
                       </div>

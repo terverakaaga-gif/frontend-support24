@@ -418,7 +418,7 @@ const TimesheetsManagement: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {/* Status filter */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-sm font-montserrat-semibold">Status</label>
                 <Select
                   value={filters.status || "all"}
                   onValueChange={(value) => handleFilterChange("status", value)}
@@ -439,7 +439,7 @@ const TimesheetsManagement: React.FC = () => {
 
               {/* Participant filter */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Participant</label>
+                <label className="text-sm font-montserrat-semibold">Participant</label>
                 <Select
                   value={filters.participantId || "all"}
                   onValueChange={(value) =>
@@ -462,7 +462,7 @@ const TimesheetsManagement: React.FC = () => {
 
               {/* Date filters */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Start Date</label>
+                <label className="text-sm font-montserrat-semibold">Start Date</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -491,7 +491,7 @@ const TimesheetsManagement: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">End Date</label>
+                <label className="text-sm font-montserrat-semibold">End Date</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -603,7 +603,7 @@ const TimesheetsManagement: React.FC = () => {
                       <TableCell colSpan={8} className="h-24 text-center">
                         <div className="flex flex-col items-center space-y-2">
                           <FileText className="h-12 w-12 text-muted-foreground" />
-                          <h3 className="text-lg font-medium">
+                          <h3 className="text-lg font-montserrat-semibold">
                             No timesheets found
                           </h3>
                           <p className="text-muted-foreground">
@@ -617,7 +617,7 @@ const TimesheetsManagement: React.FC = () => {
                   ) : (
                     timesheetData?.timesheets?.map((timesheet: Timesheet) => (
                       <TableRow key={timesheet._id}>
-                        <TableCell className="font-medium">
+                        <TableCell className="font-montserrat-semibold">
                           <div className="flex flex-col">
                             <span className="font-mono">
                               {timesheet.shiftIdRef}
@@ -633,7 +633,7 @@ const TimesheetsManagement: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="font-medium">
+                            <span className="font-montserrat-semibold">
                               {formatDateShort(timesheet.scheduledStartTime)}
                             </span>
                             <div className="flex items-center gap-1 mt-1 text-muted-foreground text-xs">
@@ -682,7 +682,7 @@ const TimesheetsManagement: React.FC = () => {
                               </div>
                             )}
                             <div className="flex flex-col">
-                              <span className="font-medium">
+                              <span className="font-montserrat-semibold">
                                 {typeof timesheet.workerId === "object"
                                   ? getFullName(timesheet.workerId)
                                   : timesheet.workerId}
@@ -697,7 +697,7 @@ const TimesheetsManagement: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="font-medium">
+                            <span className="font-montserrat-semibold">
                               {getFullName(timesheet.participantId)}
                             </span>
                             <span className="text-xs text-muted-foreground">
@@ -707,7 +707,7 @@ const TimesheetsManagement: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <div className="font-medium flex items-center">
+                            <div className="font-montserrat-semibold flex items-center">
                               <Receipt className="h-3 w-3 mr-1 text-primary-500" />
                               {formatCurrency(timesheet.totalExpenses)}
                             </div>
@@ -718,7 +718,7 @@ const TimesheetsManagement: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-medium text-green-700">
+                          <div className="font-montserrat-semibold text-green-700">
                             {formatCurrency(timesheet.totalAmount)}
                           </div>
                           {/* <div className="text-xs text-muted-foreground">

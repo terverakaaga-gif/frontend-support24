@@ -289,7 +289,7 @@ export default function ParticipantProfile() {
                     <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
                       Date of Birth
                     </p>
-                    <p className="text-sm text-gray-900 font-medium">
+                    <p className="text-sm text-gray-900 font-montserrat-semibold">
                       {participant.dateOfBirth
                         ? formatDate(participant.dateOfBirth)
                         : "Not provided"}
@@ -300,7 +300,7 @@ export default function ParticipantProfile() {
                     <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
                       Gender
                     </p>
-                    <p className="text-sm text-gray-900 font-medium">
+                    <p className="text-sm text-gray-900 font-montserrat-semibold">
                       {participant.gender
                         ? participant.gender.charAt(0).toUpperCase() +
                           participant.gender.slice(1)
@@ -380,7 +380,7 @@ export default function ParticipantProfile() {
                       <p className="text-xs text-red-600 font-montserrat-semibold mb-1">
                         Name
                       </p>
-                      <p className="text-sm text-gray-900 font-medium">
+                      <p className="text-sm text-gray-900 font-montserrat-semibold">
                         {participant.emergencyContact.name}
                       </p>
                     </div>
@@ -388,7 +388,7 @@ export default function ParticipantProfile() {
                       <p className="text-xs text-red-600 font-montserrat-semibold mb-1">
                         Relationship
                       </p>
-                      <p className="text-sm text-gray-900 font-medium">
+                      <p className="text-sm text-gray-900 font-montserrat-semibold">
                         {participant.emergencyContact.relationship}
                       </p>
                     </div>
@@ -396,7 +396,7 @@ export default function ParticipantProfile() {
                       <p className="text-xs text-red-600 font-montserrat-semibold mb-1">
                         Phone
                       </p>
-                      <p className="text-sm text-gray-900 font-medium">
+                      <p className="text-sm text-gray-900 font-montserrat-semibold">
                         {participant.emergencyContact.phone}
                       </p>
                     </div>

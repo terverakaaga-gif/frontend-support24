@@ -630,7 +630,7 @@ const AdminsList: React.FC = () => {
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <div className="font-medium flex items-center space-x-2">
+                                <div className="font-montserrat-semibold flex items-center space-x-2">
                                   <span>{admin.firstName} {admin.lastName}</span>
                                   {admin.isEmailVerified && (
                                     <CheckCircle className="h-3 w-3 text-green-500" />
@@ -673,14 +673,14 @@ const AdminsList: React.FC = () => {
                                     value={permissionProgress.percentage} 
                                     className="w-16 h-2"
                                   />
-                                  <span className="text-sm font-medium">
+                                  <span className="text-sm font-montserrat-semibold">
                                     {permissionProgress.granted}/{permissionProgress.total}
                                   </span>
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <div className="space-y-1">
-                                  <div className="font-medium">Permissions</div>
+                                  <div className="font-montserrat-semibold">Permissions</div>
                                   <div className="grid grid-cols-2 gap-2 text-sm">
                                     <div className="flex items-center space-x-1">
                                       <Users className="h-3 w-3" />
@@ -758,7 +758,7 @@ const AdminsList: React.FC = () => {
                 {adminsData?.users?.length === 0 && (
                   <div className="text-center py-12">
                     <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No administrators found</h3>
+                    <h3 className="text-lg font-montserrat-semibold">No administrators found</h3>
                     <p className="text-muted-foreground">
                       {Object.keys(filters).length > 0 
                         ? "Try adjusting your filters to see more results."

@@ -191,7 +191,7 @@ const ShiftsPage = () => {
             <Button
               variant="ghost"
               onClick={() => setViewMode("grid")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
                 viewMode === "grid"
                   ? "bg-primary text-white rounded-r-none"
                   : "text-gray-600 hover:bg-gray-100"
@@ -203,7 +203,7 @@ const ShiftsPage = () => {
             <Button
               variant="ghost"
               onClick={() => setViewMode("list")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
                 viewMode === "list"
                   ? "bg-primary text-white rounded-l-none"
                   : "text-gray-600 hover:bg-gray-100"
@@ -249,10 +249,10 @@ const ShiftsPage = () => {
             <div className="flex items-center gap-4">
               <p className="text-sm text-gray-600">
                 Showing{" "}
-                <span className="font-medium">
+                <span className="font-montserrat-semibold">
                   {Math.min(itemsPerPage, paginatedShifts.length)}
                 </span>{" "}
-                of <span className="font-medium">{filteredShifts.length}</span>{" "}
+                of <span className="font-montserrat-semibold">{filteredShifts.length}</span>{" "}
                 entries
               </p>
 
@@ -297,7 +297,7 @@ const ShiftsPage = () => {
                   <Button
                     key={idx}
                     onClick={() => setCurrentPage(idx + 1)}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-3 py-1 rounded-md text-sm font-montserrat-semibold transition-colors ${
                       currentPage === idx + 1
                         ? "bg-primary text-white"
                         : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"

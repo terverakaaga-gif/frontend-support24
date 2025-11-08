@@ -165,7 +165,7 @@ function StatsCard({
           {" "}
           {/* Smaller text and margin */}
           <CourseUp className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
-          <span className="text-green-600 font-medium">
+          <span className="text-green-600 font-montserrat-semibold">
             {stats.thisWeek} this week
           </span>
         </div>
@@ -314,13 +314,13 @@ const ParticipantShifts = () => {
             ))}
             {shift.workerAssignments.length > 2 && (
               <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
-                <span className="text-xs font-medium text-gray-600">
+                <span className="text-xs font-montserrat-semibold text-gray-600">
                   +{shift.workerAssignments.length - 2}
                 </span>
               </div>
             )}
           </div>
-          <span className="text-sm text-gray-600 font-medium">
+          <span className="text-sm text-gray-600 font-montserrat-semibold">
             {shift.workerAssignments.length} workers
           </span>
         </div>
@@ -336,7 +336,7 @@ const ParticipantShifts = () => {
                 {shift.workerId.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-sm font-montserrat-semibold text-gray-900">
               {shift.workerId.firstName} {shift.workerId.lastName}
             </span>
           </div>
@@ -492,7 +492,7 @@ const ParticipantShifts = () => {
           <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
                 viewMode === "grid"
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -503,7 +503,7 @@ const ParticipantShifts = () => {
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
+              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
                 viewMode === "list"
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -590,7 +590,7 @@ const ParticipantShifts = () => {
                           {" "}
                           {/* Smaller text */}
                           <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
-                          <span className="font-medium text-gray-900">
+                          <span className="font-montserrat-semibold text-gray-900">
                             {formatDate(shift.startTime)}
                           </span>
                         </div>
@@ -710,11 +710,11 @@ const ParticipantShifts = () => {
                 <div className="flex items-center gap-4">
                   <p className="text-sm text-gray-600">
                     Showing{" "}
-                    <span className="font-medium">
+                    <span className="font-montserrat-semibold">
                       {Math.min(itemsPerPage, paginatedShifts.length)}
                     </span>{" "}
                     of{" "}
-                    <span className="font-medium">{filteredShifts.length}</span>{" "}
+                    <span className="font-montserrat-semibold">{filteredShifts.length}</span>{" "}
                     shifts
                   </p>
 

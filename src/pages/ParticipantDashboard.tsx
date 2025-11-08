@@ -7,6 +7,7 @@ import {
   CourseDown,
   CourseUp,
   DollarMinimalistic,
+  Magnifer,
   Star,
   UsersGroupTwoRounded,
 } from "@solar-icons/react";
@@ -40,7 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SelectContent } from "@radix-ui/react-select";
+import { SelectContent, SelectPortal } from "@radix-ui/react-select";
 import {
   Popover,
   PopoverContent,
@@ -172,7 +173,7 @@ function SpendingServiceChart({
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 z-50">
               <SelectItem value="today">Today</SelectItem>
               <SelectItem value="week">Week</SelectItem>
               <SelectItem value="month">Month</SelectItem>
@@ -301,7 +302,11 @@ function SupportWorkersTable({ workers }: { workers: any[] }) {
         <h2 className="text-lg font-montserrat-semibold text-gray-900">
           Top Support Workers
         </h2>
-        <Button variant="link" onClick={()=>navigate('/participant/organizations')} className="text-status-pending hover:text-status-pending text-sm font-medium">
+        <Button
+          variant="link"
+          onClick={() => navigate("/participant/organizations")}
+          className="text-status-pending hover:text-status-pending text-sm font-montserrat-semibold"
+        >
           View all →
         </Button>
       </div>
@@ -309,19 +314,19 @@ function SupportWorkersTable({ workers }: { workers: any[] }) {
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-100">
-            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
               Worker Name
             </TableHead>
-            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
               Service Type
             </TableHead>
-            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
               Hours This Month
             </TableHead>
-            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
               Rating
             </TableHead>
-            <TableHead className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
               Status
             </TableHead>
           </TableRow>
@@ -336,7 +341,7 @@ function SupportWorkersTable({ workers }: { workers: any[] }) {
                       {worker.name[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm font-montserrat-semibold text-gray-900">
                     {worker.name}
                   </span>
                 </div>
@@ -350,13 +355,13 @@ function SupportWorkersTable({ workers }: { workers: any[] }) {
               <TableCell>
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-montserrat-semibold">
                     {worker.rating > 0 ? worker.rating.toFixed(1) : "New"}
                   </span>
                 </div>
               </TableCell>
               <TableCell>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <span className="px-3 py-1 rounded-full text-xs font-montserrat-semibold bg-green-100 text-green-800">
                   Active
                 </span>
               </TableCell>
@@ -389,7 +394,7 @@ function ServiceDistribution({ services }: { services: any[] }) {
         {services.map((service, index) => (
           <div key={index}>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-montserrat-semibold text-gray-700">
                 {getServiceTypeDisplayName(service.serviceType)}
               </span>
               <span className="text-sm text-gray-600">
@@ -511,15 +516,12 @@ function ParticipantDashboard() {
             <>
               <Button
                 variant="outline"
-                className="mr-4 rounded-full hover:bg-transparent hover:text-gray-600 text-xs truncate max-w-[120px] md:max-w-[200px]"
-                onClick={() => setSearchOpen(true)}
+                className="mr-4 rounded-lg hover:bg-transparent hover:text-gray-600 text-xs truncate"
+                onClick={() => navigate("/participant/find-support-workers")}
               >
-                Invite Support Workers
+                <Magnifer size={24} />
+                Find Support Workers
               </Button>
-              <SearchSupportWorkers
-                open={searchOpen}
-                onOpenChange={setSearchOpen}
-              />
             </>
           }
         />
@@ -528,7 +530,9 @@ function ParticipantDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Active Workers"
-            value={overviewData?.careOverview?.activeWorkers?.toPrecision(1) || "0"}
+            value={
+              overviewData?.careOverview?.activeWorkers?.toPrecision(1) || "0"
+            }
             icon={UsersGroupTwoRounded}
             additionalText="Supporting your care"
             trend={undefined}
@@ -537,7 +541,8 @@ function ParticipantDashboard() {
           <StatCard
             title="Care Hours"
             value={`${
-              overviewData?.careOverview?.totalCareHours?.current.toFixed(2) || 0
+              overviewData?.careOverview?.totalCareHours?.current.toFixed(2) ||
+              0
             }h`}
             icon={ClockCircle}
             trend={`${Math.abs(

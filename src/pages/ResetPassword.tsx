@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import authService from "@/api/services/authService";
+import { getPasswordRequirements } from "@/lib/utils";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -127,28 +128,7 @@ export default function ResetPassword() {
     );
   }
 
-  // Password requirements checker
-  const getPasswordRequirements = () => {
-    const requirements = [
-      {
-        text: "At least 8 characters",
-        met: formData.newPassword.length >= 8,
-      },
-      {
-        text: "At least 1 uppercase",
-        met: /[A-Z]/.test(formData.newPassword),
-      },
-      {
-        text: "At least 1 lowercase",
-        met: /[a-z]/.test(formData.newPassword),
-      },
-      {
-        text: "At least 1 special character",
-        met: /[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword),
-      },
-    ];
-    return requirements;
-  };
+ 
 
   return (
     <div className="flex min-h-screen w-full bg-[#FDFDFD]">
@@ -318,7 +298,7 @@ export default function ResetPassword() {
                 {/* Password Requirements */}
                 {formData.newPassword && (
                   <div className="space-y-2">
-                    {getPasswordRequirements().map((req, index) => (
+                    {getPasswordRequirements(formData.newPassword.length,formData.newPassword).map((req, index) => (
                       <div
                         key={index}
                         className="flex items-center gap-2 text-sm"

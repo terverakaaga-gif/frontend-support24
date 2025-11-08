@@ -87,13 +87,13 @@ export default function Login() {
       }
       // redirect to the proper role based dashboard
       else if (user?.role === "admin") {
-        navigate("/admin/");
+        navigate("/admin");
       } else if (user?.role === "participant") {
-        navigate("/participant/");
+        navigate("/participant");
       } else if (user?.role === "guardian") {
-        navigate("/guardian/");
+        navigate("/guardian");
       } else {
-        navigate("/support-worker/");
+        navigate("/support-worker");
       }
     } catch (error) {
       console.error("Login failed:", error);

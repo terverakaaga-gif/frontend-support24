@@ -89,7 +89,7 @@ export default function Login() {
 							members. The platform makes coordination seamless and gives us
 							peace of mind."
 						</p>
-						<p className="text-white/80 mt-4 font-medium">
+						<p className="text-white/80 mt-4 font-montserrat-semibold">
 							— Jane Wilson, Guardian
 						</p>
 					</div>
@@ -175,7 +175,7 @@ export default function Login() {
 						<span className="text-gray-600">Don't have an account? </span>
 						<a
 							href="/register"
-							className="text-guardian font-medium hover:underline"
+							className="text-guardian font-montserrat-semibold hover:underline"
 						>
 							Register here...
 						</a>

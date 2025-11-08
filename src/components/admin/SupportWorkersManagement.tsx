@@ -209,7 +209,7 @@ const SupportWorkersPage: React.FC = () => {
     return (
       <div className="flex items-center space-x-1">
         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-        <span className="text-sm font-medium">{ratings.average.toFixed(1)}</span>
+        <span className="text-sm font-montserrat-semibold">{ratings.average.toFixed(1)}</span>
         <span className="text-xs text-muted-foreground">({ratings.count})</span>
       </div>
     );
@@ -681,7 +681,7 @@ const SupportWorkersPage: React.FC = () => {
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <div className="font-medium flex items-center space-x-2">
+                                <div className="font-montserrat-semibold flex items-center space-x-2">
                                   <span>{worker.firstName} {worker.lastName}</span>
                                   {worker.profileImage && (
                                     <Image className="h-3 w-3 text-muted-foreground" />
@@ -745,14 +745,14 @@ const SupportWorkersPage: React.FC = () => {
                                     value={verificationProgress.percentage} 
                                     className="w-16 h-2"
                                   />
-                                  <span className="text-sm font-medium">
+                                  <span className="text-sm font-montserrat-semibold">
                                     {verificationProgress.percentage}%
                                   </span>
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <div className="space-y-1">
-                                  <div className="font-medium">Verification Status</div>
+                                  <div className="font-montserrat-semibold">Verification Status</div>
                                   {worker.verificationStatus ? (
                                     <div className="grid grid-cols-2 gap-2 text-sm">
                                       <div className="flex items-center space-x-1">
@@ -828,7 +828,7 @@ const SupportWorkersPage: React.FC = () => {
                 {workersData?.users?.length === 0 && (
                   <div className="text-center py-12">
                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No support workers found</h3>
+                    <h3 className="text-lg font-montserrat-semibold">No support workers found</h3>
                     <p className="text-muted-foreground">
                       {Object.keys(filters).length > 0 
                         ? "Try adjusting your filters to see more results."

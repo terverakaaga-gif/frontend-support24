@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { SupportWorker } from "@/types/user.types";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
+import { Spinner } from "@/components/Spinner";
 
 const inviteFormSchema = z.object({
   baseHourlyRate: z.number().min(1, "Base rate must be greater than 0"),
@@ -359,8 +360,8 @@ export default function SupportWorkerInvite() {
                 >
                   {sendInvitationMutation.isPending ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Sending Invitation...
+                      <Spinner />
+                      <span className="ml-2">Sending Invitation...</span>
                     </>
                   ) : (
                     <>

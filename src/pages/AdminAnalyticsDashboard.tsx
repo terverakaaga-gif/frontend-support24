@@ -428,7 +428,7 @@ export default function AdminAnalyticsDashboard() {
 								<div className="grid grid-cols-2 gap-4">
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Shift Completion Rate
 											</CardTitle>
 										</CardHeader>
@@ -445,7 +445,7 @@ export default function AdminAnalyticsDashboard() {
 									</Card>
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Avg Response Time
 											</CardTitle>
 										</CardHeader>
@@ -464,7 +464,7 @@ export default function AdminAnalyticsDashboard() {
 
 								<Card>
 									<CardHeader className="pb-2">
-										<CardTitle className="text-sm font-medium">
+										<CardTitle className="text-sm font-montserrat-semibold">
 											Cancellation Rate
 										</CardTitle>
 									</CardHeader>
@@ -511,7 +511,7 @@ export default function AdminAnalyticsDashboard() {
 								<div className="grid grid-cols-2 gap-4">
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Pending Payments
 											</CardTitle>
 										</CardHeader>
@@ -528,7 +528,7 @@ export default function AdminAnalyticsDashboard() {
 									</Card>
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Processed Today
 											</CardTitle>
 										</CardHeader>
@@ -547,7 +547,7 @@ export default function AdminAnalyticsDashboard() {
 
 								<Card>
 									<CardHeader className="pb-2">
-										<CardTitle className="text-sm font-medium">
+										<CardTitle className="text-sm font-montserrat-semibold">
 											Average Shift Value
 										</CardTitle>
 									</CardHeader>
@@ -607,7 +607,7 @@ export default function AdminAnalyticsDashboard() {
 						<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Email Verified
 									</CardTitle>
 								</CardHeader>
@@ -623,7 +623,7 @@ export default function AdminAnalyticsDashboard() {
 							</Card>
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Profile Complete
 									</CardTitle>
 								</CardHeader>
@@ -639,7 +639,7 @@ export default function AdminAnalyticsDashboard() {
 							</Card>
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Documents Verified
 									</CardTitle>
 								</CardHeader>
@@ -655,7 +655,7 @@ export default function AdminAnalyticsDashboard() {
 							</Card>
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Fully Onboarded
 									</CardTitle>
 								</CardHeader>
@@ -726,7 +726,7 @@ export default function AdminAnalyticsDashboard() {
 						<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Monthly Projected
 									</CardTitle>
 								</CardHeader>
@@ -742,7 +742,7 @@ export default function AdminAnalyticsDashboard() {
 							</Card>
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Quarterly Projected
 									</CardTitle>
 								</CardHeader>
@@ -758,7 +758,7 @@ export default function AdminAnalyticsDashboard() {
 							</Card>
 							<Card>
 								<CardHeader className="pb-2">
-									<CardTitle className="text-sm font-medium">
+									<CardTitle className="text-sm font-montserrat-semibold">
 										Growth Rate
 									</CardTitle>
 								</CardHeader>
@@ -795,7 +795,7 @@ export default function AdminAnalyticsDashboard() {
 								<div className="grid grid-cols-2 gap-4">
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Completed Shifts
 											</CardTitle>
 										</CardHeader>
@@ -812,7 +812,7 @@ export default function AdminAnalyticsDashboard() {
 									</Card>
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Cancelled Shifts
 											</CardTitle>
 										</CardHeader>
@@ -831,7 +831,7 @@ export default function AdminAnalyticsDashboard() {
 
 								<Card>
 									<CardHeader className="pb-2">
-										<CardTitle className="text-sm font-medium">
+										<CardTitle className="text-sm font-montserrat-semibold">
 											Completion Rate
 										</CardTitle>
 									</CardHeader>
@@ -856,7 +856,7 @@ export default function AdminAnalyticsDashboard() {
 								<div className="grid grid-cols-2 gap-4">
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Total Organizations
 											</CardTitle>
 										</CardHeader>
@@ -872,7 +872,7 @@ export default function AdminAnalyticsDashboard() {
 									</Card>
 									<Card>
 										<CardHeader className="pb-2">
-											<CardTitle className="text-sm font-medium">
+											<CardTitle className="text-sm font-montserrat-semibold">
 												Active Organizations
 											</CardTitle>
 										</CardHeader>
@@ -890,7 +890,7 @@ export default function AdminAnalyticsDashboard() {
 
 								<Card>
 									<CardHeader className="pb-2">
-										<CardTitle className="text-sm font-medium">
+										<CardTitle className="text-sm font-montserrat-semibold">
 											Avg Workers per Org
 										</CardTitle>
 									</CardHeader>

@@ -268,7 +268,7 @@ export function ChartCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {icon}
-            <CardTitle className="text-lg font-medium text-[#1e3b93]">{title}</CardTitle>
+            <CardTitle className="text-lg font-montserrat-semibold text-[#1e3b93]">{title}</CardTitle>
           </div>
           {onViewDetails && (
             <Button

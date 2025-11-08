@@ -49,7 +49,7 @@ export function RealTimeMetrics({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg font-medium">Real-Time Metrics</CardTitle>
+            <CardTitle className="text-lg font-montserrat-semibold">Real-Time Metrics</CardTitle>
           </div>
           <Button 
             variant="outline" 

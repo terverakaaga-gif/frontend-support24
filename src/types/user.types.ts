@@ -191,6 +191,7 @@ export interface LoginInput {
 }
 
 export interface IPagination {
+  total: number;
 	page: number;
 	limit: number;
 	totalPages: number;

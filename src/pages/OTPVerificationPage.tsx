@@ -18,6 +18,7 @@ export default function OTPVerification() {
   const email = searchParams.get("email") || "";
   const userId = searchParams.get("userId") || "";
   const isForgotPassword = searchParams.get("forgotPassword") === "true";
+  const isRegister = searchParams.get("register") === "true";
 
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(55);
@@ -197,9 +198,11 @@ export default function OTPVerification() {
                 <h1 className="text-3xl font-montserrat-bold text-gray-900">
                   Email Verified Successfully!
                 </h1>
-                <p className="text-gray-600 font-montserrat-semibold">
-                  Redirecting you to reset your password...
-                </p>
+                {!isRegister && (
+                  <p className="text-gray-600 font-montserrat-semibold">
+                    Redirecting you to reset your password...
+                  </p>
+                )}
               </div>
             </motion.div>
           ) : (

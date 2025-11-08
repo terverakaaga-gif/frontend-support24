@@ -183,7 +183,7 @@ function PerformanceChart({
             </Select>
             {selectedOption === "custom" && (
               <>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-montserrat-semibold text-gray-700">
                   Start:
                 </label>
                 <input
@@ -197,7 +197,7 @@ function PerformanceChart({
                   }
                   className="border border-gray-300 rounded px-2 py-1 text-sm"
                 />
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-montserrat-semibold text-gray-700">
                   End:
                 </label>
                 <input
@@ -219,7 +219,7 @@ function PerformanceChart({
         <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
           <div className="text-center p-8">
             <Chart className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p className="text-sm font-medium">
+            <p className="text-sm font-montserrat-semibold">
               No performance data available yet
             </p>
             <p className="text-xs text-gray-400 mt-1">
@@ -253,7 +253,7 @@ function PerformanceChart({
           </Select>
           {selectedOption === "custom" && (
             <>
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-montserrat-semibold text-gray-700">
                 Start:
               </label>
               <input
@@ -267,7 +267,7 @@ function PerformanceChart({
                 }
                 className="border border-gray-300 rounded px-2 py-1 text-sm"
               />
-              <label className="text-sm font-medium text-gray-700">End:</label>
+              <label className="text-sm font-montserrat-semibold text-gray-700">End:</label>
               <input
                 type="date"
                 value={customRange.end.toISOString().split("T")[0]}
@@ -295,7 +295,7 @@ function PerformanceChart({
                 metrics.hasIncrease
                   ? "text-green-600 bg-green-600/10"
                   : "text-red-600 bg-red-600/10"
-              } rounded-lg px-2 py-1 text-sm font-medium flex items-center`}
+              } rounded-lg px-2 py-1 text-sm font-montserrat-semibold flex items-center`}
             >
               <span className="mr-1">{metrics.hasIncrease ? "↑" : "↓"}</span>
               {metrics.percentageChange.toFixed(1)}%
@@ -401,7 +401,7 @@ function InvitationsTable({ invitations, isLoading }) {
         </div>
         <div className="p-12 text-center text-gray-500">
           <UsersGroupTwoRounded className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-          <p className="text-sm font-medium text-gray-600">
+          <p className="text-sm font-montserrat-semibold text-gray-600">
             No invitations available
           </p>
           <p className="text-xs text-gray-400 mt-1">
@@ -495,7 +495,7 @@ function InvitationsTable({ invitations, isLoading }) {
                     <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
                       {invitation.clientName.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-montserrat-semibold text-gray-900">
                       {invitation.clientName}
                     </span>
                   </div>
@@ -509,12 +509,12 @@ function InvitationsTable({ invitations, isLoading }) {
                 <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
                   {invitation.location}
                 </TableCell>
-                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-montserrat-semibold text-gray-900">
                   {invitation.hourlyRate}
                 </TableCell>
                 <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    className={`px-3 py-1 rounded-full text-xs font-montserrat-semibold ${
                       invitation.status === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : invitation.status === "Confirmed"
@@ -807,7 +807,7 @@ export default function SupportWorkerDashboard() {
               <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
                 <div className="text-center p-8">
                   <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                  <p className="text-sm font-medium">No upcoming schedules</p>
+                  <p className="text-sm font-montserrat-semibold">No upcoming schedules</p>
                   <p className="text-xs text-gray-400 mt-1">
                     Your upcoming shifts will appear here once scheduled
                   </p>

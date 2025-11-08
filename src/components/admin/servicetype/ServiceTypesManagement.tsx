@@ -374,7 +374,7 @@ const ServiceTypesManagement: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Status filter */}
               <div className="space-y-2">
-                <label className="text-xs font-medium">Status</label>
+                <label className="text-xs font-montserrat-semibold">Status</label>
                 <Select
                   value={filters.status || "all"}
                   onValueChange={(value) => handleFilterChange("status", value)}
@@ -443,7 +443,7 @@ const ServiceTypesManagement: React.FC = () => {
                 <TableBody>
                   {filteredServiceTypes.map((serviceType) => (
                     <TableRow key={serviceType._id}>
-                      <TableCell className="font-medium text-sm">
+                      <TableCell className="font-montserrat-semibold text-sm">
                         {serviceType.name}
                       </TableCell>
                       <TableCell className="text-sm">

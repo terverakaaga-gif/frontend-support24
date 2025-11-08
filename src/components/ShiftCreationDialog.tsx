@@ -1,4 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePlacesWidget } from "react-google-autocomplete";
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+
+import { DayPicker } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +53,7 @@ import {
   getWorkerProfileImage,
   filterValidWorkers,
 } from "@/lib/utils";
+import { types } from "util";
 
 // Types
 interface RoutineTask {
@@ -114,7 +119,7 @@ const RECURRENCE_PATTERNS = [
 
 const LOCATION_TYPES = [
   { value: "inPerson", label: "In Person" },
-  { value: "virtual", label: "Virtual" },
+  // { value: "virtual", label: "Virtual" },
 ];
 
 const SHIFT_DURATIONS = [
@@ -138,6 +143,7 @@ export default function ShiftCreationDialog({
   const [routineOption, setRoutineOption] = useState<
     "none" | "create" | "select"
   >("none");
+  const [placeDetails, setPlaceDetails] = useState<[] | null>(null);
 
   const { data: serviceTypes = [], isLoading: loadingServiceTypes } =
     useGetActiveServiceTypes();
@@ -147,6 +153,47 @@ export default function ShiftCreationDialog({
   const createRoutineMutation = useCreateRoutine();
   const { data: orgs = [], isLoading: orgsLoading } = useGetOrganizations();
   const workers = orgs.length ? filterValidWorkers(orgs[0].workers) : [];
+
+  // Google Places Autocomplete Hook
+  const { ref: addressInputRef } = usePlacesWidget({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    onPlaceSelected: (place) => {
+      console.log("Place selected:", place);
+      if (place.formatted_address) {
+        handleInputChange("address", place.formatted_address);
+      }
+    },
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
+  const {
+    placesService,
+    placePredictions,
+    getPlacePredictions,
+    isPlacePredictionsLoading,
+  } = usePlacesService({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
+  console.log("Place predictions:", placePredictions);
+
+  useEffect(() => {
+    // fetch place details for the first element in placePredictions array
+    if (placePredictions.length)
+      placesService?.getDetails(
+        {
+          placeId: placePredictions[0].place_id,
+        },
+        (placeDetails) => setPlaceDetails(placeDetails)
+      );
+  }, [placePredictions]);
 
   const [formData, setFormData] = useState<ShiftFormData>({
     organizationId: orgs[0]?._id || "",
@@ -310,7 +357,8 @@ export default function ShiftCreationDialog({
         formData.serviceTypeId &&
         formData.startTime &&
         formData.endTime &&
-        (formData.locationType === "virtual" || formData.address)
+        (formData.locationType === "virtual" || formData.address) &&
+        formData.specialInstructions
       );
     }
     if (step === 3) {
@@ -679,17 +727,41 @@ export default function ShiftCreationDialog({
                   Address *
                 </Label>
                 <div className="relative">
-                  <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
                   <Input
+                    ref={addressInputRef}
                     id="address"
-                    placeholder="Enter shift location address"
+                    type="text"
+                    placeholder="Start typing an address..."
                     value={formData.address}
-                    onChange={(e) =>
-                      handleInputChange("address", e.target.value)
-                    }
                     className="pl-10"
+                    autoComplete="off"
+                    onChange={(e) => {
+                      getPlacePredictions({ input: e.target.value });
+                    }}
+                    disabled={isPlacePredictionsLoading}
                   />
+                  {placePredictions.length > 0 && (
+                    <div className="absolute z-20 bg-white border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto rounded-md shadow-lg">
+                      {placePredictions.map((prediction) => (
+                        <div
+                          key={prediction.place_id}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            handleInputChange('address', prediction.description);
+                            // Clear predictions after selection
+                            getPlacePredictions({ input: "" });
+                          }}
+                        >
+                          {prediction.description}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+                <p className="text-xs text-gray-500">
+                  Type to search for addresses in Australia
+                </p>
               </div>
             )}
 
@@ -767,20 +839,6 @@ export default function ShiftCreationDialog({
                 rows={4}
               />
             </div>
-
-            {/* <div className="flex items-center space-x-2">
-              <Checkbox
-                className="w-6 h-6 border-double"
-                id="supervision"
-                checked={formData.requiresSupervision}
-                onCheckedChange={(checked) =>
-                  handleInputChange("requiresSupervision", checked)
-                }
-              />
-              <Label htmlFor="supervision" className="cursor-pointer">
-                This shift requires supervision
-              </Label>
-            </div> */}
 
             {/* Routine Section */}
             <div className="border-t pt-6 space-y-4">

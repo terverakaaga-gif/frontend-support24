@@ -173,7 +173,7 @@ export const TestimonialCard = ({ testimonial }) => {
     >
       {/* Rating Badge */}
       <div className="absolute  right-5">
-        <div className="bg-primary-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-medium w-fit">
+        <div className="bg-primary-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-montserrat-semibold w-fit">
           <Star className="w-4 h-4 fill-current" />
           <span>{testimonial.rating}</span>
         </div>
