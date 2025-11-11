@@ -121,10 +121,10 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               <li className="flex items-center gap-2 text-gray-300">
                 <Phone className="w-4 h-4"  /> 
                 <a 
-                  href="tel:+61 3 4832 4105"
+                  href="tel:+03 4832 4105"
                   className="hover:text-white transition-colors"
                 >
-                 +61 3 4832 4105
+                 +03 4832 4105
                 </a>
               </li>
               <li className="flex items-center gap-2 text-gray-300">

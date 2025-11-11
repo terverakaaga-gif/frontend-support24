@@ -729,7 +729,7 @@ export default function TermsOfUse() {
                   obligations.
                 </p>
                 <p className="text-gray-500 text-xs text-center">
-                  © 2025 Support24 Pty Ltd. All rights reserved.
+                  © 2025 Support24 . All rights reserved.
                 </p>
                 <p className="text-gray-500 text-xs text-center mt-2">
                   Version: 2.0 | Effective: 10 November 2025 | Previous

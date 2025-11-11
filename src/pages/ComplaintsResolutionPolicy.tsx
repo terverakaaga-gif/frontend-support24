@@ -873,7 +873,7 @@ export default function ComplaintsResolutionPolicy() {
                 </div>
 
                 <p className="text-gray-500 text-xs text-center">
-                  © 2025 Support24 Pty Ltd. All rights reserved. | ABN:
+                  © 2025 Support24 . All rights reserved. | ABN:
                   19673683817
                 </p>
                 <p className="text-gray-500 text-xs text-center mt-2">

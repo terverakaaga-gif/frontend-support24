@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
                   1. About This Policy
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  Support24 Pty Ltd (ABN 19673683817) operates a digital
+                  Support24  (ABN 19673683817) operates a digital
                   marketplace connecting NDIS participants with qualified
                   support workers, disability service providers, and support
                   coordinators. This Privacy Policy explains how we collect,
@@ -783,7 +783,7 @@ export default function PrivacyPolicy() {
 
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-2">
-                      Support24 Pty Ltd
+                      Support24 
                     </h3>
                     <p className="text-gray-300">ABN: 19673683817</p>
                   </div>
@@ -798,7 +798,7 @@ export default function PrivacyPolicy() {
                   days.
                 </p>
                 <p className="text-gray-500 text-xs text-center">
-                  © 2025 Support24 Pty Ltd. All rights reserved.
+                  © 2025 Support24 . All rights reserved.
                 </p>
                 <p className="text-gray-500 text-xs text-center mt-2">
                   Version: 2.0 | Effective: 10 November 2025 | Last Updated: 10
