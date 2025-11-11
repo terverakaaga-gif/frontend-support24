@@ -92,6 +92,14 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                   Incident Management
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/complaints-resolution-policy"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Complaints & Disputes
+                </Link>
+              </li>
             </ul>
           </div>
 

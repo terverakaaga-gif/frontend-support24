@@ -78,6 +78,7 @@ import PlatformTerms from "./pages/PlatformTerms";
 import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
+import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 
 const queryClient = new QueryClient();
 
@@ -141,6 +142,11 @@ const AppRoutes = () => {
       <Route
         path="/terms-of-use"
         element={<TermsOfUse />}
+      />
+      {/* Complaints Resolution Policy Page */}
+      <Route
+        path="/complaints-resolution-policy"
+        element={<ComplaintsResolutionPolicy />}
       />
 
       {/* Public routes */}
