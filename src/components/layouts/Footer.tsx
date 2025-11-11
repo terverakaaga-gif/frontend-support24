@@ -76,12 +76,12 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                 </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/incident-management-policy"
                   className="text-gray-300 hover:text-white transition-colors text-sm"
                 >
-                  Guidelines
-                </a>
+                  Incident Management
+                </Link>
               </li>
             </ul>
           </div>

@@ -76,6 +76,7 @@ import { HowItWorks } from "./pages/HowItWorks";
 import ComingSoon from "./pages/coming-soon";
 import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
 
 const queryClient = new QueryClient();
 
@@ -129,6 +130,11 @@ const AppRoutes = () => {
       <Route
         path="/privacy-policy"
         element={<PrivacyPolicy />}
+      />
+      {/* Incident Management Policy Page */}
+      <Route
+        path="/incident-management-policy"
+        element={<IncidentManagementPolicy />}
       />
 
       {/* Public routes */}
