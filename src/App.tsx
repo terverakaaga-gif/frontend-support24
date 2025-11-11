@@ -75,6 +75,7 @@ import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationD
 import { HowItWorks } from "./pages/HowItWorks";
 import ComingSoon from "./pages/coming-soon";
 import PlatformTerms from "./pages/PlatformTerms";
+import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
 
@@ -135,6 +136,11 @@ const AppRoutes = () => {
       <Route
         path="/incident-management-policy"
         element={<IncidentManagementPolicy />}
+      />
+      {/* Terms of Use Page */}
+      <Route
+        path="/terms-of-use"
+        element={<TermsOfUse />}
       />
 
       {/* Public routes */}
