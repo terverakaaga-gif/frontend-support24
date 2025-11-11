@@ -43,24 +43,20 @@ export const testimonialData = [
   {
     id: 1,
     title: "Everything we needed in one place",
-    content:
-      "Support24 has transformed how we manage daily support. Finding qualified workers is straightforward, and the invoicing system keeps everything organized. It's exactly what families like ours needed.",
+    content: "Support24 has transformed how we manage daily support. Finding qualified workers is straightforward, and the invoicing system keeps everything organized. It's exactly what families like ours needed.",
     userName: "Mally",
     userRole: "Family Carer",
-    avatar:
-      "",
-    rating: 4.1,
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    rating: 4.4,
   },
   {
     id: 2,
     title: "Smooth and worry-free from start to finish",
-    content:
-      "The quality of support workers who responded was excellent, and the communication throughout was clear and helpful. The whole process was smooth and worry-free.",
+    content: "he quality of support workers who responded was excellent, and the communication throughout was clear and helpful. The whole process was smooth and worry-free.",
     userName: "Carla",
     userRole: "NDIS Participant",
-    avatar:
-      "",
-    rating: 4.5,
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    rating: 4.7,
   },
   {
     id: 3,
@@ -173,7 +169,7 @@ export const TestimonialCard = ({ testimonial }) => {
     >
       {/* Rating Badge */}
       <div className="absolute  right-5">
-        <div className="bg-primary-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-montserrat-semibold w-fit">
+        <div className="bg-primary-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-medium w-fit">
           <Star className="w-4 h-4 fill-current" />
           <span>{testimonial.rating}</span>
         </div>
@@ -207,11 +203,11 @@ export const TestimonialCard = ({ testimonial }) => {
 
       {/* User Info */}
       <div className="flex items-center gap-3">
-        {/* <img
+        <img
           src={testimonial.avatar}
           alt={testimonial.userName}
           className="w-12 h-12 rounded-full object-cover"
-        /> */}
+        />
         <div>
           <p className="font-semibold text-gray-900">{testimonial.userName}</p>
           <p className="text-sm text-gray-600">{testimonial.userRole}</p>
