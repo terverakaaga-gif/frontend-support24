@@ -74,7 +74,7 @@ import SupportWorkerInvite from "./pages/SupportWorkerInvite";
 import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationDetailsPage";
 import { HowItWorks } from "./pages/HowItWorks";
 import ComingSoon from "./pages/coming-soon";
-import TermsOfUse from "./pages/TermsOfUse";
+import PlatformTerms from "./pages/PlatformTerms";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
 
@@ -123,8 +123,8 @@ const AppRoutes = () => {
       />
       {/* Terms of Use Page */}
       <Route
-        path="/terms-of-use"
-        element={<TermsOfUse />}
+        path="/platform-terms"
+        element={<PlatformTerms />}
       />
       {/* Privacy Policy Page */}
       <Route

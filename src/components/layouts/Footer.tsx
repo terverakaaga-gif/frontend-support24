@@ -69,10 +69,10 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               </li>
               <li>
                 <Link
-                  to="/terms-of-use"
+                  to="/platform-terms"
                   className="text-gray-300 hover:text-white transition-colors text-sm"
                 >
-                  Terms of Use
+                  Platform Terms
                 </Link>
               </li>
               <li>
