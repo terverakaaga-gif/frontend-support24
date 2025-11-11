@@ -75,6 +75,7 @@ import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationD
 import { HowItWorks } from "./pages/HowItWorks";
 import ComingSoon from "./pages/coming-soon";
 import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,11 @@ const AppRoutes = () => {
       <Route
         path="/terms-of-use"
         element={<TermsOfUse />}
+      />
+      {/* Privacy Policy Page */}
+      <Route
+        path="/privacy-policy"
+        element={<PrivacyPolicy />}
       />
 
       {/* Public routes */}

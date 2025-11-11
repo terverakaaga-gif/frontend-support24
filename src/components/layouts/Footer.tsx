@@ -60,12 +60,12 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
             </h3>
             <ul className="space-y-2 md:space-y-3 font-montserrat-semibold">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/privacy-policy"
                   className="text-gray-300 hover:text-white transition-colors text-sm"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
                 <Link
