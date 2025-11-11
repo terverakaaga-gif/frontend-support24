@@ -74,6 +74,7 @@ import SupportWorkerInvite from "./pages/SupportWorkerInvite";
 import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationDetailsPage";
 import { HowItWorks } from "./pages/HowItWorks";
 import ComingSoon from "./pages/coming-soon";
+import TermsOfUse from "./pages/TermsOfUse";
 
 const queryClient = new QueryClient();
 
@@ -117,6 +118,11 @@ const AppRoutes = () => {
       <Route
         path="/coming-soon"
         element={<ComingSoon />}
+      />
+      {/* Terms of Use Page */}
+      <Route
+        path="/terms-of-use"
+        element={<TermsOfUse />}
       />
 
       {/* Public routes */}

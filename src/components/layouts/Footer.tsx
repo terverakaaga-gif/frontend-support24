@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Letter, Phone } from "@solar-icons/react";
 
@@ -58,16 +59,30 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               Legal
             </h3>
             <ul className="space-y-2 md:space-y-3 font-montserrat-semibold">
-              {["Privacy Policy", "Terms of Use", "Guidelines"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <Link
+                  to="/terms-of-use"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Guidelines
+                </a>
+              </li>
             </ul>
           </div>
 
