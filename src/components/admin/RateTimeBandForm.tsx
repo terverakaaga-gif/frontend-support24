@@ -234,7 +234,7 @@ export function RateTimeBandForm() {
             <div className="flex items-center justify-center h-64">
               <div className="text-center text-red-600">
                 <RefreshCw className="h-8 w-8 mx-auto mb-4" />
-                <p className="font-medium">Error loading rate time band details</p>
+                <p className="font-montserrat-semibold">Error loading rate time band details</p>
                 <p className="text-sm text-gray-600 mt-1">Please try again later</p>
                 <Button 
                   variant="outline" 
@@ -267,7 +267,7 @@ export function RateTimeBandForm() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-lg font-medium mb-2">Rate Time Band Not Found</p>
+              <p className="text-lg font-montserrat-semibold mb-2">Rate Time Band Not Found</p>
               <p className="text-gray-600 mb-4">
                 The rate time band you're trying to edit could not be found.
               </p>
@@ -553,7 +553,7 @@ export function RateTimeBandForm() {
               <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 flex items-start gap-3">
                 <Info className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-yellow-800">Important Note</h4>
+                  <h4 className="font-montserrat-semibold text-yellow-800">Important Note</h4>
                   <p className="text-sm text-yellow-700 mt-1">
                     Changes to this time band will affect all rates that use it. Make sure your changes are consistent with existing rate configurations.
                   </p>

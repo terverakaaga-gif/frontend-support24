@@ -319,7 +319,7 @@ const BatchInvoiceDetail: React.FC = () => {
                       setEmailOptions(prev => ({ ...prev, sendToParticipant: !!checked }))
                     }
                   />
-                  <label htmlFor="participant" className="text-sm font-medium">
+                  <label htmlFor="participant" className="text-sm font-montserrat-semibold">
                     Send to Participant ({getFullName(batchInvoice.participantId)})
                   </label>
                 </div>
@@ -331,7 +331,7 @@ const BatchInvoiceDetail: React.FC = () => {
                       setEmailOptions(prev => ({ ...prev, sendToWorker: !!checked }))
                     }
                   />
-                  <label htmlFor="worker" className="text-sm font-medium">
+                  <label htmlFor="worker" className="text-sm font-montserrat-semibold">
                     Send to Worker ({getFullName(batchInvoice.workerId)})
                   </label>
                 </div>
@@ -384,21 +384,21 @@ const BatchInvoiceDetail: React.FC = () => {
                         <Hash className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Batch Number</p>
-                          <p className="font-medium text-sm">{batchInvoice.batchNumber}</p>
+                          <p className="font-montserrat-semibold text-sm">{batchInvoice.batchNumber}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Receipt className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Invoice Number</p>
-                          <p className="font-medium text-sm">{batchInvoice.invoiceNumber}</p>
+                          <p className="font-montserrat-semibold text-sm">{batchInvoice.invoiceNumber}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Invoice Period</p>
-                          <p className="font-medium text-sm">
+                          <p className="font-montserrat-semibold text-sm">
                             {formatDate(batchInvoice.startDate)} - {formatDate(batchInvoice.endDate)}
                           </p>
                         </div>
@@ -418,7 +418,7 @@ const BatchInvoiceDetail: React.FC = () => {
                         <History className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Generated At</p>
-                          <p className="font-medium text-sm">{formatDateTime(batchInvoice.generatedAt)}</p>
+                          <p className="font-montserrat-semibold text-sm">{formatDateTime(batchInvoice.generatedAt)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -445,14 +445,14 @@ const BatchInvoiceDetail: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Worker */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-sm text-gray-900">Support Worker</h4>
+                      <h4 className="font-montserrat-semibold text-sm text-gray-900">Support Worker</h4>
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-12 w-12">
                           <AvatarImage src="" alt={getFullName(batchInvoice.workerId)} />
                           <AvatarFallback>{getInitials(batchInvoice.workerId)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium text-sm">{getFullName(batchInvoice.workerId)}</p>
+                          <p className="font-montserrat-semibold text-sm">{getFullName(batchInvoice.workerId)}</p>
                           <p className="text-xs text-gray-600">{batchInvoice.workerId.email}</p>
                           <p className="text-xs text-gray-600">{batchInvoice.workerId.phone}</p>
                         </div>
@@ -461,14 +461,14 @@ const BatchInvoiceDetail: React.FC = () => {
 
                     {/* Participant */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-sm text-gray-900">Participant</h4>
+                      <h4 className="font-montserrat-semibold text-sm text-gray-900">Participant</h4>
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-12 w-12">
                           <AvatarImage src="" alt={getFullName(batchInvoice.participantId)} />
                           <AvatarFallback>{getInitials(batchInvoice.participantId)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium text-sm">{getFullName(batchInvoice.participantId)}</p>
+                          <p className="font-montserrat-semibold text-sm">{getFullName(batchInvoice.participantId)}</p>
                           <p className="text-xs text-gray-600">{batchInvoice.participantId.email}</p>
                           <p className="text-xs text-gray-600">{batchInvoice.participantId.phone}</p>
                         </div>
@@ -491,14 +491,14 @@ const BatchInvoiceDetail: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <User className="h-4 w-4 text-gray-1000" />
-                        <span className="text-sm font-medium">Participant Email</span>
+                        <span className="text-sm font-montserrat-semibold">Participant Email</span>
                       </div>
                       {getEmailStatus(batchInvoice.sentToParticipant, batchInvoice.participantEmailSentAt)}
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <UserCircle className="h-4 w-4 text-gray-1000" />
-                        <span className="text-sm font-medium">Worker Email</span>
+                        <span className="text-sm font-montserrat-semibold">Worker Email</span>
                       </div>
                       {getEmailStatus(batchInvoice.sentToWorker, batchInvoice.workerEmailSentAt)}
                     </div>
@@ -533,12 +533,12 @@ const BatchInvoiceDetail: React.FC = () => {
                       <TableBody>
                         {batchInvoice.timesheetIds.map((timesheet) => (
                           <TableRow key={timesheet._id}>
-                            <TableCell className="font-medium text-sm">
+                            <TableCell className="font-montserrat-semibold text-sm">
                               {timesheet.shiftId.shiftId}
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className="font-medium text-sm">{timesheet.shiftId.serviceTypeId.name}</p>
+                                <p className="font-montserrat-semibold text-sm">{timesheet.shiftId.serviceTypeId.name}</p>
                                 <p className="text-xs text-gray-600">
                                   Code: {timesheet.shiftId.serviceTypeId.code}
                                 </p>
@@ -546,7 +546,7 @@ const BatchInvoiceDetail: React.FC = () => {
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className="font-medium text-sm">
+                                <p className="font-montserrat-semibold text-sm">
                                   {formatDate(timesheet.actualStartTime)}
                                 </p>
                                 <p className="text-xs text-gray-600">
@@ -560,7 +560,7 @@ const BatchInvoiceDetail: React.FC = () => {
                             <TableCell className="text-sm">
                               {formatCurrency(timesheet.distanceTravelAmount)}
                             </TableCell>
-                            <TableCell className="font-medium text-sm">
+                            <TableCell className="font-montserrat-semibold text-sm">
                               {formatCurrency(timesheet.subtotal)}
                             </TableCell>
                           </TableRow>
@@ -581,15 +581,15 @@ const BatchInvoiceDetail: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Subtotal:</span>
-                      <span className="font-medium text-sm">{formatCurrency(batchInvoice.subtotal)}</span>
+                      <span className="font-montserrat-semibold text-sm">{formatCurrency(batchInvoice.subtotal)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Travel Expenses:</span>
-                      <span className="font-medium text-sm">{formatCurrency(batchInvoice.travelExpenseTotal)}</span>
+                      <span className="font-montserrat-semibold text-sm">{formatCurrency(batchInvoice.travelExpenseTotal)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Additional Expenses:</span>
-                      <span className="font-medium text-sm">{formatCurrency(batchInvoice.additionalExpensesTotal)}</span>
+                      <span className="font-montserrat-semibold text-sm">{formatCurrency(batchInvoice.additionalExpensesTotal)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between items-center text-base font-montserrat-bold">
@@ -644,11 +644,11 @@ const BatchInvoiceDetail: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Generated:</span>
-                  <span className="text-xs font-medium">{formatDate(batchInvoice.generatedAt)}</span>
+                  <span className="text-xs font-montserrat-semibold">{formatDate(batchInvoice.generatedAt)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Last Updated:</span>
-                  <span className="text-xs font-medium">{formatDate(batchInvoice.updatedAt)}</span>
+                  <span className="text-xs font-montserrat-semibold">{formatDate(batchInvoice.updatedAt)}</span>
                 </div>
               </div>
             </CardContent>
@@ -663,11 +663,11 @@ const BatchInvoiceDetail: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Total Timesheets:</span>
-                  <span className="text-xs font-medium">{batchInvoice.timesheetIds.length}</span>
+                  <span className="text-xs font-montserrat-semibold">{batchInvoice.timesheetIds.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Service Types:</span>
-                  <span className="text-xs font-medium">
+                  <span className="text-xs font-montserrat-semibold">
                     {new Set(batchInvoice.timesheetIds.map(t => t.shiftId.serviceTypeId.name)).size}
                   </span>
                 </div>

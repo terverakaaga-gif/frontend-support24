@@ -45,7 +45,7 @@ export function StatCard({
         {/* Content */}
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-muted-foreground group-hover:text-guardian transition-colors">
+            <h3 className="text-sm font-montserrat-semibold text-muted-foreground group-hover:text-guardian transition-colors">
               {title}
             </h3>
             <div
@@ -67,7 +67,7 @@ export function StatCard({
               {change && (
                 <div
                   className={cn(
-                    "flex items-center text-sm font-medium transition-all",
+                    "flex items-center text-sm font-montserrat-semibold transition-all",
                     change.positive
                       ? "text-emerald-600 group-hover:text-emerald-700"
                       : "text-red-500 group-hover:text-red-600"

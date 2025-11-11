@@ -10,7 +10,24 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
-import { ShareCircle, Buildings3, Calendar, ChatLine, ClipboardList, HamburgerMenu, Heart, Logout, HourglassLine, Scanner, Settings, ShieldUser, UsersGroupRounded, UsersGroupTwoRounded, Widget5, ShieldKeyholeMinimalistic } from "@solar-icons/react";
+import {
+  ShareCircle,
+  Buildings3,
+  Calendar,
+  ChatLine,
+  ClipboardList,
+  HamburgerMenu,
+  Heart,
+  Logout,
+  HourglassLine,
+  Scanner,
+  Settings,
+  ShieldUser,
+  UsersGroupRounded,
+  UsersGroupTwoRounded,
+  Widget5,
+  ShieldKeyholeMinimalistic,
+} from "@solar-icons/react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -40,8 +57,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     );
   };
 
- 
-
   const roleBasedLinks = () => {
     switch (user.role) {
       case "admin":
@@ -49,7 +64,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/admin"
-              icon={<Widget5  className="w-6 h-6" />}
+              icon={<Widget5 className="w-6 h-6" />}
               label="Dashboard"
               active={isActive("/admin")}
             />
@@ -61,31 +76,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="space-y-1">
                 <NavItem
                   to="/admin/all-admin"
-                  icon={<ShieldKeyholeMinimalistic  className="w-6 h-6" />}
+                  icon={<ShieldKeyholeMinimalistic className="w-6 h-6" />}
                   label="Admins"
                   active={isActive("/admin/all-admin")}
                 />
                 <NavItem
                   to="/admin/participants"
-                  icon={<UsersGroupTwoRounded  className="w-6 h-6" />}
+                  icon={<UsersGroupTwoRounded className="w-6 h-6" />}
                   label="Participants"
                   active={isActive("/admin/participants")}
                 />
                 <NavItem
                   to="/admin/support-workers"
-                  icon={<UsersGroupTwoRounded  className="w-6 h-6" />}
+                  icon={<UsersGroupTwoRounded className="w-6 h-6" />}
                   label="Support Workers"
                   active={isActive("/admin/support-workers")}
                 />
                 <NavItem
                   to="/admin/invites"
-                  icon={<ShareCircle  className="w-6 h-6" />}
+                  icon={<ShareCircle className="w-6 h-6" />}
                   label="Invitations"
                   active={isActive("/admin/invites")}
                 />
                 <NavItem
                   to="/admin/service-types"
-                  icon={<Settings  className="w-6 h-6" />}
+                  icon={<Settings className="w-6 h-6" />}
                   label="Service Types"
                   active={isActive("/admin/service-types")}
                 />
@@ -99,25 +114,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="space-y-1">
                 <NavItem
                   to="/admin/shifts"
-                  icon={<Calendar  className="w-6 h-6" />}
+                  icon={<Calendar className="w-6 h-6" />}
                   label="Shifts"
                   active={isActive("/admin/shifts")}
                 />
                 <NavItem
                   to="/admin/timesheets"
-                  icon={<ClipboardList  className="w-6 h-6" />}
+                  icon={<ClipboardList className="w-6 h-6" />}
                   label="Timesheets"
                   active={isActive("/admin/timesheets")}
                 />
                 <NavItem
                   to="/admin/batch-invoices"
-                  icon={<Scanner  className="w-6 h-6" />}
+                  icon={<Scanner className="w-6 h-6" />}
                   label="Batch Invoices"
                   active={isActive("/admin/batch-invoices")}
                 />
                 <NavItem
                   to="/admin/rate-time-band"
-                  icon={<HourglassLine  className="w-6 h-6" />}
+                  icon={<HourglassLine className="w-6 h-6" />}
                   label="Rate-Time-Band"
                   active={isActive("/admin/rate-time-band")}
                 />
@@ -131,13 +146,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="space-y-1">
                 <NavItem
                   to="/admin/incidents"
-                  icon={<ShieldUser  className="w-6 h-6" />}
+                  icon={<ShieldUser className="w-6 h-6" />}
                   label="Incidents"
                   active={isActive("/admin/incidents")}
                 />
                 <NavItem
                   to="/admin/chats"
-                  icon={<ChatLine  className="w-6 h-6" />}
+                  icon={<ChatLine className="w-6 h-6" />}
                   label="Messages"
                   active={isActive("/admin/chats")}
                 />
@@ -150,19 +165,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/guardian"
-              icon={<Heart  className="w-6 h-6" />}
+              icon={<Heart className="w-6 h-6" />}
               label="Dashboard"
               active={isActive("/guardian")}
             />
             <NavItem
               to="/bookings"
-              icon={<Calendar  className="w-6 h-6" />}
+              icon={<Calendar className="w-6 h-6" />}
               label="Bookings"
               active={isActive("/bookings")}
             />
             <NavItem
               to="/guardian/chats"
-              icon={<ChatLine  className="w-6 h-6" />}
+              icon={<ChatLine className="w-6 h-6" />}
               label="Messages"
               active={isActive("/guardian/chats")}
             />
@@ -173,37 +188,43 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/participant"
-              icon={<Widget5  className="w-6 h-6" />}
+              icon={<Widget5 className="w-6 h-6" />}
               label="Dashboard"
               active={isActive("/participant")}
             />
             <NavItem
               to="/participant/shifts"
-              icon={<Calendar  className="w-6 h-6" />}
+              icon={<Calendar className="w-6 h-6" />}
               label="My Shifts"
               active={isActive("/participant/shifts")}
             />
             <NavItem
               to="/participant/organizations"
-              icon={<Buildings3  className="w-6 h-6" />}
+              icon={<Buildings3 className="w-6 h-6" />}
               label="Organizations"
               active={isActive("/participant/organizations")}
             />
             <NavItem
+              to="/participant/find-support-workers"
+              icon={<UsersGroupRounded className="w-6 h-6" />}
+              label="Support Workers"
+              active={isActive("/participant/find-support-workers")}
+            />
+            <NavItem
               to="/participant/timesheets"
-              icon={<ClipboardList  className="w-6 h-6" />}
+              icon={<ClipboardList className="w-6 h-6" />}
               label="My Timesheets"
               active={isActive("/participant/timesheets")}
             />
             <NavItem
               to="/participant/incidents"
-              icon={<ShieldUser  className="w-6 h-6" />}
+              icon={<ShieldUser className="w-6 h-6" />}
               label="Incidents"
               active={isActive("/participant/incidents")}
             />
             <NavItem
               to="/participant/chats"
-              icon={<ChatLine  className="w-6 h-6" />}
+              icon={<ChatLine className="w-6 h-6" />}
               label="Messages"
               active={isActive("/participant/chats")}
             />
@@ -214,56 +235,40 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <>
             <NavItem
               to="/support-worker"
-              icon={<Widget5  className="w-6 h-6" />}
+              icon={<Widget5 className="w-6 h-6" />}
               label="Dashboard"
               active={isActive("/support-worker")}
             />
             <NavItem
               to="/support-worker/shifts"
-              icon={<Calendar  className="w-6 h-6" />}
+              icon={<Calendar className="w-6 h-6" />}
               label="Shifts"
               active={isActive("/support-worker/shifts")}
             />
             <NavItem
               to="/support-worker/organizations"
-              icon={<Buildings3  className="w-6 h-6" />}
+              icon={<Buildings3 className="w-6 h-6" />}
               label="Organizations"
               active={isActive("/support-worker/organizations")}
             />
             <NavItem
               to="/support-worker/timesheets"
-              icon={<ClipboardList  className="w-6 h-6" />}
+              icon={<ClipboardList className="w-6 h-6" />}
               label="My Timesheets"
               active={isActive("/support-worker/timesheets")}
             />
             <NavItem
               to="/support-worker/incidents"
-              icon={<ShieldUser  className="w-6 h-6" />}
+              icon={<ShieldUser className="w-6 h-6" />}
               label="Incidents"
               active={isActive("/support-worker/incidents")}
             />
             <NavItem
               to="/support-worker/chats"
-              icon={<ChatLine  className="w-6 h-6" />}
+              icon={<ChatLine className="w-6 h-6" />}
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
-
-            {/* Additional Support Worker Navigation Sections */}
-            {/* <div className="mt-8 space-y-1">
-              <NavItem
-                to="/support-worker/analytics"
-                icon={<BarChart3  className="w-6 h-6" />}
-                label="Analytics"
-                active={isActive("/support-worker/analytics")}
-              />
-              <NavItem
-                to="/support-worker/settings"
-                icon={<Settings  className="w-6 h-6" />}
-                label="Account Settings"
-                active={isActive("/support-worker/settings")}
-              />
-            </div> */}
           </>
         );
       default:
@@ -301,15 +306,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {user?.firstName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div className="text-sm text-white font-montserrat-semibold">
+          <div className="text-sm text-white font-montserrat-semibold truncate">
             {user.email}
           </div>
           <div className="text-xs text-primary-300 capitalize font-montserrat">
             {user.role === "supportWorker" ? "Support Worker" : user.role}
           </div>
           <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 text-white/80 hover:text-white hover:bg-orange-700 mt-3 font-montserrat-semibold"
+            className="w-full gap-2 items-center justify-center bg-red-600 text-white/80 hover:text-white hover:bg-red-700 mt-3 font-montserrat-semibold"
             onClick={() => logout()}
           >
             <Logout />
@@ -322,20 +326,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex min-h-screen">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto">
+      {/* Desktop Sidebar - Only show on large screens (1024px+) */}
+      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto rounded-xl m-4 mb-0">
         <Sidebar />
       </aside>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile & Tablet Sidebar - Show toggle button up to large screens */}
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetTrigger asChild>
           <Button
-        variant="ghost"
-        className="lg:hidden fixed left-4 top-6 z-40"
-        size="icon"
+            variant="ghost"
+            className="lg:hidden absolute left-2 top-2 z-40 hover:bg-transparent hover:text-black"
           >
-        <HamburgerMenu className="h-6 w-6" />
+            <HamburgerMenu />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
@@ -345,8 +348,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main Content */}
       <main className="flex-1 min-h-screen lg:pl-64 flex flex-col overflow-hidden">
-      
-
         {/* Content rendered by children */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
           {children}
@@ -373,7 +374,7 @@ const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
   <Link
     to={to}
     className={cn(
-      "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors relative",
+      "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-montserrat-semibold transition-colors relative",
       active
         ? "bg-primary text-white"
         : "text-white/80 hover:bg-primary-700 hover:text-white"

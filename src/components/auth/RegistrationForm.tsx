@@ -298,7 +298,7 @@ export function RegistrationForm({
 
         <Button
           type="submit"
-          className="w-full py-6 mt-4 rounded-xl bg-guardian hover:bg-guardian/80 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
+          className="w-full py-6 mt-4 rounded-xl bg-guardian hover:bg-guardian/80 text-white font-montserrat-semibold shadow-md hover:shadow-lg transition-all duration-200"
           disabled={isLoading}
         >
           {isLoading ? "Creating Account..." : "Sign Up"}

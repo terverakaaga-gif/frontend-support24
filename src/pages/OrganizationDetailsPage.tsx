@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { get } from "@/api/apiClient";
 import { format, parseISO } from "date-fns";
 import {
@@ -15,12 +17,19 @@ import {
   CloseCircle,
   DangerCircle,
   Letter,
-  List,
-  UsersGroupRounded,
+  Magnifer,
   UsersGroupTwoRounded,
-  Widget,
 } from "@solar-icons/react";
-import { Button } from "@/components/ui/button";
+import GeneralHeader from "@/components/GeneralHeader";
+import { pageTitles } from "@/constants/pageTitles";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import supportWorkerService from "@/api/services/supportWorkerService";
 
 // Types
 interface RateTimeBand {
@@ -182,12 +191,12 @@ const getRateBandCode = (rateTimeBandId: string | RateTimeBand): string => {
   return "";
 };
 
-// Support Worker Organization Details Page
 export default function SupportWorkerOrganizationDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"workers" | "invites">("workers");
-  const [viewMode, setViewMode] = useState("grid");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [showWorkerDetails, setShowWorkerDetails] = useState(false);
 
@@ -210,14 +219,36 @@ export default function SupportWorkerOrganizationDetailsPage() {
     organization?.pendingInvites.filter((inv) => inv.status === "declined") ||
     [];
 
+  const filteredWorkers = activeWorkers.filter((worker) => {
+    const name = getWorkerDisplayName(worker.workerId).toLowerCase();
+    const email = getWorkerEmail(worker.workerId).toLowerCase();
+    return (
+      name.includes(searchTerm.toLowerCase()) ||
+      email.includes(searchTerm.toLowerCase())
+    );
+  });
+
+  // workers details from api
+  const workers = useMemo(async () => {
+    const promises = await Promise.allSettled(
+      filteredWorkers.map(async (worker) => {
+        const details = await supportWorkerService.getById(
+          worker.workerId as string
+        );
+        return { ...worker, details };
+      })
+    );
+    return promises;
+  }, [filteredWorkers]);
+
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
               <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
                 Failed to load organization
               </h3>
               <p className="text-gray-600 mb-6">
@@ -225,7 +256,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
               </p>
               <Button
                 onClick={() => refetch()}
-                className="bg-guardian hover:bg-guardian/90"
+                className="bg-primary-600 hover:bg-primary-600"
               >
                 Try Again
               </Button>
@@ -238,7 +269,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gray-100 p-8">
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-12 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -254,12 +285,12 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
   if (!organization) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="">
+      <div className="min-h-screen bg-gray-100 p-8">
+        <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
               <Buildings3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
                 Organization not found
               </h3>
               <p className="text-gray-600 mb-6">
@@ -274,264 +305,172 @@ export default function SupportWorkerOrganizationDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="space-y-6">
+    <div className="min-h-screen bg-gray-100">
+      <div className="w-full p-8">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="mb-4 hover:bg-transparent text-gray-600 hover:text-gray-900 "
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Organizations
-          </Button>
-
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-guardian to-blue-600 flex items-center justify-center">
-                <UsersGroupTwoRounded className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  {organization.name}
-                </h1>
-                <p className="text-gray-600">{organization.description}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge
-                variant="outline"
-                className="text-green-700 bg-green-50 border-green-200"
-              >
-                <CheckCircle className="w-3 h-3 mr-1" />
-                {activeWorkers.length} Active Workers
-              </Badge>
-              {pendingInvites.length > 0 && (
-                <Badge
-                  variant="outline"
-                  className="text-orange-700 bg-orange-50 border-orange-200"
-                >
-                  <ClockCircle className="w-3 h-3 mr-1" />
-                  {pendingInvites.length} Pending Invites
-                </Badge>
-              )}
-              {declinedInvites.length > 0 && (
-                <Badge
-                  variant="outline"
-                  className="text-red-700 bg-red-50 border-red-200"
-                >
-                  <CloseCircle className="w-3 h-3 mr-1" />
-                  {declinedInvites.length} Declined Invites
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-
+        <GeneralHeader
+          showBackButton
+          title={
+            pageTitles.supportWorker["/support-worker/organizations"].title
+          }
+          subtitle={
+            pageTitles.supportWorker["/support-worker/organizations"].subtitle
+          }
+          user={user}
+          onViewProfile={() => {
+            navigate(
+              Object.keys(pageTitles.supportWorker).find(
+                (key) =>
+                  key !== "/support-worker/organizations" &&
+                  pageTitles.supportWorker[key] ===
+                    pageTitles.supportWorker["/support-worker/profile"]
+              )
+            );
+          }}
+          onLogout={logout}
+        />
         {/* Tab Navigation */}
-        <div className="flex gap-1">
-          <Button
+        <div className="flex gap-2 mb-4 md:mb-6">
+          <button
             onClick={() => setActiveTab("workers")}
-            className={`py-0 px-3 shadow-sm border border-slate-100 rounded-full text-xs font-montserrat-semibold transition-colors ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "workers"
-                ? "bg-guardian text-white"
-                : "text-gray-600 bg-slate-100 hover:bg-gray-200"
+                ? "bg-primary text-white hover:bg-primary"
+                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Active Workers
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setActiveTab("invites")}
-            className={`py-0 px-3 shadow-sm border border-slate-100 rounded-full text-xs font-montserrat-semibold transition-colors ${
+            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
               activeTab === "invites"
-                ? "bg-guardian text-white"
-                : "text-gray-600 bg-slate-100 hover:bg-gray-200"
+                ? "bg-primary text-white hover:bg-primary"
+                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             Pending Invites
-          </Button>
+          </button>
         </div>
-
         {/* Content */}
-        {activeTab === "workers" ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Active Workers ({activeWorkers.length})
-              </h2>
-              <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
-                    viewMode === "grid"
-                      ? "bg-primary text-white"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <Widget size={24} />
-                  Grid
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`px-4 py-2 flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
-                    viewMode === "list"
-                      ? "bg-primary text-white"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <List size={24} />
-                  List
-                </button>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Workers List */}
+          <div className="lg:col-span-2">
+            <h2 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
+              {activeTab === "workers"
+                ? `Active Workers (${filteredWorkers.length})`
+                : `Pending Invites (${pendingInvites.length})`}
+            </h2>
 
-            {activeWorkers.length === 0 ? (
-              <Card className="border-0 shadow-sm">
-                <CardContent className="p-12 text-center">
-                  <UsersGroupTwoRounded className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    No active workers
-                  </h3>
-                  <p className="text-gray-600">
-                    This organization doesn't have any active workers yet.
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                    : "space-y-4"
-                }
-              >
-                {activeWorkers.map((worker) => (
-                  <Card
-                    key={worker._id}
-                    className="border-0 shadow-sm hover:shadow-lg transition-all cursor-pointer"
-                    onClick={() => {
-                      setSelectedWorker(worker);
-                      setShowWorkerDetails(true);
-                    }}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <Avatar className="w-12 h-12">
-                            {getWorkerProfileImage(worker.workerId) ? (
-                              <AvatarImage
-                                src={getWorkerProfileImage(worker.workerId)}
-                              />
-                            ) : (
-                              <AvatarFallback className="bg-guardian text-white">
-                                {getWorkerInitials(worker.workerId)}
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {getWorkerDisplayName(worker.workerId)}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              {getWorkerEmail(worker.workerId)}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Joined:{" "}
-                              {format(
-                                parseISO(worker.joinedDate),
-                                "dd/MM/yyyy"
+            {activeTab === "workers" ? (
+              filteredWorkers.length === 0 ? (
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6 md:p-12 text-center">
+                    <UsersGroupTwoRounded className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                    <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
+                      No workers found
+                    </h3>
+                    <p className="text-sm md:text-base text-gray-600">
+                      {searchTerm
+                        ? "Try adjusting your search criteria"
+                        : "This organization doesn't have any active workers yet"}
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-2 md:space-y-3">
+                  {filteredWorkers.map((worker) => (
+                    <Card
+                      key={worker._id}
+                      className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                      onClick={() => {
+                        setSelectedWorker(worker);
+                        setShowWorkerDetails(true);
+                      }}
+                    >
+                      <CardContent className="p-3 md:p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                            <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
+                              {getWorkerProfileImage(worker.workerId) ? (
+                                <AvatarImage
+                                  src={getWorkerProfileImage(worker.workerId)}
+                                />
+                              ) : (
+                                <AvatarFallback className="bg-primary-100 text-primary-600 font-montserrat-semibold text-sm md:text-base">
+                                  {getWorkerInitials(worker.workerId)}
+                                </AvatarFallback>
                               )}
-                            </p>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
+                                  {getWorkerDisplayName(worker.workerId)}
+                                </h3>
+                                <Badge className="bg-green-50 text-green-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
+                                  Active
+                                </Badge>
+                              </div>
+                              <p className="text-xs md:text-sm text-gray-600 truncate">
+                                {getWorkerEmail(worker.workerId)}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Joined:{" "}
+                                {format(
+                                  parseISO(worker.joinedDate),
+                                  "dd/MM/yyyy"
+                                )}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-
-                        <div className="flex items-center gap-6">
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-guardian">
+                          <div className="text-right ml-2 md:ml-4">
+                            <p className="text-md font-montserrat-bold bg-primary/10 p-1 text-primary-600 rounded-full">
                               ${worker.serviceAgreement.baseHourlyRate}/hr
                             </p>
-                            <Badge
-                              variant="outline"
-                              className="mt-1 text-green-700 bg-green-50 border-green-200"
-                            >
-                              Active
-                            </Badge>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Pending Invites ({pendingInvites.length})
-              </h2>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className={
-                    viewMode === "list" ? "bg-guardian text-white" : ""
-                  }
-                >
-                  List
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className={
-                    viewMode === "grid" ? "bg-guardian text-white" : ""
-                  }
-                >
-                  Grid
-                </Button>
-              </div>
-            </div>
-
-            {pendingInvites.length === 0 ? (
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )
+            ) : pendingInvites.length === 0 ? (
               <Card className="border-0 shadow-sm">
-                <CardContent className="p-12 text-center">
-                  <Letter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <CardContent className="p-6 md:p-12 text-center">
+                  <Letter className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
                     No pending invites
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-sm md:text-base text-gray-600">
                     There are no pending invitations for this organization.
                   </p>
                 </CardContent>
               </Card>
             ) : (
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                    : "space-y-4"
-                }
-              >
+              <div className="space-y-2 md:space-y-3">
                 {pendingInvites.map((invite) => (
-                  <Card key={invite._id} className="border-0 shadow-sm">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <Avatar className="w-12 h-12">
-                            <AvatarFallback className="bg-orange-100 text-orange-700">
+                  <Card
+                    key={invite._id}
+                    className="border-0 shadow-sm hover:shadow-md transition-all"
+                  >
+                    <CardContent className="p-3 md:p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                          <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
+                            <AvatarFallback className="bg-orange-100 text-orange-600 font-montserrat-semibold text-sm md:text-base">
                               {getWorkerInitials(invite.workerId)}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {getWorkerDisplayName(invite.workerId)}
-                            </h3>
-                            <p className="text-sm text-gray-600">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
+                                {getWorkerDisplayName(invite.workerId)}
+                              </h3>
+                              <Badge className="bg-orange-50 text-orange-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
+                                Pending
+                              </Badge>
+                            </div>
+                            <p className="text-xs md:text-sm text-gray-600 truncate">
                               {getWorkerEmail(invite.workerId)}
                             </p>
                             <p className="text-xs text-gray-500">
@@ -543,26 +482,16 @@ export default function SupportWorkerOrganizationDetailsPage() {
                             </p>
                           </div>
                         </div>
-
-                        <div className="flex items-center gap-6">
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-orange-600">
-                              ${invite.proposedRates.baseHourlyRate}/hr
-                            </p>
-                            <Badge
-                              variant="outline"
-                              className="mt-1 text-orange-700 bg-orange-50 border-orange-200"
-                            >
-                              Pending
-                            </Badge>
-                          </div>
+                        <div className="text-right ml-2 md:ml-4">
+                          <p className="text-lg md:text-xl font-montserrat-bold text-orange-600">
+                            ${invite.proposedRates.baseHourlyRate}/hr
+                          </p>
                         </div>
                       </div>
-
                       {invite.notes && (
-                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium">Notes:</span>{" "}
+                        <div className="mt-2 md:mt-3 p-2 md:p-3 bg-gray-50 rounded-lg">
+                          <p className="text-xs md:text-sm text-gray-600">
+                            <span className="font-montserrat-semibold">Notes:</span>{" "}
                             {invite.notes}
                           </p>
                         </div>
@@ -573,116 +502,231 @@ export default function SupportWorkerOrganizationDetailsPage() {
               </div>
             )}
           </div>
-        )}
+
+          {/* Worker Details Sidebar */}
+          {selectedWorker && (
+            <div className="hidden lg:block">
+              <Card className="border-0 shadow-sm sticky top-6">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 border-b flex items-center justify-between">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => setSelectedWorker(null)}
+                    >
+                      <CloseCircle className="w-5 h-5 text-gray-400" />
+                    </Button>
+                  </div>
+
+                  <div className="p-3 md:p-4 space-y-3 md:space-y-4">
+                    {/* Worker Info */}
+                    <div className="text-center">
+                      <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
+                        {getWorkerProfileImage(selectedWorker.workerId) ? (
+                          <AvatarImage
+                            src={getWorkerProfileImage(selectedWorker.workerId)}
+                          />
+                        ) : (
+                          <AvatarFallback className="bg-primary-100 text-primary-600 text-lg md:text-2xl font-montserrat-semibold">
+                            {getWorkerInitials(selectedWorker.workerId)}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <h4 className="font-montserrat-bold text-gray-900 text-sm md:text-base mb-1">
+                        {getWorkerDisplayName(selectedWorker.workerId)}
+                      </h4>
+                      <p className="text-xs md:text-sm text-gray-600 mb-0.5">
+                        {getWorkerEmail(selectedWorker.workerId)}
+                      </p>
+                      <p className="text-xs md:text-sm text-gray-600">
+                        {getWorkerPhone(selectedWorker.workerId)}
+                      </p>
+                    </div>
+
+                    {/* Service Agreement */}
+                    <div>
+                      <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
+                        Service Agreement
+                      </h5>
+                      <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Base Hourly Rate:
+                          </span>
+                          <span className="font-montserrat-bold text-primary-600">
+                            ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Distance Travel Rate:
+                          </span>
+                          <span className="font-montserrat-semibold text-gray-900">
+                            $
+                            {selectedWorker.serviceAgreement.distanceTravelRate}
+                            /km
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Start Date:</span>
+                          <span className="font-montserrat-semibold text-gray-900">
+                            {format(
+                              parseISO(
+                                selectedWorker.serviceAgreement.startDate
+                              ),
+                              "dd/MM/yyyy"
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Terms Accepted:</span>
+                          <span className="font-montserrat-semibold text-gray-900">
+                            {selectedWorker.serviceAgreement.termsAccepted ? (
+                              <span className="text-green-600 flex items-center gap-1">
+                                Yes <CheckCircle className="w-3 h-3" />
+                              </span>
+                            ) : (
+                              "No"
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Joined Date:</span>
+                          <span className="font-montserrat-semibold text-gray-900">
+                            {format(
+                              parseISO(selectedWorker.joinedDate),
+                              "dd/MM/yyyy"
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Status:</span>
+                          <Badge className="bg-green-50 text-green-600 text-xs">
+                            Active
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Proposed Shift Rates */}
+                    <div>
+                      <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
+                        Proposed Shifts Rates
+                      </h5>
+                      <div className="space-y-1 md:space-y-2">
+                        {selectedWorker.serviceAgreement.shiftRates.map(
+                          (rate) => (
+                            <div
+                              key={rate._id}
+                              className="p-2 md:p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="font-montserrat-semibold text-gray-900 text-xs md:text-sm">
+                                  {getRateBandName(rate.rateTimeBandId)}
+                                </span>
+                                <span className="font-montserrat-bold text-primary-600 text-xs md:text-sm">
+                                  ${rate.hourlyRate}/hr
+                                </span>
+                              </div>
+                              {getRateBandCode(rate.rateTimeBandId) && (
+                                <p className="text-xs text-gray-500">
+                                  Code: {getRateBandCode(rate.rateTimeBandId)}
+                                </p>
+                              )}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Worker Details Modal */}
-      {showWorkerDetails && selectedWorker && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Worker Details
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowWorkerDetails(false)}
-                >
-                  <CloseCircle className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-6">
+      {/* Worker Details Modal - Mobile */}
+      {selectedWorker && (
+        <Dialog open={showWorkerDetails} onOpenChange={setShowWorkerDetails}>
+          <DialogContent className="lg:hidden max-w-full w-[90vw] mx-auto h-[90vh] p-0 rounded-t-2xl">
+            <div className="p-3 md:p-4 space-y-3 md:space-y-4 overflow-y-auto">
               {/* Worker Info */}
-              <div className="flex items-center gap-4">
-                <Avatar className="w-20 h-20">
+              <div className="text-center">
+                <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
                   {getWorkerProfileImage(selectedWorker.workerId) ? (
                     <AvatarImage
                       src={getWorkerProfileImage(selectedWorker.workerId)}
                     />
                   ) : (
-                    <AvatarFallback className="bg-guardian text-white text-2xl">
+                    <AvatarFallback className="bg-primary-100 text-primary-600 text-lg md:text-2xl font-montserrat-semibold">
                       {getWorkerInitials(selectedWorker.workerId)}
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {getWorkerDisplayName(selectedWorker.workerId)}
-                  </h3>
-                  <p className="text-gray-600">
-                    {getWorkerEmail(selectedWorker.workerId)}
-                  </p>
-                  <p className="text-gray-600">
-                    {getWorkerPhone(selectedWorker.workerId)}
-                  </p>
-                </div>
+                <h4 className="font-montserrat-bold text-gray-900 text-sm md:text-base mb-1">
+                  {getWorkerDisplayName(selectedWorker.workerId)}
+                </h4>
+                <p className="text-xs md:text-sm text-gray-600 mb-0.5">
+                  {getWorkerEmail(selectedWorker.workerId)}
+                </p>
+                <p className="text-xs md:text-sm text-gray-600">
+                  {getWorkerPhone(selectedWorker.workerId)}
+                </p>
               </div>
 
               {/* Service Agreement */}
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">
+                <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
                   Service Agreement
-                </h4>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-600">Base Hourly Rate:</p>
-                      <p className="text-xl font-bold text-guardian">
-                        ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
-                      </p>
-                    </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-600">
-                        Distance Travel Rate:
-                      </p>
-                      <p className="text-xl font-bold text-purple-600">
-                        ${selectedWorker.serviceAgreement.distanceTravelRate}/km
-                      </p>
-                    </div>
+                </h5>
+                <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Base Hourly Rate:</span>
+                    <span className="font-montserrat-bold text-primary-600">
+                      ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
+                    </span>
                   </div>
-
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Start Date:</p>
-                    <p className="font-medium">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Distance Travel Rate:</span>
+                    <span className="font-montserrat-semibold text-gray-900">
+                      ${selectedWorker.serviceAgreement.distanceTravelRate}/km
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Start Date:</span>
+                    <span className="font-montserrat-semibold text-gray-900">
                       {format(
                         parseISO(selectedWorker.serviceAgreement.startDate),
                         "dd/MM/yyyy"
                       )}
-                    </p>
+                    </span>
                   </div>
-
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Terms Accepted:</p>
-                    <Badge
-                      variant={
-                        selectedWorker.serviceAgreement.termsAccepted
-                          ? "default"
-                          : "secondary"
-                      }
-                    >
-                      {selectedWorker.serviceAgreement.termsAccepted
-                        ? "Yes"
-                        : "No"}
-                    </Badge>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Terms Accepted:</span>
+                    <span className="font-montserrat-semibold text-gray-900">
+                      {selectedWorker.serviceAgreement.termsAccepted ? (
+                        <span className="text-green-600 flex items-center gap-1">
+                          Yes <CheckCircle className="w-3 h-3" />
+                        </span>
+                      ) : (
+                        "No"
+                      )}
+                    </span>
                   </div>
-
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Joined Date:</p>
-                    <p className="font-medium">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Joined Date:</span>
+                    <span className="font-montserrat-semibold text-gray-900">
                       {format(
                         parseISO(selectedWorker.joinedDate),
                         "dd/MM/yyyy"
                       )}
-                    </p>
+                    </span>
                   </div>
-
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Status:</p>
-                    <Badge className="bg-green-100 text-green-700">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Status:</span>
+                    <Badge className="bg-green-50 text-green-600 text-xs">
                       Active
                     </Badge>
                   </div>
@@ -691,40 +735,35 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
               {/* Proposed Shift Rates */}
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">
-                  Proposed Shift Rates
-                </h4>
-                <div className="space-y-2">
+                <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
+                  Proposed Shifts Rates
+                </h5>
+                <div className="space-y-1 md:space-y-2">
                   {selectedWorker.serviceAgreement.shiftRates.map((rate) => (
                     <div
                       key={rate._id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="p-2 md:p-3 bg-gray-50 rounded-lg"
                     >
-                      <div>
-                        <p className="font-medium text-gray-900">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className="font-montserrat-semibold text-gray-900 text-xs md:text-sm">
                           {getRateBandName(rate.rateTimeBandId)}
-                        </p>
-                        {getRateBandCode(rate.rateTimeBandId) && (
-                          <p className="text-xs text-gray-500">
-                            Code: {getRateBandCode(rate.rateTimeBandId)}
-                          </p>
-                        )}
+                        </span>
+                        <span className="font-montserrat-bold text-primary-600 text-xs md:text-sm">
+                          ${rate.hourlyRate}/hr
+                        </span>
                       </div>
-                      <p className="text-lg font-bold text-guardian">
-                        ${rate.hourlyRate}/hr
-                      </p>
+                      {getRateBandCode(rate.rateTimeBandId) && (
+                        <p className="text-xs text-gray-500">
+                          Code: {getRateBandCode(rate.rateTimeBandId)}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
-
-              {/* Remove Worker Button */}
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
-                Remove Worker
-              </Button>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

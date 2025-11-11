@@ -176,11 +176,11 @@ export function ParticipantInvitations() {
 			<CardContent className="space-y-6">
 				{/* Pending Invitations Section */}
 				<div>
-					<h3 className="text-lg font-medium mb-4">Pending Invitations</h3>
+					<h3 className="text-lg font-montserrat-semibold mb-4">Pending Invitations</h3>
 					{pendingInvites.length === 0 ? (
 						<div className="text-center py-8 bg-muted rounded-md">
 							<Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-							<p className="text-muted-foreground font-medium">
+							<p className="text-muted-foreground font-montserrat-semibold">
 								No pending invitations
 							</p>
 							<p className="text-sm text-muted-foreground mt-1">
@@ -211,7 +211,7 @@ export function ParticipantInvitations() {
 													</AvatarFallback>
 												</Avatar>
 												<div>
-													<div className="font-medium">
+													<div className="font-montserrat-semibold">
 														{invite.workerEmail}
 													</div>
 													<div className="text-sm text-muted-foreground">
@@ -269,11 +269,11 @@ export function ParticipantInvitations() {
 
 				{/* Accepted Connections Section */}
 				<div>
-					<h3 className="text-lg font-medium mb-4">My Connections</h3>
+					<h3 className="text-lg font-montserrat-semibold mb-4">My Connections</h3>
 					{acceptedInvites.length === 0 ? (
 						<div className="text-center py-8 bg-muted rounded-md">
 							<UserCheck className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-							<p className="text-muted-foreground font-medium">
+							<p className="text-muted-foreground font-montserrat-semibold">
 								No active connections
 							</p>
 							<p className="text-sm text-muted-foreground mt-1">

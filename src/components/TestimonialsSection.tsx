@@ -29,7 +29,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           
           <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-center">
             Trusted by Thousands, across{" "}
-            <InlineVectorText className="italic" text="Australia" imageClassName="bottom-0 sm:-bottom-4 w-[300px]  translate-y-[35%] sm:translate-y-[45%]" />
+            <InlineVectorText className="italic" text="Australia" imageClassName="bottom-0 sm:-bottom-1 w-[300px]  translate-y-[35%] sm:translate-y-[45%]" />
           </motion.h1>
 
           <motion.div className="text-center mb-8 md:mb-12 w-full" {...fadeInUp}>
@@ -43,7 +43,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   key={i}
                   className={
                     i === 1
-                      ? "text-center border-x border-black px-4 sm:px-6"
+                      ? "text-center border-x border-black px-4 md:px-6"
                       : "text-center"
                   }
                   initial={{ opacity: 0, scale: 0.5 }}
@@ -51,10 +51,10 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.2 }}
                 >
-                  <div className="text-lg sm:text-xl md:text-2xl font-montserrat-bold">
+                  <div className="text-lg md:text-2xl font-montserrat-bold">
                     {stat.value}
                   </div>
-                  <div className="mt-2 text-xs sm:text-sm md:text-base font-montserrat-semibold">
+                  <div className="mt-2 text-xs  md:text-base font-montserrat-semibold">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -64,7 +64,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         </div>
 
         {/* Masonry Grid - Matches the design layout with staggered positioning */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
           {testimonialData.map((testimonial, index) => (
             <TestimonialCard 
               key={testimonial.id} 

@@ -16,9 +16,26 @@ import {
 	Organization,
 	organizationService,
 } from "@/api/services/organizationService";
+import { ServiceTypeStatus } from "@/entities/ServiceType";
+
+export interface SupportWorkerFilters {
+  skills?: string[];
+  serviceAreas?: ServiceTypeStatus[];
+  languages?: string[];
+  availabilityDays?: string[];
+  availabilityStartTime?: string;
+  availabilityEndTime?: string;
+  availabilityDate?: string;
+  minRating?: number;
+  maxHourlyRate?: number;
+  onlyVerified?: boolean;
+  keyword?: string;
+  page?: number;
+  limit?: number;
+}
 
 const queryKeys = {
-	searchSupportWorkers: (filters?: unknown) => [
+	searchSupportWorkers: (filters?: SupportWorkerFilters) => [
 		"supportWorkers",
 		"search",
 		filters,
@@ -28,17 +45,29 @@ const queryKeys = {
 	organizations: ["orgs"],
 };
 
+/**
+ * Original search hook - searches by skills, availability, etc
+ * Does NOT use location filters
+ */
 export function useSupportWorkers(
-	filters?: unknown,
-	options?: UseQueryOptions<ISearchSupportWorkersResponse>
+  filters?: SupportWorkerFilters,
+  options?: UseQueryOptions<ISearchSupportWorkersResponse>
 ) {
-	return useQuery<ISearchSupportWorkersResponse>({
-		queryKey: queryKeys.searchSupportWorkers(filters),
-		queryFn: () => participantService.getSupportWorkers(),
-		...options,
-	});
+	const hasLocationFilter = Object.keys(filters || {}).length > 0;
+  return useQuery<ISearchSupportWorkersResponse>({
+    queryKey: queryKeys.searchSupportWorkers(filters),
+    queryFn: async () => {
+      // If no filters, get all workers
+      if (!filters || Object.keys(filters).length === 0) {
+        return participantService.getSupportWorkers();
+      }
+      
+      // Otherwise use the original search endpoint
+      return participantService.getSupportWorkers(filters);
+    },
+    enabled: !!hasLocationFilter && (options?.enabled ?? true),
+  });
 }
-
 export function useSupportWorkerProfile(
 	id: string,
 	options?: UseQueryOptions<ISearchSupportWorkerResponse>
@@ -89,7 +118,7 @@ export function useParticipantService() {
 		useSendInvitationToSupportWorkers,
 
 		// Prefetching
-		prefetchSupportWorkers: (filters?: unknown) => {
+		prefetchSupportWorkers: (filters?: SupportWorkerFilters) => {
 			queryClient.prefetchQuery({
 				queryKey: queryKeys.searchSupportWorkers(filters),
 				queryFn: () => participantService.getSupportWorkers(),
@@ -111,7 +140,7 @@ export function useParticipantService() {
 		},
 
 		// Invalidation
-		invalidateSupportWorkers: (filters?: unknown) => {
+		invalidateSupportWorkers: (filters?: SupportWorkerFilters) => {
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.searchSupportWorkers(filters),
 			});

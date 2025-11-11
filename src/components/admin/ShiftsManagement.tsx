@@ -220,11 +220,11 @@ export function ShiftsManagement() {
           {/* Filters section */}
           {showFilters && (
             <div className="bg-muted/40 p-4 rounded-lg space-y-4">
-              <h3 className="font-medium text-sm">Filters</h3>
+              <h3 className="font-montserrat-semibold text-sm">Filters</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Status filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Status</label>
+                  <label className="text-sm font-montserrat-semibold">Status</label>
                   <Select
                     value={statusFilter}
                     onValueChange={(value) => setStatusFilter(value)}
@@ -245,7 +245,7 @@ export function ShiftsManagement() {
 
                 {/* Multi-worker filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Shift Type</label>
+                  <label className="text-sm font-montserrat-semibold">Shift Type</label>
                   <Select
                     value={isMultiWorkerFilter}
                     onValueChange={(value) => setIsMultiWorkerFilter(value)}
@@ -263,7 +263,7 @@ export function ShiftsManagement() {
 
                 {/* Start Date filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Start Date</label>
+                  <label className="text-sm font-montserrat-semibold">Start Date</label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -290,7 +290,7 @@ export function ShiftsManagement() {
 
                 {/* End Date filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">End Date</label>
+                  <label className="text-sm font-montserrat-semibold">End Date</label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -341,7 +341,7 @@ export function ShiftsManagement() {
                 ) : (
                   shifts.map((shift) => (
                     <TableRow key={shift._id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-montserrat-semibold">
                                                   <div className="flex flex-col">
                             <span>{shift.shiftId}</span>
                             <div className="flex items-center gap-1 mt-1">
@@ -356,7 +356,7 @@ export function ShiftsManagement() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">{formatDate(shift.startTime)}</span>
+                          <span className="font-montserrat-semibold">{formatDate(shift.startTime)}</span>
                           <div className="flex items-center gap-1 mt-1 text-muted-foreground text-xs">
                             <Clock className="h-3 w-3" />
                             <span>{formatTime(shift.startTime)} - {formatTime(shift.endTime)}</span>
@@ -366,7 +366,7 @@ export function ShiftsManagement() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">{typeof shift.participantId === 'object' ? getFullName(shift.participantId) : shift.participantId}</span>
+                          <span className="font-montserrat-semibold">{typeof shift.participantId === 'object' ? getFullName(shift.participantId) : shift.participantId}</span>
                           <span className="text-xs text-muted-foreground">{typeof shift.organizationId === 'object' ? shift.organizationId.name : shift.organizationId}</span>
                         </div>
                       </TableCell>
@@ -377,7 +377,7 @@ export function ShiftsManagement() {
                               <Users className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="font-medium text-sm">Multi-worker shift</span>
+                              <span className="font-montserrat-semibold text-sm">Multi-worker shift</span>
                               <span className="text-xs text-muted-foreground">
                                 {shift.workerAssignments?.length || 0} workers assigned
                               </span>
@@ -400,7 +400,7 @@ export function ShiftsManagement() {
                               </div>
                             )}
                             <div className="flex flex-col">
-                              <span className="font-medium">{typeof shift.workerId === 'object' ? getFullName(shift.workerId) : shift.workerId}</span>
+                              <span className="font-montserrat-semibold">{typeof shift.workerId === 'object' ? getFullName(shift.workerId) : shift.workerId}</span>
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <MapPin className="h-3 w-3" />
                                 <span className="truncate max-w-[150px]">{shift.locationType}</span>

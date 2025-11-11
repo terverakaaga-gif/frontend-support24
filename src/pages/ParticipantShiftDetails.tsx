@@ -238,13 +238,13 @@ const ParticipantShiftDetails = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-1000 mb-1">Date</p>
+                  <p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">Date</p>
                   <p className="text-lg font-montserrat-semibold text-gray-900">
                     {format(parseISO(shift.startTime), "EEEE, MMMM dd, yyyy")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-1000 mb-1">Time</p>
+                  <p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">Time</p>
                   <p className="text-lg font-montserrat-semibold text-gray-900">
                     {format(parseISO(shift.startTime), "h:mm a")} -{" "}
                     {format(parseISO(shift.endTime), "h:mm a")}
@@ -271,7 +271,7 @@ const ParticipantShiftDetails = () => {
                   <MapPin className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 mb-1">
+                  <p className="font-montserrat-semibold text-gray-900 mb-1">
                     {shift.locationType === "inPerson"
                       ? "In-Person"
                       : "Virtual"}
@@ -309,7 +309,7 @@ const ParticipantShiftDetails = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-1000 mb-1">
+                  <p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">
                     Shift Type
                   </p>
                   <p className="text-gray-900">
@@ -319,7 +319,7 @@ const ParticipantShiftDetails = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-1000 mb-1">
+                  <p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">
                     Supervision Required
                   </p>
                   <p className="text-gray-900">
@@ -330,7 +330,7 @@ const ParticipantShiftDetails = () => {
 
               {shift.recurrence?.pattern !== "none" && (
                 <div>
-                  <p className="text-sm font-medium text-gray-1000 mb-1">
+                  <p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">
                     Recurrence
                   </p>
                   <p className="text-gray-900 capitalize">
@@ -401,7 +401,7 @@ const ParticipantShiftDetails = () => {
                     <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-3">
                       <User className="w-8 h-8 text-primary" />
                     </div>
-                    <p className="font-medium text-gray-900">Worker Assigned</p>
+                    <p className="font-montserrat-semibold text-gray-900">Worker Assigned</p>
                     <p className="text-sm text-gray-1000 font-mono">
                       ID: {shift.workerId}
                     </p>
@@ -440,7 +440,7 @@ const ParticipantShiftDetails = () => {
                   <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
                     <User className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="font-medium text-gray-1000">
+                  <p className="font-montserrat-semibold text-gray-1000">
                     No worker assigned
                   </p>
                   <p className="text-sm text-gray-400">Pending assignment</p>
@@ -459,7 +459,7 @@ const ParticipantShiftDetails = () => {
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-primary"></div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Created</p>
+                    <p className="text-sm font-montserrat-semibold text-gray-900">Created</p>
                     <p className="text-xs text-gray-1000">
                       {format(
                         parseISO(shift.createdAt),
@@ -471,7 +471,7 @@ const ParticipantShiftDetails = () => {
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-gray-300"></div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-montserrat-semibold text-gray-900">
                       Last Updated
                     </p>
                     <p className="text-xs text-gray-1000">

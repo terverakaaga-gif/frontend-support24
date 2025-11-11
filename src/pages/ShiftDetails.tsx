@@ -258,7 +258,7 @@ export default function ShiftDetails() {
 								<Calendar className="h-5 w-5 text-guardian" />
 							</div>
 							<div className="flex-1">
-								<h3 className="font-medium text-gray-900 mb-1">Date & Time</h3>
+								<h3 className="font-montserrat-semibold text-gray-900 mb-1">Date & Time</h3>
 								<div className="space-y-1">
 									<div className="text-lg font-montserrat-semibold text-gray-900">
 										{format(parseISO(shift.startTime), "EEEE, MMMM dd, yyyy")}
@@ -283,9 +283,9 @@ export default function ShiftDetails() {
 								<MapPin className="h-5 w-5 text-guardian" />
 							</div>
 							<div className="flex-1">
-								<h3 className="font-medium text-gray-900 mb-1">Location</h3>
+								<h3 className="font-montserrat-semibold text-gray-900 mb-1">Location</h3>
 								<div className="text-gray-600">
-									<p className="font-medium">
+									<p className="font-montserrat-semibold">
 										{shift.locationType === "inPerson"
 											? "In-Person"
 											: "Virtual"}
@@ -302,7 +302,7 @@ export default function ShiftDetails() {
 									<AlertTriangle className="h-5 w-5 text-orange-600" />
 								</div>
 								<div className="flex-1">
-									<h3 className="font-medium text-gray-900 mb-1">
+									<h3 className="font-montserrat-semibold text-gray-900 mb-1">
 										Special Instructions
 									</h3>
 									<div className="p-4 bg-orange-50 rounded-lg">
@@ -320,12 +320,12 @@ export default function ShiftDetails() {
 								<FileText className="h-5 w-5 text-guardian" />
 							</div>
 							<div className="flex-1">
-								<h3 className="font-medium text-gray-900 mb-3">
+								<h3 className="font-montserrat-semibold text-gray-900 mb-3">
 									Additional Information
 								</h3>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div>
-										<p className="text-sm font-medium text-gray-1000 mb-1">
+										<p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">
 											Shift Type
 										</p>
 										<p className="text-gray-900">
@@ -335,7 +335,7 @@ export default function ShiftDetails() {
 										</p>
 									</div>
 									<div>
-										<p className="text-sm font-medium text-gray-1000 mb-1">
+										<p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">
 											Supervision Required
 										</p>
 										<p className="text-gray-900">
@@ -344,7 +344,7 @@ export default function ShiftDetails() {
 									</div>
 									{isRecurring && (
 										<div className="md:col-span-2">
-											<p className="text-sm font-medium text-gray-1000 mb-1">
+											<p className="text-sm font-montserrat-semibold text-gray-1000 mb-1">
 												Recurrence
 											</p>
 											<p className="text-gray-900 capitalize">
@@ -382,7 +382,7 @@ export default function ShiftDetails() {
 											<User className="h-6 w-6 text-guardian" />
 										</div>
 										<div>
-											<h3 className="font-medium text-gray-900">
+											<h3 className="font-montserrat-semibold text-gray-900">
 												{participantInfo.name}
 											</h3>
 											<p className="text-sm text-gray-1000">Participant</p>
@@ -420,7 +420,7 @@ export default function ShiftDetails() {
 									<div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
 										<User className="w-8 h-8 text-gray-400" />
 									</div>
-									<p className="font-medium text-gray-1000">
+									<p className="font-montserrat-semibold text-gray-1000">
 										Participant Details
 									</p>
 									<p className="text-sm text-gray-400">
@@ -441,7 +441,7 @@ export default function ShiftDetails() {
 								<div className="flex items-center gap-3">
 									<div className="w-2 h-2 rounded-full bg-primary"></div>
 									<div>
-										<p className="text-sm font-medium text-gray-900">Created</p>
+										<p className="text-sm font-montserrat-semibold text-gray-900">Created</p>
 										<p className="text-xs text-gray-1000">
 											{format(
 												parseISO(shift.createdAt),
@@ -453,7 +453,7 @@ export default function ShiftDetails() {
 								<div className="flex items-center gap-3">
 									<div className="w-2 h-2 rounded-full bg-gray-300"></div>
 									<div>
-										<p className="text-sm font-medium text-gray-900">
+										<p className="text-sm font-montserrat-semibold text-gray-900">
 											Last Updated
 										</p>
 										<p className="text-xs text-gray-1000">

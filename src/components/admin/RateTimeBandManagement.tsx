@@ -213,7 +213,7 @@ export function RateTimeBandsManagement() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center text-red-600">
               <RefreshCw className="h-8 w-8 mx-auto mb-4" />
-              <p className="font-medium">Error loading rate time bands</p>
+              <p className="font-montserrat-semibold">Error loading rate time bands</p>
               <p className="text-sm text-gray-600 mt-1">Please try again later</p>
               <Button 
                 variant="outline" 
@@ -294,7 +294,7 @@ export function RateTimeBandsManagement() {
               ) : (
                 filteredRateTimeBands.map((band) => (
                   <TableRow key={band._id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-montserrat-semibold">
                       <div className="flex items-center gap-2">
                         {getShiftTypeIcon(band)}
                         <span>{band.name}</span>
@@ -315,7 +315,7 @@ export function RateTimeBandsManagement() {
                     <TableCell>
                       <div className="flex items-center">
                         <DollarSign className="h-3 w-3 text-green-600 mr-1" />
-                        <span className="font-medium">{formatMultiplier(band.baseRateMultiplier)}</span>
+                        <span className="font-montserrat-semibold">{formatMultiplier(band.baseRateMultiplier)}</span>
                       </div>
                     </TableCell>
                     <TableCell>

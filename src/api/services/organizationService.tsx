@@ -163,6 +163,19 @@ export class OrganizationService {
 			`/organizations/${organizationId}/workers/${workerId}`
 		);
 	}
+	
+	// Get organization details by ID
+	async getOrganizationDetails(id: string): Promise<Organization> {
+		const response = await get<{ organizations: Organization[] }>(
+			"/organizations"
+		);
+		const organization = response.organizations.find((org) => org._id === id);
+		if (!organization) {
+			throw new Error("Organization not found");
+		}
+		return organization;
+	}
+
 }
 
 // Create and export a singleton instance

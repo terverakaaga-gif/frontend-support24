@@ -97,7 +97,7 @@ export const ConversationItem = ({
             {displayName}
           </h3>
           {conversation.lastMessage?.timestamp && (
-            <span className="text-xs text-gray-1000 ml-2 flex-shrink-0 font-medium">
+            <span className="text-xs text-gray-1000 ml-2 flex-shrink-0 font-montserrat-semibold">
               {formatMessageTime(conversation.lastMessage.timestamp)}
             </span>
           )}

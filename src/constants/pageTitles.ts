@@ -33,6 +33,26 @@ export const pageTitles = {
       title: "Support Workers",
       subtitle: "Manage support worker accounts",
     },
+    "/admin/incidents": {
+      title: "Incidents",
+      subtitle: "Report and track incidents",
+    },
+    "/admin/incidents/:id": {
+      title: "Incident Details",
+      subtitle: "View incident information",
+    },
+    "/admin/incidents/create": {
+      title: "Create Incident",
+      subtitle: "Report a new incident",
+    },
+    "/admin/chats": {
+      title: "Messages",
+      subtitle: "Communicate with your support team",
+    },
+    "/admin/chat/:workerId": {
+      title: "Chat",
+      subtitle: "Conversation with support worker",
+    },
     "/admin/invites": { title: "Invites", subtitle: "Handle invitations" },
     "/admin/rate-time-band": {
       title: "Rate Time Bands",
@@ -119,7 +139,7 @@ export const pageTitles = {
       title: "Organization Details",
       subtitle: "View organization information",
     },
-     "/support-worker/chats": {
+    "/support-worker/chats": {
       title: "Messages",
       subtitle: "Communicate with your support team",
     },

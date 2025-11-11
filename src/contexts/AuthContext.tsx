@@ -205,7 +205,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			// Always clear local state
 			setUser(null);
 			setIsAuthenticated(false);
-			localStorage.removeItem("guardianCareUser");
+			localStorage.clear();
+			sessionStorage.clear();
 			tokenStorage.clearTokens();
 
 			toast.success("You have been logged out");

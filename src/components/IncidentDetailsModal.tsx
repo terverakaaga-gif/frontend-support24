@@ -96,14 +96,14 @@ const IncidentDetailsModal = ({
 
 					<div className="p-6 space-y-6">
 						{/* Incident Content */}
-						<h3 className="text-lg font-medium text-gray-900 mb-2">
+						<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
 							{incident.title}
 						</h3>
 						<p className="text-gray-600">{incident.description}</p>
 
 						<div className="grid grid-cols-2 gap-4">
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-1">
 									Status
 								</label>
 								<span
@@ -115,7 +115,7 @@ const IncidentDetailsModal = ({
 								</span>
 							</div>
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-1">
 									Severity
 								</label>
 								<span
@@ -130,7 +130,7 @@ const IncidentDetailsModal = ({
 
 						<div className="grid grid-cols-2 gap-4">
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-1">
 									Reported By
 								</label>
 								<div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ const IncidentDetailsModal = ({
 								</p>
 							</div>
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-1">
 									Reported Against
 								</label>
 								<div className="flex items-center gap-2">
@@ -163,11 +163,11 @@ const IncidentDetailsModal = ({
 
 						{incident.shift && (
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-1">
 									Shift Information
 								</label>
 								<div className="bg-gray-100 rounded-lg p-3">
-									<p className="text-sm font-medium text-gray-900">
+									<p className="text-sm font-montserrat-semibold text-gray-900">
 										{incident.shift.shiftId}
 									</p>
 									<p className="text-xs text-gray-1000">
@@ -180,7 +180,7 @@ const IncidentDetailsModal = ({
 
 						{incident.urlLinks?.length > 0 && (
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-2">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 									Evidence Links
 								</label>
 								<div className="space-y-2">
@@ -202,7 +202,7 @@ const IncidentDetailsModal = ({
 
 						{incident.status === "RESOLVED" && incident.resolutionNote && (
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-2">
+								<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 									Resolution
 								</label>
 								<div className="bg-green-50 border border-green-200 rounded-lg p-3">

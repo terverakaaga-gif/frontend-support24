@@ -27,7 +27,7 @@ export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionPr
       <img
         src="/new-res/gradient-ckr.svg"
         alt="Vector Illustration"
-        className="absolute w-60 h-60 md:w-80 md:h-80 -top-10 md:-top-14 -left-16 md:-left-24 object-cover pointer-events-none opacity-80"
+        className="absolute w-60 h-60 md:w-80 md:h-80 -top-10 md:-top-16 -left-16 md:-left-24 object-cover pointer-events-none opacity-80"
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 w-full mx-auto max-w-7xl">

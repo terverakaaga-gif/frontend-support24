@@ -104,7 +104,7 @@ const ShiftManagement = () => {
     <Card>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-medium">Upcoming Shifts</CardTitle>
+          <CardTitle className="text-lg font-montserrat-semibold">Upcoming Shifts</CardTitle>
           <Button variant="link" className="text-sm p-0">
             View Calendar
           </Button>
@@ -123,7 +123,7 @@ const ShiftManagement = () => {
                   <AvatarFallback>{shift.worker.name[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-medium">{shift.worker.name}</h4>
+                  <h4 className="font-montserrat-semibold">{shift.worker.name}</h4>
                   <p className="text-sm text-muted-foreground">
                     {shift.date} • {shift.time}
                   </p>
@@ -160,7 +160,7 @@ const GoalsManagement = ({ goals, onUpdateGoal }) => {
     <Card>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-medium">Care Goals</CardTitle>
+          <CardTitle className="text-lg font-montserrat-semibold">Care Goals</CardTitle>
           <Button variant="outline" size="sm">
             Add Goal
           </Button>
@@ -172,7 +172,7 @@ const GoalsManagement = ({ goals, onUpdateGoal }) => {
             <div key={goal.id} className="space-y-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-medium">{goal.title}</h4>
+                  <h4 className="font-montserrat-semibold">{goal.title}</h4>
                   <p className="text-sm text-muted-foreground">
                     {goal.description}
                   </p>
@@ -192,7 +192,7 @@ const GoalsManagement = ({ goals, onUpdateGoal }) => {
               </div>
               <div className="flex items-center gap-2">
                 <Progress value={goal.progress} className="flex-1" />
-                <span className="text-sm font-medium">{goal.progress}%</span>
+                <span className="text-sm font-montserrat-semibold">{goal.progress}%</span>
               </div>
             </div>
           ))}

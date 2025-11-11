@@ -51,7 +51,22 @@ import {
 import Loader from "@/components/Loader";
 
 // Stat card component
-function StatCard({ title, value, icon: Icon, trend, trendDirection }) {
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  trend?: string;
+  trendDirection?: "up" | "down" | "neutral" | "stable";
+}
+
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  trendDirection,
+}: StatCardProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
       <div className="flex items-center justify-between mb-3">
@@ -168,7 +183,7 @@ function PerformanceChart({
             </Select>
             {selectedOption === "custom" && (
               <>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-montserrat-semibold text-gray-700">
                   Start:
                 </label>
                 <input
@@ -182,7 +197,7 @@ function PerformanceChart({
                   }
                   className="border border-gray-300 rounded px-2 py-1 text-sm"
                 />
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-montserrat-semibold text-gray-700">
                   End:
                 </label>
                 <input
@@ -204,7 +219,7 @@ function PerformanceChart({
         <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
           <div className="text-center p-8">
             <Chart className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p className="text-sm font-medium">
+            <p className="text-sm font-montserrat-semibold">
               No performance data available yet
             </p>
             <p className="text-xs text-gray-400 mt-1">
@@ -238,7 +253,7 @@ function PerformanceChart({
           </Select>
           {selectedOption === "custom" && (
             <>
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-montserrat-semibold text-gray-700">
                 Start:
               </label>
               <input
@@ -252,7 +267,7 @@ function PerformanceChart({
                 }
                 className="border border-gray-300 rounded px-2 py-1 text-sm"
               />
-              <label className="text-sm font-medium text-gray-700">End:</label>
+              <label className="text-sm font-montserrat-semibold text-gray-700">End:</label>
               <input
                 type="date"
                 value={customRange.end.toISOString().split("T")[0]}
@@ -280,7 +295,7 @@ function PerformanceChart({
                 metrics.hasIncrease
                   ? "text-green-600 bg-green-600/10"
                   : "text-red-600 bg-red-600/10"
-              } rounded-lg px-2 py-1 text-sm font-medium flex items-center`}
+              } rounded-lg px-2 py-1 text-sm font-montserrat-semibold flex items-center`}
             >
               <span className="mr-1">{metrics.hasIncrease ? "↑" : "↓"}</span>
               {metrics.percentageChange.toFixed(1)}%
@@ -386,7 +401,7 @@ function InvitationsTable({ invitations, isLoading }) {
         </div>
         <div className="p-12 text-center text-gray-500">
           <UsersGroupTwoRounded className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-          <p className="text-sm font-medium text-gray-600">
+          <p className="text-sm font-montserrat-semibold text-gray-600">
             No invitations available
           </p>
           <p className="text-xs text-gray-400 mt-1">
@@ -435,9 +450,10 @@ function InvitationsTable({ invitations, isLoading }) {
       <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
         <Button
-          onClick={()=>{navigate('/support-worker/organizations')}}
+          onClick={() => {
+            navigate("/support-worker/organizations");
+          }}
           variant="link"
-          className="text-primary hover:text-primary/80 text-sm font-medium p-0"
         >
           View all →
         </Button>
@@ -447,22 +463,22 @@ function InvitationsTable({ invitations, isLoading }) {
         <Table>
           <TableHeader>
             <TableRow className="border-b border-gray-200 bg-white font-montserrat-semibold">
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
                 Client Name
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden md:table-cell">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden md:table-cell">
                 Service Requested
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden lg:table-cell">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden lg:table-cell">
                 Date
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider hidden xl:table-cell">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden xl:table-cell">
                 Location
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
                 Hourly Rate
               </TableHead>
-              <TableHead className="px-4 md:px-6 py-3 text-left text-xs uppercase tracking-wider">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
                 Status
               </TableHead>
               <TableHead className="px-4 md:px-6 py-3"></TableHead>
@@ -479,7 +495,7 @@ function InvitationsTable({ invitations, isLoading }) {
                     <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
                       {invitation.clientName.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-montserrat-semibold text-gray-900">
                       {invitation.clientName}
                     </span>
                   </div>
@@ -493,12 +509,12 @@ function InvitationsTable({ invitations, isLoading }) {
                 <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
                   {invitation.location}
                 </TableCell>
-                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-montserrat-semibold text-gray-900">
                   {invitation.hourlyRate}
                 </TableCell>
                 <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    className={`px-3 py-1 rounded-full text-xs font-montserrat-semibold ${
                       invitation.status === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : invitation.status === "Confirmed"
@@ -529,7 +545,11 @@ function InvitationsTable({ invitations, isLoading }) {
                     </div>
                   ) : (
                     <Button
-                      onClick={()=>{navigate(`/support-worker/organizations/${invitation.id}`)}}
+                      onClick={() => {
+                        navigate(
+                          `/support-worker/organizations/${invitation.id}`
+                        );
+                      }}
                       variant="outline"
                       size="sm"
                       className="border-primary text-primary hover:bg-primary hover:text-white"
@@ -559,15 +579,15 @@ function InvitationsTable({ invitations, isLoading }) {
           </Select>
           <span>entries</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
-            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            className="border-gray-200"
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
-            ‹
+            Previous
           </Button>
           {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
             (page) => (
@@ -575,7 +595,7 @@ function InvitationsTable({ invitations, isLoading }) {
                 key={page}
                 size="sm"
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 ${
+                className={` ${
                   currentPage === page
                     ? "bg-primary text-white hover:bg-primary/90"
                     : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
@@ -588,11 +608,11 @@ function InvitationsTable({ invitations, isLoading }) {
           <Button
             variant="outline"
             size="sm"
-            className="border-primary text-primary hover:bg-primary hover:text-white px-3"
+            className="border-gray-200"
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
-            ›
+            Next
           </Button>
         </div>
       </div>
@@ -652,6 +672,8 @@ export default function SupportWorkerDashboard() {
     return <Loader />;
   }
 
+  console.log("user data: ", user);
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="">
@@ -666,10 +688,10 @@ export default function SupportWorkerDashboard() {
 
         {user &&
           user.role === "supportWorker" &&
-          (user as SupportWorker).verificationStatus?.onboardingComplete &&
+          !(user as SupportWorker).verificationStatus?.onboardingComplete &&
           !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
             <div className="mb-6">
-              <ProfileSetupAlert userName={user.firstName.split(" ")[0]} />
+              <ProfileSetupAlert />
             </div>
           )}
 
@@ -691,7 +713,9 @@ export default function SupportWorkerDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <StatCard
               title="Hours Worked"
-              value={`${overviewData?.workSummary?.hoursWorked?.current || 0}h`}
+              value={`${
+                overviewData?.workSummary?.hoursWorked?.current.toFixed(2) || 0
+              }h`}
               icon={ClockCircle}
               trend="From last Month"
               trendDirection={getTrendDirection(
@@ -700,16 +724,16 @@ export default function SupportWorkerDashboard() {
             />
             <StatCard
               title="Active Clients"
-              value={overviewData?.workSummary?.activeClients || 0}
+              value={overviewData?.workSummary?.activeClients.toFixed(0) || 0}
               icon={UsersGroupTwoRounded}
               trend="Currently Supporting"
               trendDirection="stable"
             />
             <StatCard
               title="Earnings"
-              value={`$${(
-                overviewData?.workSummary?.earnings?.current || 0
-              ).toFixed(2)}`}
+              value={`$${
+                overviewData?.workSummary?.earnings?.current.toFixed(2) || 0
+              }`}
               icon={DollarMinimalistic}
               trend="From last Month"
               trendDirection={getTrendDirection(
@@ -718,9 +742,9 @@ export default function SupportWorkerDashboard() {
             />
             <StatCard
               title="Performance Ratings"
-              value={(
-                overviewData?.performanceMetrics?.averageRating || 0
-              ).toFixed(1)}
+              value={
+                overviewData?.performanceMetrics?.averageRating.toFixed(2) || 0
+              }
               icon={Star}
               trend={`${
                 overviewData?.performanceMetrics?.onTimeRate || 0
@@ -741,14 +765,20 @@ export default function SupportWorkerDashboard() {
           />
           {/* Upcoming Schedules */}
           <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
-           <div className="flex justify-between items-center mb-6">
-             <h2 className="text-lg font-semibold text-gray-900">
-              Upcoming Schedules
-            </h2>
-            <Button onClick={() => { navigate('/support-worker/shifts') }} variant="link" className="ml-auto">
-              View All
-            </Button>
-           </div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Upcoming Schedules
+              </h2>
+              <Button
+                onClick={() => {
+                  navigate("/support-worker/shifts");
+                }}
+                variant="link"
+                className="ml-auto"
+              >
+                View All
+              </Button>
+            </div>
             {overviewData.workSummary?.upcomingShifts.length > 0 ? (
               <Table className="mt-4">
                 <TableBody className="divide-y divide-gray-200 bg-white">
@@ -758,29 +788,10 @@ export default function SupportWorkerDashboard() {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <TableCell className="px-4 md:px-6 py-3 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {new Date(shift.startTime).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {new Date(shift.startTime).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}{" "}
-                          -{" "}
-                          {new Date(shift.endTime).toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </div>
+                        {new Date(shift.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
                         {shift.clientName}
@@ -796,9 +807,7 @@ export default function SupportWorkerDashboard() {
               <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
                 <div className="text-center p-8">
                   <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                  <p className="text-sm font-medium">
-                    No upcoming schedules
-                  </p>
+                  <p className="text-sm font-montserrat-semibold">No upcoming schedules</p>
                   <p className="text-xs text-gray-400 mt-1">
                     Your upcoming shifts will appear here once scheduled
                   </p>

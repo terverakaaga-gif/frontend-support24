@@ -31,13 +31,13 @@ export function ParticipantOrganizationCard({
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <p className="text-gray-1000">Created on</p>
-                  <p className="font-medium">
+                  <p className="font-montserrat-semibold">
                     {format(parseISO(organization.createdAt), "dd/MM/yyyy")}
                   </p>
                 </div>
                 <div>
                   <p className="text-gray-1000">Last Updated</p>
-                  <p className="font-medium">
+                  <p className="font-montserrat-semibold">
                     {format(parseISO(organization.updatedAt), "dd/MM/yyyy")}
                   </p>
                 </div>

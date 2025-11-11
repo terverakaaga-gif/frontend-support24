@@ -410,7 +410,7 @@ const IncidentDetailsPage = () => {
 					<div className="p-6 space-y-6">
 						{/* Description with Rich Text Preview */}
 						<div>
-							<h3 className="text-lg font-medium text-gray-900 mb-3">
+							<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
 								Description
 							</h3>
 							<div className="bg-gray-100 rounded-lg p-4 border">
@@ -419,7 +419,7 @@ const IncidentDetailsPage = () => {
 										prose-headings:text-gray-900 prose-headings:font-montserrat-semibold prose-headings:mt-4 prose-headings:mb-2
 										prose-h1:text-xl prose-h1:font-montserrat-bold prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
 										prose-h2:text-lg prose-h2:font-montserrat-semibold
-										prose-h3:text-base prose-h3:font-medium
+										prose-h3:text-base prose-h3:font-montserrat-semibold
 										prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-3
 										prose-strong:text-gray-900 prose-strong:font-montserrat-semibold
 										prose-em:text-gray-600 prose-em:italic
@@ -438,7 +438,7 @@ const IncidentDetailsPage = () => {
 						{/* Details Grid */}
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<h4 className="text-sm font-medium text-gray-1000 mb-2">
+								<h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
 									Reported By
 								</h4>
 								<div className="flex items-center gap-2">
@@ -451,7 +451,7 @@ const IncidentDetailsPage = () => {
 							</div>
 
 							<div>
-								<h4 className="text-sm font-medium text-gray-1000 mb-2">
+								<h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
 									Reported On
 								</h4>
 								<div className="flex items-center gap-2">
@@ -464,7 +464,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.shiftId && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-1000 mb-2">
+									<h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
 										Shift ID
 									</h4>
 									<p className="text-gray-900">{incident.shiftId}</p>
@@ -473,7 +473,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.reportedAgainst && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-1000 mb-2">
+									<h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
 										Reported Against
 									</h4>
 									<div className="flex items-center gap-2">
@@ -488,7 +488,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.resolvedBy && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-1000 mb-2">
+									<h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
 										Resolved By
 									</h4>
 									<div className="flex items-center gap-2">
@@ -503,7 +503,7 @@ const IncidentDetailsPage = () => {
 
 							{incident.resolvedAt && (
 								<div>
-									<h4 className="text-sm font-medium text-gray-1000 mb-2">
+									<h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
 										Resolved On
 									</h4>
 									<div className="flex items-center gap-2">
@@ -519,7 +519,7 @@ const IncidentDetailsPage = () => {
 						{/* Resolution Note */}
 						{incident.resolutionNote && (
 							<div>
-								<h3 className="text-lg font-medium text-gray-900 mb-3">
+								<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
 									Resolution Notes
 								</h3>
 								<div className="bg-green-50 rounded-lg p-4 border border-green-200">
@@ -536,7 +536,7 @@ const IncidentDetailsPage = () => {
 						{/* Evidence */}
 						{incident.urlLinks && incident.urlLinks.length > 0 && (
 							<div>
-								<h3 className="text-lg font-medium text-gray-900 mb-3">
+								<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
 									Evidence Files
 								</h3>
 								<div className="space-y-2">
@@ -556,7 +556,7 @@ const IncidentDetailsPage = () => {
 						{/* Status Update (Admin only) */}
 						{user?.role === "admin" && (
 							<div className="border-t border-gray-200 pt-6">
-								<h3 className="text-lg font-medium text-gray-900 mb-3">
+								<h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
 									Update Status
 								</h3>
 								<div className="flex flex-wrap gap-2">

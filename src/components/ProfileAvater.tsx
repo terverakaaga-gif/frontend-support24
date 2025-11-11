@@ -28,7 +28,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+        <Button variant="ghost" className="relative h-10 w-10 border border-double  shadow-sm hover:border-2 hover:border-primary hover:shadow-md hover:text-primary rounded-full">
           <Avatar className="h-10 w-10">
             <AvatarImage src={user.profileImage} alt={user.firstName} />
             <AvatarFallback>
@@ -44,7 +44,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
             <p className="leading-none">
               {user.firstName} {user.lastName}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-xs truncate leading-none text-muted-foreground">
               {user.email}
             </p>
           </div>
