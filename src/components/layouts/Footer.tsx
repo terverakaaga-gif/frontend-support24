@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Letter, Phone } from "@solar-icons/react";
+import { MapPin } from "lucide-react";
 
 
 interface FooterProps {
@@ -58,16 +60,46 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               Legal
             </h3>
             <ul className="space-y-2 md:space-y-3 font-montserrat-semibold">
-              {["Privacy Policy", "Terms of Use", "Guidelines"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms-of-use"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/platform-terms"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Platform Terms
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/incident-management-policy"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Incident Management
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/complaints-resolution-policy"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                >
+                  Complaints & Disputes
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -89,12 +121,21 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               <li className="flex items-center gap-2 text-gray-300">
                 <Phone className="w-4 h-4"  /> 
                 <a 
-                  href="tel:+0319009800"
+                  href="tel:+03 4832 4105"
                   className="hover:text-white transition-colors"
                 >
-                  (03) 1900 9800
+                 +03 4832 4105
                 </a>
               </li>
+              <li className="flex items-center gap-2 text-gray-300">
+                <MapPin className="w-4 h-4"  /> 
+                <a 
+                  href="https://www.google.com/maps/place/Support24/@-37.8141076,144.9632817,15z/data=!4m6!3m5!1s0x6ad642af53d532bd:0x5045675c31c63dfe!8m2!3d-37.8141076!4d144.9632817!16s%2Fg%2F11c4022hz7?entry=ttu&g_ep=EgoyMDI1MTEwMjE2NjA6CGgLEgZ2aXN0aWNzMjQyBDIJc291cmNlMjQuY29tLmF1OgIIBA%3D%3D"
+                  className="hover:text-white transition-colors"
+                >
+                  Melbourne, Victoria, Australia
+                </a>
+              </li> 
             </ul>
           </div>
         </div>

@@ -71,6 +71,11 @@ import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationD
 import { HowItWorks } from "./pages/HowItWorks";
 import OTPVerification from "./pages/OTPVerificationPage";
 import ComingSoon from "./pages/coming-soon";
+import PlatformTerms from "./pages/PlatformTerms";
+import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
+import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 import SupportWorkersSearch from "./pages/SupportWorkersSearch";
 
 const queryClient = new QueryClient();
@@ -112,6 +117,31 @@ const AppRoutes = () => {
       <Route
         path="/coming-soon"
         element={<ComingSoon />}
+      />
+      {/* Terms of Use Page */}
+      <Route
+        path="/platform-terms"
+        element={<PlatformTerms />}
+      />
+      {/* Privacy Policy Page */}
+      <Route
+        path="/privacy-policy"
+        element={<PrivacyPolicy />}
+      />
+      {/* Incident Management Policy Page */}
+      <Route
+        path="/incident-management-policy"
+        element={<IncidentManagementPolicy />}
+      />
+      {/* Terms of Use Page */}
+      <Route
+        path="/terms-of-use"
+        element={<TermsOfUse />}
+      />
+      {/* Complaints Resolution Policy Page */}
+      <Route
+        path="/complaints-resolution-policy"
+        element={<ComplaintsResolutionPolicy />}
       />
 
       {/* Public routes - these handle their own logout logic */}
