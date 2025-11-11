@@ -86,17 +86,10 @@ export enum LocationType {
 	IN_PERSON = "inPerson", // At participant's address or specified location
 	// VIRTUAL = 'virtual'      // Online/video call
 }
-
-// Interfaces based on API response
-interface Organization {
-	_id: string;
-	name: string;
-}
-
 /**
  * Worker assignment status for multi-worker shifts
  */
-interface WorkerAssignment {
+export interface ShiftWorkerAssignment {
 	_id: string;
 	workerId: UserSummary;
 	status: ShiftStatus;
@@ -107,39 +100,61 @@ interface WorkerAssignment {
 	cancellationNote?: string;
 }
 
+export interface ShiftRecurrence {
+  pattern: "none" | "daily" | "weekly" | "biweekly" | "monthly";
+  occurrences?: number;
+}
+
+export interface CreateShiftRequest {
+  organizationId: string;
+  isMultiWorkerShift: boolean;
+  workerId?: string;
+  workerIds?: string[];
+  serviceType: string;
+  startTime: string;
+  endTime: string;
+  locationType: "inPerson" | "virtual";
+  address: string;
+  shiftType: "directBooking" | "openShift";
+  requiresSupervision: boolean;
+  specialInstructions?: string;
+  recurrence?: ShiftRecurrence;
+}
+
 export interface Shift {
-	serviceType: any;
-	_id: string; // Unique MongoDB ID
-	shiftId: string; // Unique shift identifier
-	organizationId: string | Organization; // Organization this shift belongs to
-	participantId: string | UserSummary; // Participant who created the shift
-	isMultiWorkerShift: boolean; // Whether shift requires multiple workers
-	workerId?: string | UserSummary; // Support worker assigned (single-worker mode)
-	workerAssignments?: WorkerAssignment[]; // Support workers assigned (multi-worker mode)
-	serviceTypeId?: ServiceTypeId; // Type of service requested
-	startTime: string; // Scheduled start time
-	endTime: string; // Scheduled end time
-
-	// Location details
-	locationType: LocationType;
-	address?: string; // Required for in-person shifts
-
-	// Shift configuration
-	shiftType: ShiftType; // Direct booking or open request
-	requiresSupervision: boolean; // Whether supervision is required
-	specialInstructions?: string; // Any special notes or requirements
-
-	// Status tracking
-	status: ShiftStatus; // Current status of the shift
-	cancelledBy?: string; // User who cancelled the shift
-	cancellationReason?: CancellationReason; // Reason for cancellation
-	cancellationNote?: string; // Additional notes for cancellation
-	declineReason?: string; // Reason for worker declining
-
-	// Recurrence for recurring shifts
-	recurrence?: Recurrence;
-
-	// Timestamps
-	createdAt: string;
-	updatedAt: string;
+  _id: string;
+  shiftId: string;
+  organizationId: string;
+  isMultiWorkerShift: boolean;
+  workerId?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    profileImage?: string;
+  };
+  workerAssignments?: Array<{
+    _id: string;
+    workerId: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+      profileImage?: string;
+    };
+  }>;
+  serviceTypeId: {
+    _id: string;
+    name: string;
+    displayName?: string;
+  };
+  startTime: string;
+  endTime: string;
+  locationType: "inPerson" | "virtual";
+  address?: string;
+  status: string;
+  shiftType: "directBooking" | "openShift";
+  requiresSupervision: boolean;
+  specialInstructions?: string;
+  recurrence?: ShiftRecurrence;
+  createdAt: string;
+  updatedAt: string;
 }

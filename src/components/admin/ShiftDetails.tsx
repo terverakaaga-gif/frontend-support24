@@ -429,19 +429,19 @@ export function ShiftDetailView() {
 										{/* Service and Location Info */}
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 											<div className="space-y-4">
-												<h3 className="text-sm font-medium text-muted-foreground">
+												<h3 className="text-sm font-montserrat-semibold text-muted-foreground">
 													Service Information
 												</h3>
 												<div className="bg-muted/30 p-4 rounded-lg space-y-4">
 													<div>
-														<p className="text-sm font-medium mb-1">
+														<p className="text-sm font-montserrat-semibold mb-1">
 															Service Type
 														</p>
 														{getServiceTypeBadge(shift.serviceTypeId.name)}
 													</div>
 
 													<div>
-														<p className="text-sm font-medium mb-1">
+														<p className="text-sm font-montserrat-semibold mb-1">
 															Shift Type
 														</p>
 														<p className="text-sm">
@@ -452,7 +452,7 @@ export function ShiftDetailView() {
 													</div>
 
 													<div>
-														<p className="text-sm font-medium mb-1">
+														<p className="text-sm font-montserrat-semibold mb-1">
 															Worker Assignment
 														</p>
 														<p className="text-sm">
@@ -463,7 +463,7 @@ export function ShiftDetailView() {
 													</div>
 
 													<div>
-														<p className="text-sm font-medium mb-1">
+														<p className="text-sm font-montserrat-semibold mb-1">
 															Requires Supervision
 														</p>
 														<p className="text-sm">
@@ -474,12 +474,12 @@ export function ShiftDetailView() {
 											</div>
 
 											<div className="space-y-4">
-												<h3 className="text-sm font-medium text-muted-foreground">
+												<h3 className="text-sm font-montserrat-semibold text-muted-foreground">
 													Location Information
 												</h3>
 												<div className="bg-muted/30 p-4 rounded-lg space-y-4">
 													<div>
-														<p className="text-sm font-medium mb-1">
+														<p className="text-sm font-montserrat-semibold mb-1">
 															Location Type
 														</p>
 														<p className="text-sm">
@@ -490,7 +490,7 @@ export function ShiftDetailView() {
 													</div>
 
 													<div>
-														<p className="text-sm font-medium mb-1">Address</p>
+														<p className="text-sm font-montserrat-semibold mb-1">Address</p>
 														<div className="flex items-start gap-2">
 															<MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
 															<p className="text-sm">{shift.address}</p>
@@ -505,7 +505,7 @@ export function ShiftDetailView() {
 											shift.workerAssignments &&
 											shift.workerAssignments.length > 0 && (
 												<div className="space-y-4">
-													<h3 className="text-sm font-medium text-muted-foreground">
+													<h3 className="text-sm font-montserrat-semibold text-muted-foreground">
 														Worker Assignments
 													</h3>
 													<div className="bg-muted/30 p-4 rounded-lg space-y-4">
@@ -531,7 +531,7 @@ export function ShiftDetailView() {
 																			</AvatarFallback>
 																		</Avatar>
 																		<div>
-																			<p className="text-sm font-medium">
+																			<p className="text-sm font-montserrat-semibold">
 																				{getFullName(assignment.workerId)}
 																			</p>
 																			<p className="text-xs text-muted-foreground">
@@ -556,13 +556,13 @@ export function ShiftDetailView() {
 
 										{/* Date and Time */}
 										<div className="space-y-4">
-											<h3 className="text-sm font-medium text-muted-foreground">
+											<h3 className="text-sm font-montserrat-semibold text-muted-foreground">
 												Date and Time
 											</h3>
 											<div className="bg-muted/30 p-4 rounded-lg">
 												<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 													<div>
-														<p className="text-sm font-medium mb-1">Date</p>
+														<p className="text-sm font-montserrat-semibold mb-1">Date</p>
 														<div className="flex items-center gap-2">
 															<Calendar className="h-4 w-4 text-muted-foreground" />
 															<p className="text-sm">
@@ -572,7 +572,7 @@ export function ShiftDetailView() {
 													</div>
 
 													<div>
-														<p className="text-sm font-medium mb-1">Time</p>
+														<p className="text-sm font-montserrat-semibold mb-1">Time</p>
 														<div className="flex items-center gap-2">
 															<Clock className="h-4 w-4 text-muted-foreground" />
 															<p className="text-sm">
@@ -583,7 +583,7 @@ export function ShiftDetailView() {
 													</div>
 
 													<div>
-														<p className="text-sm font-medium mb-1">Duration</p>
+														<p className="text-sm font-montserrat-semibold mb-1">Duration</p>
 														<div className="flex items-center gap-2">
 															<CalendarClock className="h-4 w-4 text-muted-foreground" />
 															<p className="text-sm">
@@ -594,7 +594,7 @@ export function ShiftDetailView() {
 
 													{shift.recurrence.pattern !== "none" && (
 														<div>
-															<p className="text-sm font-medium mb-1">
+															<p className="text-sm font-montserrat-semibold mb-1">
 																Recurrence
 															</p>
 															<div className="flex items-center gap-2">
@@ -623,7 +623,7 @@ export function ShiftDetailView() {
 								<TabsContent value="instructions" className="pt-4">
 									<div className="space-y-6">
 										<div className="bg-muted/30 p-4 rounded-lg">
-											<h3 className="text-sm font-medium mb-2">
+											<h3 className="text-sm font-montserrat-semibold mb-2">
 												Special Instructions
 											</h3>
 											{shift.specialInstructions ? (
@@ -638,7 +638,7 @@ export function ShiftDetailView() {
 										</div>
 
 										<div className="bg-yellow-50 border border-yellow-100 rounded-md p-4">
-											<h3 className="text-sm font-medium text-yellow-800 mb-2">
+											<h3 className="text-sm font-montserrat-semibold text-yellow-800 mb-2">
 												Notes for Support Worker
 											</h3>
 											<p className="text-sm text-yellow-700">
@@ -654,7 +654,7 @@ export function ShiftDetailView() {
 								<TabsContent value="history" className="pt-4">
 									<div className="space-y-4">
 										<div className="bg-muted/30 p-4 rounded-lg">
-											<h3 className="text-sm font-medium mb-4">
+											<h3 className="text-sm font-montserrat-semibold mb-4">
 												Shift History
 											</h3>
 											<div className="space-y-4">
@@ -663,7 +663,7 @@ export function ShiftDetailView() {
 														<Calendar className="h-4 w-4 text-primary-700" />
 													</div>
 													<div>
-														<p className="text-sm font-medium">Shift Created</p>
+														<p className="text-sm font-montserrat-semibold">Shift Created</p>
 														<p className="text-xs text-muted-foreground">
 															{formatDateTime(shift.createdAt)}
 														</p>
@@ -676,7 +676,7 @@ export function ShiftDetailView() {
 															<Clock className="h-4 w-4 text-yellow-700" />
 														</div>
 														<div>
-															<p className="text-sm font-medium">
+															<p className="text-sm font-montserrat-semibold">
 																Status Updated to "
 																{shift.status.charAt(0).toUpperCase() +
 																	shift.status.slice(1)}
@@ -706,7 +706,7 @@ export function ShiftDetailView() {
 															)}
 														</div>
 														<div>
-															<p className="text-sm font-medium">
+															<p className="text-sm font-montserrat-semibold">
 																Shift{" "}
 																{shift.status === "completed"
 																	? "Completed"
@@ -782,7 +782,7 @@ export function ShiftDetailView() {
 									</AvatarFallback>
 								</Avatar>
 								<div>
-									<h3 className="font-medium">
+									<h3 className="font-montserrat-semibold">
 										{typeof shift.participantId === "object"
 											? getFullName(shift.participantId)
 											: shift.participantId}
@@ -850,7 +850,7 @@ export function ShiftDetailView() {
 										</AvatarFallback>
 									</Avatar>
 									<div>
-										<h3 className="font-medium">
+										<h3 className="font-montserrat-semibold">
 											{typeof shift.workerId === "object"
 												? getFullName(shift.workerId)
 												: shift.workerId}
@@ -908,7 +908,7 @@ export function ShiftDetailView() {
 										<Users className="h-6 w-6 text-primary" />
 									</div>
 									<div>
-										<h3 className="font-medium">Multi-worker shift</h3>
+										<h3 className="font-montserrat-semibold">Multi-worker shift</h3>
 										<p className="text-sm text-muted-foreground">
 											{shift.workerAssignments?.length || 0} workers assigned
 										</p>

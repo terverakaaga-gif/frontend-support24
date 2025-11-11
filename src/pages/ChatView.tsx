@@ -24,12 +24,6 @@ import useChat from "@/hooks/useChat";
 import { tokenStorage } from "@/api/apiClient";
 import { useChatStore } from "@/store/chatStore";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { IConversation } from "@/types/chat.types";
 import { ChatCreationModal } from "@/components/ChatCreationModal";
 import { organizationService } from "@/api/services/organizationService";
@@ -113,7 +107,7 @@ const MessageBubble = ({
         }`}
       >
         {!isOwnMessage && currentConversation.type === "group" && (
-          <span className="text-xs font-medium text-gray-600 mb-1 px-1">
+          <span className="text-xs font-montserrat-semibold text-gray-600 mb-1 px-1">
             {message.sender.firstName}
           </span>
         )}
@@ -151,6 +145,7 @@ export default function ChatView() {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const {
     conversations: chatConversations,
@@ -207,9 +202,10 @@ export default function ChatView() {
     scrollToBottom();
   }, [messages]);
 
- useEffect(() => {
+  useEffect(() => {
     const tokens = tokenStorage.getTokens();
-    if (tokens?.access?.token && !conversationsLoaded) { // Only load if not already loaded
+    if (tokens?.access?.token && !conversationsLoaded) {
+      // Only load if not already loaded
       connect(tokens.access.token);
       loadConversations(tokens.access.token).finally(() => {
         setIsLoadingConversations(false);
@@ -237,8 +233,7 @@ export default function ChatView() {
     }
   }, [chatConversations, conversationId]);
 
-
-  // Load messages when currentConversation changes 
+  // Load messages when currentConversation changes
   useEffect(() => {
     const tokens = tokenStorage.getTokens();
     if (currentConversation && tokens?.access?.token) {
@@ -425,7 +420,7 @@ export default function ChatView() {
   ).length;
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100 font-montserrat space-y-8">
+    <div className="min-h-screen p-4 sm:p-6 md:p-8 bg-gray-100 font-montserrat space-y-4 sm:space-y-6 md:space-y-8">
       {/* Header */}
       <GeneralHeader
         title={
@@ -469,23 +464,68 @@ export default function ChatView() {
         onLogout={logout}
         rightComponent={
           <>
+            {/* Mobile sidebar toggle button */}
+            <Button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="md:hidden mr-2 h-10 w-10 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </Button>
             {/* Create New Chat Button (Direct or Group) */}
             {user.role !== "supportWorker" && (
               <Button
                 onClick={() => setIsCreatingChat(true)}
-                className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-medium shadow-sm"
+                className="w-full sm:w-auto h-10 sm:h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold shadow-sm text-sm sm:text-base"
               >
-                <Plus size={24} />
-                Create New Chat
+                <Plus size={20} className="sm:w-6 sm:h-6" />
+                <span className="hidden sm:inline ml-2">Create New Chat</span>
               </Button>
             )}
           </>
         }
       />
 
-      <div className="flex flex-col md:flex-row gap-5 h-[85vh]">
-        {/* Left Sidebar - Conversations List */}
-        <div className="w-[400px] shadow-sm rounded-xl flex flex-col bg-white overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-4 sm:gap-5 h-[85vh] md:h-[85vh]">
+        {/* Left Sidebar - Conversations List - Make it a modal/drawer on mobile */}
+        <div
+          className={`w-full md:w-[400px] shadow-sm rounded-xl flex flex-col bg-white overflow-hidden fixed md:static inset-0 z-50 md:z-auto transform ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        >
+          {/* Close button for mobile */}
+          <div className="md:hidden p-4 border-b border-gray-200">
+            <Button
+              onClick={() => setIsSidebarOpen(false)}
+              className="h-8 w-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </Button>
+          </div>
+
           {/* Conversation Search */}
           <div className="px-4 pt-4 pb-3 bg-white">
             <div className="relative">
@@ -494,13 +534,13 @@ export default function ChatView() {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-10 bg-white border-gray-200 focus:border-primary-300"
+                className="pl-10 h-10 bg-white border-gray-200 focus:border-primary-300 text-sm sm:text-base"
               />
             </div>
           </div>
 
           {/* Filter Tabs */}
-          <div className="px-4 pb-3 flex gap-2 bg-white">
+          <div className="px-4 pb-3 flex gap-2 bg-white overflow-x-auto">
             <ChatFilterButton
               active={selectedFilter === "all"}
               onClick={() => setSelectedFilter("all")}
@@ -570,18 +610,26 @@ export default function ChatView() {
           </ScrollArea>
         </div>
 
+        {/* Overlay for mobile sidebar */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+        )}
+
         {/* Right Side - Chat Interface */}
         <div className="flex-1 flex flex-col bg-white rounded-xl shadow-sm overflow-hidden">
           {currentConversation ? (
             <>
               {/* Chat Header */}
-              <div className="px-6 py-4 border-b border-gray-200 bg-white">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-white">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <div className="relative">
                       {currentConversation.type === "direct" ? (
                         <>
-                          <Avatar className="h-12 w-12 ring-2 ring-white shadow-sm">
+                          <Avatar className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-white shadow-sm">
                             <AvatarImage
                               src={
                                 getOtherMember(currentConversation)
@@ -604,13 +652,13 @@ export default function ChatView() {
                             )}
                         </>
                       ) : (
-                        <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center shadow-sm">
-                          <UsersGroupTwoRounded className="h-6 w-6 text-white" />
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary rounded-full flex items-center justify-center shadow-sm">
+                          <UsersGroupTwoRounded className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
                       )}
                     </div>
-                    <div>
-                      <h3 className="font-montserrat-semibold text-gray-900 text-[17px]">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-montserrat-semibold text-gray-900 text-sm sm:text-[17px] truncate">
                         {currentConversation.type === "direct"
                           ? `${
                               getOtherMember(currentConversation)?.firstName ||
@@ -621,13 +669,13 @@ export default function ChatView() {
                             }`.trim()
                           : currentConversation.name}
                       </h3>
-                      <p className="text-sm text-gray-1000 mt-0.5">
+                      <p className="text-xs sm:text-sm text-gray-1000 mt-0.5 truncate">
                         {currentConversation.type === "direct" ? (
                           getOtherMember(currentConversation) &&
                           isUserOnline(
                             getOtherMember(currentConversation)!._id
                           ) ? (
-                            <span className="text-green-600 font-medium flex items-center gap-1">
+                            <span className="text-green-600 font-montserrat-semibold flex items-center gap-1">
                               <span className="h-2 w-2 bg-green-500 rounded-full"></span>
                               Online
                             </span>
@@ -647,30 +695,30 @@ export default function ChatView() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10 hover:bg-gray-100 rounded-full"
+                      className="h-8 w-8 sm:h-10 sm:w-10 hover:bg-gray-100 rounded-full"
                     >
-                      <OutgoingCall className="h-5 w-5 text-gray-600" />
+                      <OutgoingCall className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10 hover:bg-gray-100 rounded-full"
+                      className="h-8 w-8 sm:h-10 sm:w-10 hover:bg-gray-100 rounded-full"
                     >
-                      <Videocamera className="h-5 w-5 text-gray-600" />
+                      <Videocamera className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10 hover:bg-gray-100 rounded-full"
+                      className="h-8 w-8 sm:h-10 sm:w-10 hover:bg-gray-100 rounded-full"
                     >
-                      <InfoCircle className="h-5 w-5 text-gray-600" />
+                      <InfoCircle className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
                     </Button>
                   </div>
                 </div>
               </div>
 
               {/* Messages Area */}
-              <ScrollArea className="flex-1 px-6 py-4 bg-gray-100">
+              <ScrollArea className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-gray-100">
                 {isLoadingMessages ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
@@ -711,7 +759,7 @@ export default function ChatView() {
                     {/* Date Divider */}
                     <div className="flex items-center justify-center my-6">
                       <div className="bg-white px-4 py-1.5 rounded-full shadow-sm border border-gray-200">
-                        <span className="text-xs font-medium text-gray-600">
+                        <span className="text-xs font-montserrat-semibold text-gray-600">
                           Today
                         </span>
                       </div>

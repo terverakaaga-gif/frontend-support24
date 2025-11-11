@@ -454,7 +454,7 @@ const ParticipantsList: React.FC = () => {
                     <TableRow key={participant._id}>
                       <TableCell>
                         <div>
-                          <div className="font-medium">
+                          <div className="font-montserrat-semibold">
                             {participant.firstName} {participant.lastName}
                           </div>
                           <div className="text-sm text-muted-foreground">
@@ -528,7 +528,7 @@ const ParticipantsList: React.FC = () => {
               {participantsData?.users?.length === 0 && (
                 <div className="text-center py-12">
                   <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No participants found</h3>
+                  <h3 className="text-lg font-montserrat-semibold">No participants found</h3>
                   <p className="text-muted-foreground">
                     {Object.keys(filters).length > 0 
                       ? "Try adjusting your filters to see more results."

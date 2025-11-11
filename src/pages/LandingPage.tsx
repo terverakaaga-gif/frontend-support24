@@ -111,7 +111,7 @@ export default function Support24Landing() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <InlineVectorText className="italic text-white " text="Support"
-              imageClassName="bottom-0 sm:-bottom-4 lg:w-[200px] w-[180px] translate-y-[35%] sm:translate-y-[45%]"
+              imageClassName="bottom-0 sm:-bottom-1 lg:w-[200px] w-[180px] translate-y-[35%] sm:translate-y-[45%]"
               />
             </motion.span>{"  "}
             <motion.span
@@ -264,7 +264,7 @@ export default function Support24Landing() {
               <InlineVectorText 
                 className="italic" 
                 text="Support24" 
-                imageClassName="-bottom-1 sm:-bottom-6 lg:w-[270px] w-[150px]  translate-y-[35%] sm:translate-y-[45%]"
+                imageClassName="-bottom-1 sm:-bottom-1 lg:w-[270px] w-[150px]  translate-y-[35%] sm:translate-y-[45%]"
               /> is
               for Everyone in The Care Journey
             </motion.h1>

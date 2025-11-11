@@ -177,19 +177,19 @@ export function InviteConfirmation() {
           {!actionCompleted ? (
             <div className="space-y-6">
               <div className="p-4 border rounded-lg">
-                <h3 className="font-medium mb-2">Invitation Details</h3>
+                <h3 className="font-montserrat-semibold mb-2">Invitation Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Participant:</p>
-                    <p className="font-medium">{inviteDetails.participantName}</p>
+                    <p className="font-montserrat-semibold">{inviteDetails.participantName}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Support Worker:</p>
-                    <p className="font-medium">{inviteDetails.workerName}</p>
+                    <p className="font-montserrat-semibold">{inviteDetails.workerName}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Invitation Date:</p>
-                    <p className="font-medium">
+                    <p className="font-montserrat-semibold">
                       {new Date(inviteDetails.inviteDate).toLocaleDateString('en-AU', {
                         year: 'numeric',
                         month: 'short',

@@ -36,12 +36,31 @@ import { useGetRateTimeBands } from "@/hooks/useRateTimeBandHooks";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "../Spinner";
+import {
+  useRegions,
+  useServiceAreasByRegion,
+  useStates,
+} from "@/hooks/useLocationHooks";
+import { Magnifer } from "@solar-icons/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const bioSchema = z.object({
   bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
   languages: z
     .array(z.string().min(1))
     .min(1, { message: "Please enter at least one language." }),
+  stateId: z.string().min(1, { message: "Please select a state." }),
+  regionId: z.string().min(1, { message: "Please select a region." }),
+  serviceAreaIds: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one service area." }),
 });
 
 const skillsSchema = z.object({
@@ -144,9 +163,25 @@ export function SupportWorkerSetup({
   const { data: rateTimeBands = [], isLoading: isLoadingRateTimeBands } =
     useGetRateTimeBands();
 
+  // Location hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [selectedRegionId, setSelectedRegionId] = useState("");
+
+  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateId,
+    !!selectedStateId
+  );
+
+  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreasByRegion(selectedRegionId, !!selectedRegionId);
+
   const [formData, setFormData] = useState({
     bio: "",
     languages: [] as string[],
+    stateId: "",
+    regionId: "",
+    serviceAreaIds: [] as string[],
     skills: [] as string[],
     experience: [
       {
@@ -172,6 +207,9 @@ export function SupportWorkerSetup({
     defaultValues: {
       bio: formData.bio,
       languages: formData.languages,
+      stateId: formData.stateId,
+      regionId: formData.regionId,
+      serviceAreaIds: formData.serviceAreaIds,
     },
   });
 
@@ -202,6 +240,31 @@ export function SupportWorkerSetup({
       availability: formData.availability,
     },
   });
+
+  // Reset dependent fields when state changes
+  React.useEffect(() => {
+    if (selectedStateId !== formData.stateId) {
+      setSelectedRegionId("");
+      setFormData((prev) => ({
+        ...prev,
+        regionId: "",
+        serviceAreaIds: [],
+      }));
+      bioForm.setValue("regionId", "");
+      bioForm.setValue("serviceAreaIds", []);
+    }
+  }, [selectedStateId, formData.stateId, bioForm]);
+
+  // Reset service areas when region changes
+  React.useEffect(() => {
+    if (selectedRegionId !== formData.regionId) {
+      setFormData((prev) => ({
+        ...prev,
+        serviceAreaIds: [],
+      }));
+      bioForm.setValue("serviceAreaIds", []);
+    }
+  }, [selectedRegionId, formData.regionId, bioForm]);
 
   React.useEffect(() => {
     if (
@@ -235,7 +298,14 @@ export function SupportWorkerSetup({
   };
 
   const handleBioSubmit = async (data: z.infer<typeof bioSchema>) => {
-    setFormData({ ...formData, bio: data.bio, languages: data.languages });
+    setFormData({
+      ...formData,
+      bio: data.bio,
+      languages: data.languages,
+      stateId: data.stateId,
+      regionId: data.regionId,
+      serviceAreaIds: data.serviceAreaIds,
+    });
     nextStep();
   };
 
@@ -341,7 +411,11 @@ export function SupportWorkerSetup({
   };
 
   const steps = [
-    { number: 1, label: "Bio", icon: <Languages className="h-4 w-4" /> },
+    {
+      number: 1,
+      label: "Bio & Location",
+      icon: <Languages className="h-4 w-4" />,
+    },
     { number: 2, label: "Skills", icon: <Briefcase className="h-4 w-4" /> },
     { number: 3, label: "Experience", icon: <Briefcase className="h-4 w-4" /> },
     { number: 4, label: "Rates", icon: <DollarSign className="h-4 w-4" /> },
@@ -373,7 +447,9 @@ export function SupportWorkerSetup({
               profile and get started
             </p>
           </div>
-          <div className="text-sm font-montserrat-semibold text-primary">{step}/5</div>
+          <div className="text-sm font-montserrat-semibold text-primary">
+            {step}/5
+          </div>
         </div>
       </div>
 
@@ -432,7 +508,7 @@ export function SupportWorkerSetup({
                       </div>
                       <span
                         className={cn(
-                          "text-base font-medium",
+                          "text-base font-montserrat-semibold",
                           isActive ? "text-primary" : "text-gray-700"
                         )}
                       >
@@ -442,7 +518,6 @@ export function SupportWorkerSetup({
                   </div>
                 );
               })}
-     
             </div>
           </div>
         </div>
@@ -451,8 +526,6 @@ export function SupportWorkerSetup({
         <div className="flex-1 flex flex-col overflow-hidden w-full flex-shrink-0">
           {/* Mobile/Desktop Header */}
           <div className="lg:px-8 flex-shrink-0">
-            
-
             {/* Mobile Progress Steps */}
             <div className="lg:hidden my-4">
               <div className="relative flex items-center justify-between">
@@ -499,7 +572,7 @@ export function SupportWorkerSetup({
                       </div>
                       <span
                         className={cn(
-                          "text-[10px] font-medium mt-1.5 text-center",
+                          "text-[10px] font-montserrat-semibold mt-1.5 text-center",
                           isActive ? "text-primary" : "text-gray-1000"
                         )}
                       >
@@ -513,247 +586,294 @@ export function SupportWorkerSetup({
           </div>
 
           {/* Scrollable Content Area */}
-         <div className="w-full">
-              {/* Step 1: Bio */}
-              {step === 1 && (
-                <div className="bg-white rounded-xl border border-gray-200">
-                  <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
-                      Bio
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      Tell us about yourself and languages you speak
-                    </p>
+          <div className="w-full">
+            {/* Step 1: Bio & Location */}
+            {step === 1 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Bio & Location
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Tell us about yourself, languages you speak, and where
+                    you're located
+                  </p>
 
-                    <Form {...bioForm}>
-                      <form
-                        onSubmit={bioForm.handleSubmit(handleBioSubmit)}
-                        className="space-y-6"
-                      >
-                        <FormField
-                          control={bioForm.control}
-                          name="bio"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-sm font-medium text-gray-900">
-                                About
-                              </FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="Good day! Tell us about yourself, your experience in supporting people, and what you enjoy about being a support worker....."
-                                  {...field}
-                                  onChange={(e) => {
-                                    field.onChange(e);
-                                    setFormData({
-                                      ...formData,
-                                      bio: e.target.value,
-                                    });
-                                  }}
-                                  className="min-h-[100px] text-sm resize-none"
-                                />
-                              </FormControl>
-                              <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
-                                <span className="text-primary mt-0.5">ⓘ</span>
-                                <span>
-                                  You can edit this info later in your profile
-                                </span>
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                  <Form {...bioForm}>
+                    <form
+                      onSubmit={bioForm.handleSubmit(handleBioSubmit)}
+                      className="space-y-6"
+                    >
+                      <FormField
+                        control={bioForm.control}
+                        name="bio"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                              About
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Good day! Tell us about yourself, your experience in supporting people, and what you enjoy about being a support worker....."
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  setFormData({
+                                    ...formData,
+                                    bio: e.target.value,
+                                  });
+                                }}
+                                className="min-h-[100px] text-sm resize-none"
+                              />
+                            </FormControl>
+                            <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
+                              <span className="text-primary mt-0.5">ⓘ</span>
+                              <span>
+                                You can edit this info later in your profile
+                              </span>
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="space-y-3">
+                        <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                          Languages
+                        </FormLabel>
+
+                        {formData.languages.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {formData.languages.map((language, index) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200  text-xs"
+                              >
+                                {language}
+                                <button
+                                  type="button"
+                                  onClick={() => removeLanguage(language)}
+                                  className="hover:text-gray-700"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        <Input
+                          placeholder="Add any language you speak...."
+                          value={languageInput}
+                          onChange={(e) => setLanguageInput(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addLanguage();
+                            }
+                          }}
+                          className="text-sm"
                         />
 
-                        <div className="space-y-3">
-                          <FormLabel className="text-sm font-medium text-gray-900">
-                            Languages
-                          </FormLabel>
+                        <div className="flex flex-wrap gap-2">
+                          {commonLanguages
+                            .filter(
+                              (lang) => !formData.languages.includes(lang)
+                            )
+                            .map((language) => (
+                              <Button
+                                key={language}
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const newLanguages = [
+                                    ...formData.languages,
+                                    language,
+                                  ];
+                                  setFormData({
+                                    ...formData,
+                                    languages: newLanguages,
+                                  });
+                                  bioForm.setValue("languages", newLanguages);
+                                }}
+                                className="h-8 px-3 text-xs border hover:text-white hover:bg-primary hover:border-gray-600 text-black"
+                              >
+                                + {language}
+                              </Button>
+                            ))}
+                        </div>
 
-                          {formData.languages.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-3">
-                              {formData.languages.map((language, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="secondary"
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm"
-                                >
-                                  {language}
-                                  <button
-                                    type="button"
-                                    onClick={() => removeLanguage(language)}
-                                    className="hover:text-gray-700"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </Badge>
-                              ))}
-                            </div>
+                        <p className="text-xs text-gray-1000 flex items-start gap-1.5 mt-2">
+                          <span className="text-primary mt-0.5">ⓘ</span>
+                          <span>
+                            Select from common languages or add your own
+                          </span>
+                        </p>
+
+                        {formData.languages.length === 0 &&
+                          bioForm.formState.isSubmitted && (
+                            <p className="text-sm text-red-500">
+                              Please add at least one language.
+                            </p>
                           )}
+                      </div>
 
-                          <Input
-                            placeholder="Add any language you speak...."
-                            value={languageInput}
-                            onChange={(e) => setLanguageInput(e.target.value)}
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                addLanguage();
-                              }
-                            }}
-                            className="text-sm"
+                      {/* Location Section */}
+                      <div className="space-y-4 border-t pt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Magnifer className="h-5 w-5 text-primary" />
+                          <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                            Service Location
+                          </FormLabel>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* State Selection */}
+                          <FormField
+                            control={bioForm.control}
+                            name="stateId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">State</FormLabel>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    setSelectedStateId(value);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      stateId: value,
+                                    }));
+                                  }}
+                                  disabled={isLoadingStates}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="text-sm">
+                                      <SelectValue placeholder="Select state..." />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {states.map((state) => (
+                                      <SelectItem
+                                        key={state._id}
+                                        value={state._id}
+                                      >
+                                        {state.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
 
-                          <div className="flex flex-wrap gap-2">
-                            {commonLanguages
-                              .filter(
-                                (lang) => !formData.languages.includes(lang)
-                              )
-                              .map((language) => (
-                                <Button
-                                  key={language}
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newLanguages = [
-                                      ...formData.languages,
-                                      language,
-                                    ];
-                                    setFormData({
-                                      ...formData,
-                                      languages: newLanguages,
-                                    });
-                                    bioForm.setValue("languages", newLanguages);
+                          {/* Region Selection */}
+                          <FormField
+                            control={bioForm.control}
+                            name="regionId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">
+                                  Region
+                                </FormLabel>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    setSelectedRegionId(value);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      regionId: value,
+                                    }));
                                   }}
-                                  className="h-8 px-3 text-xs bg-white border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700"
+                                  disabled={
+                                    !selectedStateId || isLoadingRegions
+                                  }
                                 >
-                                  + {language}
-                                </Button>
-                              ))}
-                          </div>
-
-                          <p className="text-xs text-gray-1000 flex items-start gap-1.5 mt-2">
-                            <span className="text-primary mt-0.5">ⓘ</span>
-                            <span>
-                              Select from common languages or add your own
-                            </span>
-                          </p>
-
-                          {formData.languages.length === 0 &&
-                            bioForm.formState.isSubmitted && (
-                              <p className="text-sm text-red-500">
-                                Please add at least one language.
-                              </p>
+                                  <FormControl>
+                                    <SelectTrigger className="text-sm">
+                                      <SelectValue placeholder="Select region..." />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {regions.map((region) => (
+                                      <SelectItem
+                                        key={region._id}
+                                        value={region._id}
+                                      >
+                                        {region.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
                             )}
+                          />
                         </div>
 
-                        <div className="flex justify-end pt-4">
-                          <Button
-                            type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white px-8"
-                            disabled={formData.languages.length === 0}
-                          >
-                            Next
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Skills */}
-              {step === 2 && (
-                <div className="bg-white rounded-xl border border-gray-200">
-                  <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
-                      Skills & Services
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      Select the services you can provide, you can update later.
-                    </p>
-
-                    <Form {...skillsForm}>
-                      <form
-                        onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)}
-                        className="space-y-6"
-                      >
+                        {/* Service Areas Selection */}
                         <FormField
-                          control={skillsForm.control}
-                          name="skills"
+                          control={bioForm.control}
+                          name="serviceAreaIds"
                           render={({ field }) => (
                             <FormItem>
-                              {isLoadingServiceTypes ? (
-                                <div className="flex justify-center py-12">
-                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                                </div>
-                              ) : (
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                  {serviceTypes.map((serviceType) => {
+                              <FormLabel className="text-sm">
+                                Service Areas
+                              </FormLabel>
+                              <FormDescription className="text-xs text-gray-1000">
+                                Select the areas where you can provide services
+                              </FormDescription>
+
+                              {selectedRegionId && !isLoadingServiceAreas ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                                  {serviceAreas.map((serviceArea) => {
                                     const isSelected = field.value?.includes(
-                                      serviceType._id
+                                      serviceArea._id
                                     );
 
                                     return (
                                       <div
-                                        key={serviceType._id}
+                                        key={serviceArea._id}
                                         onClick={() => {
-                                          const newSkills = isSelected
+                                          const newServiceAreas = isSelected
                                             ? field.value?.filter(
-                                                (id) => id !== serviceType._id
+                                                (id) => id !== serviceArea._id
                                               )
                                             : [
                                                 ...(field.value || []),
-                                                serviceType._id,
+                                                serviceArea._id,
                                               ];
-                                          field.onChange(newSkills);
-                                          setFormData({
-                                            ...formData,
-                                            skills: newSkills,
-                                          });
+                                          field.onChange(newServiceAreas);
+                                          setFormData((prev) => ({
+                                            ...prev,
+                                            serviceAreaIds: newServiceAreas,
+                                          }));
                                         }}
                                         className={cn(
-                                          "cursor-pointer p-4 rounded-xl border-2 transition-all",
+                                          "cursor-pointer p-3 rounded-lg border-2 transition-all text-center",
                                           isSelected
-                                            ? "bg-primary border-primary"
-                                            : "border-gray-200 hover:border-primary/50 hover:bg-gray-100"
+                                            ? "bg-primary border-primary text-white"
+                                            : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
                                         )}
                                       >
-                                        <div className="flex flex-col items-center text-center">
-                                          <div
-                                            className={cn(
-                                              "p-3 rounded-full mb-3 transition-colors",
-                                              isSelected
-                                                ? "bg-white/20 text-white"
-                                                : "bg-gray-100 text-gray-600"
-                                            )}
-                                          >
-                                            <Heart className="h-5 w-5" />
-                                          </div>
-                                          <span
-                                            className={cn(
-                                              "font-medium text-sm",
-                                              isSelected
-                                                ? "text-white"
-                                                : "text-gray-900"
-                                            )}
-                                          >
-                                            {serviceType.name}
-                                          </span>
-                                          <span
-                                            className={cn(
-                                              "text-xs mt-1",
-                                              isSelected
-                                                ? "text-white/80"
-                                                : "text-gray-1000"
-                                            )}
-                                          >
-                                            {serviceType.code}
-                                          </span>
-                                        </div>
+                                        <span className="text-sm font-montserrat-medium">
+                                          {serviceArea.name}
+                                        </span>
                                       </div>
                                     );
                                   })}
+                                </div>
+                              ) : (
+                                <div className="flex items-center justify-center py-8 text-gray-1000 text-sm">
+                                  {!selectedRegionId
+                                    ? "Please select a region first"
+                                    : isLoadingServiceAreas
+                                    ? "Loading service areas..."
+                                    : "No service areas available"}
                                 </div>
                               )}
                               <FormMessage />
@@ -761,546 +881,673 @@ export function SupportWorkerSetup({
                           )}
                         />
 
-                        <div className="flex justify-between pt-4">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
-                          >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                          </Button>
-                          <Button
-                            type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white"
-                          >
-                            Next
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </div>
+                        <p className="text-xs text-gray-1000 flex items-start gap-1.5">
+                          <span className="text-primary mt-0.5">ⓘ</span>
+                          <span>
+                            Your service location helps participants find you in
+                            their area
+                          </span>
+                        </p>
+                      </div>
+
+                      <div className="flex justify-end pt-4">
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary-700 text-white px-8"
+                          disabled={
+                            formData.languages.length === 0 ||
+                            !formData.stateId ||
+                            !formData.regionId ||
+                            formData.serviceAreaIds.length === 0
+                          }
+                        >
+                          Next
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Step 3: Experience */}
-              {step === 3 && (
-                <div className="bg-white rounded-xl border border-gray-200">
-                  <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
-                      Work Experience
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      Add your relevant work experience
-                    </p>
+            {/* Step 2: Skills */}
+            {step === 2 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Skills & Services
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Select the services you can provide, you can update later.
+                  </p>
 
-                    <Form {...experienceForm}>
-                      <form
-                        onSubmit={experienceForm.handleSubmit(
-                          handleExperienceSubmit
+                  <Form {...skillsForm}>
+                    <form
+                      onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)}
+                      className="space-y-6"
+                    >
+                      <FormField
+                        control={skillsForm.control}
+                        name="skills"
+                        render={({ field }) => (
+                          <FormItem>
+                            {isLoadingServiceTypes ? (
+                              <div className="flex justify-center py-12">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {serviceTypes.map((serviceType) => {
+                                  const isSelected = field.value?.includes(
+                                    serviceType._id
+                                  );
+
+                                  return (
+                                    <div
+                                      key={serviceType._id}
+                                      onClick={() => {
+                                        const newSkills = isSelected
+                                          ? field.value?.filter(
+                                              (id) => id !== serviceType._id
+                                            )
+                                          : [
+                                              ...(field.value || []),
+                                              serviceType._id,
+                                            ];
+                                        field.onChange(newSkills);
+                                        setFormData({
+                                          ...formData,
+                                          skills: newSkills,
+                                        });
+                                      }}
+                                      className={cn(
+                                        "cursor-pointer p-4 rounded-xl border-2 transition-all",
+                                        isSelected
+                                          ? "bg-primary border-primary"
+                                          : "border-gray-200 hover:border-primary/50 hover:bg-gray-100"
+                                      )}
+                                    >
+                                      <div className="flex flex-col items-center text-center">
+                                        <div
+                                          className={cn(
+                                            "p-3 rounded-full mb-3 transition-colors",
+                                            isSelected
+                                              ? "bg-white/20 text-white"
+                                              : "bg-gray-100 text-gray-600"
+                                          )}
+                                        >
+                                          <Heart className="h-5 w-5" />
+                                        </div>
+                                        <span
+                                          className={cn(
+                                            "font-montserrat-semibold text-sm",
+                                            isSelected
+                                              ? "text-white"
+                                              : "text-gray-900"
+                                          )}
+                                        >
+                                          {serviceType.name}
+                                        </span>
+                                        <span
+                                          className={cn(
+                                            "text-xs mt-1",
+                                            isSelected
+                                              ? "text-white/80"
+                                              : "text-gray-1000"
+                                          )}
+                                        >
+                                          {serviceType.code}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                            <FormMessage />
+                          </FormItem>
                         )}
-                        className="space-y-6"
-                      >
-                        {formData.experience.map((exp, index) => (
-                          <div
-                            key={index}
-                            className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-100"
-                          >
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium text-gray-700 text-sm italic">
-                                Experience {index + 1}
-                              </h4>
-                              {formData.experience.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeExperience(index)}
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Trash2 className="h-4 w-4 text-gray-1000" />
-                                </Button>
-                              )}
-                            </div>
+                      />
 
-                            <FormField
-                              control={experienceForm.control}
-                              name={`experience.${index}.title`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    Job Title
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="e.g Support Worker"
-                                      {...field}
-                                      onChange={(e) => {
-                                        field.onChange(e);
-                                        const newExp = [...formData.experience];
-                                        newExp[index].title = e.target.value;
-                                        setFormData({
-                                          ...formData,
-                                          experience: newExp,
-                                        });
-                                      }}
-                                      className="text-sm bg-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={experienceForm.control}
-                              name={`experience.${index}.organization`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    Organization
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="e.g Support Worker"
-                                      {...field}
-                                      onChange={(e) => {
-                                        field.onChange(e);
-                                        const newExp = [...formData.experience];
-                                        newExp[index].organization =
-                                          e.target.value;
-                                        setFormData({
-                                          ...formData,
-                                          experience: newExp,
-                                        });
-                                      }}
-                                      className="text-sm bg-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <FormField
-                                control={experienceForm.control}
-                                name={`experience.${index}.startDate`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-sm">
-                                      Start Date
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="date"
-                                        placeholder="dd/mm/yy"
-                                        {...field}
-                                        onChange={(e) => {
-                                          field.onChange(e);
-                                          const newExp = [
-                                            ...formData.experience,
-                                          ];
-                                          newExp[index].startDate =
-                                            e.target.value;
-                                          setFormData({
-                                            ...formData,
-                                            experience: newExp,
-                                          });
-                                        }}
-                                        className="text-sm bg-white"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={experienceForm.control}
-                                name={`experience.${index}.endDate`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-sm">
-                                      End Date
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="date"
-                                        placeholder="dd/mm/yy"
-                                        {...field}
-                                        onChange={(e) => {
-                                          field.onChange(e);
-                                          const newExp = [
-                                            ...formData.experience,
-                                          ];
-                                          newExp[index].endDate =
-                                            e.target.value;
-                                          setFormData({
-                                            ...formData,
-                                            experience: newExp,
-                                          });
-                                        }}
-                                        className="text-sm bg-white"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            <FormField
-                              control={experienceForm.control}
-                              name={`experience.${index}.description`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    Description
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Textarea
-                                      placeholder="Enter job experience here....."
-                                      className="min-h-[80px] text-sm resize-none bg-white"
-                                      {...field}
-                                      onChange={(e) => {
-                                        field.onChange(e);
-                                        const newExp = [...formData.experience];
-                                        newExp[index].description =
-                                          e.target.value;
-                                        setFormData({
-                                          ...formData,
-                                          experience: newExp,
-                                        });
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        ))}
-
+                      <div className="flex justify-between pt-4">
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={addExperience}
-                          className="w-full text-primary border-primary/30 hover:bg-primary/5 hover:border-primary/50"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary-700"
                         >
-                          + Add Another Experience
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back
                         </Button>
-
-                        <div className="flex justify-between pt-4">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
-                          >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                          </Button>
-                          <Button
-                            type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white"
-                          >
-                            Next
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </div>
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary-700 text-white"
+                        >
+                          Next
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Step 4: Rates */}
-              {step === 4 && (
-                <div className="bg-white rounded-xl border border-gray-200">
-                  <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
-                      Hourly Rates
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      Set your hourly rates for different time bands
-                    </p>
+            {/* Step 3: Experience */}
+            {step === 3 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Work Experience
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Add your relevant work experience
+                  </p>
 
-                    <Form {...rateForm}>
-                      <form
-                        onSubmit={rateForm.handleSubmit(handleRateSubmit)}
-                        className="space-y-4"
-                      >
-                        {isLoadingRateTimeBands ? (
-                          <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {rateTimeBands.map((band, index) => {
-                              const rate = formData.shiftRates[index];
-                              const isSelected = rate && rate.hourlyRate;
-
-                              return (
-                                <div
-                                  key={band._id}
-                                  className={cn(
-                                    "border-2 rounded-xl p-5 transition-all",
-                                    isSelected
-                                      ? "border-primary bg-primary/5"
-                                      : "border-gray-200 hover:border-primary/30"
-                                  )}
-                                >
-                                  <div className="flex items-start justify-between mb-4">
-                                    <div className="flex-1">
-                                      <h4 className="font-montserrat-semibold text-gray-900 text-base mb-1">
-                                        {band.name}
-                                      </h4>
-                                      <p className="text-sm text-gray-600 mb-1">
-                                        {band.description}
-                                      </p>
-                                      <p className="text-xs text-gray-1000">
-                                        {band.startTime} - {band.endTime}
-                                      </p>
-                                    </div>
-                                    <div
-                                      className={cn(
-                                        "w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ml-3 transition-all",
-                                        isSelected
-                                          ? "bg-primary border-primary"
-                                          : "border-gray-300 bg-white"
-                                      )}
-                                    >
-                                      {isSelected && (
-                                        <Check className="h-4 w-4 text-white" />
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <FormField
-                                    control={rateForm.control}
-                                    name={`shiftRates.${index}.hourlyRate`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-sm text-gray-700">
-                                          Hourly Rate ($)
-                                        </FormLabel>
-                                        <FormControl>
-                                          <Input
-                                            type="number"
-                                            placeholder="35"
-                                            {...field}
-                                            onChange={(e) => {
-                                              field.onChange(e);
-                                              const newRates = [
-                                                ...(formData.shiftRates || []),
-                                              ];
-                                              if (newRates[index]) {
-                                                newRates[index].hourlyRate =
-                                                  e.target.value;
-                                                setFormData({
-                                                  ...formData,
-                                                  shiftRates: newRates,
-                                                });
-                                              }
-                                            }}
-                                            className="text-sm"
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <input
-                                    type="hidden"
-                                    {...rateForm.register(
-                                      `shiftRates.${index}.rateTimeBandId`
-                                    )}
-                                    value={band._id}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-
-                        <div className="flex justify-between pt-6">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
-                          >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                          </Button>
-                          <Button
-                            type="submit"
-                            className="bg-primary hover:bg-primary/90 text-white"
-                          >
-                            Next
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 5: Availability */}
-              {step === 5 && (
-                <div className="bg-white rounded-xl border border-gray-200">
-                  <div className="p-6 lg:p-8">
-                    <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
-                      Availability
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      Set your weekly availability
-                    </p>
-
-                    <Form {...availabilityForm}>
-                      <form
-                        onSubmit={availabilityForm.handleSubmit(
-                          handleAvailabilitySubmit
-                        )}
-                        className="space-y-3"
-                      >
-                        {formData.availability.weekdays.map((day, dayIndex) => (
-                          <div
-                            key={day.day}
-                            className={cn(
-                              "border-2 rounded-xl transition-all",
-                              day.available
-                                ? "border-primary bg-primary/5"
-                                : "border-gray-200 bg-white"
+                  <Form {...experienceForm}>
+                    <form
+                      onSubmit={experienceForm.handleSubmit(
+                        handleExperienceSubmit
+                      )}
+                      className="space-y-6"
+                    >
+                      {formData.experience.map((exp, index) => (
+                        <div
+                          key={index}
+                          className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-100"
+                        >
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-montserrat-semibold text-gray-700 text-sm italic">
+                              Experience {index + 1}
+                            </h4>
+                            {formData.experience.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeExperience(index)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Trash2 className="h-4 w-4 text-gray-1000" />
+                              </Button>
                             )}
-                          >
-                            <div className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
+                          </div>
+
+                          <FormField
+                            control={experienceForm.control}
+                            name={`experience.${index}.title`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">
+                                  Job Title
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="e.g Support Worker"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      const newExp = [...formData.experience];
+                                      newExp[index].title = e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        experience: newExp,
+                                      });
+                                    }}
+                                    className="text-sm bg-white"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={experienceForm.control}
+                            name={`experience.${index}.organization`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">
+                                  Organization
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="e.g Support Worker"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      const newExp = [...formData.experience];
+                                      newExp[index].organization =
+                                        e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        experience: newExp,
+                                      });
+                                    }}
+                                    className="text-sm bg-white"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <FormField
+                              control={experienceForm.control}
+                              name={`experience.${index}.startDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm">
+                                    Start Date
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      placeholder="dd/mm/yy"
+                                      {...field}
+                                      onChange={(e) => {
+                                        field.onChange(e);
+                                        const newExp = [...formData.experience];
+                                        newExp[index].startDate =
+                                          e.target.value;
+                                        setFormData({
+                                          ...formData,
+                                          experience: newExp,
+                                        });
+                                      }}
+                                      className="text-sm bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={experienceForm.control}
+                              name={`experience.${index}.endDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm">
+                                    End Date
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      placeholder="dd/mm/yy"
+                                      {...field}
+                                      onChange={(e) => {
+                                        field.onChange(e);
+                                        const newExp = [...formData.experience];
+                                        newExp[index].endDate = e.target.value;
+                                        setFormData({
+                                          ...formData,
+                                          experience: newExp,
+                                        });
+                                      }}
+                                      className="text-sm bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={experienceForm.control}
+                            name={`experience.${index}.description`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">
+                                  Description
+                                </FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Enter job experience here....."
+                                    className="min-h-[80px] text-sm resize-none bg-white"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      const newExp = [...formData.experience];
+                                      newExp[index].description =
+                                        e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        experience: newExp,
+                                      });
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      ))}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addExperience}
+                        className="w-full text-primary border-primary/30 hover:bg-primary/5 hover:border-primary/50"
+                      >
+                        + Add Another Experience
+                      </Button>
+
+                      <div className="flex justify-between pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary-700"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary/90 text-white"
+                        >
+                          Next
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Rates */}
+            {step === 4 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Hourly Rates
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Set your hourly rates for different time bands
+                  </p>
+
+                  <Form {...rateForm}>
+                    <form
+                      onSubmit={rateForm.handleSubmit(handleRateSubmit)}
+                      className="space-y-4"
+                    >
+                      {isLoadingRateTimeBands ? (
+                        <div className="flex justify-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {rateTimeBands.map((band, index) => {
+                            const rate = formData.shiftRates[index];
+                            const isSelected = rate && rate.hourlyRate;
+
+                            return (
+                              <div
+                                key={band._id}
+                                className={cn(
+                                  "border-2 rounded-xl p-5 transition-all",
+                                  isSelected
+                                    ? "border-primary bg-primary/5"
+                                    : "border-gray-200 hover:border-primary/30"
+                                )}
+                              >
+                                <div className="flex items-start justify-between mb-4">
+                                  <div className="flex-1">
+                                    <h4 className="font-montserrat-semibold text-gray-900 text-base mb-1">
+                                      {band.name}
+                                    </h4>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                      {band.description}
+                                    </p>
+                                    <p className="text-xs text-gray-1000">
+                                      {band.startTime} - {band.endTime}
+                                    </p>
+                                  </div>
                                   <div
-                                    onClick={() =>
-                                      toggleDayAvailability(dayIndex)
-                                    }
                                     className={cn(
-                                      "w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all",
-                                      day.available
+                                      "w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ml-3 transition-all",
+                                      isSelected
                                         ? "bg-primary border-primary"
-                                        : "border-gray-300 bg-white hover:border-primary/40"
+                                        : "border-gray-300 bg-white"
                                     )}
                                   >
-                                    {day.available && (
+                                    {isSelected && (
                                       <Check className="h-4 w-4 text-white" />
                                     )}
                                   </div>
-                                  <label
-                                    className="font-montserrat-semibold text-gray-900 capitalize cursor-pointer text-base"
-                                    onClick={() =>
-                                      toggleDayAvailability(dayIndex)
-                                    }
-                                  >
-                                    {day.day}
-                                  </label>
                                 </div>
-                              </div>
 
-                              {day.available && day.slots.length > 0 && (
-                                <div className="mt-4 space-y-3 pl-9">
-                                  {day.slots.map((slot, slotIndex) => (
-                                    <div
-                                      key={slotIndex}
-                                      className="bg-white rounded-lg p-3 border border-gray-200"
-                                    >
-                                      <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                          <label className="text-xs text-gray-600 block mb-1.5 font-medium">
-                                            Start Time
-                                          </label>
-                                          <Input
-                                            type="time"
-                                            value={slot.start}
-                                            onChange={(e) => {
-                                              const newAvailability = {
-                                                ...formData.availability,
-                                              };
-                                              newAvailability.weekdays[
-                                                dayIndex
-                                              ].slots[slotIndex].start =
+                                <FormField
+                                  control={rateForm.control}
+                                  name={`shiftRates.${index}.hourlyRate`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-sm text-gray-700">
+                                        Hourly Rate ($)
+                                      </FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          placeholder="35"
+                                          {...field}
+                                          onChange={(e) => {
+                                            field.onChange(e);
+                                            const newRates = [
+                                              ...(formData.shiftRates || []),
+                                            ];
+                                            if (newRates[index]) {
+                                              newRates[index].hourlyRate =
                                                 e.target.value;
                                               setFormData({
                                                 ...formData,
-                                                availability: newAvailability,
+                                                shiftRates: newRates,
                                               });
-                                            }}
-                                            className="text-sm"
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="text-xs text-gray-600 block mb-1.5 font-medium">
-                                            End Time
-                                          </label>
-                                          <Input
-                                            type="time"
-                                            value={slot.end}
-                                            onChange={(e) => {
-                                              const newAvailability = {
-                                                ...formData.availability,
-                                              };
-                                              newAvailability.weekdays[
-                                                dayIndex
-                                              ].slots[slotIndex].end =
-                                                e.target.value;
-                                              setFormData({
-                                                ...formData,
-                                                availability: newAvailability,
-                                              });
-                                            }}
-                                            className="text-sm"
-                                          />
-                                        </div>
+                                            }
+                                          }}
+                                          className="text-sm"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <input
+                                  type="hidden"
+                                  {...rateForm.register(
+                                    `shiftRates.${index}.rateTimeBandId`
+                                  )}
+                                  value={band._id}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="flex justify-between pt-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary-700"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary-700 text-white"
+                        >
+                          Next
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Availability */}
+            {step === 5 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Availability
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Set your weekly availability
+                  </p>
+
+                  <Form {...availabilityForm}>
+                    <form
+                      onSubmit={availabilityForm.handleSubmit(
+                        handleAvailabilitySubmit
+                      )}
+                      className="space-y-3"
+                    >
+                      {formData.availability.weekdays.map((day, dayIndex) => (
+                        <div
+                          key={day.day}
+                          className={cn(
+                            "border-2 rounded-xl transition-all",
+                            day.available
+                              ? "border-primary bg-primary/5"
+                              : "border-gray-200 bg-white"
+                          )}
+                        >
+                          <div className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  onClick={() =>
+                                    toggleDayAvailability(dayIndex)
+                                  }
+                                  className={cn(
+                                    "w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all",
+                                    day.available
+                                      ? "bg-primary border-primary"
+                                      : "border-gray-300 bg-white hover:border-primary/40"
+                                  )}
+                                >
+                                  {day.available && (
+                                    <Check className="h-4 w-4 text-white" />
+                                  )}
+                                </div>
+                                <label
+                                  className="font-montserrat-semibold text-gray-900 capitalize cursor-pointer text-base"
+                                  onClick={() =>
+                                    toggleDayAvailability(dayIndex)
+                                  }
+                                >
+                                  {day.day}
+                                </label>
+                              </div>
+                            </div>
+
+                            {day.available && day.slots.length > 0 && (
+                              <div className="mt-4 space-y-3 pl-9">
+                                {day.slots.map((slot, slotIndex) => (
+                                  <div
+                                    key={slotIndex}
+                                    className="bg-white rounded-lg p-3 border border-gray-200"
+                                  >
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
+                                          Start Time
+                                        </label>
+                                        <Input
+                                          type="time"
+                                          value={slot.start}
+                                          onChange={(e) => {
+                                            const newAvailability = {
+                                              ...formData.availability,
+                                            };
+                                            newAvailability.weekdays[
+                                              dayIndex
+                                            ].slots[slotIndex].start =
+                                              e.target.value;
+                                            setFormData({
+                                              ...formData,
+                                              availability: newAvailability,
+                                            });
+                                          }}
+                                          className="text-sm"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
+                                          End Time
+                                        </label>
+                                        <Input
+                                          type="time"
+                                          value={slot.end}
+                                          onChange={(e) => {
+                                            const newAvailability = {
+                                              ...formData.availability,
+                                            };
+                                            newAvailability.weekdays[
+                                              dayIndex
+                                            ].slots[slotIndex].end =
+                                              e.target.value;
+                                            setFormData({
+                                              ...formData,
+                                              availability: newAvailability,
+                                            });
+                                          }}
+                                          className="text-sm"
+                                        />
                                       </div>
                                     </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-
-                        <div className="flex justify-between pt-6">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={prevStep}
-                            className="border-primary text-primary hover:bg-primary/5"
-                          >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                          </Button>
-                          <Button
-                            type="submit"
-                            disabled={isOnboarding || isSubmitting}
-                            className="bg-primary hover:bg-primary/90 text-white"
-                          >
-                            {isOnboarding || isSubmitting ? (
-                              "Completing Setup..."
-                            ) : (
-                              <>
-                                Complete Setup
-                                <CheckCircle className="ml-2 h-4 w-4" />
-                              </>
+                                  </div>
+                                ))}
+                              </div>
                             )}
-                          </Button>
+                          </div>
                         </div>
-                      </form>
-                    </Form>
-                  </div>
+                      ))}
+
+                      <div className="flex justify-between pt-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary/5"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          disabled={isOnboarding || isSubmitting}
+                          className="bg-primary hover:bg-primary/90 text-white"
+                        >
+                          {isOnboarding || isSubmitting ? (
+                            <>
+                              <Spinner />
+                              <span className="ml-2">Submitting...</span>
+                            </>
+                          ) : (
+                            <>
+                              Complete Setup
+                              <CheckCircle className="ml-2 h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

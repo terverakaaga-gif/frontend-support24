@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import {
@@ -21,21 +21,27 @@ import {
   ClockCircle,
   Dollar,
   BillList,
-  ArrowUp,
-  ArrowDown,
+  CloseCircle,
+  CheckCircle,
 } from "@solar-icons/react";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useGetParticipantTimesheets } from "@/hooks/useTimesheetHooks";
+import { useApproveTimesheet, useGetParticipantTimesheets, useRejectTimesheet } from "@/hooks/useTimesheetHooks";
 import {
   TimesheetClientFilters,
   Timesheet,
-  SERVICE_TYPE_LABELS,
 } from "@/entities/Timesheet";
 import Loader from "@/components/Loader";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  getWorkerDisplayName,
+  getWorkerInitials,
+  getWorkerProfileImage,
+} from "@/lib/utils";
+import { toast } from "sonner";
+import { Spinner } from "@/components/Spinner";
 
 const ParticipantTimesheets: React.FC = () => {
   const { user, logout } = useAuth();
@@ -49,12 +55,20 @@ const ParticipantTimesheets: React.FC = () => {
     sortField: "createdAt",
     sortDirection: "desc",
   });
+   const [processingTimesheet, setProcessingTimesheet] = useState<{
+    id: string;
+    action: 'approve' | 'reject';
+  } | null>(null);
 
   const {
     data: timesheetData,
     isLoading,
     error,
   } = useGetParticipantTimesheets(user?._id || "", filters, !!user?._id);
+
+  const {mutateAsync:approveTimesheet, isPending:isApprovePending, isSuccess:isApproveSuccess, isError:isApproveError, error:approveError} = useApproveTimesheet()
+
+  const {mutateAsync:rejectTimesheet, isPending:isRejectPending, isSuccess:isRejectSuccess, isError:isRejectError, error:rejectError} = useRejectTimesheet()
 
   const formatDateShort = (dateString: string) =>
     format(new Date(dateString), "d MMM, yyyy");
@@ -85,6 +99,47 @@ const ParticipantTimesheets: React.FC = () => {
     navigate(`/participant/timesheets/${id}`);
   };
 
+  const handleTimeSheetApproval = useCallback( async (id:string)=>{
+    if(!id || processingTimesheet?.id === id){
+      return;
+    }
+    
+    setProcessingTimesheet({ id, action: 'approve' });
+    
+    try {
+      await approveTimesheet(id);
+      if(isApproveSuccess){
+        toast.success('Timesheet approved successfully');
+      }
+      if (isApproveError){
+        toast.error('Timesheet approval failed')
+      }
+    } finally {
+      setProcessingTimesheet(null);
+    }
+  },[approveTimesheet,isApproveError,isApproveSuccess, processingTimesheet])
+
+  const handleTimeSheetRejection = useCallback( async (id:string)=>{
+    if(!id || processingTimesheet?.id === id){
+      return;
+    }
+    
+    setProcessingTimesheet({ id, action: 'reject' });
+    
+    try {
+      await rejectTimesheet(id);
+      if(isRejectSuccess){
+        toast.success('Timesheet rejected successfully');
+      }
+      if (isRejectError){
+        toast.error('Timesheet decline failed')
+      }
+    } finally {
+      setProcessingTimesheet(null);
+    }
+  },[rejectTimesheet,isRejectError,isRejectSuccess, processingTimesheet])
+
+
   if (isLoading) {
     return <Loader />;
   }
@@ -92,7 +147,7 @@ const ParticipantTimesheets: React.FC = () => {
   const getStatusBadge = (status: string, isPaid: boolean) => {
     if (isPaid) {
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-medium">
+        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-montserrat-semibold">
           Paid
         </Badge>
       );
@@ -100,7 +155,7 @@ const ParticipantTimesheets: React.FC = () => {
 
     if (status === "pending") {
       return (
-        <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-0 font-medium">
+        <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-0 font-montserrat-semibold">
           Pending
         </Badge>
       );
@@ -108,7 +163,7 @@ const ParticipantTimesheets: React.FC = () => {
 
     if (status === "approved") {
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-medium">
+        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-montserrat-semibold">
           Approved
         </Badge>
       );
@@ -116,14 +171,14 @@ const ParticipantTimesheets: React.FC = () => {
 
     if (status === "rejected") {
       return (
-        <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-0 font-medium">
+        <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-0 font-montserrat-semibold">
           Rejected
         </Badge>
       );
     }
 
     return (
-      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0 font-medium">
+      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0 font-montserrat-semibold">
         {status}
       </Badge>
     );
@@ -180,7 +235,7 @@ const ParticipantTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <ArrowUp size={16} color="#10B981" />
-                      <span className="text-xs text-green-600 font-medium">
+                      <span className="text-xs text-green-600 font-montserrat-semibold">
                         From last month
                       </span>
                     </div> */}
@@ -203,7 +258,7 @@ const ParticipantTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <ArrowUp size={16} color="#10B981" />
-                      <span className="text-xs text-green-600 font-medium">
+                      <span className="text-xs text-green-600 font-montserrat-semibold">
                         From last 24 Hours
                       </span>
                     </div> */}
@@ -226,7 +281,7 @@ const ParticipantTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <ArrowUp size={16} color="#10B981" />
-                      <span className="text-xs text-green-600 font-medium">
+                      <span className="text-xs text-green-600 font-montserrat-semibold">
                         From last month
                       </span>
                     </div> */}
@@ -251,7 +306,7 @@ const ParticipantTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <ArrowDown size={16} color="#EF4444" />
-                      <span className="text-xs text-red-600 font-medium">
+                      <span className="text-xs text-red-600 font-montserrat-semibold">
                         From Last Month
                       </span>
                     </div> */}
@@ -356,29 +411,17 @@ const ParticipantTimesheets: React.FC = () => {
                             <div className="flex items-center gap-3">
                               <Avatar className="w-8 h-8">
                                 <AvatarImage
-                                  src={
-                                    typeof timesheet.workerId === "object" &&
-                                    timesheet.workerId.profileImage
-                                      ? timesheet.workerId.profileImage
-                                      : undefined
-                                  }
-                                  alt={
-                                    typeof timesheet.workerId === "object"
-                                      ? getFullName(timesheet.workerId)
-                                      : timesheet.workerId
-                                  }
+                                  src={getWorkerProfileImage(
+                                    timesheet.workerId
+                                  )}
+                                  alt={getWorkerDisplayName(timesheet.workerId)}
                                 />
                                 <AvatarFallback>
-                                  {typeof timesheet.workerId === "object"
-                                    ? timesheet.workerId.firstName.charAt(0) +
-                                      timesheet.workerId.lastName.charAt(0)
-                                    : "W"}
+                                  {getWorkerInitials(timesheet.workerId)}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="text-sm text-gray-700 font-montserrat-semibold">
-                                {typeof timesheet.workerId === "object"
-                                  ? getFullName(timesheet.workerId)
-                                  : timesheet.workerId}
+                                {getWorkerDisplayName(timesheet.workerId)}
                               </span>
                             </div>
                           </TableCell>
@@ -404,15 +447,48 @@ const ParticipantTimesheets: React.FC = () => {
                             {getStatusBadge(timesheet.status, timesheet.isPaid)}
                           </TableCell>
                           <TableCell className="text-right">
+                            <div className="flex items-center gap-3 text-xs place-self-end">
+                             { timesheet.status === 'pending' &&(<><Button 
+                               disabled={processingTimesheet?.id === timesheet._id && processingTimesheet?.action === 'approve'} 
+                               variant="outline" 
+                               className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white h-9 w-9" 
+                               onClick={()=>handleTimeSheetApproval(timesheet._id)}
+                             >
+                               {processingTimesheet?.id === timesheet._id && processingTimesheet?.action === 'approve' ? (
+                                 <>
+                                   <Spinner /> <span className="ml-2">Approving...</span>
+                                 </>
+                               ) : (
+                                 <CheckCircle size={16} />
+                               )}
+                             </Button>
+                              <Button 
+                                disabled={processingTimesheet?.id === timesheet._id && processingTimesheet?.action === 'reject'} 
+                                variant="outline" 
+                                className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white h-9 w-9" 
+                                onClick={()=>handleTimeSheetRejection(timesheet._id)}
+                              >
+                                {processingTimesheet?.id === timesheet._id && processingTimesheet?.action === 'reject' ? (
+                                  <>
+                                    <Spinner />
+                                    <span className="ml-2">Declining...</span>
+                                  </>
+                                ) : (
+                                  <CloseCircle size={16} />
+                                )}
+                              </Button>
+                              
+                              </>)}
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleViewTimesheet(timesheet._id)}
-                              className="border-primary text-primary hover:bg-primary hover:text-white font-medium h-9"
+                              className="border-primary text-primary hover:bg-primary hover:text-white h-9 w-9"
                             >
-                              <Eye size={16} className="mr-2" />
-                              View
+                              <Eye size={16} className="" />
                             </Button>
+                            </div>
+
                           </TableCell>
                         </TableRow>
                       ))
@@ -427,7 +503,7 @@ const ParticipantTimesheets: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-600">
                           Showing{" "}
-                          <span className="font-medium">
+                          <span className="font-montserrat-semibold">
                             {timesheetData.pagination.totalResults}
                           </span>{" "}
                           entries
@@ -480,7 +556,7 @@ const ParticipantTimesheets: React.FC = () => {
                                   }
                                   size="sm"
                                   onClick={() => handlePageChange(pageNum)}
-                                  className={`h-9 ${
+                                  className={`h-9 w-9 ${
                                     pageNum === currentPage
                                       ? "bg-primary text-white border-primary"
                                       : "border-gray-200 text-gray-700 hover:bg-gray-100"

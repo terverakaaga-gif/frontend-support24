@@ -183,12 +183,12 @@ const ServiceTypeDetail: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 mb-2">Service Name</h3>
+                      <h3 className="text-sm font-montserrat-semibold text-gray-600 mb-2">Service Name</h3>
                       <p className="text-sm font-montserrat-semibold">{serviceType.name}</p>
                     </div>
                     
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 mb-2">Service Code</h3>
+                      <h3 className="text-sm font-montserrat-semibold text-gray-600 mb-2">Service Code</h3>
                       <code className="bg-gray-100 px-3 py-1 rounded text-sm font-mono">
                         {serviceType.code}
                       </code>
@@ -197,7 +197,7 @@ const ServiceTypeDetail: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 mb-2">Status</h3>
+                      <h3 className="text-sm font-montserrat-semibold text-gray-600 mb-2">Status</h3>
                       {getStatusBadge(serviceType.status)}
                     </div>
                   </div>
@@ -211,7 +211,7 @@ const ServiceTypeDetail: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-gray-1000" />
                       <div>
-                        <h3 className="text-sm font-medium text-gray-600">Created</h3>
+                        <h3 className="text-sm font-montserrat-semibold text-gray-600">Created</h3>
                         <p className="text-sm">{formatDateTime(serviceType.createdAt)}</p>
                       </div>
                     </div>
@@ -221,7 +221,7 @@ const ServiceTypeDetail: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <Activity className="h-4 w-4 text-gray-1000" />
                       <div>
-                        <h3 className="text-sm font-medium text-gray-600">Last Updated</h3>
+                        <h3 className="text-sm font-montserrat-semibold text-gray-600">Last Updated</h3>
                         <p className="text-sm">{formatDateTime(serviceType.updatedAt)}</p>
                       </div>
                     </div>
@@ -317,15 +317,15 @@ const ServiceTypeDetail: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Active Shifts:</span>
-                  <span className="text-xs font-medium">-</span>
+                  <span className="text-xs font-montserrat-semibold">-</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Total Shifts:</span>
-                  <span className="text-xs font-medium">-</span>
+                  <span className="text-xs font-montserrat-semibold">-</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">Organizations Using:</span>
-                  <span className="text-xs font-medium">-</span>
+                  <span className="text-xs font-montserrat-semibold">-</span>
                 </div>
               </div>
               <p className="text-xs text-gray-1000 mt-3">

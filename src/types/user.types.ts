@@ -134,8 +134,16 @@ export interface Subscription {
 
 // Participant interface
 export interface Participant extends BaseUser {
+	gender: string;
+	dateOfBirth: null;
+	address: { street: string; city: string; state: string; postalCode: string; country: string; };
+	planManager: { name: string; email: string; };
+	coordinator: { name: string; email: string; };
+	notes: string;
+	ndisNumber: string;
+	onboardingComplete: boolean;
 	subscription: Subscription;
-	supportNeeds: string[];
+	supportNeeds: {name:string, description:string,_id:string}[];
 	supportCoordinators: string[];
 	preferredLanguages: string[];
 	preferredGenders: string[];
@@ -183,6 +191,7 @@ export interface LoginInput {
 }
 
 export interface IPagination {
+  total: number;
 	page: number;
 	limit: number;
 	totalPages: number;

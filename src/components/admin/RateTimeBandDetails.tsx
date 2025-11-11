@@ -132,7 +132,7 @@ export function RateTimeBandDetailsPage() {
             <div className="flex items-center justify-center h-64">
               <div className="text-center text-red-600">
                 <RefreshCw className="h-8 w-8 mx-auto mb-4" />
-                <p className="font-medium">Error loading rate time band details</p>
+                <p className="font-montserrat-semibold">Error loading rate time band details</p>
                 <p className="text-sm text-gray-600 mt-1">Please try again later</p>
                 <Button 
                   variant="outline" 
@@ -207,20 +207,20 @@ export function RateTimeBandDetailsPage() {
         
         <CardContent className="space-y-6">
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Description</h3>
+            <h3 className="text-sm font-montserrat-semibold text-muted-foreground mb-2">Description</h3>
             <p>{timeBand.description || "No description provided."}</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Time Information</h3>
+                <h3 className="text-sm font-montserrat-semibold text-muted-foreground mb-2">Time Information</h3>
                 <div className="bg-muted/40 p-4 rounded-lg space-y-3">
                   {timeBand.startTime && timeBand.endTime ? (
                     <div className="flex items-center gap-3">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium">Time Range</p>
+                        <p className="text-sm font-montserrat-semibold">Time Range</p>
                         <p className="text-sm">{timeBand.startTime} - {timeBand.endTime}</p>
                       </div>
                     </div>
@@ -228,7 +228,7 @@ export function RateTimeBandDetailsPage() {
                     <div className="flex items-center gap-3">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium">Time Range</p>
+                        <p className="text-sm font-montserrat-semibold">Time Range</p>
                         <p className="text-sm text-muted-foreground">Not specified</p>
                       </div>
                     </div>
@@ -237,7 +237,7 @@ export function RateTimeBandDetailsPage() {
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-4 w-4 text-green-600" />
                     <div>
-                      <p className="text-sm font-medium">Base Rate Multiplier</p>
+                      <p className="text-sm font-montserrat-semibold">Base Rate Multiplier</p>
                       <p className="text-sm">{timeBand.baseRateMultiplier}x standard rate</p>
                     </div>
                   </div>
@@ -245,7 +245,7 @@ export function RateTimeBandDetailsPage() {
               </div>
               
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Shift Categories</h3>
+                <h3 className="text-sm font-montserrat-semibold text-muted-foreground mb-2">Shift Categories</h3>
                 <div className="bg-muted/40 p-4 rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -285,27 +285,27 @@ export function RateTimeBandDetailsPage() {
             
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">System Information</h3>
+                <h3 className="text-sm font-montserrat-semibold text-muted-foreground mb-2">System Information</h3>
                 <div className="bg-muted/40 p-4 rounded-lg space-y-3">
                   <div>
-                    <p className="text-sm font-medium">ID</p>
+                    <p className="text-sm font-montserrat-semibold">ID</p>
                     <p className="text-xs font-mono mt-1 bg-muted p-1 rounded">{timeBand._id}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm font-medium">Created</p>
+                    <p className="text-sm font-montserrat-semibold">Created</p>
                     <p className="text-sm">{formatDate(timeBand.createdAt)}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm font-medium">Last Updated</p>
+                    <p className="text-sm font-montserrat-semibold">Last Updated</p>
                     <p className="text-sm">{formatDate(timeBand.updatedAt)}</p>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Usage Information</h3>
+                <h3 className="text-sm font-montserrat-semibold text-muted-foreground mb-2">Usage Information</h3>
                 <div className="bg-muted/40 p-4 rounded-lg">
                   <p className="text-sm">This time band is currently used in X rate configurations and Y support worker profiles.</p>
                   <p className="text-sm mt-2 text-muted-foreground">Deactivating this time band will affect these configurations.</p>

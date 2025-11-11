@@ -101,7 +101,7 @@ export function InviteManagement() {
 				return (
 					<Badge
 						variant="outline"
-						className="bg-amber-50 text-amber-700 border-amber-200 font-medium"
+						className="bg-amber-50 text-amber-700 border-amber-200 font-montserrat-semibold"
 					>
 						<Clock className="w-3 h-3 mr-1" />
 						Pending
@@ -111,7 +111,7 @@ export function InviteManagement() {
 				return (
 					<Badge
 						variant="outline"
-						className="bg-emerald-50 text-emerald-700 border-emerald-200 font-medium"
+						className="bg-emerald-50 text-emerald-700 border-emerald-200 font-montserrat-semibold"
 					>
 						<Users className="w-3 h-3 mr-1" />
 						Accepted
@@ -121,7 +121,7 @@ export function InviteManagement() {
 				return (
 					<Badge
 						variant="outline"
-						className="bg-red-50 text-red-700 border-red-200 font-medium"
+						className="bg-red-50 text-red-700 border-red-200 font-montserrat-semibold"
 					>
 						Declined
 					</Badge>
@@ -305,12 +305,12 @@ export function InviteManagement() {
 											<TableCell className="py-4">
 												<div className="flex items-center gap-3">
 													<Avatar className="border-2 border-guardian/10">
-														<AvatarFallback className="bg-guardian/10 text-guardian font-medium">
+														<AvatarFallback className="bg-guardian/10 text-guardian font-montserrat-semibold">
 															{getAvatarPlaceholder(invitation.participantName)}
 														</AvatarFallback>
 													</Avatar>
 													<div>
-														<div className="font-medium text-gray-900">
+														<div className="font-montserrat-semibold text-gray-900">
 															{invitation.participantName}
 														</div>
 														<div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -323,12 +323,12 @@ export function InviteManagement() {
 											<TableCell className="py-4">
 												<div className="flex items-center gap-3">
 													<Avatar className="border-2 border-guardian/10">
-														<AvatarFallback className="bg-guardian/10 text-guardian font-medium">
+														<AvatarFallback className="bg-guardian/10 text-guardian font-montserrat-semibold">
 															{getAvatarPlaceholder(invitation.workerName)}
 														</AvatarFallback>
 													</Avatar>
 													<div>
-														<div className="font-medium text-gray-900">
+														<div className="font-montserrat-semibold text-gray-900">
 															{invitation.workerName}
 														</div>
 														<div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -347,7 +347,7 @@ export function InviteManagement() {
 											</TableCell>
 											<TableCell className="py-4">
 												<div className="text-sm">
-													<div className="font-medium">
+													<div className="font-montserrat-semibold">
 														{new Date(invitation.inviteDate).toLocaleDateString(
 															"en-AU",
 															{

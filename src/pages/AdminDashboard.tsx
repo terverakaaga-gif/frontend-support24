@@ -220,7 +220,7 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <CardHeader className="px-0 pt-0">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-medium">
+              <CardTitle className="text-lg font-montserrat-semibold">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-guardian" />
                   <span>Booking Trends</span>
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <CardHeader className="px-0 pt-0">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-medium">
+              <CardTitle className="text-lg font-montserrat-semibold">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-guardian" />
                   <span>Revenue Overview</span>
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
         <Card className="md:col-span-2 border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-medium text-[#1e3b93]">
+              <CardTitle className="text-lg font-montserrat-semibold text-[#1e3b93]">
                 Recent Bookings
               </CardTitle>
               <Button
@@ -312,12 +312,12 @@ export default function AdminDashboard() {
                     <div className="flex items-center gap-4">
                       <Avatar className="border-2 border-[#1e3b93]/10">
                         <AvatarImage src={booking.participant.avatar} />
-                        <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
+                        <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-montserrat-semibold">
                           {booking.participant.name[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium text-gray-900">
+                        <div className="font-montserrat-semibold text-gray-900">
                           {booking.participant.name}
                         </div>
                         <div className="text-sm text-muted-foreground">
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
 
         <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
           <CardHeader>
-            <CardTitle className="text-lg font-medium text-[#1e3b93]">
+            <CardTitle className="text-lg font-montserrat-semibold text-[#1e3b93]">
               Notifications
             </CardTitle>
           </CardHeader>
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
       {/* Stakeholder Overview */}
       {/* <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-medium">
+          <CardTitle className="text-lg font-montserrat-semibold">
             Stakeholder Overview
           </CardTitle>
         </CardHeader>
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
             {stakeholders.map((item) => (
               <div key={item.type} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="font-medium">{item.type}</div>
+                  <div className="font-montserrat-semibold">{item.type}</div>
                   <Badge variant="outline" className="font-normal">
                     {item.growth}
                   </Badge>

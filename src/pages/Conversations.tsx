@@ -212,7 +212,7 @@ export default function Conversations() {
   }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100 font-montserrat space-y-8">
+    <div className="min-h-screen p-4 md:p-8 bg-gray-100 font-montserrat space-y-4 md:space-y-8">
       {/* Header */}
       <GeneralHeader
         title={
@@ -257,20 +257,22 @@ export default function Conversations() {
         rightComponent={
           <>
             {/* Create New Chat Button (Direct or Group) */}
-            {user.role !== "supportWorker" && (<Button
-              onClick={() => setIsCreatingChat(true)}
-              className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-medium shadow-sm"
-            >
-              <Plus size={24} />
-              Create New Chat
-            </Button>)}
+            {user.role !== "supportWorker" && (
+              <Button
+                onClick={() => setIsCreatingChat(true)}
+                className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold  shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Plus size={24} />
+                Create New Chat
+              </Button>
+            )}
           </>
         }
       />
 
-      <div className="flex flex-col md:flex-row gap-5 h-[85vh]">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-5 h-[85vh]">
         {/* Left Sidebar - Conversations List */}
-        <div className="w-[400px] shadow-sm rounded-xl flex flex-col bg-white overflow-hidden">
+        <div className="w-full md:w-[400px] shadow-sm rounded-xl flex flex-col bg-white overflow-hidden">
           {/* Conversation Search */}
           <div className="px-4 pt-4 pb-3">
             <div className="relative">
@@ -279,13 +281,13 @@ export default function Conversations() {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="px-8 py-5 border-gray-200 focus:border-primary-300"
+                className="px-8 py-3 md:py-5 border-gray-200 focus:border-primary-300 text-sm md:text-base"
               />
             </div>
           </div>
 
           {/* Filter Tabs */}
-          <div className="px-4 pb-3 flex gap-2 bg-white">
+          <div className="px-4 pb-3 flex gap-2 bg-white overflow-x-auto">
             <ChatFilterButton
               active={selectedFilter === "all"}
               onClick={() => setSelectedFilter("all")}
@@ -310,10 +312,10 @@ export default function Conversations() {
           <ScrollArea className="flex-1 bg-white">
             <div className="divide-y divide-gray-100">
               {filteredConversations.length === 0 ? (
-                <div className="p-8 text-center">
+                <div className="p-4 md:p-8 text-center">
                   <div className="mb-4 text-gray-300">
                     <svg
-                      className="mx-auto h-20 w-20"
+                      className="mx-auto h-16 w-16 md:h-20 md:w-20"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -326,20 +328,17 @@ export default function Conversations() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-montserrat-semibold text-gray-700 mb-2">
+                  <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-700 mb-2">
                     No conversations found
                   </h3>
                   <p className="text-sm text-gray mb-4">
                     Try adjusting your search or filters
                   </p>
                   <Button
-                    onClick={() => {
-                      setIsCreatingChat(true);
-                      setChatType("group");
-                    }}
-                    className="bg-primary hover:bg-primary-700 shadow-sm"
+                    onClick={() => setIsCreatingChat(true)}
+                    className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold  shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    <span className="mr-2">⊕</span>
+                    <Plus size={24} />
                     Start New Chat
                   </Button>
                 </div>
@@ -359,11 +358,11 @@ export default function Conversations() {
         </div>
 
         {/* Main Content Area - Empty State or Chat View */}
-        <div className="flex-1 flex items-center justify-center bg-white rounded-xl shadow-sm">
+        <div className="flex-1 flex items-center justify-center bg-white rounded-xl shadow-sm p-4 md:p-0">
           <div className="text-center max-w-md px-4">
             <div className="mb-6 text-gray-300">
               <svg
-                className="mx-auto h-32 w-32"
+                className="mx-auto h-24 w-24 md:h-32 md:w-32"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -376,10 +375,10 @@ export default function Conversations() {
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-montserrat-semibold mb-3">
+            <h3 className="text-xl md:text-2xl font-montserrat-semibold mb-3">
               Select a conversation
             </h3>
-            <p className="text-gray leading-relaxed">
+            <p className="text-gray leading-relaxed text-sm md:text-base">
               Choose a conversation from the list to start messaging or create a
               new one to begin chatting
             </p>
@@ -387,7 +386,7 @@ export default function Conversations() {
         </div>
 
         {/* Chat Creation Modal */}
-        {user.role !== 'supportWorker'  && isCreatingChat && (
+        {user.role !== "supportWorker" && isCreatingChat && (
           <ChatCreationModal
             isOpen={isCreatingChat}
             onClose={() => {

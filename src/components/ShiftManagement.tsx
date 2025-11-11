@@ -131,7 +131,7 @@ const ShiftManagement = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Select Service Category</h3>
+            <h3 className="text-lg font-montserrat-semibold">Select Service Category</h3>
             <div className="grid grid-cols-2 gap-4">
               {Object.entries(serviceCategoryNames).map(([key, name]) => (
                 <button
@@ -144,7 +144,7 @@ const ShiftManagement = () => {
                   <div className="mb-2 rounded-full bg-primary/10 p-2">
                     {serviceCategoryIcons[key as ServiceCategory]}
                   </div>
-                  <div className="font-medium">{name}</div>
+                  <div className="font-montserrat-semibold">{name}</div>
                 </button>
               ))}
             </div>
@@ -163,11 +163,11 @@ const ShiftManagement = () => {
       case 2:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Select Date & Time</h3>
+            <h3 className="text-lg font-montserrat-semibold">Select Date & Time</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Date</label>
+                <label className="block text-sm font-montserrat-semibold mb-2">Date</label>
                 <CalendarComponent 
                   mode="single" 
                   selected={currentBooking.date || undefined}
@@ -178,7 +178,7 @@ const ShiftManagement = () => {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Start Time</label>
+                  <label className="block text-sm font-montserrat-semibold mb-2">Start Time</label>
                   <Select 
                     value={currentBooking.timeStart}
                     onValueChange={(value) => updateCurrentBooking({ timeStart: value })}
@@ -195,7 +195,7 @@ const ShiftManagement = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">End Time</label>
+                  <label className="block text-sm font-montserrat-semibold mb-2">End Time</label>
                   <Select 
                     value={currentBooking.timeEnd}
                     onValueChange={(value) => updateCurrentBooking({ timeEnd: value })}
@@ -229,7 +229,7 @@ const ShiftManagement = () => {
       case 3:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Select Support Worker</h3>
+            <h3 className="text-lg font-montserrat-semibold">Select Support Worker</h3>
             
             <div className="mb-4 flex space-x-2">
               <Button variant="outline" className="w-1/2">List View</Button>
@@ -250,14 +250,14 @@ const ShiftManagement = () => {
                       <User className="h-5 w-5 text-guardian" />
                     </div>
                     <div>
-                      <h3 className="font-medium">{worker.name}</h3>
+                      <h3 className="font-montserrat-semibold">{worker.name}</h3>
                       <div className="text-xs text-muted-foreground">{worker.role}</div>
                     </div>
                   </div>
                   <div className="text-right text-xs">
-                    <div className="font-medium">{worker.rating} ★</div>
+                    <div className="font-montserrat-semibold">{worker.rating} ★</div>
                     <div className="text-muted-foreground">{worker.distance} km away</div>
-                    <div className={`${worker.availability ? 'text-green-600' : 'text-red-600'} font-medium`}>
+                    <div className={`${worker.availability ? 'text-green-600' : 'text-red-600'} font-montserrat-semibold`}>
                       {worker.availability ? 'Available' : 'Unavailable'}
                     </div>
                   </div>
@@ -281,7 +281,7 @@ const ShiftManagement = () => {
       case 4:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Select Participant</h3>
+            <h3 className="text-lg font-montserrat-semibold">Select Participant</h3>
             
             <div className="space-y-4 max-h-[400px] overflow-auto pr-2">
               {availableParticipants.map((participant) => (
@@ -297,7 +297,7 @@ const ShiftManagement = () => {
                       <User className="h-5 w-5 text-guardian" />
                     </div>
                     <div>
-                      <h3 className="font-medium">{participant.name}</h3>
+                      <h3 className="font-montserrat-semibold">{participant.name}</h3>
                       <div className="text-xs text-muted-foreground capitalize">{participant.type}</div>
                     </div>
                   </div>
@@ -324,35 +324,35 @@ const ShiftManagement = () => {
       case 5:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Confirm Booking Details</h3>
+            <h3 className="text-lg font-montserrat-semibold">Confirm Booking Details</h3>
             
             <div className="space-y-3 border rounded-lg p-4 bg-muted/20">
               <div className="flex justify-between">
-                <span className="text-sm font-medium">Service:</span>
+                <span className="text-sm font-montserrat-semibold">Service:</span>
                 <span className="text-sm">
                   {currentBooking.serviceCategory ? serviceCategoryNames[currentBooking.serviceCategory] : '-'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm font-medium">Date:</span>
+                <span className="text-sm font-montserrat-semibold">Date:</span>
                 <span className="text-sm">
                   {currentBooking.date ? format(currentBooking.date, 'EEEE, MMMM d, yyyy') : '-'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm font-medium">Time:</span>
+                <span className="text-sm font-montserrat-semibold">Time:</span>
                 <span className="text-sm">
                   {currentBooking.timeStart} - {currentBooking.timeEnd}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm font-medium">Support Worker:</span>
+                <span className="text-sm font-montserrat-semibold">Support Worker:</span>
                 <span className="text-sm">
                   {availableWorkers.find(w => w.id === currentBooking.workerId)?.name || '-'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm font-medium">Participant:</span>
+                <span className="text-sm font-montserrat-semibold">Participant:</span>
                 <span className="text-sm">
                   {availableParticipants.find(p => p.id === currentBooking.participantId)?.name || '-'}
                 </span>
@@ -360,7 +360,7 @@ const ShiftManagement = () => {
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-medium">Additional Notes</label>
+              <label className="block text-sm font-montserrat-semibold">Additional Notes</label>
               <Textarea 
                 placeholder="Add any special instructions or requirements..."
                 value={currentBooking.notes}
@@ -454,7 +454,7 @@ const ShiftManagement = () => {
                     <User className="h-5 w-5 text-guardian" />
                   </div>
                   <div>
-                    <h3 className="font-medium">{shift.worker.name}</h3>
+                    <h3 className="font-montserrat-semibold">{shift.worker.name}</h3>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="h-3 w-3" />
                       <span>{new Date(shift.date).toLocaleDateString('en-US', {
@@ -530,7 +530,7 @@ const ShiftManagement = () => {
                             <User className="h-5 w-5 text-guardian" />
                           </div>
                           <div>
-                            <h3 className="font-medium">{shift.worker.name}</h3>
+                            <h3 className="font-montserrat-semibold">{shift.worker.name}</h3>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                               <Clock className="h-3 w-3" />
                               <span>{shift.timeStart} - {shift.timeEnd}</span>

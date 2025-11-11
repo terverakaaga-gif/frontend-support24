@@ -41,7 +41,7 @@ const ResolveIncidentModal = ({
 				>
 					<div className="p-6">
 						<div className="mb-4">
-							<label className="block text-sm font-medium text-gray-700 mb-2">
+							<label className="block text-sm font-montserrat-semibold text-gray-700 mb-2">
 								Resolution Notes *
 							</label>
 							<textarea

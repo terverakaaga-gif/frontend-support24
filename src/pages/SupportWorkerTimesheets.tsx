@@ -10,23 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Eye,
   Magnifer,
@@ -34,19 +20,13 @@ import {
   ClockCircle,
   Dollar,
   BillList,
-  ArrowUp,
-  ArrowDown,
-  CourseUp,
-  CourseDown,
 } from "@solar-icons/react";
-import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetWorkerTimesheets } from "@/hooks/useTimesheetHooks";
 import {
   TimesheetClientFilters,
   Timesheet,
-  SERVICE_TYPE_LABELS,
 } from "@/entities/Timesheet";
 import Loader from "@/components/Loader";
 import GeneralHeader from "@/components/GeneralHeader";
@@ -111,7 +91,7 @@ const SupportWorkerTimesheets: React.FC = () => {
   const getStatusBadge = (status: string, isPaid: boolean) => {
     if (isPaid) {
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-medium">
+        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-montserrat-semibold">
           Paid
         </Badge>
       );
@@ -119,7 +99,7 @@ const SupportWorkerTimesheets: React.FC = () => {
 
     if (status === "pending") {
       return (
-        <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-0 font-medium">
+        <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-0 font-montserrat-semibold">
           Pending
         </Badge>
       );
@@ -127,7 +107,7 @@ const SupportWorkerTimesheets: React.FC = () => {
 
     if (status === "approved") {
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-medium">
+        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 font-montserrat-semibold">
           Approved
         </Badge>
       );
@@ -135,14 +115,14 @@ const SupportWorkerTimesheets: React.FC = () => {
 
     if (status === "rejected") {
       return (
-        <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-0 font-medium">
+        <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-0 font-montserrat-semibold">
           Rejected
         </Badge>
       );
     }
 
     return (
-      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0 font-medium">
+      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0 font-montserrat-semibold">
         {status}
       </Badge>
     );
@@ -202,7 +182,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <CourseUp size={16} color="#10B981" />
-                      <span className="text-xs text-green-600 font-medium">
+                      <span className="text-xs text-green-600 font-montserrat-semibold">
                         From last month
                       </span>
                     </div> */}
@@ -225,7 +205,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <CourseUp size={16} color="#10B981" />
-                      <span className="text-xs text-green-600 font-medium">
+                      <span className="text-xs text-green-600 font-montserrat-semibold">
                         From last 24 Hours
                       </span>
                     </div> */}
@@ -248,7 +228,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <CourseUp size={16} color="#10B981" />
-                      <span className="text-xs text-green-600 font-medium">
+                      <span className="text-xs text-green-600 font-montserrat-semibold">
                         From last month
                       </span>
                     </div> */}
@@ -271,7 +251,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                     </p>
                     {/* <div className="flex items-center gap-1 mt-2">
                       <CourseDown size={16} color="#EF4444" />
-                      <span className="text-xs text-red-600 font-medium">
+                      <span className="text-xs text-red-600 font-montserrat-semibold">
                         From Last Month
                       </span>
                     </div> */}
@@ -360,12 +340,12 @@ const SupportWorkerTimesheets: React.FC = () => {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-sm font-medium text-black">
+                              <span className="text-sm font-montserrat-semibold text-black">
                                 {timesheet.participantId.firstName.charAt(0)}
                                 {timesheet.participantId.lastName.charAt(0)}
                               </span>
                             </div>
-                            <span className="text-sm text-gray-900 font-medium">
+                            <span className="text-sm text-gray-900 font-montserrat-semibold">
                               {getFullName(timesheet.participantId)}
                             </span>
                           </div>
@@ -396,7 +376,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleViewTimesheet(timesheet._id)}
-                            className="border-primary text-primary hover:bg-primary hover:text-white font-medium h-9"
+                            className="border-primary text-primary hover:bg-primary hover:text-white font-montserrat-semibold h-9"
                           >
                             <Eye size={16} className="mr-2" />
                             View
@@ -414,7 +394,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                   <div className="px-6 py-3 border-t border-gray-100">
                     <div className="text-sm text-black">
                       Showing{" "}
-                      <span className="font-medium">
+                      <span className="font-montserrat-semibold">
                         {Math.min(
                           (timesheetData.pagination.page - 1) *
                             timesheetData.pagination.limit +
@@ -423,7 +403,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                         )}
                       </span>{" "}
                       to{" "}
-                      <span className="font-medium">
+                      <span className="font-montserrat-semibold">
                         {Math.min(
                           timesheetData.pagination.page *
                             timesheetData.pagination.limit,
@@ -431,7 +411,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                         )}
                       </span>{" "}
                       of{" "}
-                      <span className="font-medium">
+                      <span className="font-montserrat-semibold">
                         {timesheetData.pagination.totalResults}
                       </span>{" "}
                       entries
@@ -446,7 +426,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-black">
                         Showing{" "}
-                        <span className="font-medium">
+                        <span className="font-montserrat-semibold">
                           {timesheetData.pagination.totalResults}
                         </span>{" "}
                         entries
@@ -459,7 +439,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             handlePageChange(timesheetData.pagination.page - 1)
                           }
                           disabled={timesheetData.pagination.page <= 1}
-                          className="border-gray-200 h-9"
+                          className="border-gray-200"
                         >
                           Previous
                         </Button>
@@ -514,7 +494,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                             handlePageChange(timesheetData.pagination.page + 1)
                           }
                           disabled={!timesheetData.pagination.hasMore}
-                          className="border-gray-200 h-9"
+                          className="border-gray-200"
                         >
                           Next
                         </Button>
