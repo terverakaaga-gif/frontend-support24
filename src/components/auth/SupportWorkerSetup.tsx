@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { useEffect, useMemo } from "react";
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+
 import {
   Form,
   FormControl,
@@ -14,20 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Briefcase,
-  Languages,
-  Clock,
-  DollarSign,
-  CheckCircle,
-  Heart,
-  Plus,
-  Trash2,
-  X,
-  Check,
-} from "lucide-react";
+
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import authService from "@/api/services/authService";
@@ -42,7 +32,21 @@ import {
   useServiceAreasByRegion,
   useStates,
 } from "@/hooks/useLocationHooks";
-import { Magnifer } from "@solar-icons/react";
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  DollarMinimalistic,
+  Global,
+  Heart,
+  Magnifer,
+  MapPoint,
+  Refresh,
+  Suitcase,
+  TrashBinMinimalistic,
+} from "@solar-icons/react";
 import {
   Select,
   SelectContent,
@@ -50,12 +54,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { commonLanguages } from "@/constants/common-languages";
 
 const bioSchema = z.object({
-  bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
+  bio: z.string().min(10, { message: "Bio must be at least 10 characters." }).max(500, { message: "Bio must be at most 500 characters." }),
   languages: z
     .array(z.string().min(1))
     .min(1, { message: "Please enter at least one language." }),
+  address: z.string().min(5, { message: "Please enter your address." }),
   stateId: z.string().min(1, { message: "Please select a state." }),
   regionId: z.string().min(1, { message: "Please select a region." }),
   serviceAreaIds: z
@@ -124,18 +130,6 @@ interface SupportWorkerSetupProps {
   isSubmitting?: boolean;
 }
 
-const commonLanguages = [
-  "English",
-  "Mandarin",
-  "Spanish",
-  "Arabic",
-  "French",
-  "Italian",
-  "German",
-  "Portuguese",
-  "Japanese",
-  "Korean",
-];
 
 const weekdays = [
   { value: "monday", label: "Monday" },
@@ -151,13 +145,29 @@ export function SupportWorkerSetup({
   onComplete,
   isSubmitting = false,
 }: SupportWorkerSetupProps) {
+  const { completeOnboarding, user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [languageInput, setLanguageInput] = useState("");
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [showAddressPredictions, setShowAddressPredictions] = useState(false);
+  const [addressInputValue, setAddressInputValue] = useState("");
 
-  const { completeOnboarding } = useAuth();
+  // Google Places Autocomplete Hook
+  const {
+    placesService,
+    placePredictions,
+    getPlacePredictions,
+    isPlacePredictionsLoading,
+  } = usePlacesService({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
   const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } =
     useGetServiceTypes();
   const { data: rateTimeBands = [], isLoading: isLoadingRateTimeBands } =
@@ -181,6 +191,7 @@ export function SupportWorkerSetup({
     languages: [] as string[],
     stateId: "",
     regionId: "",
+    address: "",
     serviceAreaIds: [] as string[],
     skills: [] as string[],
     experience: [
@@ -207,6 +218,7 @@ export function SupportWorkerSetup({
     defaultValues: {
       bio: formData.bio,
       languages: formData.languages,
+      address: formData.address,
       stateId: formData.stateId,
       regionId: formData.regionId,
       serviceAreaIds: formData.serviceAreaIds,
@@ -240,6 +252,56 @@ export function SupportWorkerSetup({
       availability: formData.availability,
     },
   });
+
+  // Handle address input changes with debouncing
+  const handleAddressInputChange = (value: string) => {
+    setAddressInputValue(value);
+    setFormData({ ...formData, address: value });
+    bioForm.setValue("address", value);
+
+    if (value.trim().length > 2) {
+      getPlacePredictions({ input: value });
+      setShowAddressPredictions(true);
+    } else {
+      setShowAddressPredictions(false);
+    }
+  };
+
+  // Handle address selection from predictions
+  const handleAddressSelect = (prediction: any) => {
+    const selectedAddress = prediction.description;
+    setAddressInputValue(selectedAddress);
+    setFormData({ ...formData, address: selectedAddress });
+    bioForm.setValue("address", selectedAddress);
+    setShowAddressPredictions(false);
+
+    // Optional: Get detailed place information
+    if (placesService) {
+      placesService.getDetails(
+        {
+          placeId: prediction.place_id,
+        },
+        (placeDetails: any) => {
+          console.log("Place details:", placeDetails);
+          // You can extract additional information here if needed
+          // like latitude, longitude, formatted address components, etc.
+        }
+      );
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest("#address-autocomplete-container")) {
+        setShowAddressPredictions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Reset dependent fields when state changes
   React.useEffect(() => {
@@ -302,6 +364,7 @@ export function SupportWorkerSetup({
       ...formData,
       bio: data.bio,
       languages: data.languages,
+      address: data.address,
       stateId: data.stateId,
       regionId: data.regionId,
       serviceAreaIds: data.serviceAreaIds,
@@ -338,7 +401,35 @@ export function SupportWorkerSetup({
     setIsOnboarding(true);
 
     try {
-      await authService.completeSupportWorkerOnboarding(data);
+      // Transform data to match backend validation exactly
+      const transformedData = {
+        bio: data.bio,
+        skills: data.skills, // Already array of ObjectId strings
+        languages: data.languages,
+        experience: data.experience.map((exp) => ({
+          ...exp,
+          startDate: new Date(exp.startDate),
+          endDate: exp.endDate ? new Date(exp.endDate) : undefined,
+        })),
+        shiftRates: data.shiftRates.map((rate) => ({
+          rateTimeBandId: rate.rateTimeBandId,
+          hourlyRate: parseFloat(rate.hourlyRate),
+        })),
+        availability: data.availability,
+        stateIds: data.stateId ? [data.stateId] : undefined,
+        regionIds: data.regionId ? [data.regionId] : undefined,
+        serviceAreaIds: data.serviceAreaIds,
+        baseLocation: data.address
+          ? {
+              longitude: 0, // You'll need to get this from Google Places if needed
+              latitude: 0, // You'll need to get this from Google Places if needed
+            }
+          : undefined,
+        travelRadiusKm: undefined, // Add this field if needed
+        address: data.address,
+      };
+
+      await authService.completeSupportWorkerOnboarding(transformedData);
       completeOnboarding();
       toast.success("Profile setup completed successfully!");
       onComplete();
@@ -414,12 +505,12 @@ export function SupportWorkerSetup({
     {
       number: 1,
       label: "Bio & Location",
-      icon: <Languages className="h-4 w-4" />,
+      icon: <Global className="h-4 w-4" />,
     },
-    { number: 2, label: "Skills", icon: <Briefcase className="h-4 w-4" /> },
-    { number: 3, label: "Experience", icon: <Briefcase className="h-4 w-4" /> },
-    { number: 4, label: "Rates", icon: <DollarSign className="h-4 w-4" /> },
-    { number: 5, label: "Availability", icon: <Clock className="h-4 w-4" /> },
+    { number: 2, label: "Skills", icon: <Suitcase className="h-4 w-4" /> },
+    { number: 3, label: "Experience", icon: <Suitcase className="h-4 w-4" /> },
+    { number: 4, label: "Rates", icon: <DollarMinimalistic className="h-4 w-4" /> },
+    { number: 5, label: "Availability", icon: <ClockCircle className="h-4 w-4" /> },
   ];
 
   const handleSkipSetup = () => {
@@ -434,7 +525,7 @@ export function SupportWorkerSetup({
           onClick={handleSkipSetup}
           className="font-montserrat-semibold flex items-center hover:text-gray-900 mb-6"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <AltArrowLeft className="h-4 w-4 mr-2" />
           Back to Dashboard
         </button>
 
@@ -494,7 +585,7 @@ export function SupportWorkerSetup({
                         )}
                       >
                         {isCompleted ? (
-                          <Check className="h-4 w-4 text-white" />
+                          <CheckCircle className="h-4 w-4 text-white" />
                         ) : (
                           <span
                             className={cn(
@@ -558,7 +649,7 @@ export function SupportWorkerSetup({
                         )}
                       >
                         {isCompleted ? (
-                          <Check className="h-4 w-4 text-white" />
+                          <CheckCircle className="h-4 w-4 text-white" />
                         ) : (
                           <span
                             className={cn(
@@ -656,7 +747,7 @@ export function SupportWorkerSetup({
                                   onClick={() => removeLanguage(language)}
                                   className="hover:text-gray-700"
                                 >
-                                  <X className="h-3 w-3" />
+                                  <CloseCircle className="h-3 w-3" />
                                 </button>
                               </Badge>
                             ))}
@@ -718,6 +809,108 @@ export function SupportWorkerSetup({
                               Please add at least one language.
                             </p>
                           )}
+                      </div>
+
+                      {/* Address with Google Autocomplete */}
+                      <div className="space-y-4 border-t pt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPoint className="h-5 w-5 text-primary" />
+                          <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                            Address
+                          </FormLabel>
+                        </div>
+
+                        <FormField
+                          control={bioForm.control}
+                          name="address"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div
+                                  id="address-autocomplete-container"
+                                  className="relative"
+                                >
+                                  <div className="relative">
+                                    <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                                    <Input
+                                      {...field}
+                                      type="text"
+                                      placeholder="Start typing your address..."
+                                      value={addressInputValue}
+                                      onChange={(e) => {
+                                        field.onChange(e);
+                                        handleAddressInputChange(
+                                          e.target.value
+                                        );
+                                      }}
+                                      onFocus={() => {
+                                        if (
+                                          addressInputValue.trim().length > 2 &&
+                                          placePredictions.length > 0
+                                        ) {
+                                          setShowAddressPredictions(true);
+                                        }
+                                      }}
+                                      className="pl-10 text-sm"
+                                      autoComplete="off"
+                                      disabled={isPlacePredictionsLoading}
+                                    />
+                                    {isPlacePredictionsLoading && (
+                                      <Refresh className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                                    )}
+                                  </div>
+
+                                  {/* Predictions Dropdown */}
+                                  {showAddressPredictions &&
+                                    placePredictions.length > 0 && (
+                                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                        {placePredictions.map((prediction) => (
+                                          <div
+                                            key={prediction.place_id}
+                                            onClick={() =>
+                                              handleAddressSelect(prediction)
+                                            }
+                                            className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                          >
+                                            <div className="flex items-start gap-3">
+                                              <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-sm text-gray-900 font-medium truncate">
+                                                  {prediction
+                                                    .structured_formatting
+                                                    ?.main_text ||
+                                                    prediction.description}
+                                                </p>
+                                                {prediction
+                                                  .structured_formatting
+                                                  ?.secondary_text && (
+                                                  <p className="text-xs text-gray-500 truncate mt-0.5">
+                                                    {
+                                                      prediction
+                                                        .structured_formatting
+                                                        .secondary_text
+                                                    }
+                                                  </p>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                </div>
+                              </FormControl>
+                              <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
+                                <span className="text-primary mt-0.5">ⓘ</span>
+                                <span>
+                                  Start typing to search for your address in
+                                  Australia
+                                </span>
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
 
                       {/* Location Section */}
@@ -902,7 +1095,7 @@ export function SupportWorkerSetup({
                           }
                         >
                           Next
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <AltArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
                     </form>
@@ -1017,7 +1210,7 @@ export function SupportWorkerSetup({
                           onClick={prevStep}
                           className="border-primary text-primary hover:bg-primary-700"
                         >
-                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          <AltArrowLeft className="mr-2 h-8 w-8" />
                           Back
                         </Button>
                         <Button
@@ -1025,7 +1218,7 @@ export function SupportWorkerSetup({
                           className="bg-primary hover:bg-primary-700 text-white"
                         >
                           Next
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <AltArrowRight className="ml-2 h-8 w-8" />
                         </Button>
                       </div>
                     </form>
@@ -1069,7 +1262,7 @@ export function SupportWorkerSetup({
                                 onClick={() => removeExperience(index)}
                                 className="h-8 w-8 p-0"
                               >
-                                <Trash2 className="h-4 w-4 text-gray-1000" />
+                                <TrashBinMinimalistic className="h-4 w-4 text-gray-1000" />
                               </Button>
                             )}
                           </div>
@@ -1244,7 +1437,7 @@ export function SupportWorkerSetup({
                           onClick={prevStep}
                           className="border-primary text-primary hover:bg-primary-700"
                         >
-                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          <AltArrowLeft className="mr-2 h-4 w-4" />
                           Back
                         </Button>
                         <Button
@@ -1252,7 +1445,7 @@ export function SupportWorkerSetup({
                           className="bg-primary hover:bg-primary/90 text-white"
                         >
                           Next
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <AltArrowRight className="ml-2 h-8 w-8" />
                         </Button>
                       </div>
                     </form>
@@ -1318,7 +1511,7 @@ export function SupportWorkerSetup({
                                     )}
                                   >
                                     {isSelected && (
-                                      <Check className="h-4 w-4 text-white" />
+                                      <CheckCircle className="h-4 w-4 text-white" />
                                     )}
                                   </div>
                                 </div>
@@ -1377,7 +1570,7 @@ export function SupportWorkerSetup({
                           onClick={prevStep}
                           className="border-primary text-primary hover:bg-primary-700"
                         >
-                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          <AltArrowLeft className="mr-2 h-4 w-4" />
                           Back
                         </Button>
                         <Button
@@ -1385,7 +1578,7 @@ export function SupportWorkerSetup({
                           className="bg-primary hover:bg-primary-700 text-white"
                         >
                           Next
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <AltArrowRight className="ml-2 h-8 w-8" />
                         </Button>
                       </div>
                     </form>
@@ -1437,7 +1630,7 @@ export function SupportWorkerSetup({
                                   )}
                                 >
                                   {day.available && (
-                                    <Check className="h-4 w-4 text-white" />
+                                    <CheckCircle className="h-4 w-4 text-white" />
                                   )}
                                 </div>
                                 <label
@@ -1521,7 +1714,7 @@ export function SupportWorkerSetup({
                           onClick={prevStep}
                           className="border-primary text-primary hover:bg-primary/5"
                         >
-                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          <AltArrowLeft className="mr-2 h-4 w-4" />
                           Back
                         </Button>
                         <Button

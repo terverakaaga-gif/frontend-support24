@@ -100,8 +100,15 @@ export default function OTPVerification() {
     setIsResending(true);
 
     try {
-      await authService.forgotPassword({ email });
-      toast.success("Verification code sent successfully!");
+      if (isForgotPassword){
+        const res = await authService.forgotPassword({ email });
+        toast.success(res.message || "Verification code resent successfully!");
+
+      }
+      if (isRegister){
+       await authService.resendVerification({ email });
+        toast.success( "Verification code resent successfully!");
+      }
     } catch (err: any) {
       const errorMessage =
         err.response?.data.error || "Failed to resend code. Please try again.";

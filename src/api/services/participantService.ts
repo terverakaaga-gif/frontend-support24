@@ -7,67 +7,117 @@ import {
   Rating,
   IPagination,
 } from "../../types/user.types";
-import { SupportWorkerFilters } from "@/hooks/useParticipant";
-import { LocationSupportWorkerFilters } from "@/hooks/useLocationHooks";
 
 // ===== TYPES =====
 
-interface WorkerSearchResponse {
-  workers: SearchWorker[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+export interface WorkerSearchFilters {
+  // Location filters
+  stateId?: string;
+  regionId?: string;
+  serviceAreaId?: string;
+  matchParticipantLocation?: boolean;
+
+  // Search filters
+  keyword?: string;
+  skills?: string[];
+  languages?: string[];
+  minRating?: number;
+  maxHourlyRate?: number;
+  onlyVerified?: boolean;
+
+  // Pagination
+  page?: number;
+  limit?: number;
 }
 
-interface SearchWorker {
+export interface FilterOptions {
+  skills: Array<{
+    _id: string;
+    name: string;
+    code: string;
+    category?: string;
+  }>;
+  languages: string[];
+  serviceAreas: Array<{
+    _id: string;
+    name: string;
+    code: string;
+    regionId: string;
+    stateId: string;
+  }>;
+  states: Array<{
+    _id: string;
+    name: string;
+    code: string;
+  }>;
+  regions: Array<{
+    _id: string;
+    name: string;
+    code: string;
+    stateId: string;
+  }>;
+  rateRanges: {
+    min: number;
+    max: number;
+    average: number;
+  };
+}
+
+export interface SearchWorkerLocation {
+  _id: string;
+  name: string;
+  code: string;
+}
+
+export interface ISearchSupportWorkers {
   _id: string;
   firstName: string;
   lastName: string;
-  serviceAreas: string[];
+  email: string;
+  phone: string;
+  profileImage?: string;
+  skills: Array<{
+    _id: string;
+    name: string;
+    code: string;
+  }>;
   hourlyRate: {
     baseRate: number;
+    weekendRate?: number;
+    holidayRate?: number;
   };
   ratings: {
     average: number;
     count: number;
   };
-  verificationStatus: {
-    identityVerified: boolean;
-  };
-  languages: string[];
-  skills: Array<{ _id: string; name: string } | string>;
-  distance?: number;
-}
-
-interface ServiceTypeStatus {
-  [key: string]: any;
-}
-
-export interface ISearchSupportWorkers {
-  distance: string;
-  _id: string;
-  firstName: string;
-  lastName: string;
-  skills: {
-    _id: string;
-    name: string;
-    code: string;
-  }[];
-  hourlyRate: {
-    baseRate: number;
-  };
-  ratings: Rating;
   serviceAreas: string[];
   languages: string[];
-  verificationStatus: VerificationStatus;
+  bio?: string;
+  verificationStatus: {
+    profileSetupComplete: boolean;
+    identityVerified: boolean;
+    policeCheckVerified: boolean;
+    ndisWorkerScreeningVerified: boolean;
+    onboardingComplete: boolean;
+  };
   isInUserOrganization: boolean;
-  profileImage?: string;
+  // Location data when filtering by location
+  stateIds?: SearchWorkerLocation[];
+  regionIds?: SearchWorkerLocation[];
+  serviceAreaIds?: SearchWorkerLocation[];
+  distance?: number; // For proximity searches
 }
 
 export interface ISearchSupportWorkersResponse {
   workers: ISearchSupportWorkers[];
-  pagination: IPagination;
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalResults: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }
 
 export interface ISearchSupportWorkerResponse {
@@ -79,149 +129,123 @@ export class ParticipantService {
   endpoint = "workers";
 
   /**
-   * Original search - by skills, availability, etc
+   * Universal search endpoint - handles all types of searches
+   * Uses the new /api/v1/workers/search endpoint
    */
-  async getSupportWorkers(
-    filters?: SupportWorkerFilters
+  async searchSupportWorkers(
+    filters?: WorkerSearchFilters
   ): Promise<ISearchSupportWorkersResponse> {
-    const params = new URLSearchParams();
+    try {
+      const params = new URLSearchParams();
 
-    if (filters.keyword) params.append("keyword", filters.keyword);
+      // Location filters
+      if (filters?.stateId) params.append("stateId", filters.stateId);
+      if (filters?.regionId) params.append("regionId", filters.regionId);
+      if (filters?.serviceAreaId)
+        params.append("serviceAreaId", filters.serviceAreaId);
+      if (filters?.matchParticipantLocation) {
+        params.append("matchParticipantLocation", "true");
+      }
 
-    if (filters.skills && filters.skills.length > 0) {
-      filters.skills.forEach((skill) => params.append("skills[]", skill));
-    }
+      // Search filters
+      if (filters?.keyword) params.append("keyword", filters.keyword);
+      if (filters?.minRating) {
+        params.append("minRating", filters.minRating.toString());
+      }
+      if (filters?.maxHourlyRate) {
+        params.append("maxHourlyRate", filters.maxHourlyRate.toString());
+      }
+      if (filters?.onlyVerified) {
+        params.append("onlyVerified", "true");
+      }
 
-    if (filters.serviceAreas && filters.serviceAreas.length > 0) {
-      filters.serviceAreas.forEach((area) =>
-        params.append("serviceAreas[]", area)
+      // Array filters
+      if (filters?.skills && filters.skills.length > 0) {
+        filters.skills.forEach((skill) => params.append("skills[]", skill));
+      }
+      if (filters?.languages && filters.languages.length > 0) {
+        filters.languages.forEach((lang) => params.append("languages[]", lang));
+      }
+
+      // Pagination
+      if (filters?.page) params.append("page", filters.page.toString());
+      if (filters?.limit) params.append("limit", filters.limit.toString());
+
+      const queryString = params.toString();
+      console.log(
+        "Search API call:",
+        `/workers/search${queryString ? `?${queryString}` : ""}`
       );
-    }
 
-    if (filters.languages && filters.languages.length > 0) {
-      filters.languages.forEach((lang) => params.append("languages[]", lang));
-    }
-
-    if (filters.availabilityDays && filters.availabilityDays.length > 0) {
-      filters.availabilityDays.forEach((day) =>
-        params.append("availabilityDays[]", day)
+      const response = await get<ISearchSupportWorkersResponse>(
+        `/workers/search${queryString ? `?${queryString}` : ""}`
       );
+
+      return response;
+    } catch (error) {
+      console.error("Error in searchSupportWorkers:", error);
+      throw error;
     }
-
-    if (filters.availabilityStartTime) {
-      params.append("availabilityStartTime", filters.availabilityStartTime);
-    }
-
-    if (filters.availabilityEndTime) {
-      params.append("availabilityEndTime", filters.availabilityEndTime);
-    }
-
-    if (filters.availabilityDate) {
-      params.append("availabilityDate", filters.availabilityDate);
-    }
-
-    if (filters.minRating) {
-      params.append("minRating", filters.minRating.toString());
-    }
-
-    if (filters.maxHourlyRate) {
-      params.append("maxHourlyRate", filters.maxHourlyRate.toString());
-    }
-
-    if (filters.onlyVerified) {
-      params.append("onlyVerified", "true");
-    }
-
-    if (filters.page) params.append("page", filters.page.toString());
-    if (filters.limit) params.append("limit", filters.limit.toString());
-
-    return get<ISearchSupportWorkersResponse>(
-      `/workers/search?${params.toString()}`
-    );
   }
 
   /**
-   * NEW: Location-based search
+   * Get filter options for the search
    */
-  async searchSupportWorkersByLocation(
-    filters: LocationSupportWorkerFilters
-  ): Promise<ISearchSupportWorkersResponse> {
-    const params = new URLSearchParams();
+  async getFilterOptions(): Promise<FilterOptions> {
+    try {
+      const response = await get<{
+        success: boolean;
+        data: FilterOptions;
+      }>("/workers/filter-options");
 
-    // Location filters
-    if (filters.stateId) params.append("stateId", filters.stateId);
-    if (filters.regionId) params.append("regionId", filters.regionId);
-    if (filters.serviceAreaId)
-      params.append("serviceAreaId", filters.serviceAreaId);
-    if (filters.maxDistanceKm)
-      params.append("maxDistanceKm", filters.maxDistanceKm.toString());
-    if (filters.participantId)
-      params.append("participantId", filters.participantId);
-    if (filters.matchParticipantLocation)
-      params.append("matchParticipantLocation", "true");
-
-    // Additional filters
-    if (filters.keyword) params.append("keyword", filters.keyword);
-    if (filters.minRating)
-      params.append("minRating", filters.minRating.toString());
-    if (filters.maxHourlyRate)
-      params.append("maxHourlyRate", filters.maxHourlyRate.toString());
-    if (filters.onlyVerified) params.append("onlyVerified", "true");
-
-    if (filters.skills && filters.skills.length > 0) {
-      filters.skills.forEach((skill) => params.append("skills[]", skill));
+      return response.data;
+    } catch (error) {
+      console.error("Error in getFilterOptions:", error);
+      throw error;
     }
-    if (filters.languages && filters.languages.length > 0) {
-      filters.languages.forEach((lang) => params.append("languages[]", lang));
-    }
-
-    if (filters.page) params.append("page", filters.page.toString());
-    if (filters.limit) params.append("limit", filters.limit.toString());
-
-    // Choose endpoint based on distance/participant filters
-    const endpoint =
-      filters.maxDistanceKm || filters.participantId
-        ? "/location/workers/nearby"
-        : "/location/workers/by-region";
-
-    const response = await get<WorkerSearchResponse>(
-      `${endpoint}?${params.toString()}`
-    );
-
-    // Transform to match ISearchSupportWorkersResponse format
-    return {
-      workers: response.workers.map((worker) => ({
-        _id: worker._id,
-        firstName: worker.firstName,
-        lastName: worker.lastName,
-        skills: worker.skills.map((skill) =>
-          typeof skill === "string"
-            ? { _id: skill, name: skill, code: skill }
-            : { _id: skill._id, name: skill.name, code: skill._id }
-        ),
-        hourlyRate: worker.hourlyRate,
-        ratings: worker.ratings,
-        serviceAreas: worker.serviceAreas,
-        languages: worker.languages,
-        verificationStatus: worker.verificationStatus,
-        isInUserOrganization: false, // Determined on frontend
-        distance: worker.distance,
-      })),
-      pagination: {
-        page: response.page,
-        limit: response.limit,
-        total: response.total,
-        totalPages: response.totalPages,
-      },
-    };
   }
 
+  /**
+   * Get support worker profile
+   */
   async getSupportWorkerProfile(
     id: string
   ): Promise<ISearchSupportWorkerResponse> {
     return await get<ISearchSupportWorkerResponse>(
       `${this.endpoint}/${id}/profile`
     );
+  }
+
+  // Alias methods for backward compatibility
+  async searchSupportWorkersByLocation(
+    filters?: WorkerSearchFilters
+  ): Promise<ISearchSupportWorkersResponse> {
+    return this.searchSupportWorkers(filters);
+  }
+
+  async searchSupportWorkersByRegion(
+    filters?: WorkerSearchFilters
+  ): Promise<ISearchSupportWorkersResponse> {
+    return this.searchSupportWorkers(filters);
+  }
+
+  async searchSupportWorkersByState(
+    filters?: WorkerSearchFilters
+  ): Promise<ISearchSupportWorkersResponse> {
+    return this.searchSupportWorkers(filters);
+  }
+
+  /**
+   * Legacy method for backward compatibility
+   * @deprecated Use searchSupportWorkers instead
+   */
+  async getSupportWorkers(
+    filters?: any
+  ): Promise<ISearchSupportWorkersResponse> {
+    console.warn(
+      "getSupportWorkers is deprecated. Use searchSupportWorkers instead."
+    );
+    return this.searchSupportWorkers(filters);
   }
 }
 

@@ -77,6 +77,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
 import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 import SupportWorkersSearch from "./pages/SupportWorkersSearch";
+import ParticipantSetupPage from "./pages/ParticipantSetupPage";
 
 const queryClient = new QueryClient();
 
@@ -114,30 +115,18 @@ const AppRoutes = () => {
       {/* How It Works Page */}
       <Route path="/how-it-works" element={<HowItWorks />} />
       {/* Coming Soon Page */}
-      <Route
-        path="/coming-soon"
-        element={<ComingSoon />}
-      />
+      <Route path="/coming-soon" element={<ComingSoon />} />
       {/* Terms of Use Page */}
-      <Route
-        path="/platform-terms"
-        element={<PlatformTerms />}
-      />
+      <Route path="/platform-terms" element={<PlatformTerms />} />
       {/* Privacy Policy Page */}
-      <Route
-        path="/privacy-policy"
-        element={<PrivacyPolicy />}
-      />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       {/* Incident Management Policy Page */}
       <Route
         path="/incident-management-policy"
         element={<IncidentManagementPolicy />}
       />
       {/* Terms of Use Page */}
-      <Route
-        path="/terms-of-use"
-        element={<TermsOfUse />}
-      />
+      <Route path="/terms-of-use" element={<TermsOfUse />} />
       {/* Complaints Resolution Policy Page */}
       <Route
         path="/complaints-resolution-policy"
@@ -164,20 +153,6 @@ const AppRoutes = () => {
             <Navigate to="/support-worker" replace />
           ) : (
             <SetupChoicePage />
-          )
-        }
-      />
-
-      {/* Support Worker Setup Route - accessible but not mandatory */}
-      <Route
-        path="/support-worker-setup"
-        element={
-          !user ? (
-            <Navigate to="/login" replace />
-          ) : user.role !== "supportWorker" ? (
-            <Navigate to={getDefaultRoute()} replace />
-          ) : (
-            <SupportWorkerSetupPage />
           )
         }
       />
@@ -280,7 +255,10 @@ const AppRoutes = () => {
             <DashboardLayout>
               <Routes>
                 <Route path="/" element={<ParticipantDashboard />} />
-                <Route path="/find-support-workers" element={<SupportWorkersSearch />} />
+                <Route
+                  path="/find-support-workers"
+                  element={<SupportWorkersSearch />}
+                />
                 <Route path="/profile" element={<ParticipantProfile />} />
                 <Route
                   path="/profile/:id"
@@ -314,6 +292,19 @@ const AppRoutes = () => {
 
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:workerId" element={<ChatView />} />
+                {/* Participant Setup Route - accessible (mandatory) */}
+                <Route
+                  path="/setup"
+                  element={
+                    !user ? (
+                      <Navigate to="/login" replace />
+                    ) : user.role !== "participant" ? (
+                      <Navigate to={getDefaultRoute()} replace />
+                    ) : (
+                      <ParticipantSetupPage />
+                    )
+                  }
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -348,6 +339,19 @@ const AppRoutes = () => {
 
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:workerId" element={<ChatView />} />
+                {/* Support Worker Setup Route - accessible (mandatory) */}
+                <Route
+                  path="/setup"
+                  element={
+                    !user ? (
+                      <Navigate to="/login" replace />
+                    ) : user.role !== "supportWorker" ? (
+                      <Navigate to={getDefaultRoute()} replace />
+                    ) : (
+                      <SupportWorkerSetupPage />
+                    )
+                  }
+                />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>

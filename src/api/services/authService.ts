@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { post } from '../apiClient';
-import { tokenStorage } from '../apiClient';
-import apiClient from '../apiClient';
 import { 
   User, 
   UserRegistrationInput, 
@@ -12,8 +8,11 @@ import {
   SupportWorker,
   Participant,
   Guardian,
-  Admin
+  Admin,
+  ParticipantOnboardingInput,
+  SupportWorkerOnboardingInput
 } from '../../types/user.types';
+import { post, tokenStorage } from '../apiClient';
 
 // Token interface matching your backend response
 interface Tokens {
@@ -67,43 +66,7 @@ interface ForgotPasswordInput {
   email: string;
 }
 
-// Support Worker Onboarding interfaces
-interface ExperienceInput {
-  title: string;
-  organization: string;
-  startDate: string;
-  endDate?: string;
-  description: string;
-}
-
-interface ShiftRateInput {
-  rateTimeBandId: string;
-  hourlyRate: string;
-}
-
-interface AvailabilitySlot {
-  start: string;
-  end: string;
-}
-
-interface WeekdayAvailability {
-  day: string;
-  available: boolean;
-  slots: AvailabilitySlot[];
-}
-
-interface SupportWorkerOnboardingInput {
-  bio: string;
-  skills: string[]; // Array of Service Type IDs
-  experience: ExperienceInput[];
-  languages: string[];
-  shiftRates: ShiftRateInput[];
-  availability: {
-    weekdays: WeekdayAvailability[];
-  };
-}
-
-interface SupportWorkerOnboardingResponse {
+interface OnboardingResponse {
   success: boolean;
   message: string;
 }
@@ -127,7 +90,6 @@ const authService = {
   register: async (userData: UserRegistrationInput): Promise<RegisterResponse> => {
     const response = await post<RegisterResponse>('/auth/register', userData);
     
-    // Store tokens if registration is successful
     if (response.tokens) {
       tokenStorage.setTokens(response.tokens);
     }
@@ -142,7 +104,6 @@ const authService = {
   login: async (credentials: LoginInput): Promise<LoginResponse> => {
     const response = await post<LoginResponse>('/auth/login', credentials);
     
-    // Store tokens after successful login
     tokenStorage.setTokens(response.tokens);
     
     return {
@@ -166,9 +127,8 @@ const authService = {
   
   // Forgot password - send OTP to email
   forgotPassword: async (data: ForgotPasswordInput): Promise<ForgotPasswordResponse> => {
-    // Use apiClient directly to get the full response, not just the data property
-    const response = await apiClient.post('/auth/forgot-password', data);
-    return response.data as ForgotPasswordResponse;
+    const response = await post<ForgotPasswordResponse>('/auth/forgot-password', data);
+    return response;
   },
   
   // Reset password with OTP
@@ -188,7 +148,6 @@ const authService = {
       refreshToken 
     });
     
-    // Update stored tokens
     tokenStorage.setTokens(response.tokens);
     
     return response.tokens;
@@ -199,15 +158,12 @@ const authService = {
     const refreshToken = tokenStorage.getRefreshToken();
     
     try {
-      // Send logout request to server with refresh token
       if (refreshToken) {
         await post('/auth/logout', { refreshToken });
       }
     } catch (error) {
-      // If logout fails on server, we still want to clear local tokens
       console.warn('Server logout failed, clearing local tokens:', error);
     } finally {
-      // Always clear local tokens
       tokenStorage.clearTokens();
     }
   },
@@ -230,8 +186,13 @@ const authService = {
   },
 
   // Complete Support Worker Onboarding
-  completeSupportWorkerOnboarding: async (data: SupportWorkerOnboardingInput): Promise<SupportWorkerOnboardingResponse> => {
-    return await post<SupportWorkerOnboardingResponse>('/users/workers/onboarding', data);
+  completeSupportWorkerOnboarding: async (data: SupportWorkerOnboardingInput): Promise<OnboardingResponse> => {
+    return await post<OnboardingResponse>('/users/workers/onboarding', data);
+  },
+
+  // Complete Participant Onboarding
+  completeParticipantOnboarding: async (data: ParticipantOnboardingInput): Promise<OnboardingResponse> => {
+    return await post<OnboardingResponse>('/users/participants/onboarding', data);
   },
 };
 

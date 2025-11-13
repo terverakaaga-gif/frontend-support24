@@ -56,6 +56,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Participant } from "@/types/user.types";
+import { ParticipantSetupAlert } from "@/components/ParticipantSetupAlert";
 
 // Service type labels for display
 const SERVICE_TYPE_LABELS: Record<string, string> = {
@@ -499,6 +501,8 @@ function ParticipantDashboard() {
   const budgetUsed = overviewData?.financialSummary?.budgetUtilization || 0;
   const budgetTrend = budgetUsed > 80 ? "up" : budgetUsed > 50 ? null : "down";
 
+  console.log("user", user);
+
   return (
     <div className="min-h-screen font-montserrat bg-gray-100">
       <div className="p-8">
@@ -512,20 +516,15 @@ function ParticipantDashboard() {
           onViewProfile={() => {
             navigate("/participant/profile");
           }}
-          rightComponent={
-            <>
-              <Button
-                variant="outline"
-                className="mr-4 rounded-lg hover:bg-transparent hover:text-gray-600 text-xs truncate"
-                onClick={() => navigate("/participant/find-support-workers")}
-              >
-                <Magnifer size={24} />
-                Find Support Workers
-              </Button>
-            </>
-          }
         />
 
+        {user &&
+          user.role === "participant" &&
+          !(user as Participant)?.onboardingComplete && (
+            <div className="mb-6">
+              <ParticipantSetupAlert />
+            </div>
+          )}
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard

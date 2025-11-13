@@ -1,200 +1,300 @@
-// User Role type
+// Enums and basic types
 export type UserRole = "admin" | "participant" | "supportWorker" | "guardian";
-export enum EUserRole {
-	Admin = "admin",
-	Participant = "participant",
-	SupportWorker = "supportWorker",
-	Guardian = "guardian",
-}
-
-// User Status type
 export type UserStatus = "active" | "pending" | "suspended" | "inactive";
+export type Gender = "male" | "female" | "other" | "prefer-not-to-say";
+export type NotificationPreference = "all" | "important" | "none";
+export type SubscriptionTier = "basic" | "premium" | "enterprise";
+export enum EUserRole {
+  ADMIN = "admin",
+  PARTICIPANT = "participant",
+  SUPPORT_WORKER = "supportWorker",
+  GUARDIAN = "guardian",
+}
+export enum EUserStatus {
+  ACTIVE = "active",
+  PENDING = "pending",
+  SUSPENDED = "suspended",
+  INACTIVE = "inactive",
+}
+export enum ENotificationPreference {
+  ALL = "all",
+  IMPORTANT = "important",
+  NONE = "none",
+}
+export enum ESubscriptionTier {
+  BASIC = "basic",
+  PREMIUM = "premium",
+  ENTERPRISE = "enterprise",
+}
 
-// Base User interface with common fields
+// Base User interface matching backend
 export interface BaseUser {
-	_id: string;
-	email: string;
-	firstName: string;
-	lastName: string;
-	emergencyContact: {
-		name: string;
-		relationship: string;
-		phone: string;
-	};
-	bio?: string;
-	role: UserRole;
-	status: UserStatus;
-	phone: string;
-	profileImage: string;
-	notificationPreferences: string;
-	isEmailVerified: boolean;
-	createdAt: string;
-	updatedAt: string;
-	lastLogin?: string;
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  status: UserStatus;
+  phone?: string;
+  gender?: Gender;
+  dateOfBirth?: Date;
+  profileImage?: string | null;
+  notificationPreferences: NotificationPreference;
+  pushTokens?: {
+    token: string;
+    platform: 'ios' | 'android' | 'web';
+    deviceId: string;
+    lastUsed: Date;
+  }[];
+  isEmailVerified: boolean;
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  lastLogin?: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type SupportWorkerSkill =
-	| "personal-care"
-	| "transport"
-	| "therapy"
-	| "social-support"
-	| "household"
-	| "communication"
-	| "behavior-support"
-	| "medication-management"
-	| "meal-preparation"
-	| "first-aid";
-
-// Support Worker Verification Status
-export interface VerificationStatus {
-	profileSetupComplete: boolean;
-	identityVerified: boolean;
-	policeCheckVerified: boolean;
-	ndisWorkerScreeningVerified: boolean;
-	onboardingComplete: boolean;
-	onboardingFeeReceived: boolean;
+// Location types
+export interface LocationPoint {
+  type: 'Point';
+  coordinates: [number, number]; // [longitude, latitude]
 }
 
-// Support Worker Rating
-export interface Rating {
-	average: number;
-	count: number;
+// Participant specific types
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
 }
 
-// Support Worker Availability
-export interface Availability {
-	unavailableDates: string[];
-	weekdays: WeekdayAvailability[];
+export interface PlanManager {
+  name: string;
+  email: string;
 }
 
-export interface WeekdayAvailability {
-	day: string;
-	slots: TimeSlot[];
+export interface Coordinator {
+  name: string;
+  email: string;
+}
+
+export interface ParticipantSubscription {
+  tier: SubscriptionTier;
+  startDate: Date;
+  endDate?: Date;
+  isActive: boolean;
+  autoRenew: boolean;
+  paymentMethod?: string;
+}
+
+export interface SupportNeed {
+  _id: string;
+  name: string;
+  description: string;
+  category?: string;
+}
+
+// Support Worker specific types
+export interface Qualification {
+  title: string;
+  issuer: string;
+  issueDate: Date;
+  expiryDate?: Date;
+  verified: boolean;
+}
+
+export interface Experience {
+  title: string;
+  organization: string;
+  startDate: Date;
+  endDate?: Date;
+  description?: string;
+}
+
+export interface HourlyRates {
+  baseRate: number;
+  weekendRate?: number;
+  holidayRate?: number;
+  overnightRate?: number;
+}
+
+export interface ShiftRate {
+  rateTimeBandId: string;
+  hourlyRate: number;
 }
 
 export interface TimeSlot {
-	start: string;
-	end: string;
+  start: string; // HH:MM format
+  end: string;   // HH:MM format
 }
 
-// Support Worker Experience
-export interface Experience {
-	_id?: string;
-	title: string;
-	organization: string;
-	startDate: string;
-	endDate?: string;
-	description: string;
+export interface WeekdayAvailability {
+  day: string;
+  available: boolean;
+  slots?: TimeSlot[];
 }
 
-export interface RateTimeBandId {
-	_id: string;
-	name: string;
-	code: string;
-	startTime: string;
-	endTime: string;
-}
-export interface ShiftRate {
-	rateTimeBandId: RateTimeBandId;
-	hourlyRate: number;
-	_id: string;
+export interface Availability {
+  weekdays: WeekdayAvailability[];
+  unavailableDates?: Date[];
 }
 
-// Support Worker interface
-export interface SupportWorker extends BaseUser {
-	shiftRates: ShiftRate[];
-	skills: {
-		_id: string;
-		name: string;
-		code: string;
-	}[];
-	availability: Availability;
-	serviceAreas: string[];
-	languages: string[];
-	ratings: Rating;
-	verificationStatus: VerificationStatus;
-	organizations: string[];
-	qualifications: string[];
-	experience: Experience[];
-	bio?: string;
-	hourlyRate?: number;
-	weekendRate?: number;
-	holidayRate?: number;
-	overnightRate?: number;
+export interface Rating {
+  average: number;
+  count: number;
 }
 
-// Participant Subscription
-export interface Subscription {
-	tier: string;
-	isActive: boolean;
-	autoRenew: boolean;
-	startDate: string;
-	endDate?: string;
+export interface VerificationStatus {
+  profileSetupComplete: boolean;
+  identityVerified: boolean;
+  policeCheckVerified: boolean;
+  ndisWorkerScreeningVerified: boolean;
+  onboardingComplete: boolean;
+  onboardingFeeReceived: boolean;
 }
 
-// Participant interface
+export interface BankDetails {
+  accountName: string;
+  bsb: string;
+  accountNumber: string;
+}
+
+export interface Skill {
+  _id: string;
+  name: string;
+  code: string;
+}
+
+// Main User Interfaces
 export interface Participant extends BaseUser {
-	gender: string;
-	dateOfBirth: null;
-	address: { street: string; city: string; state: string; postalCode: string; country: string; };
-	planManager: { name: string; email: string; };
-	coordinator: { name: string; email: string; };
-	notes: string;
-	ndisNumber: string;
-	onboardingComplete: boolean;
-	subscription: Subscription;
-	supportNeeds: {name:string, description:string,_id:string}[];
-	supportCoordinators: string[];
-	preferredLanguages: string[];
-	preferredGenders: string[];
-	requiresSupervision: boolean;
+  supportNeeds: SupportNeed[];
+  emergencyContact?: EmergencyContact;
+  planManager?: PlanManager;
+  coordinator?: Coordinator;
+  guardianId?: string;
+  subscription: ParticipantSubscription;
+  supportCoordinators: string[];
+  preferredLanguages?: string[];
+  preferredGenders?: string[];
+  notes?: string;
+  ndisNumber?: string;
+  requiresSupervision: boolean;
+  onboardingComplete: boolean;
+  // Location fields
+  stateId?: string;
+  regionId?: string;
+  suburbId?: string;
+  serviceAreaId?: string;
+  participantLocation?: LocationPoint;
+  address?: string;
 }
 
-// Guardian interface
+export interface SupportWorker extends BaseUser {
+  skills?: Skill[];
+  bio?: string;
+  qualifications: Qualification[];
+  experience: Experience[];
+  hourlyRate?: HourlyRates;
+  shiftRates: ShiftRate[];
+  availability: Availability;
+  serviceAreas: string[];
+  languages: string[];
+  ratings: Rating;
+  verificationStatus: VerificationStatus;
+  organizations: string[];
+  abn?: string;
+  bankDetails?: BankDetails;
+  // Location fields
+  stateIds?: string[];
+  regionIds?: string[];
+  serviceAreaIds?: string[];
+  baseLocation?: LocationPoint;
+  travelRadiusKm?: number;
+  address?: string;
+}
+
 export interface Guardian extends BaseUser {
-	participants: string[];
+  participants: string[];
+  relationship: string;
+  isLegalGuardian: boolean;
+  organization?: string;
+  isPrimaryContact: boolean;
 }
 
-// Admin interface
 export interface Admin extends BaseUser {
-	permissions: string[];
+  permissions: string[];
 }
 
 // Union type for all user types
 export type User = SupportWorker | Participant | Guardian | Admin;
 
-// Registration input type
+// Input types for onboarding
+export interface ParticipantOnboardingInput {
+  supportNeeds: string[];
+  emergencyContact?: EmergencyContact;
+  planManager?: PlanManager;
+  coordinator?: Coordinator;
+  preferredLanguages?: string[];
+  ndisNumber?: string;
+  stateId?: string;
+  regionId?: string;
+  suburbId?: string;
+  serviceAreaId?: string;
+  location?: {
+    longitude: number;
+    latitude: number;
+  };
+  address?: string;
+}
+
+export interface SupportWorkerOnboardingInput {
+  bio: string;
+  skills: string[];
+  languages: string[];
+  experience?: Experience[];
+  shiftRates: ShiftRate[];
+  availability: Availability;
+  stateIds?: string[];
+  regionIds?: string[];
+  serviceAreaIds?: string[];
+  baseLocation?: {
+    longitude: number;
+    latitude: number;
+  };
+  travelRadiusKm?: number;
+  address?: string;
+}
+
+// Other existing types for auth, etc.
 export interface UserRegistrationInput {
-	email: string;
-	password: string;
-	firstName: string;
-	lastName: string;
-	phone: string;
-	role: UserRole;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  role: UserRole;
 }
 
-// Email verification input
 export interface EmailVerificationInput {
-	userId: string;
-	otpCode: string;
+  userId: string;
+  otpCode: string;
 }
 
-// Resend verification input
 export interface ResendVerificationInput {
-	email: string;
+  email: string;
 }
 
-// Login input
 export interface LoginInput {
-	email: string;
-	password: string;
+  email: string;
+  password: string;
 }
 
 export interface IPagination {
   total: number;
-	page: number;
-	limit: number;
-	totalPages: number;
-	totalResults: number;
-	hasMore: boolean;
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
+  hasMore: boolean;
 }

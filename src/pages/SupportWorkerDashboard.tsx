@@ -1,4 +1,4 @@
-import { ProfileSetupAlert } from "@/components/ProfileSetupAlert";
+import { SupportWorkerSetupAlert } from "@/components/SupportWorkerSetupAlert";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useGetSupportWorkerOverview,
@@ -6,6 +6,8 @@ import {
 } from "@/hooks/useAnalyticsHooks";
 import { useGetOrganizationInvites } from "@/hooks/useInviteHooks";
 import {
+  AltArrowLeft,
+  AltArrowRight,
   Calendar,
   Chart,
   CheckCircle,
@@ -587,7 +589,7 @@ function InvitationsTable({ invitations, isLoading }) {
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
-            Previous
+            <AltArrowLeft className="h-4 w-4" />
           </Button>
           {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
             (page) => (
@@ -612,7 +614,7 @@ function InvitationsTable({ invitations, isLoading }) {
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
-            Next
+            <AltArrowRight  className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -666,13 +668,10 @@ export default function SupportWorkerDashboard() {
     return trend === "up" ? "up" : "down";
   };
 
-  console.log("overviewData:", overviewData);
 
   if (overviewLoading || invitationsLoading) {
     return <Loader />;
   }
-
-  console.log("user data: ", user);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -691,7 +690,7 @@ export default function SupportWorkerDashboard() {
           !(user as SupportWorker).verificationStatus?.onboardingComplete &&
           !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
             <div className="mb-6">
-              <ProfileSetupAlert />
+              <SupportWorkerSetupAlert />
             </div>
           )}
 

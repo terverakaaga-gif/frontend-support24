@@ -1,26 +1,28 @@
 import {
-	useMutation,
-	useQuery,
-	useQueryClient,
-	UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
 } from "@tanstack/react-query";
 
 import {
-	ISearchSupportWorkersResponse,
-	participantService,
-	ISearchSupportWorkerResponse,
+  ISearchSupportWorkersResponse,
+  participantService,
+  ISearchSupportWorkerResponse,
+  WorkerSearchFilters,
+  FilterOptions,
 } from "@/api/services/participantService";
 import { IInvitationRequest } from "@/entities/Invitation";
 import inviteService from "@/api/services/inviteService";
 import {
-	Organization,
-	organizationService,
+  Organization,
+  organizationService,
 } from "@/api/services/organizationService";
-import { ServiceTypeStatus } from "@/entities/ServiceType";
 
+// Legacy interface for backward compatibility
 export interface SupportWorkerFilters {
   skills?: string[];
-  serviceAreas?: ServiceTypeStatus[];
+  serviceAreas?: string[];
   languages?: string[];
   availabilityDays?: string[];
   availabilityStartTime?: string;
@@ -35,130 +37,215 @@ export interface SupportWorkerFilters {
 }
 
 const queryKeys = {
-	searchSupportWorkers: (filters?: SupportWorkerFilters) => [
-		"supportWorkers",
-		"search",
-		filters,
-	],
-	supportWorkerProfile: (id: string) => ["supportWorkers", "profile", id],
-	inviteSupportWorkers: (orgId: string) => ["inviteSupportWorkers", orgId],
-	organizations: ["orgs"],
+  searchSupportWorkers: (filters?: WorkerSearchFilters) => [
+    "supportWorkers",
+    "search", 
+    filters,
+  ],
+  supportWorkerProfile: (id: string) => ["supportWorkers", "profile", id],
+  inviteSupportWorkers: (orgId: string) => ["inviteSupportWorkers", orgId],
+  organizations: ["orgs"],
+  filterOptions: ["supportWorkers", "filterOptions"],
 };
 
 /**
- * Original search hook - searches by skills, availability, etc
- * Does NOT use location filters
+ * Main search hook - uses the new universal search endpoint
+ * Handles all types of searches: location-based, keyword, filters, etc.
  */
 export function useSupportWorkers(
-  filters?: SupportWorkerFilters,
+  filters?: WorkerSearchFilters,
   options?: UseQueryOptions<ISearchSupportWorkersResponse>
 ) {
-	const hasLocationFilter = Object.keys(filters || {}).length > 0;
   return useQuery<ISearchSupportWorkersResponse>({
     queryKey: queryKeys.searchSupportWorkers(filters),
     queryFn: async () => {
-      // If no filters, get all workers
-      if (!filters || Object.keys(filters).length === 0) {
-        return participantService.getSupportWorkers();
+      console.log('useSupportWorkers called with filters:', filters);
+      try {
+        const result = await participantService.searchSupportWorkers(filters);
+        console.log('Search result:', result);
+        return result;
+      } catch (error) {
+        console.error('Error in useSupportWorkers:', error);
+        throw error;
       }
-      
-      // Otherwise use the original search endpoint
-      return participantService.getSupportWorkers(filters);
     },
-    enabled: !!hasLocationFilter && (options?.enabled ?? true),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on 4xx errors, but retry on 5xx and network errors
+      if (error instanceof Error && error.message.includes('4')) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+    ...options,
   });
 }
-export function useSupportWorkerProfile(
-	id: string,
-	options?: UseQueryOptions<ISearchSupportWorkerResponse>
+
+/**
+ * Get filter options for search interface
+ */
+export function useSearchFilterOptions(
+  options?: UseQueryOptions<FilterOptions>
 ) {
-	return useQuery<ISearchSupportWorkerResponse>({
-		queryKey: queryKeys.supportWorkerProfile(id),
-		queryFn: () => participantService.getSupportWorkerProfile(id),
-		enabled: !!id, // Only run query if id exists
-		...options,
-	});
+  return useQuery<FilterOptions>({
+    queryKey: queryKeys.filterOptions,
+    queryFn: async () => {
+      try {
+        const result = await participantService.getFilterOptions();
+        console.log('Filter options result:', result);
+        return result;
+      } catch (error) {
+        console.error('Error in useSearchFilterOptions:', error);
+        throw error;
+      }
+    },
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours (options don't change often)
+    retry: 2,
+    ...options,
+  });
 }
 
-// Get my organizations
+/**
+ * Get individual support worker profile
+ */
+export function useSupportWorkerProfile(
+  id: string,
+  options?: UseQueryOptions<ISearchSupportWorkerResponse>
+) {
+  return useQuery<ISearchSupportWorkerResponse>({
+    queryKey: queryKeys.supportWorkerProfile(id),
+    queryFn: () => participantService.getSupportWorkerProfile(id),
+    enabled: !!id,
+    ...options,
+  });
+}
+
+/**
+ * Get my organizations
+ */
 export function useMyOrganizations() {
-	return useQuery<Organization[]>({
-		queryKey: queryKeys.organizations,
-		queryFn: async () =>
-			(await organizationService.getOrganizations()).organizations,
-	});
+  return useQuery<Organization[]>({
+    queryKey: queryKeys.organizations,
+    queryFn: async () =>
+      (await organizationService.getOrganizations()).organizations,
+  });
 }
 
-// send invites to support workers to join your organization
+/**
+ * Send invites to support workers to join organization
+ */
 export function useSendInvitationToSupportWorkers(orgId: string) {
-	const queryClient = useQueryClient();
-	return useMutation({
-		mutationFn: (data: IInvitationRequest) =>
-			inviteService.sendInvitationToSupportWorkers(orgId, data),
-		onMutate: async (data: IInvitationRequest) => {
-			await queryClient.cancelQueries({
-				queryKey: queryKeys.inviteSupportWorkers(orgId),
-			});
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.inviteSupportWorkers(orgId),
-			});
-		},
-	});
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: IInvitationRequest) =>
+      inviteService.sendInvitationToSupportWorkers(orgId, data),
+    onMutate: async (data: IInvitationRequest) => {
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.inviteSupportWorkers(orgId),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.inviteSupportWorkers(orgId),
+      });
+    },
+  });
 }
 
+/**
+ * Convenience hook for different search scenarios
+ */
+export function useSearchSupportWorkers() {
+  return {
+    // Search all workers (no filters)
+    useAllWorkers: (options?: UseQueryOptions<ISearchSupportWorkersResponse>) =>
+      useSupportWorkers(undefined, options),
+
+    // Search by participant location
+    useWorkersByLocation: (options?: UseQueryOptions<ISearchSupportWorkersResponse>) =>
+      useSupportWorkers({ matchParticipantLocation: true }, options),
+
+    // Search by specific location
+    useWorkersByRegion: (
+      regionId: string,
+      options?: UseQueryOptions<ISearchSupportWorkersResponse>
+    ) => useSupportWorkers({ regionId }, options),
+
+    useWorkersByState: (
+      stateId: string,
+      options?: UseQueryOptions<ISearchSupportWorkersResponse>
+    ) => useSupportWorkers({ stateId }, options),
+
+    // Search with custom filters
+    useWorkersWithFilters: (
+      filters: WorkerSearchFilters,
+      options?: UseQueryOptions<ISearchSupportWorkersResponse>
+    ) => useSupportWorkers(filters, options),
+
+    // Get filter options
+    useFilterOptions: useSearchFilterOptions,
+  };
+}
+
+/**
+ * Participant service utilities
+ */
 export function useParticipantService() {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return {
-		// Queries
-		useSupportWorkers,
-		useSupportWorkerProfile,
-		useSendInvitationToSupportWorkers,
+  return {
+    // Queries
+    useSupportWorkers,
+    useSupportWorkerProfile,
+    useSendInvitationToSupportWorkers,
+    useSearchFilterOptions,
+    useSearchSupportWorkers,
 
-		// Prefetching
-		prefetchSupportWorkers: (filters?: SupportWorkerFilters) => {
-			queryClient.prefetchQuery({
-				queryKey: queryKeys.searchSupportWorkers(filters),
-				queryFn: () => participantService.getSupportWorkers(),
-			});
-		},
+    // Prefetching
+    prefetchSupportWorkers: (filters?: WorkerSearchFilters) => {
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.searchSupportWorkers(filters),
+        queryFn: () => participantService.searchSupportWorkers(filters),
+      });
+    },
 
-		prefetchSupportWorkerProfile: (id: string) => {
-			queryClient.prefetchQuery({
-				queryKey: queryKeys.supportWorkerProfile(id),
-				queryFn: () => participantService.getSupportWorkerProfile(id),
-			});
-		},
+    prefetchSupportWorkerProfile: (id: string) => {
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.supportWorkerProfile(id),
+        queryFn: () => participantService.getSupportWorkerProfile(id),
+      });
+    },
 
-		prefetchOrganizations: () => {
-			queryClient.prefetchQuery({
-				queryKey: queryKeys.organizations,
-				queryFn: () => organizationService.getOrganizations(),
-			});
-		},
+    prefetchFilterOptions: () => {
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.filterOptions,
+        queryFn: () => participantService.getFilterOptions(),
+      });
+    },
 
-		// Invalidation
-		invalidateSupportWorkers: (filters?: SupportWorkerFilters) => {
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.searchSupportWorkers(filters),
-			});
-		},
+    // Invalidation
+    invalidateSupportWorkers: (filters?: WorkerSearchFilters) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.searchSupportWorkers(filters),
+      });
+    },
 
-		invalidateSupportWorkerProfile: (id: string) => {
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.supportWorkerProfile(id),
-			});
-		},
+    invalidateSupportWorkerProfile: (id: string) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.supportWorkerProfile(id),
+      });
+    },
 
-		invalidateOrganizations: () => {
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.organizations,
-			});
-		},
+    invalidateFilterOptions: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.filterOptions,
+      });
+    },
 
-		// Query keys for external use
-		queryKeys,
-	};
+    // Query keys for external use
+    queryKeys,
+  };
 }
+
+// Legacy exports for backward compatibility
+export { useSupportWorkers as useLegacySupportWorkers };
