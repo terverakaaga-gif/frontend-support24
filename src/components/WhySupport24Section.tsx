@@ -14,19 +14,19 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
     const stats = [
         {
             icon: Users,
-            value: "150k",
+            value: "10,000",
             label: "Active users",
             description: "Families and participant trust Support24",
         },
         {
             icon: Calendar,
-            value: "50.0k+",
+            value: "2,000",
             label: "Successful Booking",
             description: "Safe and reliable support connection",
         },
         {
             icon: Star,
-            value: "4.9",
+            value: "4.5",
             label: "User Rating",
             description: "Average Rating",
         },
