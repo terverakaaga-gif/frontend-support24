@@ -55,6 +55,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { commonLanguages } from "@/constants/common-languages";
+import { SupportWorkerOnboardingInput } from "@/types/user.types";
 
 const bioSchema = z.object({
   bio: z.string().min(10, { message: "Bio must be at least 10 characters." }).max(500, { message: "Bio must be at most 500 characters." }),
@@ -429,7 +430,7 @@ export function SupportWorkerSetup({
         address: data.address,
       };
 
-      await authService.completeSupportWorkerOnboarding(transformedData);
+      await authService.completeSupportWorkerOnboarding(transformedData as unknown as SupportWorkerOnboardingInput);
       completeOnboarding();
       toast.success("Profile setup completed successfully!");
       onComplete();

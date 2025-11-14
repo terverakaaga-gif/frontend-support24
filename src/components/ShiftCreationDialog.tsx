@@ -158,7 +158,7 @@ export default function ShiftCreationDialog({
     startTime: "",
     endTime: "",
     locationType: "inPerson",
-    address: user.address || "",
+    address: user.address  as string || "",
     shiftType: "directBooking",
     requiresSupervision: false,
     specialInstructions: "",

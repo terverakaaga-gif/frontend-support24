@@ -122,6 +122,7 @@ export default function SearchSupportWorkersPage() {
     ? locationSearchResponse
     : originalSearchResponse;
 
+    console.log('search response',searchResponse)
   const searchLoading = hasLocationFilters
     ? locationSearchLoading
     : originalSearchLoading;

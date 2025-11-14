@@ -223,7 +223,7 @@ export default function ParticipantProfile() {
         <div className="flex gap-2 mb-6 overflow-x-auto">
           {tabButtons.map((tab) => (
             <Button
-            variant="ghost"
+              variant="ghost"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
@@ -336,7 +336,7 @@ export default function ParticipantProfile() {
                       </div>
                       <div className="flex-1">
                         {/* FIX: Handle both string and object address formats */}
-                        {typeof participant.address === 'string' ? (
+                        {typeof participant.address === "string" ? (
                           <p className="font-montserrat-semibold text-gray-900">
                             {participant.address}
                           </p>
@@ -346,7 +346,9 @@ export default function ParticipantProfile() {
                               {participant.address.street}
                             </p>
                             <p className="text-gray-700">
-                              {participant.address.city}, {participant.address.state} {participant.address.postalCode}
+                              {participant.address.city},{" "}
+                              {participant.address.state}{" "}
+                              {participant.address.postalCode}
                             </p>
                             <p className="text-gray-700">
                               {participant.address.country}
@@ -453,8 +455,14 @@ export default function ParticipantProfile() {
                       Plan Manager
                     </h4>
                     <div className="space-y-2">
-                      <p className="text-sm"><span className="font-montserrat-semibold">Name:</span> {participant.planManager.name}</p>
-                      <p className="text-sm"><span className="font-montserrat-semibold">Email:</span> {participant.planManager.email}</p>
+                      <p className="text-sm">
+                        <span className="font-montserrat-semibold">Name:</span>{" "}
+                        {participant.planManager.name}
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-montserrat-semibold">Email:</span>{" "}
+                        {participant.planManager.email}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -467,14 +475,20 @@ export default function ParticipantProfile() {
                       Support Coordinator
                     </h4>
                     <div className="space-y-2">
-                      <p className="text-sm"><span className="font-montserrat-semibold">Name:</span> {participant.coordinator.name}</p>
-                      <p className="text-sm"><span className="font-montserrat-semibold">Email:</span> {participant.coordinator.email}</p>
+                      <p className="text-sm">
+                        <span className="font-montserrat-semibold">Name:</span>{" "}
+                        {participant.coordinator.name}
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-montserrat-semibold">Email:</span>{" "}
+                        {participant.coordinator.email}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 {/* Legacy care team if exists */}
-                {(!participant.planManager && !participant.coordinator) && (
+                {!participant.planManager && !participant.coordinator && (
                   <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                     <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                       <Shield className="w-8 h-8 text-gray-400" />
@@ -482,7 +496,11 @@ export default function ParticipantProfile() {
                     <p className="text-gray-600 mb-3 font-montserrat-semibold">
                       No care team members specified
                     </p>
-                    <Button onClick={handleEditProfile} variant="outline" size="sm">
+                    <Button
+                      onClick={handleEditProfile}
+                      variant="outline"
+                      size="sm"
+                    >
                       Add Care Team Members
                     </Button>
                   </div>
@@ -504,39 +522,57 @@ export default function ParticipantProfile() {
                 <div className="space-y-4">
                   {/* Preferred Languages */}
                   <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">Preferred Languages</h4>
-                    {participant.preferredLanguages && participant.preferredLanguages.length > 0 ? (
+                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">
+                      Preferred Languages
+                    </h4>
+                    {participant.preferredLanguages &&
+                    participant.preferredLanguages.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {participant.preferredLanguages.map((lang, index) => (
-                          <Badge key={index} className="bg-primary-100 text-primary border-0">
+                          <Badge
+                            key={index}
+                            className="bg-primary-100 text-primary border-0"
+                          >
                             {lang}
                           </Badge>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600">No preferred languages specified</p>
+                      <p className="text-sm text-gray-600">
+                        No preferred languages specified
+                      </p>
                     )}
                   </div>
 
                   {/* Preferred Genders */}
                   <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">Preferred Worker Gender</h4>
-                    {participant.preferredGenders && participant.preferredGenders.length > 0 ? (
+                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">
+                      Preferred Worker Gender
+                    </h4>
+                    {participant.preferredGenders &&
+                    participant.preferredGenders.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {participant.preferredGenders.map((gender, index) => (
-                          <Badge key={index} className="bg-primary-100 text-primary border-0">
+                          <Badge
+                            key={index}
+                            className="bg-primary-100 text-primary border-0"
+                          >
                             {gender}
                           </Badge>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600">No gender preference specified</p>
+                      <p className="text-sm text-gray-600">
+                        No gender preference specified
+                      </p>
                     )}
                   </div>
 
                   {/* Notification Preferences */}
                   <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">Notification Preferences</h4>
+                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">
+                      Notification Preferences
+                    </h4>
                     <p className="text-sm text-gray-900">
                       {participant.notificationPreferences || "Email"}
                     </p>

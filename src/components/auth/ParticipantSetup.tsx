@@ -50,6 +50,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { commonLanguages } from "@/constants/common-languages";
+import { ParticipantOnboardingInput } from "@/types/user.types";
 
 // Validation Schemas
 const personalInfoSchema = z.object({
@@ -385,7 +386,7 @@ export function ParticipantSetup({
           address: data.address,
         };
 
-        await authService.completeParticipantOnboarding(transformedData);
+        await authService.completeParticipantOnboarding(transformedData as ParticipantOnboardingInput);
         completeOnboarding();
         toast.success("Profile setup completed successfully!");
         onComplete();

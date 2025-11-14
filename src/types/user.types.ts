@@ -55,6 +55,7 @@ export interface BaseUser {
   lastLogin?: Date;
   createdAt: string;
   updatedAt: string;
+  address?:string|{street:string,city:string,state:string,country:string,postalCode:string}
 }
 
 // Location types
@@ -121,7 +122,11 @@ export interface HourlyRates {
 }
 
 export interface ShiftRate {
-  rateTimeBandId: string;
+  rateTimeBandId: {
+    _id: string;
+    name: string;
+    description?: string;
+  };
   hourlyRate: number;
 }
 
@@ -188,7 +193,6 @@ export interface Participant extends BaseUser {
   suburbId?: string;
   serviceAreaId?: string;
   participantLocation?: LocationPoint;
-  address?: string;
 }
 
 export interface SupportWorker extends BaseUser {
@@ -212,7 +216,6 @@ export interface SupportWorker extends BaseUser {
   serviceAreaIds?: string[];
   baseLocation?: LocationPoint;
   travelRadiusKm?: number;
-  address?: string;
 }
 
 export interface Guardian extends BaseUser {
