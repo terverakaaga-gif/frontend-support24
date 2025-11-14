@@ -66,7 +66,7 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
         </div>
       </header>
       {/* Mobile view */}
-      <header className="md:hidden top-8 relative">
+      <header className="md:hidden top-10 relative">
         <div className="flex items-center gap-3 place-self-end -mt-3 mb-1">
           {showBackButton && (
             <Button

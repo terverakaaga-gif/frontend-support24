@@ -316,7 +316,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {user.role === "supportWorker" ? "Support Worker" : user.role}
           </div>
           <Button
-            className="w-full gap-2 items-center justify-center bg-red-600 text-white/80 hover:text-white hover:bg-red-700 mt-3 font-montserrat-semibold"
+            className="w-full gap-2 items-center justify-center bg-primary-100 text-red-600/80 hover:text-red-600 hover:bg-primary-100 mt-3 font-montserrat-semibold"
             onClick={() => logout()}
           >
             <Logout />
@@ -338,10 +338,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetTrigger asChild>
           <Button
-            variant="ghost"
-            className="lg:hidden absolute left-2 top-2 z-40 hover:bg-transparent hover:text-black"
+        variant="ghost"
+        size="icon"
+        className="lg:hidden absolute left-2 top-2 z-40 hover:bg-transparent hover:text-black p-2"
           >
-            <HamburgerMenu />
+        <HamburgerMenu className="w-10 h-10" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
