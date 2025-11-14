@@ -107,14 +107,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	const login = async (email: string, password: string): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const { user: loggedInUser } = await authService.login({
+			const { user: loggedInUser,tokens } = await authService.login({
 				email,
 				password,
 			});
 
+			// Store tokens
+			tokenStorage.setTokens(tokens);
+
 			setUser(loggedInUser);
+
+			// Store current user role for future reference
+			sessionStorage.setItem("lastUserRole", loggedInUser.role);
+
 			setIsAuthenticated(true);
-			localStorage.setItem("guardianCareUser", JSON.stringify(loggedInUser));
 
 			toast.success(`Welcome back, ${loggedInUser.firstName}!`);
 			queryClient.invalidateQueries();
@@ -208,6 +214,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			localStorage.clear();
 			sessionStorage.clear();
 			tokenStorage.clearTokens();
+
+			// Clear role memory on logout
+			sessionStorage.removeItem("lastUserRole");
+			sessionStorage.removeItem("returnUrl");
 
 			toast.success("You have been logged out");
 

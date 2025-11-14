@@ -78,6 +78,9 @@ import IncidentManagementPolicy from "./pages/IncidentManagementPolicy";
 import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 import SupportWorkersSearch from "./pages/SupportWorkersSearch";
 import ParticipantSetupPage from "./pages/ParticipantSetupPage";
+import ResendEmail from "./pages/ResendEmail";
+// import CoordinatorDashboard from "./pages/CoordinatorDashboard";
+// import CoordinatorParticipants from "./pages/CoordinatorParticipants";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +100,8 @@ const AppRoutes = () => {
         return "/participant";
       case "supportWorker":
         return "/support-worker";
+      case "coordinator":
+        return "/coordinator"; // Add this
       default:
         return "/login";
     }
@@ -137,6 +142,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/otp-verify" element={<OTPVerification />} />
+      <Route path="/resend-email" element={<ResendEmail />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
@@ -165,66 +171,66 @@ const AppRoutes = () => {
             <DashboardLayout>
               <Routes>
                 {/* <Route path="/" element={<AdminDashboard />} /> */}
-                <Route path="/" element={<AdminAnalyticsDashboard />} />
+                <Route path="" element={<AdminAnalyticsDashboard />} />
                 {/* <Route
 									path="/analytics"
 									element={<AdminAnalyticsDashboard />}
 								/> */}
-                <Route path="/invites" element={<InviteManagementPage />} />
+                <Route path="invites" element={<InviteManagementPage />} />
                 <Route
-                  path="/invites/:inviteId/details"
+                  path="invites/:inviteId/details"
                   element={<InviteDetailsPage />}
                 />
                 <Route
-                  path="/invites/:inviteId/confirm"
+                  path="invites/:inviteId/confirm"
                   element={<InviteConfirmationPage />}
                 />
                 <Route
-                  path="/rate-time-band"
+                  path="rate-time-band"
                   element={<RateTimeBandManagementPage />}
                 />
                 <Route
-                  path="/rate-time-band/create"
+                  path="rate-time-band/create"
                   element={<RateTimeBandForm />}
                 />
                 <Route
-                  path="/rate-time-band/:id/view"
+                  path="rate-time-band/:id/view"
                   element={<RateTimeBandDetailsPage />}
                 />
                 <Route
-                  path="/rate-time-band/:id/edit"
+                  path="rate-time-band/:id/edit"
                   element={<RateTimeBandForm />}
                 />
                 <Route path="/all-admin" element={<AdminsManagementPage />} />
                 <Route
-                  path="/participants"
+                  path="participants"
                   element={<ParticipantsManagementPage />}
                 />
                 <Route
-                  path="/support-workers"
+                  path="support-workers"
                   element={<SupportWorkersManagementPage />}
                 />
-                <Route path="/shifts" element={<ShiftsManagement />} />
-                <Route path="/shifts/:id" element={<ShiftDetailView />} />
-                <Route path="/timesheets" element={<TimesheetsManagement />} />
-                <Route path="/timesheets/:id" element={<TimesheetDetail />} />
-                <Route path="/batch-invoices" element={<BatchInvoicesPage />} />
+                <Route path="shifts" element={<ShiftsManagement />} />
+                <Route path="shifts/:id" element={<ShiftDetailView />} />
+                <Route path="timesheets" element={<TimesheetsManagement />} />
+                <Route path="timesheets/:id" element={<TimesheetDetail />} />
+                <Route path="batch-invoices" element={<BatchInvoicesPage />} />
                 <Route
-                  path="/batch-invoices/:id"
+                  path="batch-invoices/:id"
                   element={<BatchInvoiceDetailPage />}
                 />
                 <Route
-                  path="/service-types"
+                  path="service-types"
                   element={<ServiceTypesManagementPage />}
                 />
                 <Route
-                  path="/service-types/:id"
+                  path="service-types/:id"
                   element={<ServiceTypeDetailPage />}
                 />
-                <Route path="/incidents" element={<IncidentsPage />} />
+                <Route path="incidents" element={<IncidentsPage />} />
 
-                <Route path="/chats" element={<Converations />} />
-                <Route path="/chat/:workerId" element={<ChatView />} />
+                <Route path="chats" element={<Converations />} />
+                <Route path="chat/:workerId" element={<ChatView />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -352,6 +358,24 @@ const AppRoutes = () => {
                     )
                   }
                 />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/coordinator/*"
+        element={
+          <ProtectedRoute allowedRoles={["coordinator", "admin"]}>
+            <DashboardLayout>
+              <Routes>
+                {/* <Route path="/" element={<CoordinatorDashboard />} />
+                <Route path="/participants" element={<CoordinatorParticipants />} /> */}
+                <Route path="/incidents" element={<IncidentsPage />} />
+                <Route path="/chats" element={<Converations />} />
+                <Route path="/chat/:workerId" element={<ChatView />} />
+                {/* Add other coordinator-specific routes */}
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
