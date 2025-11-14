@@ -73,6 +73,7 @@ export function InviteDetails() {
 		error,
 		refetch,
 	} = useGetInviteById(inviteId || "");
+	console.log('invite details: ', inviteDetails)
 
 	const handleGoBack = () => {
 		navigate(-1);
@@ -280,34 +281,54 @@ export function InviteDetails() {
 											<Separator className="my-4" />
 											<h3 className="font-montserrat-semibold mb-4">Shift Rate Breakdown</h3>
 											<div className="space-y-4">
-												{inviteDetails.proposedRates.shiftRates.map(
-													(rate: any) => (
-														<div
-															key={rate._id}
-															className="flex items-center justify-between p-3 border border-border rounded-md"
-														>
-															<div>
-																<p className="font-montserrat-semibold">
-																	{rate.rateTimeBandId.name}
+												{inviteDetails.proposedRates.shiftRates.map((rate: any, index: number) => (
+													<div
+														key={rate._id || index}
+														className="flex items-center justify-between p-3 border border-border rounded-md"
+													>
+														<div>
+															<p className="font-montserrat-semibold">
+																{rate.rateTimeBandId?.name || `Shift Rate ${index + 1}`}
+															</p>
+															{rate.rateTimeBandId?.startTime && rate.rateTimeBandId?.endTime && (
+																<p className="text-xs text-muted-foreground">
+																	{rate.rateTimeBandId.startTime} - {rate.rateTimeBandId.endTime}
 																</p>
-																{rate.rateTimeBandId.startTime &&
-																	rate.rateTimeBandId.endTime && (
-																		<p className="text-xs text-muted-foreground">
-																			{rate.rateTimeBandId.startTime} -{" "}
-																			{rate.rateTimeBandId.endTime}
-																		</p>
-																	)}
+															)}
+															{rate.rateTimeBandId?.code && (
 																<p className="text-xs text-muted-foreground">
 																	Code: {rate.rateTimeBandId.code}
 																</p>
-															</div>
-															<p className="text-lg font-montserrat-semibold text-green-600">
-																{formatCurrency(rate.hourlyRate)}
+															)}
+															{!rate.rateTimeBandId && (
+																<p className="text-xs text-muted-foreground">
+																	Custom rate (no time band specified)
+																</p>
+															)}
+														</div>
+														<p className="text-lg font-montserrat-semibold text-green-600">
+															{formatCurrency(rate.hourlyRate)}
+														</p>
+													</div>
+												))}
+											</div>
+											
+											{/* Add distance travel rate if available */}
+											{inviteDetails.proposedRates.distanceTravelRate && (
+												<div className="mt-4 pt-4 border-t border-border">
+													<div className="flex items-center justify-between p-3 bg-blue-50 rounded-md">
+														<div>
+															<p className="font-montserrat-semibold">Distance Travel Rate</p>
+															<p className="text-xs text-muted-foreground">
+																Additional rate for travel distance
 															</p>
 														</div>
-													)
-												)}
-											</div>
+														<p className="text-lg font-montserrat-semibold text-blue-600">
+															{formatCurrency(inviteDetails.proposedRates.distanceTravelRate)} per km
+														</p>
+													</div>
+												</div>
+											)}
 										</div>
 									</div>
 								</TabsContent>

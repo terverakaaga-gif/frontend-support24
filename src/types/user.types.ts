@@ -1,5 +1,5 @@
 // Enums and basic types
-export type UserRole = "admin" | "participant" | "supportWorker" | "guardian";
+export type UserRole = "admin" | "participant" | "supportWorker" | "guardian" | "coordinator";
 export type UserStatus = "active" | "pending" | "suspended" | "inactive";
 export type Gender = "male" | "female" | "other" | "prefer-not-to-say";
 export type NotificationPreference = "all" | "important" | "none";
@@ -9,6 +9,7 @@ export enum EUserRole {
   PARTICIPANT = "participant",
   SUPPORT_WORKER = "supportWorker",
   GUARDIAN = "guardian",
+  COORDINATOR = "coordinator", // Add this
 }
 export enum EUserStatus {
   ACTIVE = "active",
@@ -226,8 +227,16 @@ export interface Admin extends BaseUser {
   permissions: string[];
 }
 
+export interface Coordinator extends BaseUser {
+  assignedParticipants: string[];
+  organization?: string;
+  licenseNumber?: string;
+  qualifications: Qualification[];
+  serviceAreas: string[];
+}
+
 // Union type for all user types
-export type User = SupportWorker | Participant | Guardian | Admin;
+export type User = SupportWorker | Participant | Guardian | Admin | Coordinator;
 
 // Input types for onboarding
 export interface ParticipantOnboardingInput {

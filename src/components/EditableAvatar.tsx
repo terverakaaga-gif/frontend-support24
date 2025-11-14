@@ -4,6 +4,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useProfile, useUpdateProfileImage } from "@/hooks/useProfile";
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const EditableAvatar = () => {
 	const [isUploading, setIsUploading] = useState(false);
@@ -29,20 +30,9 @@ const EditableAvatar = () => {
 
 		setIsUploading(true);
 
-		// Create preview while uploading
-		const reader = new FileReader();
-		reader.onload = () => {
-			// Temporarily update the UI with the new image
-			if (typeof reader.result === "string") {
-				// This is just for immediate UI feedback - the actual update comes from the mutation
-			}
-		};
-		reader.readAsDataURL(file);
-
 		// Upload the image
 		updateProfileImage(file, {
 			onSuccess: (updatedUser) => {
-				// Update the auth context with the new profile data
 				console.log("udpatedUser", updatedUser);
 				setIsUploading(false);
 				// Reset the file input
@@ -52,7 +42,6 @@ const EditableAvatar = () => {
 			},
 			onError: (error) => {
 				setIsUploading(false);
-				// Error handling is already done in the mutation
 			},
 		});
 	};
@@ -70,59 +59,41 @@ const EditableAvatar = () => {
 				0
 			)}`.toUpperCase();
 		}
-		return "U"; // Default fallback
-	};
-
-	const getAvatarContent = () => {
-		if (isUploading) {
-			return (
-				<div className="h-full w-full rounded-full flex items-center justify-center bg-gray-100">
-					<Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-				</div>
-			);
-		}
-
-		if (profile.user.profileImage) {
-			return (
-				<img
-					src={profile.user.profileImage}
-					alt="Profile"
-					className="h-full w-full rounded-full object-cover"
-					onError={(e) => {
-						// If image fails to load, fall back to initials
-						e.currentTarget.style.display = "none";
-					}}
-				/>
-			);
-		}
-
-		return (
-			<div className="h-full w-full flex items-center justify-center bg-gray-200">
-				<span className="text-2xl font-montserrat-semibold text-gray-600">
-					{getInitials()}
-				</span>
-			</div>
-		);
+		return "U";
 	};
 
 	return (
 		<div className="relative flex flex-col items-center mb-4">
 			<div className="relative">
-				<div className="h-24 w-24 rounded-full bg-gray-200 border-2 border-gray-300 relative">
-					{getAvatarContent()}
-
-					{/* Edit button - always visible */}
-					{!isUploading && (
-						<Button
-							className="absolute -bottom-1 -right-1 rounded-full bg-white p-2 border-2 border-gray-300 cursor-pointer shadow-md hover:bg-gray-100 transition-colors z-50 flex items-center justify-center"
-							onClick={triggerFileInput}
-							aria-label="Edit profile picture"
-							style={{ width: 36, height: 36 }}
-						>
-							<Camera className="text-primary-500" size={20} />
-						</Button>
+				<Avatar className="h-24 w-24 border-2 border-gray-300">
+					{isUploading ? (
+						<div className="h-full w-full flex items-center justify-center bg-gray-100">
+							<Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+						</div>
+					) : (
+						<>
+							<AvatarImage 
+								src={profile.user.profileImage} 
+								alt="Profile" 
+							/>
+							<AvatarFallback className="bg-gray-200 text-2xl font-montserrat-semibold text-gray-600">
+								{getInitials()}
+							</AvatarFallback>
+						</>
 					)}
-				</div>
+				</Avatar>
+
+				{/* Edit button */}
+				{!isUploading && (
+					<Button
+						className="absolute -bottom-1 -right-1 rounded-full bg-white p-2 border-2 border-gray-300 cursor-pointer shadow-md hover:bg-gray-100 transition-colors z-50 flex items-center justify-center"
+						onClick={triggerFileInput}
+						aria-label="Edit profile picture"
+						style={{ width: 36, height: 36 }}
+					>
+						<Camera className="text-primary-500" size={20} />
+					</Button>
+				)}
 			</div>
 
 			{/* Edit text indication */}

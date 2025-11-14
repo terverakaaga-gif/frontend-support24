@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -15,10 +15,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, DollarSign, Clock, CheckCircle, Loader2 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  CalendarIcon,
+  DollarSign,
+  Clock,
+  CheckCircle,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FlattenedInvite, ProcessInviteRequest, ServiceAgreement } from "@/entities/Invitation";
+import {
+  FlattenedInvite,
+  ProcessInviteRequest,
+  ServiceAgreement,
+} from "@/entities/Invitation";
 import { useProcessInvite } from "@/hooks/useInviteHooks";
 import { toast } from "@/hooks/use-toast";
 
@@ -34,57 +48,66 @@ const formatCurrency = (amount: number) => {
   return `$${amount.toFixed(2)}`;
 };
 
-export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: InviteAcceptanceFormProps) {
+export function InviteAcceptanceForm({
+  invite,
+  isOpen,
+  onClose,
+  onSuccess,
+}: InviteAcceptanceFormProps) {
   const [adminNotes, setAdminNotes] = useState("");
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const processInviteMutation = useProcessInvite();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      // Prepare the service agreement from the proposed rates
+      const serviceAgreement: ServiceAgreement = {
+        baseHourlyRate: invite.proposedRates.baseHourlyRate,
+        shiftRates: invite.proposedRates.shiftRates
+          .filter((rate) => rate.rateTimeBandId !== null) // Only include rates with valid time bands
+          .map((rate) => ({
+            rateTimeBandId: rate.rateTimeBandId!._id, // We know it's not null due to filter
+            hourlyRate: rate.hourlyRate,
+          })),
+        distanceTravelRate: invite.proposedRates.distanceTravelRate,
+        startDate: format(startDate, "yyyy-MM-dd"),
+        termsAccepted: true,
+      };
 
-    // Prepare the service agreement from the proposed rates
-    const serviceAgreement: ServiceAgreement = {
-      baseHourlyRate: invite.proposedRates.baseHourlyRate,
-      shiftRates: invite.proposedRates.shiftRates.map(rate => ({
-        rateTimeBandId: rate.rateTimeBandId._id,
-        hourlyRate: rate.hourlyRate
-      })),
-      distanceTravelRate: invite.proposedRates.distanceTravelRate,
-      startDate: format(startDate, 'yyyy-MM-dd'),
-      termsAccepted: true
-    };
+      // Prepare the request body
+      const requestData: ProcessInviteRequest = {
+        status: "accepted",
+        adminNotes: adminNotes.trim() || undefined,
+        serviceAgreement,
+      };
 
-    // Prepare the request body
-    const requestData: ProcessInviteRequest = {
-      status: 'accepted',
-      adminNotes: adminNotes.trim() || undefined,
-      serviceAgreement
-    };
+      try {
+        await processInviteMutation.mutateAsync({
+          organizationId: invite.organizationId,
+          inviteId: invite.inviteId,
+          data: requestData,
+        });
 
-    try {
-      await processInviteMutation.mutateAsync({
-        organizationId: invite.organizationId,
-        inviteId: invite.inviteId,
-        data: requestData
-      });
+        toast({
+          title: "Invitation Accepted",
+          description: `Successfully accepted invitation for ${invite.workerName}`,
+        });
 
-      toast({
-        title: "Invitation Accepted",
-        description: `Successfully accepted invitation for ${invite.workerName}`,
-      });
-
-      onSuccess?.();
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to accept invitation. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+        onSuccess?.();
+        onClose();
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to accept invitation. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [adminNotes, invite, onClose, onSuccess, processInviteMutation, startDate]
+  );
 
   const handleClose = () => {
     if (!processInviteMutation.isPending) {
@@ -101,7 +124,8 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
             Accept Invitation
           </DialogTitle>
           <DialogDescription>
-            Review the proposed rates and complete the acceptance for {invite.workerName}
+            Review the proposed rates and complete the acceptance for{" "}
+            {invite.workerName}
           </DialogDescription>
         </DialogHeader>
 
@@ -110,7 +134,10 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Accepted
               </Badge>
@@ -120,7 +147,9 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
           {/* Proposed Rates (Read-only) */}
           <div className="space-y-4">
             <div>
-              <Label className="text-base font-montserrat-semibold">Proposed Service Agreement</Label>
+              <Label className="text-base font-montserrat-semibold">
+                Proposed Service Agreement
+              </Label>
               <p className="text-sm text-muted-foreground">
                 These rates will be used for the service agreement
               </p>
@@ -131,7 +160,9 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-green-600" />
-                  <span className="font-montserrat-semibold">Base Hourly Rate</span>
+                  <span className="font-montserrat-semibold">
+                    Base Hourly Rate
+                  </span>
                 </div>
                 <span className="text-lg font-montserrat-semibold text-green-600">
                   {formatCurrency(invite.proposedRates.baseHourlyRate)}
@@ -142,15 +173,35 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
 
               {/* Shift Rates */}
               <div className="space-y-2">
-                <h4 className="font-montserrat-semibold text-sm">Shift Rate Breakdown</h4>
+                <h4 className="font-montserrat-semibold text-sm">
+                  Shift Rate Breakdown
+                </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {invite.proposedRates.shiftRates.map((rate) => (
-                    <div key={rate._id} className="flex items-center justify-between p-2 bg-white rounded border">
+                  {invite.proposedRates.shiftRates.map((rate, index) => (
+                    <div
+                      key={rate._id || index}
+                      className="flex items-center justify-between p-2 bg-white rounded border"
+                    >
                       <div>
-                        <p className="text-sm font-montserrat-semibold">{rate.rateTimeBandId.name}</p>
-                        {rate.rateTimeBandId.startTime && rate.rateTimeBandId.endTime && (
+                        <p className="text-sm font-montserrat-semibold">
+                          {rate.rateTimeBandId?.name ||
+                            `Shift Rate ${index + 1}`}
+                        </p>
+                        {rate.rateTimeBandId?.startTime &&
+                          rate.rateTimeBandId?.endTime && (
+                            <p className="text-xs text-muted-foreground">
+                              {rate.rateTimeBandId.startTime} -{" "}
+                              {rate.rateTimeBandId.endTime}
+                            </p>
+                          )}
+                        {rate.rateTimeBandId?.code && (
                           <p className="text-xs text-muted-foreground">
-                            {rate.rateTimeBandId.startTime} - {rate.rateTimeBandId.endTime}
+                            Code: {rate.rateTimeBandId.code}
+                          </p>
+                        )}
+                        {!rate.rateTimeBandId && (
+                          <p className="text-xs text-muted-foreground">
+                            Custom rate
                           </p>
                         )}
                       </div>
@@ -168,7 +219,9 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-primary" />
-                  <span className="font-montserrat-semibold">Distance Travel Rate</span>
+                  <span className="font-montserrat-semibold">
+                    Distance Travel Rate
+                  </span>
                 </div>
                 <span className="text-lg font-montserrat-semibold text-primary">
                   {formatCurrency(invite.proposedRates.distanceTravelRate)}
@@ -226,7 +279,8 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
             <div className="flex items-center gap-2 text-primary-700">
               <CheckCircle className="h-4 w-4" />
               <span className="text-sm font-montserrat-semibold">
-                Terms and conditions will be automatically accepted upon submission
+                Terms and conditions will be automatically accepted upon
+                submission
               </span>
             </div>
           </div>
@@ -255,4 +309,4 @@ export function InviteAcceptanceForm({ invite, isOpen, onClose, onSuccess }: Inv
       </DialogContent>
     </Dialog>
   );
-} 
+}

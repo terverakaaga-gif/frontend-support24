@@ -21,6 +21,18 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }
   }, [user, isLoading, location]);
   
+  // Add role validation in ProtectedRoute:
+  useEffect(() => {
+    // Clear return URL if user role doesn't match the stored role
+    if (user) {
+      const lastUserRole = sessionStorage.getItem("lastUserRole");
+      if (lastUserRole && lastUserRole !== user.role) {
+        sessionStorage.removeItem("returnUrl");
+        sessionStorage.setItem("lastUserRole", user.role);
+      }
+    }
+  }, [user]);
+  
   // Show loading state while checking auth
   if (isLoading) {
     return (

@@ -140,18 +140,18 @@ export default function Register() {
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
       {/* Left side - Registration Form */}
-      <motion.div
-        initial={{ x: -100, opacity: 0 }}
+       <motion.div
+        initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
         className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
       >
-        {/* Logo */}
+         {/* Logo */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="flex justify-center items-center w-full mb-12"
+          className="flex justify-center items-center w-full my-28"
         >
           <img src="/logo.svg" alt="Support 24" className="h-12" />
         </motion.div>

@@ -18,6 +18,7 @@ import { motion } from "framer-motion";
 import { useLogin } from "@/hooks/useAuthHooks";
 import { Eye, EyeClosed } from "@solar-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
+import { UserRole } from "@/types/user.types";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -79,22 +80,8 @@ export default function Login() {
         password: values.password,
       });
 
-      // After successful login, check for return URL
-      const returnUrl = sessionStorage.getItem("returnUrl");
-      if (returnUrl) {
-        sessionStorage.removeItem("returnUrl");
-        navigate(returnUrl, { replace: true });
-      }
-      // redirect to the proper role based dashboard
-      else if (user?.role === "admin") {
-        navigate("/admin");
-      } else if (user?.role === "participant") {
-        navigate("/participant");
-      } else if (user?.role === "guardian") {
-        navigate("/guardian");
-      } else {
-        navigate("/support-worker");
-      }
+      // The login mutation should update the user state
+      // We need to wait for that to complete before navigation
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -105,6 +92,65 @@ export default function Login() {
     setShowPassword((prev) => !prev);
   };
 
+  // Add this useEffect to handle navigation after successful login
+  useEffect(() => {
+    if (user && !login.isPending) {
+      // Check for return URL first, but validate it against user role
+      const returnUrl = sessionStorage.getItem("returnUrl");
+      const lastUserRole = sessionStorage.getItem("lastUserRole");
+
+      if (returnUrl && lastUserRole === user.role) {
+        // Only use return URL if it's for the same user role
+        const isValidReturnUrl = validateReturnUrlForRole(returnUrl, user.role);
+        if (isValidReturnUrl) {
+          sessionStorage.removeItem("returnUrl");
+          sessionStorage.removeItem("lastUserRole");
+          navigate(returnUrl, { replace: true });
+          return;
+        }
+      }
+
+      // Clear any invalid return URL
+      sessionStorage.removeItem("returnUrl");
+      sessionStorage.removeItem("lastUserRole");
+
+      // Navigate to role-specific dashboard
+      const dashboardRoute = getRoleBasedRoute(user.role);
+      navigate(dashboardRoute, { replace: true });
+    }
+  }, [user, login.isPending, navigate]);
+
+  // Helper function to get role-based routes
+  const getRoleBasedRoute = (role: UserRole): string => {
+    switch (role) {
+      case "admin":
+        return "/admin";
+      case "participant":
+        return "/participant";
+      case "guardian":
+        return "/guardian";
+      case "coordinator":
+        return "/coordinator";
+      case "supportWorker":
+        return "/support-worker";
+      default:
+        return "/login";
+    }
+  };
+
+  // Helper function to validate return URL against user role
+  const validateReturnUrlForRole = (url: string, role: UserRole): boolean => {
+    const rolePathMap = {
+      admin: "/admin",
+      participant: "/participant",
+      guardian: "/guardian",
+      coordinator: "/coordinator",
+      supportWorker: "/support-worker",
+    };
+
+    const expectedPath = rolePathMap[role];
+    return url.startsWith(expectedPath);
+  };
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
@@ -233,12 +279,12 @@ export default function Login() {
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
         className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
       >
-        {/* Logo */}
+         {/* Logo */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="flex justify-center items-center w-full mb-28"
+          className="flex justify-center items-center w-full my-28"
         >
           <img src="/logo.svg" alt="Support 24" className="h-12" />
         </motion.div>
@@ -248,7 +294,7 @@ export default function Login() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
-          className="w-full max-w-md space-y-8"
+          className="w-full max-w-md space-y-6"
         >
           {/* Header */}
           <div className="text-center">

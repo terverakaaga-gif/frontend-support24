@@ -132,7 +132,7 @@ export default function OTPVerification() {
             This verification link is invalid or has expired.
           </p>
           <Link
-            to="/forgot-password"
+            to={"/resend-email"}
             className="text-orange-500 hover:text-orange-600 font-montserrat-semibold"
           >
             Request New Verification Code
