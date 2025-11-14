@@ -44,6 +44,12 @@ import { X, Plus } from "lucide-react";
 import { commonLanguages } from "@/constants/common-languages";
 
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+import {
+  useStates,
+  useRegions,
+  useServiceAreasByRegion,
+  useServiceAreasByState,
+} from "@/hooks/useLocationHooks";
 
 // Simple debounce function
 const debounce = (func: Function, wait: number) => {
@@ -175,6 +181,43 @@ export default function EditProfile() {
   // Add these state variables for better control
   const [selectedAddress, setSelectedAddress] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  // Initialize address input value from form data
+  useEffect(() => {
+    if (formData.address) {
+      setSelectedAddress(formData.address);
+      setAddressInputValue(formData.address);
+    }
+  }, [formData.address]);
+
+  // Debounced function for getting predictions
+  const debouncedGetPredictions = useMemo(
+    () =>
+      debounce((input: string) => {
+        if (input.length > 2) {
+          getPlacePredictions({ input });
+          setShowAddressPredictions(true);
+        } else {
+          setShowAddressPredictions(false);
+        }
+      }, 300),
+    [getPlacePredictions]
+  );
+
+  // Handle input change with proper debouncing
+  const handleAddressInputChange = (value: string) => {
+    setAddressInputValue(value);
+    setIsTyping(true);
+
+    // Update form data immediately for local state
+    handleInputChange("address", value);
+
+    // Debounced prediction fetch
+    debouncedGetPredictions(value);
+
+    // Stop typing indicator after a delay
+    setTimeout(() => setIsTyping(false), 1000);
+  };
 
   // Initialize form data
   useEffect(() => {
@@ -318,41 +361,12 @@ export default function EditProfile() {
           (placeDetails: any) => {
             if (placeDetails) {
               console.log("Place details:", placeDetails);
-
-              // Extract additional address components
-              const addressComponents = placeDetails.address_components || [];
-
-              // You can extract specific components like:
-              const state = addressComponents.find((comp: any) =>
-                comp.types.includes("administrative_area_level_1")
-              )?.long_name;
-
-              const suburb = addressComponents.find(
-                (comp: any) =>
-                  comp.types.includes("locality") ||
-                  comp.types.includes("sublocality")
-              )?.long_name;
-
-              const postcode = addressComponents.find((comp: any) =>
-                comp.types.includes("postal_code")
-              )?.long_name;
-
-              // Optionally update additional fields if you have them
-              if (state && isParticipant) {
-                console.log("Extracted state:", state);
-                // You could auto-populate state-related fields here
-              }
-
-              if (suburb && isParticipant) {
-                console.log("Extracted suburb:", suburb);
-                // You could auto-populate suburb-related fields here
-              }
             }
           }
         );
       }
     },
-    [placesService, handleInputChange, isParticipant]
+    [placesService, handleInputChange]
   );
 
   // Array manipulation helpers
@@ -467,14 +481,22 @@ export default function EditProfile() {
     }
   };
 
-  const handleStepClick = async (stepId: number) => {
-    if (stepId < currentStep) {
-      setCurrentStep(stepId);
-      setValidationErrors([]);
-    } else if (stepId === currentStep + 1) {
-      await handleNext();
+const handleStepClick = async (stepId: number) => {
+  // Allow navigation to any step without restriction
+  if (stepId !== currentStep) {
+    // Save current step before navigating
+    if (hasChanges) {
+      const saved = await saveCurrentStep();
+      if (!saved) {
+        toast.error("Please fix validation errors before switching tabs");
+        return;
+      }
     }
-  };
+    
+    setCurrentStep(stepId);
+    setValidationErrors([]);
+  }
+};
 
   const handleFinish = async () => {
     const saved = await saveCurrentStep();
@@ -485,6 +507,39 @@ export default function EditProfile() {
       );
     }
   };
+
+  // state management for location selections
+  const [selectedStateIds, setSelectedStateIds] = useState<string[]>([]);
+  const [selectedRegionIds, setSelectedRegionIds] = useState<string[]>([]);
+
+  // Location data hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const { data: allRegions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateIds.length > 0 ? selectedStateIds[0] : undefined,
+    selectedStateIds.length > 0
+  );
+  const { data: allServiceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreasByRegion(
+      selectedRegionIds.length > 0 ? selectedRegionIds[0] : undefined,
+      selectedRegionIds.length > 0
+    );
+
+  // Initialize selected IDs from form data
+  useEffect(() => {
+    if (isParticipant) {
+      if (formData.stateId) setSelectedStateIds([formData.stateId]);
+      if (formData.regionId) setSelectedRegionIds([formData.regionId]);
+    } else {
+      if (formData.stateIds) setSelectedStateIds(formData.stateIds);
+      if (formData.regionIds) setSelectedRegionIds(formData.regionIds);
+    }
+  }, [
+    formData.stateId,
+    formData.regionId,
+    formData.stateIds,
+    formData.regionIds,
+    isParticipant,
+  ]);
 
   if (isLoading) {
     return <Loader type="pulse" />;
@@ -554,29 +609,29 @@ export default function EditProfile() {
         </div>
 
         {/* Step Navigation */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {STEPS.map((step) => {
-            const Icon = step.icon;
-            return (
-              <button
-                key={step.id}
-                onClick={() => handleStepClick(step.id)}
-                className={cn(
-                  "flex h-6 items-center gap-2 px-4 py-2 rounded-full text-xs font-montserrat-semibold whitespace-nowrap transition-all duration-200",
-                  currentStep === step.id
-                    ? "bg-primary text-white shadow-lg"
-                    : step.id < currentStep
-                    ? "bg-green-100 text-green-700 border border-green-300"
-                    : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {step.title}
-                {step.id < currentStep && <CheckCircle className="w-4 h-4" />}
-              </button>
-            );
-          })}
-        </div>
+       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+  {STEPS.map((step) => {
+    const Icon = step.icon;
+    return (
+      <button
+        key={step.id}
+        onClick={() => handleStepClick(step.id)}
+        className={cn(
+          "flex h-8 items-center gap-2 px-4 py-2 rounded-full text-xs font-montserrat-semibold whitespace-nowrap transition-all duration-200 cursor-pointer hover:scale-105",
+          currentStep === step.id
+            ? "bg-primary text-white shadow-lg"
+            : step.id < currentStep
+            ? "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200"
+            : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+        )}
+      >
+        <Icon className="w-4 h-4" />
+        {step.title}
+        {step.id < currentStep && <CheckCircle className="w-4 h-4" />}
+      </button>
+    );
+  })}
+</div>
 
         {/* Validation Errors */}
         {validationErrors.length > 0 && (
@@ -779,11 +834,9 @@ export default function EditProfile() {
                       </div>
                     </div>
 
+                    {/* Address Input with Autocomplete */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="address"
-                        className="font-montserrat-semibold"
-                      >
+                      <Label htmlFor="address" className="font-montserrat-semibold">
                         Address
                       </Label>
                       <div className="relative">
@@ -794,9 +847,7 @@ export default function EditProfile() {
                             type="text"
                             placeholder="Start typing your address..."
                             value={addressInputValue}
-                            onChange={(e) =>
-                              handleInputChange("address", e.target.value)
-                            }
+                            onChange={(e) => handleAddressInputChange(e.target.value)}
                             onFocus={() => {
                               if (
                                 addressInputValue.trim().length > 2 &&
@@ -804,13 +855,6 @@ export default function EditProfile() {
                               ) {
                                 setShowAddressPredictions(true);
                               }
-                            }}
-                            onBlur={() => {
-                              // Delay hiding predictions to allow for selection
-                              setTimeout(
-                                () => setShowAddressPredictions(false),
-                                200
-                              );
                             }}
                             className="pl-10 text-sm"
                             autoComplete="off"
@@ -821,122 +865,130 @@ export default function EditProfile() {
                         </div>
 
                         {/* Predictions Dropdown */}
-                        {showAddressPredictions &&
-                          placePredictions.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                              {placePredictions.map((prediction) => (
-                                <div
-                                  key={prediction.place_id}
-                                  onClick={() =>
-                                    handleAddressSelect(prediction)
-                                  }
-                                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
-                                  onMouseDown={(e) => e.preventDefault()} // Prevent blur event
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm text-gray-900 font-medium truncate">
-                                        {prediction.structured_formatting
-                                          ?.main_text ||
-                                          prediction.description.split(",")[0]}
-                                      </p>
-                                      <p className="text-xs text-gray-500 truncate mt-0.5">
-                                        {prediction.structured_formatting
-                                          ?.secondary_text ||
-                                          prediction.description
-                                            .split(",")
-                                            .slice(1)
-                                            .join(",")
-                                            .trim()}
-                                      </p>
-                                    </div>
+                        {showAddressPredictions && placePredictions.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            {placePredictions.map((prediction) => (
+                              <div
+                                key={prediction.place_id}
+                                onClick={() => handleAddressSelect(prediction)}
+                                onMouseDown={(e) => e.preventDefault()} // Prevent input blur
+                                className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-900 font-medium truncate">
+                                      {prediction.structured_formatting?.main_text ||
+                                        prediction.description.split(",")[0]}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                                      {prediction.structured_formatting?.secondary_text ||
+                                        prediction.description.split(",").slice(1).join(",").trim()}
+                                    </p>
                                   </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                      </div>
-
-                      {/* Show selected address confirmation */}
-                      {selectedAddress &&
-                        selectedAddress !== addressInputValue && (
-                          <div className="text-xs text-green-600 flex items-center gap-1">
-                            <CheckCircle className="h-3 w-3" />
-                            Address selected: {selectedAddress}
+                              </div>
+                            ))}
                           </div>
                         )}
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Location Selection - State, Region, Service Area */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* State Selection */}
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="stateId"
-                          className="font-montserrat-semibold"
-                        >
-                          State ID
+                        <Label htmlFor="stateId" className="font-montserrat-semibold">
+                          State
                         </Label>
-                        <Input
-                          id="stateId"
+                        <Select
                           value={formData.stateId || ""}
-                          onChange={(e) =>
-                            handleInputChange("stateId", e.target.value)
-                          }
-                          placeholder="State identifier"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="regionId"
-                          className="font-montserrat-semibold"
+                          onValueChange={(value) => {
+                            handleInputChange("stateId", value);
+                            setSelectedStateIds([value]);
+                            // Reset dependent fields
+                            setSelectedRegionIds([]);
+                            handleInputChange("regionId", "");
+                            handleInputChange("serviceAreaId", "");
+                          }}
                         >
-                          Region ID
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select state" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {states.map((state) => (
+                              <SelectItem key={state._id} value={state._id}>
+                                {state.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Region Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="regionId" className="font-montserrat-semibold">
+                          Region
                         </Label>
-                        <Input
-                          id="regionId"
+                        <Select
                           value={formData.regionId || ""}
-                          onChange={(e) =>
-                            handleInputChange("regionId", e.target.value)
-                          }
-                          placeholder="Region identifier"
-                        />
+                          onValueChange={(value) => {
+                            handleInputChange("regionId", value);
+                            setSelectedRegionIds([value]);
+                            // Reset dependent fields
+                            handleInputChange("serviceAreaId", "");
+                          }}
+                          disabled={!formData.stateId || isLoadingRegions}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select region" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {allRegions.map((region) => (
+                              <SelectItem key={region._id} value={region._id}>
+                                {region.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Service Area Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="serviceAreaId" className="font-montserrat-semibold">
+                          Service Area
+                        </Label>
+                        <Select
+                          value={formData.serviceAreaId || ""}
+                          onValueChange={(value) => handleInputChange("serviceAreaId", value)}
+                          disabled={!formData.regionId || isLoadingServiceAreas}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select service area" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {allServiceAreas.map((serviceArea) => (
+                              <SelectItem key={serviceArea._id} value={serviceArea._id}>
+                                {serviceArea.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="suburbId"
-                          className="font-montserrat-semibold"
-                        >
-                          Suburb ID
-                        </Label>
-                        <Input
-                          id="suburbId"
-                          value={formData.suburbId || ""}
-                          onChange={(e) =>
-                            handleInputChange("suburbId", e.target.value)
-                          }
-                          placeholder="Suburb identifier"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="serviceAreaId"
-                          className="font-montserrat-semibold"
-                        >
-                          Service Area ID
-                        </Label>
-                        <Input
-                          id="serviceAreaId"
-                          value={formData.serviceAreaId || ""}
-                          onChange={(e) =>
-                            handleInputChange("serviceAreaId", e.target.value)
-                          }
-                          placeholder="Service area identifier"
-                        />
-                      </div>
-                    </div>
+                    {/* Comment out suburb selection */}
+                    {/* <div className="space-y-2">
+                      <Label htmlFor="suburbId" className="font-montserrat-semibold">
+                        Suburb ID
+                      </Label>
+                      <Input
+                        id="suburbId"
+                        value={formData.suburbId || ""}
+                        onChange={(e) => handleInputChange("suburbId", e.target.value)}
+                        placeholder="Suburb identifier"
+                      />
+                    </div> */}
                   </div>
                 )}
 
@@ -1499,7 +1551,7 @@ export default function EditProfile() {
                           placeholder="Start typing your address..."
                           value={addressInputValue}
                           onChange={(e) =>
-                            handleInputChange("address", e.target.value)
+                            handleAddressInputChange(e.target.value)
                           }
                           onFocus={() => {
                             if (
@@ -1532,25 +1584,19 @@ export default function EditProfile() {
                               <div
                                 key={prediction.place_id}
                                 onClick={() => handleAddressSelect(prediction)}
+                                onMouseDown={(e) => e.preventDefault()} // Prevent input blur
                                 className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
-                                onMouseDown={(e) => e.preventDefault()} // Prevent blur event
                               >
                                 <div className="flex items-start gap-3">
                                   <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                                   <div className="flex-1 min-w-0">
                                     <p className="text-sm text-gray-900 font-medium truncate">
-                                      {prediction.structured_formatting
-                                        ?.main_text ||
+                                      {prediction.structured_formatting?.main_text ||
                                         prediction.description.split(",")[0]}
                                     </p>
                                     <p className="text-xs text-gray-500 truncate mt-0.5">
-                                      {prediction.structured_formatting
-                                        ?.secondary_text ||
-                                        prediction.description
-                                          .split(",")
-                                          .slice(1)
-                                          .join(",")
-                                          .trim()}
+                                      {prediction.structured_formatting?.secondary_text ||
+                                        prediction.description.split(",").slice(1).join(",").trim()}
                                     </p>
                                   </div>
                                 </div>
@@ -1559,15 +1605,6 @@ export default function EditProfile() {
                           </div>
                         )}
                     </div>
-
-                    {/* Show selected address confirmation */}
-                    {selectedAddress &&
-                      selectedAddress !== addressInputValue && (
-                        <div className="text-xs text-green-600 flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" />
-                          Address selected: {selectedAddress}
-                        </div>
-                      )}
                   </div>
                 )}
 

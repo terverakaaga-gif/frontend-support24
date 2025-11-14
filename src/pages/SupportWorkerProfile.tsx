@@ -261,18 +261,19 @@ export default function SupportWorkerProfile() {
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-6 overflow-x-auto">
           {tabButtons.map((tab) => (
-            <button
+            <Button
+            variant="ghost"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-montserrat-semibold whitespace-nowrap transition-all duration-200",
+                "px-4 py-2 rounded-full text-xs h-6 font-montserrat-semibold whitespace-nowrap transition-all duration-200",
                 activeTab === tab.id
-                  ? "bg-primary text-white shadow-lg"
-                  : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+                  ? "bg-primary text-white shadow-lg hover:bg-primary"
+                  : "bg-white text-gray-600 border border-gray-300 hover:bg-primary"
               )}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -364,7 +365,7 @@ export default function SupportWorkerProfile() {
                       {supportWorker.languages.map((lang, i) => (
                         <Badge
                           key={i}
-                          className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-sm"
+                          className="bg-primary-100 h-6 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-xs"
                         >
                           {lang}
                         </Badge>
@@ -407,7 +408,7 @@ export default function SupportWorkerProfile() {
                           <span className="text-sm text-gray-600 font-montserrat-semibold">
                             {rate.rateTimeBandId.name}
                           </span>
-                          <span className="text-sm font-montserrat-bold text-gray-900">
+                          <span className="text-xs font-montserrat-bold bg-primary-100 rounded-full px-3 py-1 text-primary">
                             ${rate.hourlyRate}/hr
                           </span>
                         </div>
