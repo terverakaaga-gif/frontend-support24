@@ -17,6 +17,7 @@ import {
   CalendarMark,
   User,
   Dollar,
+  MapPoint,
 } from "@solar-icons/react";
 import { SupportWorker } from "@/types/user.types";
 import Loader from "@/components/Loader";
@@ -153,6 +154,7 @@ export default function SupportWorkerProfile() {
 
   const tabButtons = [
     { id: "about", label: "About & Skills" },
+    { id: "professional", label: "Professional Details" },
     { id: "schedule", label: "Availability" },
     { id: "shifts", label: "Upcoming Shifts" },
     { id: "ratings", label: "Ratings & Reviews" },
@@ -477,6 +479,115 @@ export default function SupportWorkerProfile() {
                       </Button>
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "professional" && (
+          <div className="space-y-6">
+            {/* Qualifications */}
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <CaseRoundMinimalistic className="w-5 h-5 text-primary" />
+                  Qualifications
+                </h3>
+                {supportWorker.qualifications?.length > 0 ? (
+                  <div className="space-y-3">
+                    {supportWorker.qualifications.map((qual, i) => (
+                      <div
+                        key={i}
+                        className="p-3 rounded-lg bg-gray-50 border border-gray-200"
+                      >
+                        <h4 className="font-montserrat-semibold text-gray-900">
+                          {qual.title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Issued by: {qual.issuer}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Issued: {formatDate(qual.issueDate)}
+                          {qual.expiryDate &&
+                            ` | Expires: ${formatDate(qual.expiryDate)}`}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <p className="text-gray-600 mb-2 font-montserrat-semibold">
+                      No qualifications added
+                    </p>
+                    <Button onClick={handleEditProfile} variant="outline" size="sm">
+                      Add Qualifications
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Verification Status */}
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4">
+                  Verification Status
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(supportWorker.verificationStatus || {}).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-200"
+                      >
+                        <span className="text-sm font-montserrat-semibold capitalize">
+                          {key
+                            .replace(/([A-Z])/g, " $1")
+                            .toLowerCase()}
+                        </span>
+                        <Badge
+                          className={
+                            value
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }
+                        >
+                          {value ? "Verified" : "Pending"}
+                        </Badge>
+                      </div>
+                    )
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Service Areas */}
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <MapPoint className="w-5 h-5 text-primary" />
+                  Service Information
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
+                        Travel Radius
+                      </p>
+                      <p className="text-sm text-gray-900">
+                        {supportWorker.travelRadiusKm || 0} km
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
+                        Service Areas
+                      </p>
+                      <p className="text-sm text-gray-900">
+                        {supportWorker.serviceAreaIds?.length || 0} areas
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

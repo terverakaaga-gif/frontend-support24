@@ -296,7 +296,7 @@ export default function SearchSupportWorkersPage() {
             </Select>
 
             {/* Service Area Filter */}
-            <Select
+            {/* <Select
               value={selectedServiceArea}
               onValueChange={setSelectedServiceArea}
               disabled={!selectedState}
@@ -321,7 +321,7 @@ export default function SearchSupportWorkersPage() {
                   </SelectItem>
                 )}
               </SelectContent>
-            </Select>
+            </Select> */}
 
             {/* Max Distance Filter */}
             <Select value={maxDistance} onValueChange={setMaxDistance}>
@@ -353,7 +353,7 @@ export default function SearchSupportWorkersPage() {
             <Input
               type="number"
               placeholder="Max Hourly Rate ($)"
-              className="h-6 border-gray-400 text-xs w-32 rounded-full focus:border-primary px-3"
+              className="h-6 border-gray-400 text-xs w-32 rounded-full focus:border-primary px-3 placeholder:text-black placeholder:text-xs"
               value={maxHourlyRate}
               onChange={(e) => setMaxHourlyRate(e.target.value)}
             />

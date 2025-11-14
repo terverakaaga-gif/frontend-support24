@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +32,7 @@ import {
   Dollar,
   CalendarMark,
   DocumentText,
+  Refresh,
 } from "@solar-icons/react";
 import { Participant, SupportWorker, EUserRole } from "@/types/user.types";
 import { UpdateProfileData } from "@/api/services/userService";
@@ -40,6 +41,22 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { X, Plus } from "lucide-react";
+import { commonLanguages } from "@/constants/common-languages";
+
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+
+// Simple debounce function
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 // Helper functions
 const deepEqual = (a: unknown, b: unknown): boolean => {
@@ -95,22 +112,21 @@ const getChangedFields = (original: unknown, updated: unknown) => {
 // Step configurations for Participant
 const PARTICIPANT_STEPS = [
   { id: 1, title: "Basic Information", icon: User },
-  { id: 2, title: "Address", icon: MapPoint },
-  { id: 3, title: "Support Needs", icon: Heart },
-  { id: 4, title: "NDIS Information", icon: Shield },
-  { id: 5, title: "Emergency Contact", icon: DangerCircle },
-  { id: 6, title: "Care Team", icon: Buildings2 },
-  { id: 7, title: "Preferences", icon: Star },
+  { id: 2, title: "Contact & Location", icon: MapPoint },
+  { id: 3, title: "NDIS & Support", icon: Heart },
+  { id: 4, title: "Emergency Contact", icon: DangerCircle },
+  { id: 5, title: "Care Team", icon: Buildings2 },
+  { id: 6, title: "Preferences", icon: Star },
 ];
 
 // Step configurations for Support Worker
 const SUPPORT_WORKER_STEPS = [
   { id: 1, title: "Basic Information", icon: User },
-  { id: 2, title: "Professional Details", icon: CaseRoundMinimalistic },
-  { id: 3, title: "Skills & Experience", icon: Star },
-  { id: 4, title: "Languages & Rates", icon: Translation },
-  { id: 5, title: "Availability", icon: CalendarMark },
-  { id: 6, title: "Bio & Preferences", icon: DocumentText },
+  { id: 2, title: "Professional Bio", icon: CaseRoundMinimalistic },
+  { id: 3, title: "Skills & Languages", icon: Star },
+  { id: 4, title: "Experience", icon: Translation },
+  { id: 5, title: "Location & Service Areas", icon: MapPoint },
+  { id: 6, title: "Rates & Availability", icon: CalendarMark },
 ];
 
 export default function EditProfile() {
@@ -122,6 +138,9 @@ export default function EditProfile() {
   const [formData, setFormData] = useState<Partial<any>>({});
   const [originalData, setOriginalData] = useState<Partial<any>>({});
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  const [showAddressPredictions, setShowAddressPredictions] = useState(false);
+  const [addressInputValue, setAddressInputValue] = useState("");
 
   // Dynamic input states
   const [newSupportNeed, setNewSupportNeed] = useState("");
@@ -136,8 +155,26 @@ export default function EditProfile() {
   });
 
   const userRole = profileData?.user?.role;
-  const isParticipant = userRole === EUserRole.Participant;
+  const isParticipant = userRole === EUserRole.PARTICIPANT;
   const STEPS = isParticipant ? PARTICIPANT_STEPS : SUPPORT_WORKER_STEPS;
+
+  // Google Places Autocomplete Hook
+  const {
+    placesService,
+    placePredictions,
+    getPlacePredictions,
+    isPlacePredictionsLoading,
+  } = usePlacesService({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
+  // Add these state variables for better control
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
 
   // Initialize form data
   useEffect(() => {
@@ -150,21 +187,25 @@ export default function EditProfile() {
           phone: participant.phone || "",
           gender: participant.gender || "",
           dateOfBirth: participant.dateOfBirth || null,
-          address: participant.address || {
-            street: "",
-            city: "",
-            state: "",
-            postalCode: "",
-            country: "",
-          },
-          notificationPreferences: participant.notificationPreferences,
+          address: participant.address || "",
+          notificationPreferences: participant.notificationPreferences || "",
+          // NDIS & Support
+          ndisNumber: participant.ndisNumber || "",
           supportNeeds:
-            participant.supportNeeds?.map((need: any) => need.name) || [],
+            participant.supportNeeds?.map((need: any) => need._id) || [],
+          requiresSupervision: participant.requiresSupervision || false,
+          // Location - FIX: Use the correct field names
+          stateId: participant.stateId || "",
+          regionId: participant.regionId || "",
+          suburbId: participant.suburbId || "",
+          serviceAreaId: participant.serviceAreaId || "",
+          // Emergency Contact
           emergencyContact: participant.emergencyContact || {
             name: "",
             relationship: "",
             phone: "",
           },
+          // Care Team - FIX: Add these fields
           planManager: participant.planManager || {
             name: "",
             email: "",
@@ -173,27 +214,54 @@ export default function EditProfile() {
             name: "",
             email: "",
           },
+          // Preferences - FIX: Add these fields
           preferredLanguages: participant.preferredLanguages || [],
           preferredGenders: participant.preferredGenders || [],
           notes: participant.notes || "",
-          ndisNumber: participant.ndisNumber || "",
-          requiresSupervision: participant.requiresSupervision || false,
+          // Add missing fields
+          subscription: participant.subscription || {},
+          supportCoordinators: participant.supportCoordinators || [],
+          onboardingComplete: participant.onboardingComplete || false,
         };
         setFormData(userData);
         setOriginalData(JSON.parse(JSON.stringify(userData)));
       } else {
         const supportWorker = profileData.user as SupportWorker;
         const userData = {
+          // Basic Info
           firstName: supportWorker.firstName || "",
           lastName: supportWorker.lastName || "",
           phone: supportWorker.phone || "",
+          gender: supportWorker.gender || "",
+          dateOfBirth: supportWorker.dateOfBirth || null,
+          // Professional
           bio: supportWorker.bio || "",
-          skills: supportWorker.skills?.map((s: any) => s.name) || [],
+          address: supportWorker.address || "",
+          // Skills & Languages
+          skills: supportWorker.skills?.map((s: any) => s._id) || [],
           languages: supportWorker.languages || [],
+          // Experience
           experience: supportWorker.experience || [],
+          qualifications: supportWorker.qualifications || [],
+          // Location & Service
+          stateIds: supportWorker.stateIds || [],
+          regionIds: supportWorker.regionIds || [],
+          serviceAreaIds: supportWorker.serviceAreaIds || [],
+          serviceAreas: supportWorker.serviceAreas || [],
+          travelRadiusKm: supportWorker.travelRadiusKm || 20,
+          baseLocation: supportWorker.baseLocation || null,
+          // Rates & Availability
           shiftRates: supportWorker.shiftRates || [],
-          availability: supportWorker.availability || { weekdays: [] },
-          certifications: supportWorker.certifications || [],
+          availability: supportWorker.availability || {
+            weekdays: [],
+            unavailableDates: [],
+          },
+          // Verification & Organizations
+          verificationStatus: supportWorker.verificationStatus || {},
+          ratings: supportWorker.ratings || { average: 0, count: 0 },
+          organizations: supportWorker.organizations || [],
+          // Additional fields
+          notificationPreferences: supportWorker.notificationPreferences || "",
         };
         setFormData(userData);
         setOriginalData(JSON.parse(JSON.stringify(userData)));
@@ -220,6 +288,72 @@ export default function EditProfile() {
       },
     }));
   };
+
+  // Handle address selection from predictions
+
+  const handleAddressSelect = React.useCallback(
+    (prediction: any) => {
+      const selectedAddress = prediction.description;
+
+      console.log("Address selected:", selectedAddress);
+
+      // Update all address-related state
+      setAddressInputValue(selectedAddress);
+      setSelectedAddress(selectedAddress);
+      handleInputChange("address", selectedAddress);
+      setShowAddressPredictions(false);
+
+      // Get detailed place information for additional data
+      if (placesService) {
+        placesService.getDetails(
+          {
+            placeId: prediction.place_id,
+            fields: [
+              "address_components",
+              "formatted_address",
+              "geometry",
+              "name",
+            ],
+          },
+          (placeDetails: any) => {
+            if (placeDetails) {
+              console.log("Place details:", placeDetails);
+
+              // Extract additional address components
+              const addressComponents = placeDetails.address_components || [];
+
+              // You can extract specific components like:
+              const state = addressComponents.find((comp: any) =>
+                comp.types.includes("administrative_area_level_1")
+              )?.long_name;
+
+              const suburb = addressComponents.find(
+                (comp: any) =>
+                  comp.types.includes("locality") ||
+                  comp.types.includes("sublocality")
+              )?.long_name;
+
+              const postcode = addressComponents.find((comp: any) =>
+                comp.types.includes("postal_code")
+              )?.long_name;
+
+              // Optionally update additional fields if you have them
+              if (state && isParticipant) {
+                console.log("Extracted state:", state);
+                // You could auto-populate state-related fields here
+              }
+
+              if (suburb && isParticipant) {
+                console.log("Extracted suburb:", suburb);
+                // You could auto-populate suburb-related fields here
+              }
+            }
+          }
+        );
+      }
+    },
+    [placesService, handleInputChange, isParticipant]
+  );
 
   // Array manipulation helpers
   const addItem = (field: string, value: string) => {
@@ -274,7 +408,7 @@ export default function EditProfile() {
       if (!formData.lastName?.trim()) errors.push("Last name is required");
     }
 
-    if (isParticipant && step === 6) {
+    if (isParticipant && step === 5) {
       if (
         formData.planManager?.email &&
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.planManager.email)
@@ -428,7 +562,7 @@ export default function EditProfile() {
                 key={step.id}
                 onClick={() => handleStepClick(step.id)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-montserrat-semibold whitespace-nowrap transition-all duration-200",
+                  "flex h-6 items-center gap-2 px-4 py-2 rounded-full text-xs font-montserrat-semibold whitespace-nowrap transition-all duration-200",
                   currentStep === step.id
                     ? "bg-primary text-white shadow-lg"
                     : step.id < currentStep
@@ -628,7 +762,7 @@ export default function EditProfile() {
                   </div>
                 )}
 
-                {/* Step 2: Address */}
+                {/* Step 2: Contact & Location */}
                 {currentStep === 2 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
@@ -637,71 +771,134 @@ export default function EditProfile() {
                       </div>
                       <div>
                         <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Address Information
+                          Contact & Location
                         </h2>
                         <p className="text-sm text-gray-600">
-                          Your residential address
+                          Your address and location information
                         </p>
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <Label
-                        htmlFor="street"
+                        htmlFor="address"
                         className="font-montserrat-semibold"
                       >
-                        Street Address
+                        Address
                       </Label>
-                      <Input
-                        id="street"
-                        value={formData.address?.street || ""}
-                        onChange={(e) =>
-                          handleNestedChange(
-                            "address",
-                            "street",
-                            e.target.value
-                          )
-                        }
-                      />
+                      <div className="relative">
+                        <div className="relative">
+                          <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                          <Input
+                            id="address"
+                            type="text"
+                            placeholder="Start typing your address..."
+                            value={addressInputValue}
+                            onChange={(e) =>
+                              handleInputChange("address", e.target.value)
+                            }
+                            onFocus={() => {
+                              if (
+                                addressInputValue.trim().length > 2 &&
+                                placePredictions.length > 0
+                              ) {
+                                setShowAddressPredictions(true);
+                              }
+                            }}
+                            onBlur={() => {
+                              // Delay hiding predictions to allow for selection
+                              setTimeout(
+                                () => setShowAddressPredictions(false),
+                                200
+                              );
+                            }}
+                            className="pl-10 text-sm"
+                            autoComplete="off"
+                          />
+                          {(isPlacePredictionsLoading || isTyping) && (
+                            <Refresh className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                          )}
+                        </div>
+
+                        {/* Predictions Dropdown */}
+                        {showAddressPredictions &&
+                          placePredictions.length > 0 && (
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                              {placePredictions.map((prediction) => (
+                                <div
+                                  key={prediction.place_id}
+                                  onClick={() =>
+                                    handleAddressSelect(prediction)
+                                  }
+                                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                  onMouseDown={(e) => e.preventDefault()} // Prevent blur event
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm text-gray-900 font-medium truncate">
+                                        {prediction.structured_formatting
+                                          ?.main_text ||
+                                          prediction.description.split(",")[0]}
+                                      </p>
+                                      <p className="text-xs text-gray-500 truncate mt-0.5">
+                                        {prediction.structured_formatting
+                                          ?.secondary_text ||
+                                          prediction.description
+                                            .split(",")
+                                            .slice(1)
+                                            .join(",")
+                                            .trim()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                      </div>
+
+                      {/* Show selected address confirmation */}
+                      {selectedAddress &&
+                        selectedAddress !== addressInputValue && (
+                          <div className="text-xs text-green-600 flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3" />
+                            Address selected: {selectedAddress}
+                          </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label
-                          htmlFor="city"
+                          htmlFor="stateId"
                           className="font-montserrat-semibold"
                         >
-                          City
+                          State ID
                         </Label>
                         <Input
-                          id="city"
-                          value={formData.address?.city || ""}
+                          id="stateId"
+                          value={formData.stateId || ""}
                           onChange={(e) =>
-                            handleNestedChange(
-                              "address",
-                              "city",
-                              e.target.value
-                            )
+                            handleInputChange("stateId", e.target.value)
                           }
+                          placeholder="State identifier"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label
-                          htmlFor="state"
+                          htmlFor="regionId"
                           className="font-montserrat-semibold"
                         >
-                          State
+                          Region ID
                         </Label>
                         <Input
-                          id="state"
-                          value={formData.address?.state || ""}
+                          id="regionId"
+                          value={formData.regionId || ""}
                           onChange={(e) =>
-                            handleNestedChange(
-                              "address",
-                              "state",
-                              e.target.value
-                            )
+                            handleInputChange("regionId", e.target.value)
                           }
+                          placeholder="Region identifier"
                         />
                       </div>
                     </div>
@@ -709,47 +906,41 @@ export default function EditProfile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label
-                          htmlFor="postalCode"
+                          htmlFor="suburbId"
                           className="font-montserrat-semibold"
                         >
-                          Postal Code
+                          Suburb ID
                         </Label>
                         <Input
-                          id="postalCode"
-                          value={formData.address?.postalCode || ""}
+                          id="suburbId"
+                          value={formData.suburbId || ""}
                           onChange={(e) =>
-                            handleNestedChange(
-                              "address",
-                              "postalCode",
-                              e.target.value
-                            )
+                            handleInputChange("suburbId", e.target.value)
                           }
+                          placeholder="Suburb identifier"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label
-                          htmlFor="country"
+                          htmlFor="serviceAreaId"
                           className="font-montserrat-semibold"
                         >
-                          Country
+                          Service Area ID
                         </Label>
                         <Input
-                          id="country"
-                          value={formData.address?.country || ""}
+                          id="serviceAreaId"
+                          value={formData.serviceAreaId || ""}
                           onChange={(e) =>
-                            handleNestedChange(
-                              "address",
-                              "country",
-                              e.target.value
-                            )
+                            handleInputChange("serviceAreaId", e.target.value)
                           }
+                          placeholder="Service area identifier"
                         />
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Step 3: Support Needs */}
+                {/* Step 3: NDIS & Support */}
                 {currentStep === 3 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
@@ -758,86 +949,10 @@ export default function EditProfile() {
                       </div>
                       <div>
                         <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Support Needs
+                          NDIS & Support Needs
                         </h2>
                         <p className="text-sm text-gray-600">
-                          Types of support you require
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <Label className="font-montserrat-semibold">
-                        Your Support Needs
-                      </Label>
-                      <div className="flex flex-wrap gap-2">
-                        {(formData.supportNeeds || []).map(
-                          (need: string, index: number) => (
-                            <Badge
-                              key={index}
-                              className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-sm pr-1"
-                            >
-                              {need}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-auto p-0 ml-2 hover:bg-transparent"
-                                onClick={() =>
-                                  removeItem("supportNeeds", index)
-                                }
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </Badge>
-                          )
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Add support need"
-                          value={newSupportNeed}
-                          onChange={(e) => setNewSupportNeed(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              if (newSupportNeed.trim()) {
-                                addItem("supportNeeds", newSupportNeed);
-                                setNewSupportNeed("");
-                              }
-                            }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            if (newSupportNeed.trim()) {
-                              addItem("supportNeeds", newSupportNeed);
-                              setNewSupportNeed("");
-                            }
-                          }}
-                          className="gap-2"
-                        >
-                          <Plus className="h-4 w-4" />
-                          Add
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 4: NDIS Information */}
-                {currentStep === 4 && (
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                        <Shield className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          NDIS & Care Information
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Your NDIS details and care requirements
+                          Your NDIS information and support requirements
                         </p>
                       </div>
                     </div>
@@ -859,22 +974,28 @@ export default function EditProfile() {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="notes"
-                        className="font-montserrat-semibold"
-                      >
-                        Notes
+                    <div className="space-y-4">
+                      <Label className="font-montserrat-semibold">
+                        Support Needs
                       </Label>
-                      <Textarea
-                        id="notes"
-                        placeholder="Additional notes about your care needs"
-                        value={formData.notes || ""}
-                        onChange={(e) =>
-                          handleInputChange("notes", e.target.value)
-                        }
-                        className="min-h-[120px]"
-                      />
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">
+                          Current support needs (managed by system
+                          administrator)
+                        </p>
+                        <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                          {formData.supportNeeds?.length > 0 ? (
+                            <div className="text-sm text-gray-700">
+                              {formData.supportNeeds.length} support need(s)
+                              configured
+                            </div>
+                          ) : (
+                            <div className="text-sm text-gray-500">
+                              No support needs configured yet
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex items-center space-x-2 p-4 rounded-lg bg-gray-50 border border-gray-200">
@@ -896,8 +1017,8 @@ export default function EditProfile() {
                   </div>
                 )}
 
-                {/* Step 5: Emergency Contact */}
-                {currentStep === 5 && (
+                {/* Step 4: Emergency Contact */}
+                {currentStep === 4 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
@@ -977,8 +1098,8 @@ export default function EditProfile() {
                   </div>
                 )}
 
-                {/* Step 6: Care Team */}
-                {currentStep === 6 && (
+                {/* Step 5: Care Team */}
+                {currentStep === 5 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
@@ -1092,8 +1213,8 @@ export default function EditProfile() {
                   </div>
                 )}
 
-                {/* Step 7: Preferences */}
-                {currentStep === 7 && (
+                {/* Step 6: Preferences */}
+                {currentStep === 6 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
@@ -1118,13 +1239,13 @@ export default function EditProfile() {
                           (lang: string, index: number) => (
                             <Badge
                               key={index}
-                              className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-sm pr-1"
+                              className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-xs pr-1 h-6"
                             >
                               {lang}
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-auto p-0 ml-2 hover:bg-transparent"
+                                className="text-xs p-0 ml-2 hover:bg-transparent"
                                 onClick={() =>
                                   removeItem("preferredLanguages", index)
                                 }
@@ -1134,6 +1255,49 @@ export default function EditProfile() {
                             </Badge>
                           )
                         )}
+                      </div>
+                      {/* Show a list of common languages to add */}
+                      <div className="flex flex-wrap gap-4">
+                        {commonLanguages.map((lang) => (
+                          <Button
+                            key={lang}
+                            type="button"
+                            variant="outline"
+                            onClick={() => addItem("preferredLanguages", lang)}
+                            className="text-xs h-6 hover:bg-primary-700 hover:text-white transition-colors rounded-full"
+                          >
+                            {lang}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Add language"
+                          value={newLanguage}
+                          onChange={(e) => setNewLanguage(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              if (newLanguage.trim()) {
+                                addItem("preferredLanguages", newLanguage);
+                                setNewLanguage("");
+                              }
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            if (newLanguage.trim()) {
+                              addItem("preferredLanguages", newLanguage);
+                              setNewLanguage("");
+                            }
+                          }}
+                          className="gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add
+                        </Button>
                       </div>
                     </div>
 
@@ -1163,6 +1327,24 @@ export default function EditProfile() {
                           )
                         )}
                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="notes"
+                        className="font-montserrat-semibold"
+                      >
+                        Additional Notes
+                      </Label>
+                      <Textarea
+                        id="notes"
+                        placeholder="Additional notes about your care needs"
+                        value={formData.notes || ""}
+                        onChange={(e) =>
+                          handleInputChange("notes", e.target.value)
+                        }
+                        className="min-h-[120px]"
+                      />
                     </div>
                   </div>
                 )}
@@ -1224,60 +1406,172 @@ export default function EditProfile() {
                       </div>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="phone"
+                          className="font-montserrat-semibold"
+                        >
+                          Phone Number
+                        </Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          value={formData.phone || ""}
+                          onChange={(e) =>
+                            handleInputChange("phone", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="gender"
+                          className="font-montserrat-semibold"
+                        >
+                          Gender
+                        </Label>
+                        <Select
+                          value={formData.gender || ""}
+                          onValueChange={(value) =>
+                            handleInputChange("gender", value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="non-binary">
+                              Non-binary
+                            </SelectItem>
+                            <SelectItem value="prefer-not-to-say">
+                              Prefer not to say
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
                       <Label
-                        htmlFor="phone"
+                        htmlFor="dateOfBirth"
                         className="font-montserrat-semibold"
                       >
-                        Phone Number
+                        Date of Birth
                       </Label>
                       <Input
-                        id="phone"
-                        type="tel"
-                        value={formData.phone || ""}
+                        id="dateOfBirth"
+                        type="date"
+                        value={
+                          formData.dateOfBirth
+                            ? new Date(formData.dateOfBirth)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
                         onChange={(e) =>
-                          handleInputChange("phone", e.target.value)
+                          handleInputChange(
+                            "dateOfBirth",
+                            e.target.value ? new Date(e.target.value) : null
+                          )
                         }
                       />
                     </div>
                   </div>
                 )}
 
-                {/* Step 2: Professional Details */}
+                {/* Step 2: Professional Bio */}
                 {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                        <CaseRoundMinimalistic className="w-6 h-6 text-primary" />
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="address"
+                      className="font-montserrat-semibold"
+                    >
+                      Address
+                    </Label>
+                    <div className="relative">
+                      <div className="relative">
+                        <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                        <Input
+                          id="address"
+                          type="text"
+                          placeholder="Start typing your address..."
+                          value={addressInputValue}
+                          onChange={(e) =>
+                            handleInputChange("address", e.target.value)
+                          }
+                          onFocus={() => {
+                            if (
+                              addressInputValue.trim().length > 2 &&
+                              placePredictions.length > 0
+                            ) {
+                              setShowAddressPredictions(true);
+                            }
+                          }}
+                          onBlur={() => {
+                            // Delay hiding predictions to allow for selection
+                            setTimeout(
+                              () => setShowAddressPredictions(false),
+                              200
+                            );
+                          }}
+                          className="pl-10 text-sm"
+                          autoComplete="off"
+                        />
+                        {(isPlacePredictionsLoading || isTyping) && (
+                          <Refresh className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                        )}
                       </div>
-                      <div>
-                        <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Professional Details
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Tell us about your professional background
-                        </p>
-                      </div>
+
+                      {/* Predictions Dropdown */}
+                      {showAddressPredictions &&
+                        placePredictions.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            {placePredictions.map((prediction) => (
+                              <div
+                                key={prediction.place_id}
+                                onClick={() => handleAddressSelect(prediction)}
+                                className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                onMouseDown={(e) => e.preventDefault()} // Prevent blur event
+                              >
+                                <div className="flex items-start gap-3">
+                                  <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-900 font-medium truncate">
+                                      {prediction.structured_formatting
+                                        ?.main_text ||
+                                        prediction.description.split(",")[0]}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                                      {prediction.structured_formatting
+                                        ?.secondary_text ||
+                                        prediction.description
+                                          .split(",")
+                                          .slice(1)
+                                          .join(",")
+                                          .trim()}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="bio" className="font-montserrat-semibold">
-                        Professional Bio
-                      </Label>
-                      <Textarea
-                        id="bio"
-                        placeholder="Tell us about yourself and your experience in support work..."
-                        value={formData.bio || ""}
-                        onChange={(e) =>
-                          handleInputChange("bio", e.target.value)
-                        }
-                        className="min-h-[150px]"
-                      />
-                    </div>
+                    {/* Show selected address confirmation */}
+                    {selectedAddress &&
+                      selectedAddress !== addressInputValue && (
+                        <div className="text-xs text-green-600 flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" />
+                          Address selected: {selectedAddress}
+                        </div>
+                      )}
                   </div>
                 )}
 
-                {/* Step 3: Skills & Experience */}
+                {/* Step 3: Skills & Languages */}
                 {currentStep === 3 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
@@ -1286,10 +1580,10 @@ export default function EditProfile() {
                       </div>
                       <div>
                         <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Skills & Experience
+                          Skills & Languages
                         </h2>
                         <p className="text-sm text-gray-600">
-                          Your professional skills and work experience
+                          Your professional skills and languages
                         </p>
                       </div>
                     </div>
@@ -1299,19 +1593,32 @@ export default function EditProfile() {
                       <Label className="font-montserrat-semibold">
                         Professional Skills
                       </Label>
+                      <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <p className="text-sm text-gray-600">
+                          Skills are managed by system administrator. Current
+                          skills: {formData.skills?.length || 0}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Languages */}
+                    <div className="space-y-4">
+                      <Label className="font-montserrat-semibold">
+                        Languages Spoken
+                      </Label>
                       <div className="flex flex-wrap gap-2">
-                        {(formData.skills || []).map(
-                          (skill: string, index: number) => (
+                        {(formData.languages || []).map(
+                          (lang: string, index: number) => (
                             <Badge
                               key={index}
-                              className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-sm pr-1"
+                              className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-xs pr-1 h-6"
                             >
-                              {skill}
+                              {lang}
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-auto p-0 ml-2 hover:bg-transparent"
-                                onClick={() => removeItem("skills", index)}
+                                className="text-xs p-0 ml-2 hover:bg-transparent"
+                                onClick={() => removeItem("languages", index)}
                               >
                                 <X className="h-3 w-3" />
                               </Button>
@@ -1319,17 +1626,33 @@ export default function EditProfile() {
                           )
                         )}
                       </div>
+                      {/* Show a list of common languages to add */}
+                      <div className="flex flex-wrap gap-4">
+                        {commonLanguages
+                          .filter((lang) => !formData.languages?.includes(lang))
+                          .map((lang) => (
+                            <Button
+                              key={lang}
+                              type="button"
+                              variant="outline"
+                              onClick={() => addItem("languages", lang)}
+                              className="text-xs h-6 hover:bg-primary-700 hover:text-white transition-colors rounded-full"
+                            >
+                              {lang}
+                            </Button>
+                          ))}
+                      </div>
                       <div className="flex gap-2">
                         <Input
-                          placeholder="Add skill"
-                          value={newSkill}
-                          onChange={(e) => setNewSkill(e.target.value)}
+                          placeholder="Add language"
+                          value={newLanguage}
+                          onChange={(e) => setNewLanguage(e.target.value)}
                           onKeyPress={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
-                              if (newSkill.trim()) {
-                                addItem("skills", newSkill);
-                                setNewSkill("");
+                              if (newLanguage.trim()) {
+                                addItem("languages", newLanguage);
+                                setNewLanguage("");
                               }
                             }
                           }}
@@ -1337,9 +1660,9 @@ export default function EditProfile() {
                         <Button
                           type="button"
                           onClick={() => {
-                            if (newSkill.trim()) {
-                              addItem("skills", newSkill);
-                              setNewSkill("");
+                            if (newLanguage.trim()) {
+                              addItem("languages", newLanguage);
+                              setNewLanguage("");
                             }
                           }}
                           className="gap-2"
@@ -1347,6 +1670,25 @@ export default function EditProfile() {
                           <Plus className="h-4 w-4" />
                           Add
                         </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 4: Experience */}
+                {currentStep === 4 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                        <Translation className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-montserrat-bold text-gray-900">
+                          Work Experience
+                        </h2>
+                        <p className="text-sm text-gray-600">
+                          Your professional work experience
+                        </p>
                       </div>
                     </div>
 
@@ -1367,8 +1709,17 @@ export default function EditProfile() {
                                   <h4 className="font-montserrat-bold text-gray-900">
                                     {exp.title} at {exp.organization}
                                   </h4>
-                                  <p className="text-xs text-gray-600">
-                                    {exp.startDate} - {exp.endDate || "Present"}
+                                  <p className="text-sm text-gray-600">
+                                    {exp.startDate &&
+                                      new Date(
+                                        exp.startDate
+                                      ).toLocaleDateString()}{" "}
+                                    -{" "}
+                                    {exp.endDate
+                                      ? new Date(
+                                          exp.endDate
+                                        ).toLocaleDateString()
+                                      : "Present"}
                                   </p>
                                 </div>
                                 <Button
@@ -1465,80 +1816,91 @@ export default function EditProfile() {
                   </div>
                 )}
 
-                {/* Step 4: Languages & Rates */}
-                {currentStep === 4 && (
+                {/* Step 5: Location & Service Areas */}
+                {currentStep === 5 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                        <Translation className="w-6 h-6 text-primary" />
+                        <MapPoint className="w-6 h-6 text-primary" />
                       </div>
                       <div>
                         <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Languages & Rates
+                          Location & Service Areas
                         </h2>
                         <p className="text-sm text-gray-600">
-                          Languages you speak and your shift rates
+                          Your service location and travel radius
                         </p>
                       </div>
                     </div>
 
-                    {/* Languages */}
-                    <div className="space-y-4">
-                      <Label className="font-montserrat-semibold">
-                        Languages Spoken
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="travelRadiusKm"
+                        className="font-montserrat-semibold"
+                      >
+                        Travel Radius (km)
                       </Label>
-                      <div className="flex flex-wrap gap-2">
-                        {(formData.languages || []).map(
-                          (lang: string, index: number) => (
-                            <Badge
-                              key={index}
-                              className="bg-primary-100 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-sm pr-1"
-                            >
-                              {lang}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-auto p-0 ml-2 hover:bg-transparent"
-                                onClick={() => removeItem("languages", index)}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </Badge>
+                      <Input
+                        id="travelRadiusKm"
+                        type="number"
+                        value={formData.travelRadiusKm || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "travelRadiusKm",
+                            parseFloat(e.target.value) || 0
                           )
-                        )}
+                        }
+                        placeholder="Enter travel radius in kilometers"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <Label className="font-montserrat-semibold">
+                          State IDs
+                        </Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {formData.stateIds?.length || 0} configured
+                        </p>
                       </div>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Add language"
-                          value={newLanguage}
-                          onChange={(e) => setNewLanguage(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              if (newLanguage.trim()) {
-                                addItem("languages", newLanguage);
-                                setNewLanguage("");
-                              }
-                            }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            if (newLanguage.trim()) {
-                              addItem("languages", newLanguage);
-                              setNewLanguage("");
-                            }
-                          }}
-                          className="gap-2"
-                        >
-                          <Plus className="h-4 w-4" />
-                          Add
-                        </Button>
+                      <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <Label className="font-montserrat-semibold">
+                          Region IDs
+                        </Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {formData.regionIds?.length || 0} configured
+                        </p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <Label className="font-montserrat-semibold">
+                          Service Area IDs
+                        </Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {formData.serviceAreaIds?.length || 0} configured
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 6: Rates & Availability */}
+                {currentStep === 6 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                        <CalendarMark className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-montserrat-bold text-gray-900">
+                          Rates & Availability
+                        </h2>
+                        <p className="text-sm text-gray-600">
+                          Your shift rates and availability schedule
+                        </p>
                       </div>
                     </div>
 
-                    {/* Shift Rates - Placeholder for now */}
+                    {/* Shift Rates */}
                     <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
                       <div className="flex items-center gap-2 mb-2">
                         <Dollar className="w-5 h-5 text-primary" />
@@ -1547,63 +1909,26 @@ export default function EditProfile() {
                         </Label>
                       </div>
                       <p className="text-sm text-gray-600">
-                        Contact your administrator to update shift rates
+                        {formData.shiftRates?.length || 0} shift rates
+                        configured. Contact your administrator to update rates.
                       </p>
                     </div>
-                  </div>
-                )}
 
-                {/* Step 5: Availability */}
-                {currentStep === 5 && (
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                        <CalendarMark className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Availability
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Set your weekly availability schedule
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                      <p className="text-sm text-gray-600">
-                        Availability scheduling feature coming soon. Contact
-                        your administrator for now.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 6: Bio & Preferences */}
-                {currentStep === 6 && (
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                        <DocumentText className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-montserrat-bold text-gray-900">
-                          Additional Information
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Certifications and additional preferences
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                      <Label className="font-montserrat-semibold mb-3 block">
-                        Certifications
+                    {/* Availability */}
+                    <div className="space-y-4">
+                      <Label className="font-montserrat-semibold">
+                        Weekly Availability
                       </Label>
-                      <p className="text-sm text-gray-600">
-                        Contact your administrator to add or update
-                        certifications
-                      </p>
+                      <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <p className="text-sm text-gray-600">
+                          Availability is managed through the admin panel.
+                          Current status:{" "}
+                          {formData.availability?.weekdays?.filter(
+                            (day: any) => day.available
+                          )?.length || 0}{" "}
+                          days available
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}

@@ -1359,7 +1359,7 @@ export function ParticipantSetup({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm">
-                                Organization Name
+                                Name
                               </FormLabel>
                               <FormControl>
                                 <Input

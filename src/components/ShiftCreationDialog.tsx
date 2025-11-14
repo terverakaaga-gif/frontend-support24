@@ -50,6 +50,7 @@ import {
   filterValidWorkers,
 } from "@/lib/utils";
 import { types } from "util";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Types
 interface RoutineTask {
@@ -139,6 +140,7 @@ export default function ShiftCreationDialog({
   const [routineOption, setRoutineOption] = useState<
     "none" | "create" | "select"
   >("none");
+  const {user} = useAuth()
 
   const { data: serviceTypes = [], isLoading: loadingServiceTypes } =
     useGetActiveServiceTypes();
@@ -156,7 +158,7 @@ export default function ShiftCreationDialog({
     startTime: "",
     endTime: "",
     locationType: "inPerson",
-    address: "",
+    address: user.address || "",
     shiftType: "directBooking",
     requiresSupervision: false,
     specialInstructions: "",
@@ -685,12 +687,11 @@ export default function ShiftCreationDialog({
                   <Input
                     id="address"
                     type="text"
+                    
                     placeholder="Enter full address..."
                     value={formData.address}
                     className="pl-10"
-                    onChange={(e) =>
-                      handleInputChange("address", e.target.value)
-                    }
+                    disabled={formData.locationType === "inPerson"}
                   />
                 </div>
                 <p className="text-xs text-gray-500">
