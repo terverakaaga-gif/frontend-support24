@@ -2,6 +2,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UsersGroupTwoRounded } from "@solar-icons/react";
 import { IConversation, IUser } from "@/types/chat.types";
+import { useChatStore } from "@/store/chatStore";
 
 interface ConversationItemProps {
   conversation: IConversation;
@@ -33,6 +34,8 @@ export const ConversationItem = ({
   onClick,
   isActive,
 }: ConversationItemProps) => {
+  const { onlineUsers } = useChatStore();
+  
   const otherMember = conversation.members.find(
     (member) => member.userId._id !== user._id
   )?.userId;
@@ -41,6 +44,9 @@ export const ConversationItem = ({
     conversation.type === "direct"
       ? `${otherMember?.firstName || ""} ${otherMember?.lastName || ""}`.trim()
       : conversation.name;
+
+  // Fix: Check if the OTHER member is online, not the current user
+  const isOtherMemberOnline = otherMember && onlineUsers.some(onlineUser => onlineUser._id === otherMember._id);
 
   const getLastMessagePreview = () => {
     if (!conversation.lastMessage) return "No messages yet";
@@ -79,7 +85,8 @@ export const ConversationItem = ({
                 {otherMember?.firstName?.[0] || "U"}
               </AvatarFallback>
             </Avatar>
-            {conversation.isActive && (
+            {/* Fix: Show online status for the other member, not current user */}
+            {conversation.type === "direct" && isOtherMemberOnline && (
               <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 bg-green-500 border-2 border-white rounded-full" />
             )}
           </>

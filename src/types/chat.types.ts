@@ -99,7 +99,7 @@ export interface IChatState {
 	setCurrentConversation: (conversation: IConversation | null) => void;
 	setMessages: (messages: IMessage[]) => void;
 	addMessage: (message: IMessage) => void;
-	updateMessage: (message: IMessage, updates: Partial<IMessage>) => void;
+	updateMessage: (messageId: string, updates: Partial<IMessage>) => void;
 	deleteMessage: (messageId: string) => void;
 	setOnlineUsers: (users: IUser[]) => void;
 	setLoading: (loading: boolean) => void;

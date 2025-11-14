@@ -15,133 +15,28 @@ import {
   Paperclip,
   Microphone2,
   SmileCircle,
-  Filter,
-  Bell,
 } from "@solar-icons/react";
 import { Loader2, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import useChat from "@/hooks/useChat";
-import { tokenStorage } from "@/api/apiClient";
 import { useChatStore } from "@/store/chatStore";
-import { useParams, useNavigate } from "react-router-dom";
-import { IConversation } from "@/types/chat.types";
-import { ChatCreationModal } from "@/components/ChatCreationModal";
-import { organizationService } from "@/api/services/organizationService";
-import { adminUserService } from "@/api/services/adminUserService";
-import chatServices from "@/api/services/chatService";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ConversationItem } from "@/components/ConversationItem";
-import { ChatFilterButton } from "@/components/ChatFilterButton";
+import chatServices from "@/api/services/chatService";
+import { adminUserService } from "@/api/services/adminUserService";
+import { organizationService } from "@/api/services/organizationService";
+import { tokenStorage } from "@/api/apiClient";
+import { IConversation } from "@/types/chat.types";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
-
-// Message Component
-const MessageBubble = ({
-  message,
-  user,
-  currentConversation,
-  getOtherMember,
-}) => {
-  const isOwnMessage = message.sender._id === user._id;
-
-  const formatMessageTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
-  const getStatusIcon = (status: string) => {
-    if (status === "read") {
-      return (
-        <svg
-          className="h-4 w-4 text-primary"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-        >
-          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-          <path d="M11.354 1.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z" />
-        </svg>
-      );
-    }
-    return (
-      <svg
-        className="h-4 w-4 text-gray-400"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-      >
-        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-      </svg>
-    );
-  };
-
-  return (
-    <div
-      className={`flex gap-3 mb-4 ${
-        isOwnMessage ? "flex-row-reverse" : "flex-row"
-      }`}
-    >
-      {!isOwnMessage && (
-        <Avatar className="h-10 w-10 flex-shrink-0 ring-2 ring-white shadow-sm">
-          <AvatarImage
-            src={
-              currentConversation.type === "direct"
-                ? getOtherMember(currentConversation)?.profileImage
-                : message.sender.profileImage
-            }
-            className="object-cover"
-          />
-          <AvatarFallback className="bg-primary text-white font-montserrat-semibold text-sm">
-            {currentConversation.type === "direct"
-              ? getOtherMember(currentConversation)?.firstName[0]
-              : message.sender.firstName[0]}
-          </AvatarFallback>
-        </Avatar>
-      )}
-
-      <div
-        className={`flex flex-col max-w-[70%] ${
-          isOwnMessage ? "items-end" : "items-start"
-        }`}
-      >
-        {!isOwnMessage && currentConversation.type === "group" && (
-          <span className="text-xs font-montserrat-semibold text-gray-600 mb-1 px-1">
-            {message.sender.firstName}
-          </span>
-        )}
-
-        <div
-          className={`rounded-2xl px-4 py-2.5 shadow-sm ${
-            isOwnMessage
-              ? "bg-primary text-white rounded-br-md"
-              : "bg-white text-gray-900 rounded-bl-md border border-gray-100"
-          }`}
-        >
-          <p className="text-[15px] leading-relaxed break-words">
-            {message.content}
-          </p>
-        </div>
-
-        <div
-          className={`flex items-center gap-1.5 mt-1 px-1 ${
-            isOwnMessage ? "flex-row-reverse" : "flex-row"
-          }`}
-        >
-          <span className="text-xs text-gray-1000">
-            {formatMessageTime(message.createdAt)}
-          </span>
-          {isOwnMessage && getStatusIcon(message.status)}
-        </div>
-      </div>
-    </div>
-  );
-};
+import { ChatFilterButton } from "@/components/ChatFilterButton";
+import { ConversationItem } from "@/components/ConversationItem";
+import { ChatCreationModal } from "@/components/ChatCreationModal";
+import { MessageBubble } from "@/components/MessageBubble";
 
 export default function ChatView() {
   const { user, logout } = useAuth();
-  const { conversationId } = useParams();
+  const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -157,15 +52,20 @@ export default function ChatView() {
     cleanupSocketListeners,
     sendMessage,
     createNewConversation,
+    sendTypingStatus,
   } = useChat();
 
-  const { currentConversation, messages, setCurrentConversation, onlineUsers } =
-    useChatStore();
-  const [conversationsLoaded, setConversationsLoaded] = useState(false);
+  const {
+    currentConversation,
+    messages,
+    setCurrentConversation,
+    onlineUsers,
+    typingUsers,
+  } = useChatStore();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [messageText, setMessageText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
@@ -194,69 +94,57 @@ export default function ChatView() {
     queryFn: async () => await organizationService.getOrganizations(),
   });
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Auto-scroll effect
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const scrollTimer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
 
+    return () => clearTimeout(scrollTimer);
+  }, [messages.length]);
+
+  // Initialize socket and load conversations ONCE
   useEffect(() => {
     const tokens = tokenStorage.getTokens();
-    if (tokens?.access?.token && !conversationsLoaded) {
-      // Only load if not already loaded
+    if (tokens?.access?.token) {
       connect(tokens.access.token);
       loadConversations(tokens.access.token).finally(() => {
         setIsLoadingConversations(false);
-        setConversationsLoaded(true); // Mark as loaded
       });
     }
 
     return () => {
       cleanupSocketListeners();
     };
-  }, [conversationsLoaded]);
+  }, []); // Empty dependency array - only run once on mount
 
-  // This useEffect now solely handles setting currentConversation after conversations are loaded
+  // Handle conversation selection from URL params
   useEffect(() => {
-    if (conversationId && chatConversations.length > 0) {
+    if (conversationId && chatConversations.length > 0 && !isLoadingConversations) {
       const conversation = chatConversations.find(
         (conv) => conv._id === conversationId
       );
-      if (
-        conversation &&
-        (!currentConversation || currentConversation._id !== conversation._id)
-      ) {
+      
+      if (conversation) {
+        console.log("Setting current conversation:", conversation);
         setCurrentConversation(conversation);
+      } else {
+        console.warn("Conversation not found:", conversationId);
       }
     }
-  }, [chatConversations, conversationId]);
+  }, [conversationId, chatConversations, isLoadingConversations]);
 
   // Load messages when currentConversation changes
   useEffect(() => {
     const tokens = tokenStorage.getTokens();
     if (currentConversation && tokens?.access?.token) {
+      console.log("Loading messages for:", currentConversation._id);
       setIsLoadingMessages(true);
       loadMessages(currentConversation._id, tokens.access.token).finally(() => {
         setIsLoadingMessages(false);
       });
     }
-  }, [currentConversation]);
-
-  useEffect(() => {
-    if (conversationId && chatConversations.length > 0) {
-      const conversation = chatConversations.find(
-        (conv) => conv._id === conversationId
-      );
-      if (
-        conversation &&
-        (!currentConversation || currentConversation._id !== conversation._id)
-      ) {
-        setCurrentConversation(conversation);
-      }
-    }
-  }, [chatConversations, conversationId]);
+  }, [currentConversation?._id]); // Only depend on the ID
 
   // Auto-resize textarea
   useEffect(() => {
@@ -270,6 +158,9 @@ export default function ChatView() {
   }, [messageText]);
 
   const handleChatSelect = (chatId: string) => {
+    // Close sidebar on mobile when selecting a chat
+    setIsSidebarOpen(false);
+    
     const roleRoutes: Record<string, string> = {
       supportWorker: `/support-worker/chat/${chatId}`,
       participant: `/participant/chat/${chatId}`,
@@ -287,16 +178,6 @@ export default function ChatView() {
 
     try {
       await sendMessage(messageToSend, "text");
-      await loadConversations(tokenStorage.getTokens()?.access.token);
-      await loadMessages(
-        currentConversation._id,
-        tokenStorage.getTokens()?.access.token
-      );
-
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-      }, 2000);
     } catch (error) {
       console.error("Failed to send message:", error);
       setMessageText(messageToSend);
@@ -347,8 +228,42 @@ export default function ChatView() {
       ?.userId;
   };
 
+  // Handle typing indicator
+  useEffect(() => {
+    let typingTimer: NodeJS.Timeout;
+
+    if (messageText.length > 0 && currentConversation) {
+      sendTypingStatus(currentConversation._id, true);
+
+      // Clear previous timer
+      if (typingTimer) {
+        clearTimeout(typingTimer);
+      }
+
+      // Set timer to stop typing indicator
+      typingTimer = setTimeout(() => {
+        sendTypingStatus(currentConversation._id, false);
+      }, 2000);
+    } else if (currentConversation) {
+      sendTypingStatus(currentConversation._id, false);
+    }
+
+    return () => {
+      if (typingTimer) {
+        clearTimeout(typingTimer);
+      }
+    };
+  }, [messageText, currentConversation?._id]);
+
+  // Get typing users for current conversation (excluding current user)
+  const currentTypingUsers = currentConversation
+    ? (typingUsers[currentConversation._id] || []).filter(
+        (userId) => userId !== user._id
+      )
+    : [];
+
   const isUserOnline = (userId: string) => {
-    return onlineUsers.some((u) => u._id === userId);
+    return onlineUsers.some((onlineUser) => onlineUser._id === userId);
   };
 
   const toggleUserSelection = (userId: string) => {
@@ -498,7 +413,7 @@ export default function ChatView() {
       />
 
       <div className="flex flex-col md:flex-row gap-4 sm:gap-5 h-[85vh] md:h-[85vh]">
-        {/* Left Sidebar - Conversations List - Make it a modal/drawer on mobile */}
+        {/* Left Sidebar - Conversations List */}
         <div
           className={`w-full md:w-[400px] shadow-sm rounded-xl flex flex-col bg-white overflow-hidden fixed md:static inset-0 z-50 md:z-auto transform ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -684,6 +599,12 @@ export default function ChatView() {
                               currentConversation.updatedAt
                             )}`
                           )
+                        ) : currentTypingUsers.length > 0 ? (
+                          <span className="text-primary font-montserrat-semibold">
+                            {currentTypingUsers.length === 1
+                              ? "Someone is typing..."
+                              : `${currentTypingUsers.length} people are typing...`}
+                          </span>
                         ) : (
                           `${currentConversation.members.length} members`
                         )}
@@ -776,17 +697,11 @@ export default function ChatView() {
                     ))}
 
                     {/* Typing Indicator */}
-                    {isTyping && (
+                    {currentTypingUsers.length > 0 && (
                       <div className="flex gap-3 mb-4">
                         <Avatar className="h-10 w-10 flex-shrink-0 ring-2 ring-white shadow-sm">
-                          <AvatarImage
-                            src={
-                              getOtherMember(currentConversation)?.profileImage
-                            }
-                            className="object-cover"
-                          />
                           <AvatarFallback className="bg-primary text-white font-montserrat-semibold text-sm">
-                            {getOtherMember(currentConversation)?.firstName[0]}
+                            T
                           </AvatarFallback>
                         </Avatar>
                         <div className="bg-white rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100">

@@ -342,16 +342,15 @@ export default function Conversations() {
                     Start New Chat
                   </Button>
                 </div>
-              ) : (
-                filteredConversations.map((conversation) => (
-                  <ConversationItem
-                    key={conversation._id}
-                    conversation={conversation}
-                    user={user}
-                    onClick={() => handleChatClick(conversation._id)}
-                    isActive={currentConversation?._id === conversation._id}
-                  />
-                ))
+              ) : (filteredConversations.map((conversation) => (
+                                  <ConversationItem
+                                    key={conversation._id}
+                                    conversation={conversation}
+                                    user={user}
+                                    onClick={() => handleChatClick(conversation._id)}
+                                    isActive={currentConversation?._id === conversation._id}
+                                  />
+                                ))
               )}
             </div>
           </ScrollArea>
