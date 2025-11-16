@@ -18,12 +18,14 @@ const chatServices = {
 		description?: string,
 		organizationId?: string
 	) => {
+		console.log("Creating conversation:", { type, memberIds, name, description });
 		const response = await post<ICreateConversationResponse>(
 			`/chat/conversations`,
 			{
 				type,
 				memberIds,
-				...(type === "group" && { name, description, organizationId }),
+				...(type === "group" && { name, description }),
+				...(organizationId && { organizationId }),
 			},
 			{
 				headers: {
@@ -52,15 +54,26 @@ const chatServices = {
 		page = 1,
 		limit = 50
 	) => {
-		const response = await get<IMessagesResponse>(
-			`/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-		);
-		return response;
+		console.log("ChatService: Getting messages for conversation:", conversationId);
+
+		try {
+			const response = await get<IMessagesResponse>(
+				`/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			console.log("ChatService: Messages response:", response);
+			console.log("ChatService: Messages count:", response.messages?.length || 0);
+
+			return response;
+		} catch (error) {
+			console.error("ChatService: Error getting messages:", error);
+			throw error;
+		}
 	},
 
 	sendMessage: async (
@@ -69,6 +82,7 @@ const chatServices = {
 		content: string,
 		type: TMessageType = "text"
 	) => {
+		console.log("Sending message:", { conversationId, content, type });
 		const response = await post<ISendMessageResponse>(
 			`/chat/conversations/${conversationId}/messages`,
 			{

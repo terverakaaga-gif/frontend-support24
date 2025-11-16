@@ -1,4 +1,3 @@
-// pages/ChatView.tsx
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -48,7 +47,7 @@ export default function ChatView() {
     loading,
     setLoading,
     connect,
-    loadMessages,
+    selectConversation,
     cleanupSocketListeners,
     sendMessage,
     createNewConversation,
@@ -59,6 +58,8 @@ export default function ChatView() {
     currentConversation,
     messages,
     setCurrentConversation,
+    clearMessages, // Add this
+    clearCurrentConversation, // Add this
     onlineUsers,
     typingUsers,
   } = useChatStore();
@@ -73,6 +74,7 @@ export default function ChatView() {
   const [chatType, setChatType] = useState<"direct" | "group" | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [groupName, setGroupName] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
 
   const { data: all_users = [], isLoading: loadingUsers } = useQuery({
     queryKey: ["support-worker-organizations"],
@@ -105,43 +107,91 @@ export default function ChatView() {
 
   // Initialize socket and load conversations ONCE
   useEffect(() => {
-    const tokens = tokenStorage.getTokens();
-    if (tokens?.access?.token) {
-      connect(tokens.access.token);
-      loadConversations(tokens.access.token).finally(() => {
-        setIsLoadingConversations(false);
-      });
-    }
+    const initializeChat = async () => {
+      const tokens = tokenStorage.getTokens();
+      if (tokens?.access?.token) {
+        try {
+          setIsLoadingConversations(true);
+          
+          // Connect to socket
+          connect(tokens.access.token);
+          setSocketConnected(true);
+          
+          // Load conversations
+          await loadConversations(tokens.access.token);
+        } catch (error) {
+          console.error("Failed to initialize chat:", error);
+        } finally {
+          setIsLoadingConversations(false);
+        }
+      }
+    };
+
+    initializeChat();
 
     return () => {
       cleanupSocketListeners();
     };
   }, []); // Empty dependency array - only run once on mount
 
-  // Handle conversation selection from URL params
+  // Update the conversation selection effect to prevent unnecessary reloads
   useEffect(() => {
-    if (conversationId && chatConversations.length > 0 && !isLoadingConversations) {
-      const conversation = chatConversations.find(
-        (conv) => conv._id === conversationId
-      );
-      
-      if (conversation) {
-        setCurrentConversation(conversation);
-      } else {
-      }
-    }
-  }, [conversationId, chatConversations, isLoadingConversations]);
+    const selectConversationFromUrl = async () => {
+      console.log("=== Conversation Selection ===");
+      console.log("URL conversationId:", conversationId);
+      console.log("Current conversation:", currentConversation?._id);
+      console.log("Available conversations:", chatConversations.length);
 
-  // Load messages when currentConversation changes
+      if (conversationId && chatConversations.length > 0 && !isLoadingConversations) {
+        const conversation = chatConversations.find(
+          (conv) => conv._id === conversationId
+        );
+        
+        if (conversation) {
+          // Only load if we're actually switching conversations
+          if (!currentConversation || currentConversation._id !== conversationId) {
+            console.log("Switching to new conversation, loading messages");
+            
+            const tokens = tokenStorage.getTokens();
+            if (tokens?.access?.token) {
+              setIsLoadingMessages(true);
+              try {
+                await selectConversation(conversationId, tokens.access.token);
+                console.log("Successfully switched conversation");
+              } catch (error) {
+                console.error("Failed to select conversation:", error);
+              } finally {
+                setIsLoadingMessages(false);
+              }
+            }
+          } else {
+            console.log("Same conversation already selected, no action needed");
+          }
+        } else {
+          console.error("Conversation not found in list:", conversationId);
+          clearCurrentConversation();
+          navigate(
+            user.role === "supportWorker"
+              ? "/support-worker/chats"
+              : user.role === "participant"
+              ? "/participant/chats"
+              : "/admin/chats"
+          );
+        }
+      } else if (!conversationId) {
+        console.log("No conversationId, clearing current conversation");
+        clearCurrentConversation();
+      }
+    };
+
+    selectConversationFromUrl();
+  }, [conversationId, chatConversations, isLoadingConversations]); // Removed currentConversation dependency
+
+  // Add a debug effect to monitor current conversation and messages
   useEffect(() => {
-    const tokens = tokenStorage.getTokens();
-    if (currentConversation && tokens?.access?.token) {
-      setIsLoadingMessages(true);
-      loadMessages(currentConversation._id, tokens.access.token).finally(() => {
-        setIsLoadingMessages(false);
-      });
-    }
-  }, [currentConversation?._id]); // Only depend on the ID
+    console.log("Current conversation changed:", currentConversation?._id);
+    console.log("Messages count:", messages.length);
+  }, [currentConversation?._id, messages.length]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -154,10 +204,11 @@ export default function ChatView() {
     }
   }, [messageText]);
 
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = async (chatId: string) => {
     // Close sidebar on mobile when selecting a chat
     setIsSidebarOpen(false);
     
+    // Navigate to the new conversation
     const roleRoutes: Record<string, string> = {
       supportWorker: `/support-worker/chat/${chatId}`,
       participant: `/participant/chat/${chatId}`,
@@ -166,17 +217,20 @@ export default function ChatView() {
     navigate(roleRoutes[user.role] || `/admin/chat/${chatId}`);
   };
 
+  // Update handleSendMessage to not trigger any reloads
   const handleSendMessage = async () => {
     if (!messageText.trim() || !currentConversation || isSending) return;
 
     setIsSending(true);
     const messageToSend = messageText.trim();
-    setMessageText("");
+    setMessageText(""); // Clear input immediately
 
     try {
+      // Send message - this will use optimistic updates
       await sendMessage(messageToSend, "text");
     } catch (error) {
       console.error("Failed to send message:", error);
+      // Restore message text on error
       setMessageText(messageToSend);
     } finally {
       setIsSending(false);
@@ -275,6 +329,20 @@ export default function ChatView() {
     );
   };
 
+  // Fix the chatType useEffect to prevent infinite loops
+  useEffect(() => {
+    // Only set chat type when creating chat and users are selected
+    if (isCreatingChat) {
+      if (selectedUsers.length > 1) {
+        setChatType('group');
+      } else if (selectedUsers.length === 1) {
+        setChatType('direct');
+      } else {
+        setChatType(null);
+      }
+    }
+  }, [selectedUsers.length, isCreatingChat]); // Removed chatType dependency
+
   const handleCreateChat = async () => {
     const tokens = tokenStorage.getTokens();
     if (!tokens?.access?.token) return;
@@ -284,16 +352,53 @@ export default function ChatView() {
       let newConversation;
 
       if (chatType === "direct") {
+        if (selectedUsers.length !== 1) {
+          console.error("Direct chat requires exactly 1 user");
+          return;
+        }
+        
+        // Check if direct conversation already exists
+        const existingDirectConv = chatConversations.find(conv => 
+          conv.type === "direct" && 
+          conv.members.length === 2 && // Ensure it's a direct chat
+          conv.members.some(member => member.userId._id === selectedUsers[0]) &&
+          conv.members.some(member => member.userId._id === user._id)
+        );
+
+        if (existingDirectConv) {
+          console.log("Direct conversation already exists, navigating to it");
+          // Navigate to existing conversation instead of creating new one
+          const roleRoutes: Record<string, string> = {
+            supportWorker: `/support-worker/chat/${existingDirectConv._id}`,
+            participant: `/participant/chat/${existingDirectConv._id}`,
+            admin: `/admin/chat/${existingDirectConv._id}`,
+          };
+          navigate(roleRoutes[user.role] || `/admin/chat/${existingDirectConv._id}`);
+          
+          setIsCreatingChat(false);
+          setSelectedUsers([]);
+          setGroupName("");
+          setChatType(null);
+          return;
+        }
+
         newConversation = await createNewConversation(
           "direct",
           selectedUsers,
           tokens.access.token,
-          "Direct Chat",
-          "Testing Direct Chat",
+          undefined, // No name for direct chat
+          undefined, // No description for direct chat
           organizations[0]?._id
         );
       } else {
-        if (selectedUsers.length < 2) return;
+        if (selectedUsers.length < 2) {
+          console.error("Group chat requires at least 2 users");
+          return;
+        }
+        if (!groupName.trim()) {
+          console.error("Group chat requires a name");
+          return;
+        }
         newConversation = await createNewConversation(
           "group",
           selectedUsers,
@@ -305,7 +410,7 @@ export default function ChatView() {
       }
 
       if (newConversation) {
-        setCurrentConversation(newConversation);
+        // Navigate to the new conversation
         const roleRoutes: Record<string, string> = {
           supportWorker: `/support-worker/chat/${newConversation._id}`,
           participant: `/participant/chat/${newConversation._id}`,
@@ -320,6 +425,7 @@ export default function ChatView() {
       setIsCreatingChat(false);
       setSelectedUsers([]);
       setGroupName("");
+      setChatType(null);
     }
   };
 
@@ -353,24 +459,10 @@ export default function ChatView() {
         onViewProfile={() => {
           navigate(
             user.role === "supportWorker"
-              ? Object.keys(pageTitles.supportWorker).find(
-                  (key) =>
-                    key !== "/support-worker/chats" &&
-                    pageTitles.supportWorker[key] ===
-                      pageTitles.supportWorker["/support-worker/profile"]
-                )
+              ? "/support-worker/profile"
               : user.role === "participant"
-              ? Object.keys(pageTitles.participant).find(
-                  (key) =>
-                    key !== "/participant/chats" &&
-                    pageTitles.participant[key] ===
-                      pageTitles.participant["/participant/profile"]
-                )
-              : Object.keys(pageTitles.admin).find(
-                  (key) =>
-                    key !== "/admin/chats" &&
-                    pageTitles.admin[key] === pageTitles.admin["/admin/profile"]
-                )
+              ? "/participant/profile"
+              : "/admin/profile"
           );
         }}
         onLogout={logout}
@@ -395,10 +487,13 @@ export default function ChatView() {
                 />
               </svg>
             </Button>
-            {/* Create New Chat Button (Direct or Group) */}
+            {/* Create New Chat Button */}
             {user.role !== "supportWorker" && (
               <Button
-                onClick={() => setIsCreatingChat(true)}
+                onClick={() => {
+                  setIsCreatingChat(true);
+                  setChatType(null);
+                }}
                 className="w-full sm:w-auto h-10 sm:h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold shadow-sm text-sm sm:text-base"
               >
                 <Plus size={20} className="sm:w-6 sm:h-6" />
@@ -552,7 +647,7 @@ export default function ChatView() {
                             <AvatarFallback className="bg-primary text-white font-montserrat-semibold">
                               {
                                 getOtherMember(currentConversation)
-                                  ?.firstName[0]
+                                  ?.firstName?.[0]
                               }
                             </AvatarFallback>
                           </Avatar>
@@ -638,14 +733,38 @@ export default function ChatView() {
               {/* Messages Area */}
               <ScrollArea className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-gray-100">
                 {isLoadingMessages ? (
+                  <>
+                  {/* Loading bubbles */}
                   <div className="flex items-center justify-center h-full">
-                    <div className="text-center">
-                      <Loader2 className="h-8 w-8 text-primary mx-auto mb-3 animate-spin" />
-                      <p className="text-sm text-gray-1000">
-                        Loading messages...
-                      </p>
+                    <div className="space-y-4 w-full max-w-2xl">
+                      {/* Loading bubble 1 - left side */}
+                      <div className="flex gap-3 animate-pulse">
+                        <div className="h-10 w-10 bg-gray-200 rounded-full flex-shrink-0"></div>
+                        <div className="flex flex-col gap-2 flex-1">
+                          <div className="h-16 bg-gray-200 rounded-2xl rounded-bl-md max-w-md"></div>
+                          <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+
+                      {/* Loading bubble 2 - right side */}
+                      <div className="flex gap-3 justify-end animate-pulse" style={{ animationDelay: '0.2s' }}>
+                        <div className="flex flex-col gap-2 items-end flex-1">
+                          <div className="h-12 bg-primary/20 rounded-2xl rounded-br-md max-w-sm"></div>
+                          <div className="h-3 w-16 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+
+                      {/* Loading bubble 3 - left side */}
+                      <div className="flex gap-3 animate-pulse" style={{ animationDelay: '0.4s' }}>
+                        <div className="h-10 w-10 bg-gray-200 rounded-full flex-shrink-0"></div>
+                        <div className="flex flex-col gap-2 flex-1">
+                          <div className="h-20 bg-gray-200 rounded-2xl rounded-bl-md max-w-lg"></div>
+                          <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  </>
                 ) : messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
@@ -661,7 +780,7 @@ export default function ChatView() {
                             strokeLinejoin="round"
                             strokeWidth={1}
                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                          />
+                    />
                         </svg>
                       </div>
                       <h3 className="text-lg font-montserrat-semibold text-gray-700 mb-2">
@@ -673,7 +792,7 @@ export default function ChatView() {
                     </div>
                   </div>
                 ) : (
-                  <div className="max-w-4xl mx-auto">
+                  <div className="max-w-6xl mx-auto">
                     {/* Date Divider */}
                     <div className="flex items-center justify-center my-6">
                       <div className="bg-white px-4 py-1.5 rounded-full shadow-sm border border-gray-200">
@@ -820,7 +939,7 @@ export default function ChatView() {
               setGroupName("");
               setChatType(null);
             }}
-            chatType={chatType!}
+            chatType={chatType}
             users={all_users}
             selectedUsers={selectedUsers}
             onUserSelect={toggleUserSelection}

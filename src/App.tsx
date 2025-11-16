@@ -230,7 +230,7 @@ const AppRoutes = () => {
                 <Route path="incidents" element={<IncidentsPage />} />
 
                 <Route path="chats" element={<Converations />} />
-                <Route path="chat/:workerId" element={<ChatView />} />
+                <Route path="chat/:conversationId" element={<ChatView />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -247,7 +247,7 @@ const AppRoutes = () => {
                 <Route path="/incidents" element={<IncidentsPage />} />
 
                 <Route path="/chats" element={<Converations />} />
-                <Route path="/chat/:workerId" element={<ChatView />} />
+                <Route path="/chat/:conversationId" element={<ChatView />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -297,7 +297,7 @@ const AppRoutes = () => {
                 <Route path="/incidents" element={<IncidentsPage />} />
 
                 <Route path="/chats" element={<Converations />} />
-                <Route path="/chat/:workerId" element={<ChatView />} />
+                <Route path="/chat/:conversationId" element={<ChatView />} />
                 {/* Participant Setup Route - accessible (mandatory) */}
                 <Route
                   path="/setup"
@@ -344,7 +344,7 @@ const AppRoutes = () => {
                 <Route path="/incidents" element={<IncidentsPage />} />
 
                 <Route path="/chats" element={<Converations />} />
-                <Route path="/chat/:workerId" element={<ChatView />} />
+                <Route path="/chat/:conversationId" element={<ChatView />} />
                 {/* Support Worker Setup Route - accessible (mandatory) */}
                 <Route
                   path="/setup"
@@ -374,7 +374,7 @@ const AppRoutes = () => {
                 <Route path="/participants" element={<CoordinatorParticipants />} /> */}
                 <Route path="/incidents" element={<IncidentsPage />} />
                 <Route path="/chats" element={<Converations />} />
-                <Route path="/chat/:workerId" element={<ChatView />} />
+                <Route path="/chat/:conversationId" element={<ChatView />} />
                 {/* Add other coordinator-specific routes */}
               </Routes>
             </DashboardLayout>

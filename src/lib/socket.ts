@@ -10,29 +10,39 @@ const initializeListeners = () => {
 	if (!socket || listenersInitialized) return;
 
 	socket.on("connect", () => {
+		console.log("Socket connected successfully");
 	});
 
-	socket.on("disconnect", () => {
+	socket.on("disconnect", (reason) => {
+		console.log("Socket disconnected:", reason);
 	});
 
 	socket.on("connect_error", (err) => {
+		console.error("Socket connection error:", err);
 	});
 
 	listenersInitialized = true;
 };
 
 export const initializeSocket = (token: string) => {
-	if (!socket) {
-		socket = io(SOCKET_SERVER_URL.replace("https","wss"), {
-			auth: { token },
-			autoConnect: true,
-			reconnection: true,
-			path: "/socket.io",
-			transports: ["websocket"],
-		});
-
-		initializeListeners();
+	// Disconnect existing socket if any
+	if (socket) {
+		socket.disconnect();
+		socket = null;
+		listenersInitialized = false;
 	}
+
+	socket = io(SOCKET_SERVER_URL, {
+		auth: { token },
+		autoConnect: true,
+		reconnection: true,
+		reconnectionAttempts: 5,
+		reconnectionDelay: 1000,
+		path: "/socket.io",
+		transports: ["websocket", "polling"], // Allow fallback to polling
+	});
+
+	initializeListeners();
 	return socket;
 };
 
@@ -45,6 +55,7 @@ export const getSocket = () => {
 
 export const disconnectSocket = () => {
 	if (socket) {
+		socket.removeAllListeners();
 		socket.disconnect();
 		socket = null;
 		listenersInitialized = false;

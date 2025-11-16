@@ -159,12 +159,64 @@ export default function Conversations() {
     }
   };
 
-  const handleCreateChat = async () => {
-    if (chatType === "direct") {
-      handleNewDirectChat(selectedUsers[0]);
-      return;
+   const handleCreateChat = async () => {
+    const tokens = tokenStorage.getTokens();
+    if (!tokens?.access?.token) return;
+
+    try {
+      setLoading(true);
+      let newConversation;
+
+      if (chatType === "direct") {
+        if (selectedUsers.length !== 1) {
+          console.error("Direct chat requires exactly 1 user");
+          return;
+        }
+        newConversation = await createNewConversation(
+          "direct",
+          selectedUsers,
+          tokens.access.token,
+          undefined, // No name for direct chat
+          undefined, // No description for direct chat
+          organizations[0]?._id
+        );
+      } else {
+        if (selectedUsers.length < 2) {
+          console.error("Group chat requires at least 2 users");
+          return;
+        }
+        if (!groupName.trim()) {
+          console.error("Group chat requires a name");
+          return;
+        }
+        newConversation = await createNewConversation(
+          "group",
+          selectedUsers,
+          tokens.access.token,
+          groupName,
+          "Group messaging",
+          organizations[0]?._id
+        );
+      }
+
+      if (newConversation) {
+        // Navigate to the new conversation
+        const roleRoutes: Record<string, string> = {
+          supportWorker: `/support-worker/chat/${newConversation._id}`,
+          participant: `/participant/chat/${newConversation._id}`,
+          admin: `/admin/chat/${newConversation._id}`,
+        };
+        navigate(roleRoutes[user.role] || `/admin/chat/${newConversation._id}`);
+      }
+    } catch (error) {
+      console.error("Failed to create chat:", error);
+    } finally {
+      setLoading(false);
+      setIsCreatingChat(false);
+      setSelectedUsers([]);
+      setGroupName("");
+      setChatType(null);
     }
-    handleNewGroupChat();
   };
 
   const toggleUserSelection = (userId: string) => {
@@ -207,10 +259,19 @@ export default function Conversations() {
     (c) => c.type === "group"
   ).length;
 
-  if (loadingUsers) {
-    return <Loader />;
-  }
-
+  
+  useEffect(() => {
+    // dynamically set chat type
+    if(selectedUsers.length && selectedUsers.length > 1){
+      setChatType('group')
+    }else{
+      setChatType('direct')
+    }
+    },[chatType, selectedUsers])
+    
+    if (loadingUsers) {
+      return <Loader />;
+    }
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gray-100 font-montserrat space-y-4 md:space-y-8">
       {/* Header */}
@@ -342,15 +403,16 @@ export default function Conversations() {
                     Start New Chat
                   </Button>
                 </div>
-              ) : (filteredConversations.map((conversation) => (
-                                  <ConversationItem
-                                    key={conversation._id}
-                                    conversation={conversation}
-                                    user={user}
-                                    onClick={() => handleChatClick(conversation._id)}
-                                    isActive={currentConversation?._id === conversation._id}
-                                  />
-                                ))
+              ) : (
+                filteredConversations.map((conversation) => (
+                  <ConversationItem
+                    key={conversation._id}
+                    conversation={conversation}
+                    user={user}
+                    onClick={() => handleChatClick(conversation._id)}
+                    isActive={currentConversation?._id === conversation._id}
+                  />
+                ))
               )}
             </div>
           </ScrollArea>
