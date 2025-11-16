@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle, ArrowRight } from "lucide-react";
@@ -9,49 +9,47 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import authService from "@/api/services/authService";
 import { Spinner } from "@/components/Spinner";
+import { useForgotPassword } from "@/hooks/useAuthHooks";
+import { AltArrowRight } from "@solar-icons/react";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+  // mutation for forgot password
+  const { data, error, mutateAsync, isSuccess, isPending, isError } =
+    useForgotPassword();
+  console.log("Forgot Password Data:", data, isSuccess);
+  console.log("Error occurs:", error, isError);
 
-    try {
-      const response = await authService.forgotPassword({ email });
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-      if (response.success && response.data?.userId) {
-        toast.success(response.message);
-        // Redirect to OTP verification page with email and userId
-        setIsSuccess(true);
-        navigate(
-          `/otp-verify?email=${encodeURIComponent(email)}&userId=${
-            response.data.userId
-          }&forgotPassword=true`
-        );
-      } else {
-        // Handle case where API call succeeds but doesn't return expected data
+      try {
+        const response = await mutateAsync(email);
+
+        if (isSuccess) {
+          // Redirect to OTP verification page with email and userId
+          // Wait for 3s to navigate
+          setTimeout(() => {
+            navigate(
+              `/otp-verify?email=${encodeURIComponent(email)}&userId=${
+                response.userId
+              }&forgotPassword=true`
+            );
+          }, 3000);
+        }
+      } catch (err: any) {
         const errorMessage =
-          response.message || "Failed to send reset instructions";
-        setError(errorMessage);
+          err.response?.data?.error ||
+          err.message ||
+          "An error occurred. Please try again.";
         toast.error(errorMessage);
       }
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        "An error occurred. Please try again.";
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [email, isSuccess, mutateAsync, navigate]
+  );
 
   return (
     <div className="flex min-h-screen w-full bg-[#FDFDFD]">
@@ -124,9 +122,11 @@ export default function ForgotPassword() {
                 asChild
                 className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg"
               >
-                <Link to="/login">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Login
+                <Link to={`/otp-verify?email=${encodeURIComponent(email)}&userId=${
+                  data?.userId
+                }&forgotPassword=true`}>
+                  Next
+                  <AltArrowRight className="w-4 h-4 mr-2" />
                 </Link>
               </Button>
             </motion.div>
@@ -148,7 +148,7 @@ export default function ForgotPassword() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
                   <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription>{error.message}</AlertDescription>
                   </Alert>
                 )}
 
@@ -168,7 +168,7 @@ export default function ForgotPassword() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="h-12 px-4 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                    disabled={isLoading}
+                    disabled={isPending}
                   />
                 </div>
 
@@ -180,9 +180,9 @@ export default function ForgotPassword() {
                   <Button
                     type="submit"
                     className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-                    disabled={isLoading || !email.trim()}
+                    disabled={isPending || !email.trim()}
                   >
-                    {isLoading ? (
+                    {isPending ? (
                       <>
                         <Spinner />
                         <span className="ml-2">Sending...</span>
