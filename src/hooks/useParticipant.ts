@@ -59,13 +59,10 @@ export function useSupportWorkers(
   return useQuery<ISearchSupportWorkersResponse>({
     queryKey: queryKeys.searchSupportWorkers(filters),
     queryFn: async () => {
-      console.log('useSupportWorkers called with filters:', filters);
       try {
         const result = await participantService.searchSupportWorkers(filters);
-        console.log('Search result:', result);
         return result;
       } catch (error) {
-        console.error('Error in useSupportWorkers:', error);
         throw error;
       }
     },
@@ -92,10 +89,8 @@ export function useSearchFilterOptions(
     queryFn: async () => {
       try {
         const result = await participantService.getFilterOptions();
-        console.log('Filter options result:', result);
         return result;
       } catch (error) {
-        console.error('Error in useSearchFilterOptions:', error);
         throw error;
       }
     },

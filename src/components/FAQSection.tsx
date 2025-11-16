@@ -98,8 +98,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                   size="sm" 
                   className="bg-primary hover:bg-primary-700 px-4 py-2"
                   onClick={() => {
-                    // Handle search functionality
-                    console.log("Searching for:", searchQuery);
+                    
                   }}
                 >
                   <Send className="w-2 h-2 md:w-4 md:h-4" />

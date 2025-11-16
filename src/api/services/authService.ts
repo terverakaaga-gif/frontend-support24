@@ -172,7 +172,6 @@ const authService = {
         await post("/auth/logout", { refreshToken });
       }
     } catch (error) {
-      console.warn("Server logout failed, clearing local tokens:", error);
     } finally {
       tokenStorage.clearTokens();
     }

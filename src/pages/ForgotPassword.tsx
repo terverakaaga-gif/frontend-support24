@@ -19,8 +19,6 @@ export default function ForgotPassword() {
   // mutation for forgot password
   const { data, error, mutateAsync, isSuccess, isPending, isError } =
     useForgotPassword();
-  console.log("Forgot Password Data:", data, isSuccess);
-  console.log("Error occurs:", error, isError);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {

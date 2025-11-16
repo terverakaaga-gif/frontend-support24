@@ -36,7 +36,6 @@ const ShiftsPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const { data: shifts = [], isLoading, error, refetch } = useGetShifts();
-  console.log("Fetched shifts:", shifts);
 
   const getStatusCount = (status: string) => {
     if (status === "all") return shifts.length;

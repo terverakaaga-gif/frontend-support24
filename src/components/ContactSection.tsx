@@ -31,8 +31,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission logic here
   };
 
   const fadeInUp = {

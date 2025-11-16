@@ -27,7 +27,6 @@ export const useChatStore = create<ExtendedChatState>((set, get) => ({
       );
 
       if (messageExists) {
-        console.log("Message already exists, skipping:", message._id);
         return state;
       }
 

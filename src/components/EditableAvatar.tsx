@@ -33,7 +33,6 @@ const EditableAvatar = () => {
 		// Upload the image
 		updateProfileImage(file, {
 			onSuccess: (updatedUser) => {
-				console.log("udpatedUser", updatedUser);
 				setIsUploading(false);
 				// Reset the file input
 				if (fileInputRef.current) {

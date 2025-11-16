@@ -338,8 +338,6 @@ export default function EditProfile() {
     (prediction: any) => {
       const selectedAddress = prediction.description;
 
-      console.log("Address selected:", selectedAddress);
-
       // Update all address-related state
       setAddressInputValue(selectedAddress);
       setSelectedAddress(selectedAddress);
@@ -360,7 +358,6 @@ export default function EditProfile() {
           },
           (placeDetails: any) => {
             if (placeDetails) {
-              console.log("Place details:", placeDetails);
             }
           }
         );

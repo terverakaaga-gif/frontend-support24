@@ -86,14 +86,6 @@ const TimesheetsManagement: React.FC = () => {
   const getFullName = (user: { firstName: string; lastName: string }) =>
     `${user.firstName} ${user.lastName}`;
 
-  console.log("=== DEBUG INFO ===");
-  console.log("Filters:", filters);
-  console.log("Raw timesheetData:", timesheetData);
-  console.log("Is Loading:", isLoading);
-  console.log("Error:", error);
-  console.log("timesheetData?.timesheets:", timesheetData?.timesheets);
-  console.log("=================");
-
   const formatDuration = (startTime: string, endTime: string) => {
     const start = new Date(startTime);
     const end = new Date(endTime);

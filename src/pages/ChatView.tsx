@@ -126,10 +126,8 @@ export default function ChatView() {
       );
       
       if (conversation) {
-        console.log("Setting current conversation:", conversation);
         setCurrentConversation(conversation);
       } else {
-        console.warn("Conversation not found:", conversationId);
       }
     }
   }, [conversationId, chatConversations, isLoadingConversations]);
@@ -138,7 +136,6 @@ export default function ChatView() {
   useEffect(() => {
     const tokens = tokenStorage.getTokens();
     if (currentConversation && tokens?.access?.token) {
-      console.log("Loading messages for:", currentConversation._id);
       setIsLoadingMessages(true);
       loadMessages(currentConversation._id, tokens.access.token).finally(() => {
         setIsLoadingMessages(false);

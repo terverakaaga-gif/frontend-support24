@@ -297,8 +297,6 @@ export function ShiftDetailView() {
 
 	const { data: shift, isLoading, error } = useGetShiftById(id);
 
-	console.log("shift: ", shift);
-
 	const handleGoBack = () => {
 		navigate("/admin/shifts");
 	};

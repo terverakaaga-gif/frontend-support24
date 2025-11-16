@@ -283,7 +283,6 @@ export function SupportWorkerSetup({
           placeId: prediction.place_id,
         },
         (placeDetails: any) => {
-          console.log("Place details:", placeDetails);
           // You can extract additional information here if needed
           // like latitude, longitude, formatted address components, etc.
         }

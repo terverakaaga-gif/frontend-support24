@@ -10,15 +10,12 @@ const initializeListeners = () => {
 	if (!socket || listenersInitialized) return;
 
 	socket.on("connect", () => {
-		console.log("Socket connected:", socket?.id);
 	});
 
 	socket.on("disconnect", () => {
-		console.log("Socket disconnected");
 	});
 
 	socket.on("connect_error", (err) => {
-		console.error("Socket connection error:", err);
 	});
 
 	listenersInitialized = true;
@@ -51,7 +48,6 @@ export const disconnectSocket = () => {
 		socket.disconnect();
 		socket = null;
 		listenersInitialized = false;
-		console.log("Socket disconnected and cleaned up");
 	}
 };
 

@@ -49,7 +49,6 @@ export const useGetRoutines = (): UseQueryResult<Routine[]> => {
     queryFn: async () => {
       // get<Routine[]> already returns Routine[], not {data: Routine[]}
       const response = await get<Routine[]>(`/routines`);
-      console.log("Fetched routines:", response);
       // Response is already Routine[], no need to access .data
       return response || [];
     },

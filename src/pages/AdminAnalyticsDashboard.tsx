@@ -64,9 +64,6 @@ export default function AdminAnalyticsDashboard() {
 	const { data: platformData, isLoading: isLoadingPlatform } =
 		useGetPlatformSummary(dateRange, activeTab === "platform");
 
-	console.log("***************User TOtal Users*****************");
-	console.log(overviewData?.userMetrics?.totalUsers);
-	console.log(overviewData);
 
 	// Generate metrics for overview tab
 	const generateOverviewMetrics = () => {

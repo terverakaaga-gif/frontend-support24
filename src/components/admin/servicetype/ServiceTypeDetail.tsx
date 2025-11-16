@@ -56,8 +56,7 @@ const ServiceTypeDetail: React.FC = () => {
   };
 
   const handleEdit = () => {
-    // TODO: Implement edit functionality - could open a modal or navigate to edit page
-    console.log('Edit service type:', serviceType?._id);
+    
   };
 
   const handleDelete = () => {

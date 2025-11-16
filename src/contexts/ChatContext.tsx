@@ -61,18 +61,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const connect = (token: string) => {
     try {
-      console.log("Connecting to socket with token...");
-      
       // Check if socket exists and is connected
       try {
         const existingSocket = getSocket();
         if (existingSocket && existingSocket.connected) {
-          console.log("Socket already connected, cleaning up listeners...");
           existingSocket.removeAllListeners();
         }
       } catch (err) {
         // Socket doesn't exist yet, which is fine
-        console.log("No existing socket found, creating new one");
       }
 
       initializeSocket(token);
@@ -82,13 +78,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       socket.removeAllListeners();
 
       socket.on("connect", () => {
-        console.log("Connected to socket successfully");
         setSocketInitialized(true);
         setIsConnected(true);
       });
 
       socket.on("authenticated", (data) => {
-        console.log("Socket authenticated:", data);
         // Join conversation rooms for current conversations
         conversations.forEach((conv) => {
           socket.emit("join_conversation", { conversationId: conv._id });
@@ -97,7 +91,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle new messages - IMPORTANT: Check for duplicates
       socket.on("new_message", (message) => {
-        console.log("New message received:", message);
 
         const currentUserId = user?._id;
 
@@ -128,19 +121,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle message status updates
       socket.on("message_sent", (data) => {
-        console.log("Message sent confirmation:", data);
         if (data.messageId) {
           updateMessageStatus(data.messageId, "sent");
         }
       });
 
       socket.on("message_delivered", (data) => {
-        console.log("Message delivered:", data);
         updateMessageStatus(data.messageId, "delivered");
       });
 
       socket.on("message_read", (data) => {
-        console.log("Message read:", data);
         data.messageIds?.forEach((messageId: string) => {
           updateMessageStatus(messageId, "read");
         });
@@ -148,7 +138,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle typing indicators
       socket.on("user_typing", (data) => {
-        console.log("User typing:", data);
         if (data.isTyping) {
           addTypingUser(data.conversationId, data.userId);
         } else {
@@ -158,7 +147,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle user presence
       socket.on("online_users_list", (users) => {
-        console.log("Online users received:", users);
         setOnlineUsers(
           users.map((user: any) => ({
             _id: user.userId,
@@ -171,7 +159,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       socket.on("user_status_change", (data) => {
-        console.log("User status change:", data);
         if (data.status === "online") {
           // Add user to online list (would need user details)
           socket.emit("get_online_users");
@@ -185,23 +172,19 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       socket.on("conversation_created", (conversation) => {
-        console.log("New conversation created:", conversation);
         setConversations([conversation, ...conversations]);
       });
 
       socket.on("error", (error) => {
-        console.error("Socket error:", error);
         setError(error.message || "Connection error");
       });
 
       socket.on("disconnect", (reason) => {
-        console.log("Socket disconnected:", reason);
         setSocketInitialized(false);
         setIsConnected(false);
       });
 
       socket.on("connect_error", (error) => {
-        console.error("Socket connection error:", error);
         setError("Failed to connect to chat server");
         setSocketInitialized(false);
         setIsConnected(false);
@@ -212,7 +195,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         socket.connect();
       }
     } catch (err) {
-      console.error("Error initializing socket:", err);
       setError("Failed to connect to chat server");
     }
   };
@@ -226,15 +208,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           socket.removeAllListeners();
         }
       } catch (err) {
-        console.log("No socket to disconnect");
       }
       
       disconnectSocket();
       setSocketInitialized(false);
       setIsConnected(false);
-      console.log("Disconnected from socket");
     } catch (err) {
-      console.error("Error disconnecting socket:", err);
+      throw new Error("Failed to disconnect from chat server");
     }
   };
 
@@ -242,14 +222,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Loading conversations...");
       const response = await chatServices.getConversations(token);
-      console.log("Conversations loaded:", response);
 
       if (response.conversations && Array.isArray(response.conversations)) {
         setConversations(response.conversations);
       } else {
-        console.warn("Invalid conversations response:", response);
         setConversations([]);
       }
     } catch (err) {
@@ -265,9 +242,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Loading messages for conversation:", conversationId);
       const response = await chatServices.getMessages(token, conversationId);
-      console.log("Messages loaded for conversation:", response);
 
       const conversation = conversations.find((c) => c._id === conversationId);
       if (conversation) {
@@ -276,15 +251,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         if (response.messages && Array.isArray(response.messages)) {
           setMessages(response.messages);
         } else {
-          console.warn("Invalid messages response:", response);
           setMessages([]);
         }
       } else {
-        console.error("Conversation not found:", conversationId);
         setError("Conversation not found");
       }
     } catch (err) {
-      console.error("Failed to load messages:", err);
       setError("Failed to load messages");
     } finally {
       setLoading(false);
@@ -293,7 +265,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const sendMessage = async (content: string, type: TMessageType = "text") => {
     if (!currentConversation) {
-      console.error("No current conversation selected");
       return;
     }
 
@@ -301,7 +272,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const { token } = tokens.access;
 
     if (!token) {
-      console.error("No token available");
       setError("Authentication required");
       return;
     }
@@ -324,7 +294,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     };
     
     try {
-      console.log("Sending message:", { content, type });
 
       // Add optimistic message to UI
       addMessage(optimisticMessage);
@@ -337,7 +306,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         type
       );
 
-      console.log("Message sent successfully:", response);
 
       if (response.message) {
         // Remove optimistic message and add real message
@@ -349,7 +317,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         // The real message will come through socket's "new_message" event
       }
     } catch (err) {
-      console.error("Failed to send message:", err);
       setError("Failed to send message");
       // Update optimistic message to show error
       updateMessage(optimisticMessage._id, { status: "failed" });
@@ -375,16 +342,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Messages loading...");
       const response = await chatServices.getMessages(token, conversationId);
       if (response.messages && Array.isArray(response.messages)) {
         setMessages(response.messages);
       } else {
-        console.warn("Invalid messages response:", response);
         setMessages([]);
       }
     } catch (err) {
-      console.error("Failed to load messages:", err);
       setError("Failed to load messages");
       setMessages([]);
     } finally {
@@ -401,13 +365,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     organizationId?: string
   ) => {
     try {
-      console.log("Creating new conversation:", {
-        type,
-        memberIds,
-        name,
-        description,
-        organizationId,
-      });
+    
       const response = await chatServices.createConversation(
         token,
         type,
@@ -417,7 +375,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         organizationId
       );
 
-      console.log("New conversation created:", response);
 
       if (response) {
         // Add to local state
@@ -429,16 +386,15 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             const socket = getSocket();
             socket.emit("conversationCreated", response);
           } catch (err) {
-            console.log("Socket not available for conversation creation event");
+            setError(err)
           }
         }
 
         return response.conversation;
       } else {
-        throw new Error("Invalid conversation response");
+        setError("Invalid conversation response");
       }
     } catch (err) {
-      console.error("Failed to create conversation:", err);
       setError("Failed to create conversation");
       throw err;
     }
@@ -452,7 +408,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (err) {
       // Socket not initialized, nothing to clean up
-      console.log("No socket listeners to clean up");
     }
   };
 

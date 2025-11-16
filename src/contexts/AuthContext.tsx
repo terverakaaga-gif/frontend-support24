@@ -305,7 +305,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await authService.logout();
     } catch (error) {
-      console.warn("Logout error:", error);
       // Continue with local cleanup even if server logout fails
     } finally {
       // Always clear local state

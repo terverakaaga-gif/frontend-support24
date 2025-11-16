@@ -501,7 +501,6 @@ function ParticipantDashboard() {
   const budgetUsed = overviewData?.financialSummary?.budgetUtilization || 0;
   const budgetTrend = budgetUsed > 80 ? "up" : budgetUsed > 50 ? null : "down";
 
-  console.log("user", user);
 
   return (
     <div className="min-h-screen font-montserrat bg-gray-100">

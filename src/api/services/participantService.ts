@@ -172,10 +172,7 @@ export class ParticipantService {
       if (filters?.limit) params.append("limit", filters.limit.toString());
 
       const queryString = params.toString();
-      console.log(
-        "Search API call:",
-        `/workers/search${queryString ? `?${queryString}` : ""}`
-      );
+   
 
       const response = await get<ISearchSupportWorkersResponse>(
         `/workers/search${queryString ? `?${queryString}` : ""}`
@@ -242,9 +239,6 @@ export class ParticipantService {
   async getSupportWorkers(
     filters?: any
   ): Promise<ISearchSupportWorkersResponse> {
-    console.warn(
-      "getSupportWorkers is deprecated. Use searchSupportWorkers instead."
-    );
     return this.searchSupportWorkers(filters);
   }
 }

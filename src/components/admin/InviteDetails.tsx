@@ -73,7 +73,6 @@ export function InviteDetails() {
 		error,
 		refetch,
 	} = useGetInviteById(inviteId || "");
-	console.log('invite details: ', inviteDetails)
 
 	const handleGoBack = () => {
 		navigate(-1);
