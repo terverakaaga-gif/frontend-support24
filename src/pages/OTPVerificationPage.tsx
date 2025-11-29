@@ -57,25 +57,28 @@ export default function OTPVerification() {
     try {
       if (isForgotPassword) {
         // Redirect to reset password with verified flag
+        setIsSuccess(true);
         setTimeout(() => {
           navigate(
             `/reset-password?email=${encodeURIComponent(
               email
             )}&userId=${userId}&otpCode=${otp}&verified=true`
           );
-        }, 2000);
+        }, 3000);
         return;
-      } else {
+      }
+      if (isRegister) {
         await authService.verifyEmail({
           userId,
           otpCode: otp,
         });
         setIsSuccess(true);
-        toast.success("Email verified successfully!");
+        toast.success("Email verified successfully! Please login to continue.");
         // Redirect to login after short delay
         setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+          navigate("/login", { replace: true });
+        }, 3000);
+        return;
       }
     } catch (err: any) {
       const errorMessage =
@@ -100,14 +103,13 @@ export default function OTPVerification() {
     setIsResending(true);
 
     try {
-      if (isForgotPassword){
+      if (isForgotPassword) {
         const res = await authService.forgotPassword({ email });
         toast.success(res.message || "Verification code resent successfully!");
-
       }
-      if (isRegister){
-       await authService.resendVerification({ email });
-        toast.success( "Verification code resent successfully!");
+      if (isRegister) {
+        await authService.resendVerification({ email });
+        toast.success("Verification code resent successfully!");
       }
     } catch (err: any) {
       const errorMessage =
@@ -205,11 +207,11 @@ export default function OTPVerification() {
                 <h1 className="text-3xl font-montserrat-bold text-gray-900">
                   Email Verified Successfully!
                 </h1>
-                {!isRegister && (
-                  <p className="text-gray-600 font-montserrat-semibold">
-                    Redirecting you to reset your password...
-                  </p>
-                )}
+                <p className="text-gray-600 font-montserrat-semibold">
+                  {isForgotPassword
+                    ? "Redirecting you to reset your password..."
+                    : "Redirecting you to login..."}
+                </p>
               </div>
             </motion.div>
           ) : (

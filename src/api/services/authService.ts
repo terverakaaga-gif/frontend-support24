@@ -85,9 +85,10 @@ const authService = {
   ): Promise<RegisterResponse> => {
     const response = await post<RegisterResponse>("/auth/register", userData);
 
-    if (response.tokens) {
-      tokenStorage.setTokens(response.tokens);
-    }
+    // DON'T store tokens here - user needs to verify email first
+    // if (response.tokens) {
+    //   tokenStorage.setTokens(response.tokens);
+    // }
 
     return {
       ...response,

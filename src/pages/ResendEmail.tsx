@@ -42,7 +42,7 @@ export default function ResendEmail() {
       }
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message ||
+        err.data?.error ||
         err.message ||
         "An error occurred. Please try again.";
       setError(errorMessage);
