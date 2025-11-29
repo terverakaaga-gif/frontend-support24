@@ -1,4 +1,3 @@
-// src/api/services/analyticsService.ts
 import { get, post } from '../apiClient';
 import { 
   DateRange, 
@@ -8,6 +7,18 @@ import {
   AnalyticsResponse
 } from '../../entities/Analytics';
 import { ServiceTypeInfo } from '../../entities/types';
+
+// utils function to revert daterange object into either string or string[]
+function formatDateRangeParam(dateRange: DateRange): string | string[] {
+  if (dateRange.type === DateRangeType.CUSTOM) {
+    return [
+      dateRange.type,
+      dateRange.startDate.toISOString(),
+      dateRange.endDate.toISOString()
+    ];
+  }
+  return dateRange.type;
+}
 
 // Analytics overview interfaces
 export interface AdminOverviewAnalytics {
@@ -451,11 +462,14 @@ const analyticsService = {
 
   // Get support worker overview analytics
   getSupportWorkerOverview: async (
-    dateRange: string = 'month',
+    dateRange: DateRange,
     comparison: boolean = true
   ): Promise<SupportWorkerOverviewAnalytics> => {
+
+    
+
     const params = new URLSearchParams({
-      dateRange,
+      dateRange:formatDateRangeParam(dateRange).toString(),
       comparison: comparison.toString()
     });
 
@@ -465,10 +479,10 @@ const analyticsService = {
 
   // Get support worker financial analytics
   getSupportWorkerFinancial: async (
-    dateRange: string = 'month'
+    dateRange: DateRange
   ): Promise<SupportWorkerFinancialAnalytics> => {
     const params = new URLSearchParams({
-      dateRange
+     dateRange:formatDateRangeParam(dateRange).toString(),
     });
 
     const response = await get<AnalyticsResponse<SupportWorkerFinancialAnalytics>>(`/analytics/worker/financial?${params}`);
@@ -477,10 +491,10 @@ const analyticsService = {
 
   // Get support worker schedule analytics
   getSupportWorkerSchedule: async (
-    dateRange: string = 'month'
+    dateRange: DateRange
   ): Promise<SupportWorkerScheduleAnalytics> => {
     const params = new URLSearchParams({
-      dateRange
+      dateRange:formatDateRangeParam(dateRange).toString(),
     });
 
     const response = await get<AnalyticsResponse<SupportWorkerScheduleAnalytics>>(`/analytics/worker/schedule?${params}`);
@@ -489,10 +503,10 @@ const analyticsService = {
 
   // Get support worker performance analytics
   getSupportWorkerPerformance: async (
-    dateRange: string = 'month'
+    dateRange:DateRange
   ): Promise<SupportWorkerPerformanceAnalytics> => {
     const params = new URLSearchParams({
-      dateRange
+      dateRange:formatDateRangeParam(dateRange).toString(),
     });
 
     const response = await get<{ skillUtilization: any[]; availabilityComparison: any; documentAlerts: any[] }>(`/analytics/worker/performance?${params}`);
