@@ -159,7 +159,7 @@ export default function Conversations() {
     }
   };
 
-   const handleCreateChat = async () => {
+  const handleCreateChat = async () => {
     const tokens = tokenStorage.getTokens();
     if (!tokens?.access?.token) return;
 
@@ -220,15 +220,15 @@ export default function Conversations() {
   };
 
   const toggleUserSelection = (userId: string) => {
-    if (chatType === "direct") {
-      setSelectedUsers([userId]);
-      return;
-    }
-    setSelectedUsers((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
-    );
+    setSelectedUsers((prev) => {
+      if (prev.includes(userId)) {
+        // Deselect the user
+        return prev.filter((id) => id !== userId);
+      } else {
+        // Add the user to selection
+        return [...prev, userId];
+      }
+    });
   };
 
   const filteredConversations = chatConversations.filter((conv) => {
@@ -259,19 +259,20 @@ export default function Conversations() {
     (c) => c.type === "group"
   ).length;
 
-  
   useEffect(() => {
-    // dynamically set chat type
-    if(selectedUsers.length && selectedUsers.length > 1){
-      setChatType('group')
-    }else{
-      setChatType('direct')
+    // Dynamically set chat type based on selected users count
+    if (selectedUsers.length === 0) {
+      setChatType(null);
+    } else if (selectedUsers.length === 1) {
+      setChatType("direct");
+    } else {
+      setChatType("group");
     }
-    },[chatType, selectedUsers])
-    
-    if (loadingUsers) {
-      return <Loader />;
-    }
+  }, [selectedUsers.length]); // Only depend on selectedUsers.length, not chatType
+
+  if (loadingUsers) {
+    return <Loader />;
+  }
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gray-100 font-montserrat space-y-4 md:space-y-8">
       {/* Header */}

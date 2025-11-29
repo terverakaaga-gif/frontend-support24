@@ -318,15 +318,15 @@ export default function ChatView() {
   };
 
   const toggleUserSelection = (userId: string) => {
-    if (chatType === "direct") {
-      setSelectedUsers([userId]);
-      return;
-    }
-    setSelectedUsers((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
-    );
+    setSelectedUsers((prev) => {
+      if (prev.includes(userId)) {
+        // Deselect the user
+        return prev.filter((id) => id !== userId);
+      } else {
+        // Add the user to selection
+        return [...prev, userId];
+      }
+    });
   };
 
   // Fix the chatType useEffect to prevent infinite loops
