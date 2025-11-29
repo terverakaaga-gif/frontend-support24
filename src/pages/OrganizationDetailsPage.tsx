@@ -243,408 +243,392 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
-        <div className="max-w-md mx-auto mt-20">
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8 text-center">
-              <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
-                Failed to load organization
-              </h3>
-              <p className="text-gray-600 mb-6">
-                There was an error loading the organization details.
-              </p>
-              <Button
-                onClick={() => refetch()}
-                className="bg-primary-600 hover:bg-primary-600"
-              >
-                Try Again
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-8 text-center">
+            <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
+              Failed to load organization
+            </h3>
+            <p className="text-gray-600 mb-6">
+              There was an error loading the organization details.
+            </p>
+            <Button
+              onClick={() => refetch()}
+              className="bg-primary-600 hover:bg-primary-600"
+            >
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-32" />
-            ))}
-          </div>
-          <Skeleton className="h-96" />
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <Skeleton className="h-12 w-64" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
         </div>
+        <Skeleton className="h-96" />
       </div>
     );
   }
 
   if (!organization) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
-        <div className="max-w-md mx-auto mt-20">
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8 text-center">
-              <Buildings3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
-                Organization not found
-              </h3>
-              <p className="text-gray-600 mb-6">
-                The organization you're looking for doesn't exist.
-              </p>
-              <Button onClick={() => navigate(-1)}>Go Back</Button>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-8 text-center">
+            <Buildings3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
+              Organization not found
+            </h3>
+            <p className="text-gray-600 mb-6">
+              The organization you're looking for doesn't exist.
+            </p>
+            <Button onClick={() => navigate(-1)}>Go Back</Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="w-full p-8">
-        {/* Header */}
-        <GeneralHeader
-          showBackButton
-          title={
-            pageTitles.supportWorker["/support-worker/organizations"].title
-          }
-          subtitle={
-            pageTitles.supportWorker["/support-worker/organizations"].subtitle
-          }
-          user={user}
-          onViewProfile={() => {
-            navigate(
-              Object.keys(pageTitles.supportWorker).find(
-                (key) =>
-                  key !== "/support-worker/organizations" &&
-                  pageTitles.supportWorker[key] ===
-                    pageTitles.supportWorker["/support-worker/profile"]
-              )
-            );
-          }}
-          onLogout={logout}
-        />
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-4 md:mb-6">
-          <button
-            onClick={() => setActiveTab("workers")}
-            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
-              activeTab === "workers"
-                ? "bg-primary text-white hover:bg-primary"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-            }`}
-          >
-            Active Workers
-          </button>
-          <button
-            onClick={() => setActiveTab("invites")}
-            className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
-              activeTab === "invites"
-                ? "bg-primary text-white hover:bg-primary"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-            }`}
-          >
-            Pending Invites
-          </button>
-        </div>
-        {/* Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Workers List */}
-          <div className="lg:col-span-2">
-            <h2 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
-              {activeTab === "workers"
-                ? `Active Workers (${filteredWorkers.length})`
-                : `Pending Invites (${pendingInvites.length})`}
-            </h2>
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      {/* Header */}
+      <GeneralHeader
+        showBackButton
+        title={pageTitles.supportWorker["/support-worker/organizations"].title}
+        subtitle={
+          pageTitles.supportWorker["/support-worker/organizations"].subtitle
+        }
+        user={user}
+        onViewProfile={() => {
+          navigate(
+            Object.keys(pageTitles.supportWorker).find(
+              (key) =>
+                key !== "/support-worker/organizations" &&
+                pageTitles.supportWorker[key] ===
+                  pageTitles.supportWorker["/support-worker/profile"]
+            )
+          );
+        }}
+        onLogout={logout}
+      />
+      {/* Tab Navigation */}
+      <div className="flex gap-2 mb-4 md:mb-6">
+        <button
+          onClick={() => setActiveTab("workers")}
+          className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
+            activeTab === "workers"
+              ? "bg-primary text-white hover:bg-primary"
+              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+          }`}
+        >
+          Active Workers
+        </button>
+        <button
+          onClick={() => setActiveTab("invites")}
+          className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
+            activeTab === "invites"
+              ? "bg-primary text-white hover:bg-primary"
+              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+          }`}
+        >
+          Pending Invites
+        </button>
+      </div>
+      {/* Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Workers List */}
+        <div className="lg:col-span-2">
+          <h2 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
+            {activeTab === "workers"
+              ? `Active Workers (${filteredWorkers.length})`
+              : `Pending Invites (${pendingInvites.length})`}
+          </h2>
 
-            {activeTab === "workers" ? (
-              filteredWorkers.length === 0 ? (
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="p-6 md:p-12 text-center">
-                    <UsersGroupTwoRounded className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
-                    <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
-                      No workers found
-                    </h3>
-                    <p className="text-sm md:text-base text-gray-600">
-                      {searchTerm
-                        ? "Try adjusting your search criteria"
-                        : "This organization doesn't have any active workers yet"}
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-2 md:space-y-3">
-                  {filteredWorkers.map((worker) => (
-                    <Card
-                      key={worker._id}
-                      className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                      onClick={() => {
-                        setSelectedWorker(worker);
-                        setShowWorkerDetails(true);
-                      }}
-                    >
-                      <CardContent className="p-3 md:p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                            <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
-                              {getWorkerProfileImage(worker.workerId) ? (
-                                <AvatarImage
-                                  src={getWorkerProfileImage(worker.workerId)}
-                                />
-                              ) : (
-                                <AvatarFallback className="bg-primary-100 text-primary-600 font-montserrat-semibold text-sm md:text-base">
-                                  {getWorkerInitials(worker.workerId)}
-                                </AvatarFallback>
-                              )}
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-0.5">
-                                <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
-                                  {getWorkerDisplayName(worker.workerId)}
-                                </h3>
-                                <Badge className="bg-green-50 text-green-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
-                                  Active
-                                </Badge>
-                              </div>
-                              <p className="text-xs md:text-sm text-gray-600 truncate">
-                                {getWorkerEmail(worker.workerId)}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Joined:{" "}
-                                {format(
-                                  parseISO(worker.joinedDate),
-                                  "dd/MM/yyyy"
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right ml-2 md:ml-4">
-                            <p className="text-md font-montserrat-bold bg-primary/10 p-1 text-primary-600 rounded-full">
-                              ${worker.serviceAgreement.baseHourlyRate}/hr
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )
-            ) : pendingInvites.length === 0 ? (
+          {activeTab === "workers" ? (
+            filteredWorkers.length === 0 ? (
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-6 md:p-12 text-center">
-                  <Letter className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                  <UsersGroupTwoRounded className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
                   <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
-                    No pending invites
+                    No workers found
                   </h3>
                   <p className="text-sm md:text-base text-gray-600">
-                    There are no pending invitations for this organization.
+                    {searchTerm
+                      ? "Try adjusting your search criteria"
+                      : "This organization doesn't have any active workers yet"}
                   </p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-2 md:space-y-3">
-                {pendingInvites.map((invite) => (
+                {filteredWorkers.map((worker) => (
                   <Card
-                    key={invite._id}
-                    className="border-0 shadow-sm hover:shadow-md transition-all"
+                    key={worker._id}
+                    className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                    onClick={() => {
+                      setSelectedWorker(worker);
+                      setShowWorkerDetails(true);
+                    }}
                   >
                     <CardContent className="p-3 md:p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
                           <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
-                            <AvatarFallback className="bg-orange-100 text-orange-600 font-montserrat-semibold text-sm md:text-base">
-                              {getWorkerInitials(invite.workerId)}
-                            </AvatarFallback>
+                            {getWorkerProfileImage(worker.workerId) ? (
+                              <AvatarImage
+                                src={getWorkerProfileImage(worker.workerId)}
+                              />
+                            ) : (
+                              <AvatarFallback className="bg-primary-100 text-primary-600 font-montserrat-semibold text-sm md:text-base">
+                                {getWorkerInitials(worker.workerId)}
+                              </AvatarFallback>
+                            )}
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
                               <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
-                                {getWorkerDisplayName(invite.workerId)}
+                                {getWorkerDisplayName(worker.workerId)}
                               </h3>
-                              <Badge className="bg-orange-50 text-orange-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
-                                Pending
+                              <Badge className="bg-green-50 text-green-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
+                                Active
                               </Badge>
                             </div>
                             <p className="text-xs md:text-sm text-gray-600 truncate">
-                              {getWorkerEmail(invite.workerId)}
+                              {getWorkerEmail(worker.workerId)}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Invited:{" "}
+                              Joined:{" "}
                               {format(
-                                parseISO(invite.inviteDate),
+                                parseISO(worker.joinedDate),
                                 "dd/MM/yyyy"
                               )}
                             </p>
                           </div>
                         </div>
                         <div className="text-right ml-2 md:ml-4">
-                          <p className="text-lg md:text-xl font-montserrat-bold text-orange-600">
-                            ${invite.proposedRates.baseHourlyRate}/hr
+                          <p className="text-md font-montserrat-bold bg-primary/10 p-1 text-primary-600 rounded-full">
+                            ${worker.serviceAgreement.baseHourlyRate}/hr
                           </p>
                         </div>
                       </div>
-                      {invite.notes && (
-                        <div className="mt-2 md:mt-3 p-2 md:p-3 bg-gray-50 rounded-lg">
-                          <p className="text-xs md:text-sm text-gray-600">
-                            <span className="font-montserrat-semibold">Notes:</span>{" "}
-                            {invite.notes}
-                          </p>
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 ))}
               </div>
-            )}
-          </div>
-
-          {/* Worker Details Sidebar */}
-          {selectedWorker && (
-            <div className="hidden lg:block">
-              <Card className="border-0 shadow-sm sticky top-6">
-                <CardContent className="p-0">
-                  <div className="p-3 md:p-4 border-b flex items-center justify-between">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => setSelectedWorker(null)}
-                    >
-                      <CloseCircle className="w-5 h-5 text-gray-400" />
-                    </Button>
-                  </div>
-
-                  <div className="p-3 md:p-4 space-y-3 md:space-y-4">
-                    {/* Worker Info */}
-                    <div className="text-center">
-                      <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
-                        {getWorkerProfileImage(selectedWorker.workerId) ? (
-                          <AvatarImage
-                            src={getWorkerProfileImage(selectedWorker.workerId)}
-                          />
-                        ) : (
-                          <AvatarFallback className="bg-primary-100 text-primary-600 text-lg md:text-2xl font-montserrat-semibold">
-                            {getWorkerInitials(selectedWorker.workerId)}
+            )
+          ) : pendingInvites.length === 0 ? (
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6 md:p-12 text-center">
+                <Letter className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                <h3 className="text-lg md:text-xl font-montserrat-semibold text-gray-900 mb-2">
+                  No pending invites
+                </h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  There are no pending invitations for this organization.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2 md:space-y-3">
+              {pendingInvites.map((invite) => (
+                <Card
+                  key={invite._id}
+                  className="border-0 shadow-sm hover:shadow-md transition-all"
+                >
+                  <CardContent className="p-3 md:p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                        <Avatar className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
+                          <AvatarFallback className="bg-orange-100 text-orange-600 font-montserrat-semibold text-sm md:text-base">
+                            {getWorkerInitials(invite.workerId)}
                           </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <h4 className="font-montserrat-bold text-gray-900 text-sm md:text-base mb-1">
-                        {getWorkerDisplayName(selectedWorker.workerId)}
-                      </h4>
-                      <p className="text-xs md:text-sm text-gray-600 mb-0.5">
-                        {getWorkerEmail(selectedWorker.workerId)}
-                      </p>
-                      <p className="text-xs md:text-sm text-gray-600">
-                        {getWorkerPhone(selectedWorker.workerId)}
-                      </p>
-                    </div>
-
-                    {/* Service Agreement */}
-                    <div>
-                      <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
-                        Service Agreement
-                      </h5>
-                      <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">
-                            Base Hourly Rate:
-                          </span>
-                          <span className="font-montserrat-bold text-primary-600">
-                            ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">
-                            Distance Travel Rate:
-                          </span>
-                          <span className="font-montserrat-semibold text-gray-900">
-                            $
-                            {selectedWorker.serviceAgreement.distanceTravelRate}
-                            /km
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Start Date:</span>
-                          <span className="font-montserrat-semibold text-gray-900">
-                            {format(
-                              parseISO(
-                                selectedWorker.serviceAgreement.startDate
-                              ),
-                              "dd/MM/yyyy"
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Terms Accepted:</span>
-                          <span className="font-montserrat-semibold text-gray-900">
-                            {selectedWorker.serviceAgreement.termsAccepted ? (
-                              <span className="text-green-600 flex items-center gap-1">
-                                Yes <CheckCircle className="w-3 h-3" />
-                              </span>
-                            ) : (
-                              "No"
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Joined Date:</span>
-                          <span className="font-montserrat-semibold text-gray-900">
-                            {format(
-                              parseISO(selectedWorker.joinedDate),
-                              "dd/MM/yyyy"
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Status:</span>
-                          <Badge className="bg-green-50 text-green-600 text-xs">
-                            Active
-                          </Badge>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h3 className="font-montserrat-semibold text-gray-900 text-sm md:text-base truncate">
+                              {getWorkerDisplayName(invite.workerId)}
+                            </h3>
+                            <Badge className="bg-orange-50 text-orange-600 text-xs px-1 md:px-2 py-0 h-4 md:h-5">
+                              Pending
+                            </Badge>
+                          </div>
+                          <p className="text-xs md:text-sm text-gray-600 truncate">
+                            {getWorkerEmail(invite.workerId)}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Invited:{" "}
+                            {format(parseISO(invite.inviteDate), "dd/MM/yyyy")}
+                          </p>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Proposed Shift Rates */}
-                    <div>
-                      <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
-                        Proposed Shifts Rates
-                      </h5>
-                      <div className="space-y-1 md:space-y-2">
-                        {selectedWorker.serviceAgreement.shiftRates.map(
-                          (rate) => (
-                            <div
-                              key={rate._id}
-                              className="p-2 md:p-3 bg-gray-50 rounded-lg"
-                            >
-                              <div className="flex justify-between items-start mb-1">
-                                <span className="font-montserrat-semibold text-gray-900 text-xs md:text-sm">
-                                  {getRateBandName(rate.rateTimeBandId)}
-                                </span>
-                                <span className="font-montserrat-bold text-primary-600 text-xs md:text-sm">
-                                  ${rate.hourlyRate}/hr
-                                </span>
-                              </div>
-                              {getRateBandCode(rate.rateTimeBandId) && (
-                                <p className="text-xs text-gray-500">
-                                  Code: {getRateBandCode(rate.rateTimeBandId)}
-                                </p>
-                              )}
-                            </div>
-                          )
-                        )}
+                      <div className="text-right ml-2 md:ml-4">
+                        <p className="text-lg md:text-xl font-montserrat-bold text-orange-600">
+                          ${invite.proposedRates.baseHourlyRate}/hr
+                        </p>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    {invite.notes && (
+                      <div className="mt-2 md:mt-3 p-2 md:p-3 bg-gray-50 rounded-lg">
+                        <p className="text-xs md:text-sm text-gray-600">
+                          <span className="font-montserrat-semibold">
+                            Notes:
+                          </span>{" "}
+                          {invite.notes}
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </div>
+
+        {/* Worker Details Sidebar */}
+        {selectedWorker && (
+          <div className="hidden lg:block">
+            <Card className="border-0 shadow-sm sticky top-6">
+              <CardContent className="p-0">
+                <div className="p-3 md:p-4 border-b flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setSelectedWorker(null)}
+                  >
+                    <CloseCircle className="w-5 h-5 text-gray-400" />
+                  </Button>
+                </div>
+
+                <div className="p-3 md:p-4 space-y-3 md:space-y-4">
+                  {/* Worker Info */}
+                  <div className="text-center">
+                    <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-3">
+                      {getWorkerProfileImage(selectedWorker.workerId) ? (
+                        <AvatarImage
+                          src={getWorkerProfileImage(selectedWorker.workerId)}
+                        />
+                      ) : (
+                        <AvatarFallback className="bg-primary-100 text-primary-600 text-lg md:text-2xl font-montserrat-semibold">
+                          {getWorkerInitials(selectedWorker.workerId)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <h4 className="font-montserrat-bold text-gray-900 text-sm md:text-base mb-1">
+                      {getWorkerDisplayName(selectedWorker.workerId)}
+                    </h4>
+                    <p className="text-xs md:text-sm text-gray-600 mb-0.5">
+                      {getWorkerEmail(selectedWorker.workerId)}
+                    </p>
+                    <p className="text-xs md:text-sm text-gray-600">
+                      {getWorkerPhone(selectedWorker.workerId)}
+                    </p>
+                  </div>
+
+                  {/* Service Agreement */}
+                  <div>
+                    <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
+                      Service Agreement
+                    </h5>
+                    <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Base Hourly Rate:</span>
+                        <span className="font-montserrat-bold text-primary-600">
+                          ${selectedWorker.serviceAgreement.baseHourlyRate}/hr
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
+                          Distance Travel Rate:
+                        </span>
+                        <span className="font-montserrat-semibold text-gray-900">
+                          ${selectedWorker.serviceAgreement.distanceTravelRate}
+                          /km
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Start Date:</span>
+                        <span className="font-montserrat-semibold text-gray-900">
+                          {format(
+                            parseISO(selectedWorker.serviceAgreement.startDate),
+                            "dd/MM/yyyy"
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Terms Accepted:</span>
+                        <span className="font-montserrat-semibold text-gray-900">
+                          {selectedWorker.serviceAgreement.termsAccepted ? (
+                            <span className="text-green-600 flex items-center gap-1">
+                              Yes <CheckCircle className="w-3 h-3" />
+                            </span>
+                          ) : (
+                            "No"
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Joined Date:</span>
+                        <span className="font-montserrat-semibold text-gray-900">
+                          {format(
+                            parseISO(selectedWorker.joinedDate),
+                            "dd/MM/yyyy"
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Status:</span>
+                        <Badge className="bg-green-50 text-green-600 text-xs">
+                          Active
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Proposed Shift Rates */}
+                  <div>
+                    <h5 className="font-montserrat-semibold text-gray-900 text-sm md:text-base mb-2 md:mb-3">
+                      Proposed Shifts Rates
+                    </h5>
+                    <div className="space-y-1 md:space-y-2">
+                      {selectedWorker.serviceAgreement.shiftRates.map(
+                        (rate) => (
+                          <div
+                            key={rate._id}
+                            className="p-2 md:p-3 bg-gray-50 rounded-lg"
+                          >
+                            <div className="flex justify-between items-start mb-1">
+                              <span className="font-montserrat-semibold text-gray-900 text-xs md:text-sm">
+                                {getRateBandName(rate.rateTimeBandId)}
+                              </span>
+                              <span className="font-montserrat-bold text-primary-600 text-xs md:text-sm">
+                                ${rate.hourlyRate}/hr
+                              </span>
+                            </div>
+                            {getRateBandCode(rate.rateTimeBandId) && (
+                              <p className="text-xs text-gray-500">
+                                Code: {getRateBandCode(rate.rateTimeBandId)}
+                              </p>
+                            )}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
 
       {/* Worker Details Modal - Mobile */}

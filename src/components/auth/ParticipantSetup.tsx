@@ -51,6 +51,7 @@ import {
 } from "../ui/select";
 import { commonLanguages } from "@/constants/common-languages";
 import { ParticipantOnboardingInput } from "@/types/user.types";
+import GeneralHeader from "../GeneralHeader";
 
 // Validation Schemas
 const personalInfoSchema = z.object({
@@ -103,7 +104,7 @@ export function ParticipantSetup({
   onComplete,
   isSubmitting = false,
 }: ParticipantSetupProps) {
-  const { completeOnboarding } = useAuth();
+  const { completeOnboarding, user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isOnboarding, setIsOnboarding] = useState(false);
@@ -237,8 +238,8 @@ export function ParticipantSetup({
             placeId: prediction.place_id,
           },
           (placeDetails: any) => {
-             // You can extract additional information here if needed
-          // like latitude, longitude, formatted address components, etc.
+            // You can extract additional information here if needed
+            // like latitude, longitude, formatted address components, etc.
           }
         );
       }
@@ -387,7 +388,9 @@ export function ParticipantSetup({
           address: data.address,
         };
 
-        await authService.completeParticipantOnboarding(transformedData as ParticipantOnboardingInput);
+        await authService.completeParticipantOnboarding(
+          transformedData as ParticipantOnboardingInput
+        );
         completeOnboarding();
         toast.success("Profile setup completed successfully!");
         onComplete();
@@ -451,29 +454,26 @@ export function ParticipantSetup({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 py-6 px-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
       {/* Back Button & Header */}
-      <div className="">
-        <button
-          onClick={handleSkipSetup}
-          className="font-montserrat-semibold flex items-center hover:text-gray-900 mb-6"
-        >
-          <AltArrowLeft className="h-4 w-4 mr-2" />
-          Back to Dashboard
-        </button>
+      <GeneralHeader
+        stickyTop={true}
+        title={"Profile Setup"}
+        subtitle=" Answer a few quick questions to complete your participant profile
+              and get started."
+        user={user}
+        onLogout={() => {}}
+        onViewProfile={() => navigate("/provider/profile")}
+      />
 
-        {/* Progress Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-montserrat-semibold">Profile Setup</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Answer a few quick questions to complete your participant profile
-              and get started
-            </p>
-          </div>
-          <div className="text-sm font-montserrat-semibold text-primary">
-            {step}/4
-          </div>
+      {/* Progress Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-montserrat-semibold"></h2>
+          <p className="text-sm text-gray-600 mt-1"></p>
+        </div>
+        <div className="text-sm font-montserrat-semibold text-primary">
+          {step}/4
         </div>
       </div>
 
@@ -1360,9 +1360,7 @@ export function ParticipantSetup({
                           name="planManager.name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-sm">
-                                Name
-                              </FormLabel>
+                              <FormLabel className="text-sm">Name</FormLabel>
                               <FormControl>
                                 <Input
                                   placeholder="e.g. NDIS Care Coordinators Pty Ltd"

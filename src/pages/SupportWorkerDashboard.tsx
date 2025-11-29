@@ -17,6 +17,7 @@ import {
   CourseUp,
   DollarMinimalistic,
   Eye,
+  InfoCircle,
   Star,
   UsersGroupTwoRounded,
 } from "@solar-icons/react";
@@ -31,6 +32,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   ComposedChart,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useNavigate } from "react-router-dom";
@@ -51,6 +55,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Loader from "@/components/Loader";
+import { DateRangePicker } from "@/components/analytics/DateRangePicker";
+import { DateRange, DateRangeType } from "@/entities/Analytics";
+import { createDateRange } from "@/api/services/analyticsService";
+import { Progress } from "@/components/ui/progress";
 
 // Stat card component
 
@@ -100,20 +108,8 @@ function StatCard({
 }
 
 // Performance chart component
-function PerformanceChart({
-  selectedOption,
-  onSelectedOptionChange,
-  customRange,
-  onCustomRangeChange,
-}) {
-  const dateRange =
-    selectedOption === "custom"
-      ? {
-          start: customRange.start.toISOString(),
-          end: customRange.end.toISOString(),
-        }
-      : selectedOption;
-
+function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
+  console.log('datarange: ',dateRange)
   // Update hook calls
   const { data: overviewData, isLoading: overviewLoading } =
     useGetSupportWorkerOverview(dateRange, true, true);
@@ -166,56 +162,6 @@ function PerformanceChart({
           <h2 className="text-lg font-semibold text-gray-900">
             Performance Overview
           </h2>
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <Select
-              value={selectedOption}
-              onValueChange={onSelectedOptionChange}
-            >
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Pick Date Range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="quarter">This Quarter</SelectItem>
-                <SelectItem value="year">This Year</SelectItem>
-                <SelectItem value="custom">Custom Range</SelectItem>
-              </SelectContent>
-            </Select>
-            {selectedOption === "custom" && (
-              <>
-                <label className="text-sm font-montserrat-semibold text-gray-700">
-                  Start:
-                </label>
-                <input
-                  type="date"
-                  value={customRange.start.toISOString().split("T")[0]}
-                  onChange={(e) =>
-                    onCustomRangeChange({
-                      ...customRange,
-                      start: new Date(e.target.value),
-                    })
-                  }
-                  className="border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-                <label className="text-sm font-montserrat-semibold text-gray-700">
-                  End:
-                </label>
-                <input
-                  type="date"
-                  value={customRange.end.toISOString().split("T")[0]}
-                  onChange={(e) =>
-                    onCustomRangeChange({
-                      ...customRange,
-                      end: new Date(e.target.value),
-                    })
-                  }
-                  className="border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-              </>
-            )}
-          </div>
         </div>
 
         <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
@@ -239,51 +185,6 @@ function PerformanceChart({
         <h2 className="text-lg font-semibold text-gray-900">
           Performance Overview
         </h2>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <Select value={selectedOption} onValueChange={onSelectedOptionChange}>
-            <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Pick Date Range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
-              <SelectItem value="custom">Custom Range</SelectItem>
-            </SelectContent>
-          </Select>
-          {selectedOption === "custom" && (
-            <>
-              <label className="text-sm font-montserrat-semibold text-gray-700">
-                Start:
-              </label>
-              <input
-                type="date"
-                value={customRange.start.toISOString().split("T")[0]}
-                onChange={(e) =>
-                  onCustomRangeChange({
-                    ...customRange,
-                    start: new Date(e.target.value),
-                  })
-                }
-                className="border border-gray-300 rounded px-2 py-1 text-sm"
-              />
-              <label className="text-sm font-montserrat-semibold text-gray-700">End:</label>
-              <input
-                type="date"
-                value={customRange.end.toISOString().split("T")[0]}
-                onChange={(e) =>
-                  onCustomRangeChange({
-                    ...customRange,
-                    end: new Date(e.target.value),
-                  })
-                }
-                className="border border-gray-300 rounded px-2 py-1 text-sm"
-              />
-            </>
-          )}
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-4 md:gap-8 mb-6">
@@ -364,6 +265,148 @@ function PerformanceChart({
           <div className="w-8 h-1 bg-yellow-400 rounded mr-2"></div>
           <span className="text-gray-600">On-Time Trend</span>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// NEW: Document Alerts Component
+function DocumentAlerts({ alerts }) {
+  if (!alerts || alerts.length === 0) return null;
+
+  return (
+    <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+      <div className="flex items-start">
+        <InfoCircle className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
+        <div>
+          <h3 className="font-semibold">Action Required</h3>
+          <ul className="list-disc list-inside text-sm mt-1">
+            {alerts.map((alert, index) => (
+              <li key={index}>{alert.message}</li> // Assuming alert has a 'message' property
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// NEW: Availability & Utilization Component
+function AvailabilityUtilization({ overviewData, performanceData }) {
+  const availability = overviewData?.analytics?.availability;
+  const comparison = performanceData?.availabilityComparison;
+  const skills = performanceData?.skillUtilization;
+
+  const COLORS = ["#0D2BEC", "#4B7BF5", "#A4BCF6", "#CACEE8"];
+
+  if (!availability || !comparison) return null;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      {/* Availability Card */}
+      <div className="lg:col-span-1 bg-white rounded-lg border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Availability
+        </h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-gray-600">Utilization Rate</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {comparison.utilizationPercentage?.toFixed(1) || 0}%
+            </p>
+            <Progress
+              value={comparison.utilizationPercentage || 0}
+              className="h-2 mt-1"
+            />
+          </div>
+          <div className="flex justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Booked Hours</p>
+              <p className="font-semibold text-gray-900">
+                {comparison.bookedHours?.toFixed(1) || 0}h
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Available Hours</p>
+              <p className="font-semibold text-gray-900">
+                {comparison.availableHours?.toFixed(1) || 0}h
+              </p>
+            </div>
+          </div>
+          <hr />
+          <div>
+            <p className="text-sm text-gray-600">Peak Work Days</p>
+            <p className="font-semibold text-gray-900">
+              {availability.peakWorkDays?.join(", ") || "N/A"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Average Shift Length</p>
+            <p className="font-semibold text-gray-900">
+              {availability.averageShiftLength?.toFixed(1) || 0} hours
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Skill Utilization Card */}
+      <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Skill Utilization
+        </h2>
+        {skills && skills.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={skills}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="utilizationRate"
+                    nameKey="skill"
+                  >
+                    {skills.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value, name) => [`${value}%`, name]} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex flex-col justify-center">
+              <p className="text-sm text-gray-600 mb-2">
+                Breakdown of hours by skill type:
+              </p>
+              <ul className="space-y-2">
+                {skills.map((skill, index) => (
+                  <li key={index} className="flex items-center text-sm">
+                    <span
+                      className="h-3 w-3 rounded-full mr-3"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    ></span>
+                    <span className="font-semibold text-gray-800 mr-2">
+                      {skill.skill || "General"}:
+                    </span>
+                    <span className="text-gray-600">
+                      {skill.totalHours} hours ({skill.utilizationRate}%)
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            <p>No skill utilization data available.</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -625,23 +668,14 @@ function InvitationsTable({ invitations, isLoading }) {
 export default function SupportWorkerDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [selectedOption, setSelectedOption] = useState("month"); // Default to "This Month"
-  const [customRange, setCustomRange] = useState({
-    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
-    end: new Date(),
-  });
-
-  // Determine dateRange for hooks
-  const dateRange =
-    selectedOption === "custom"
-      ? {
-          start: customRange.start.toISOString(),
-          end: customRange.end.toISOString(),
-        }
-      : selectedOption;
+  const [dateRange, setDateRange] = useState<DateRange>(
+    createDateRange(DateRangeType.MONTH)
+  );
 
   const { data: overviewData, isLoading: overviewLoading } =
     useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: performanceData, isLoading: performanceLoading } =
+    useGetSupportWorkerPerformance(dateRange);
   const { data: invitations, isLoading: invitationsLoading } =
     useGetOrganizationInvites();
 
@@ -669,9 +703,12 @@ export default function SupportWorkerDashboard() {
   };
 
 
-  if (overviewLoading || invitationsLoading) {
+  if (overviewLoading || invitationsLoading || performanceLoading) {
     return <Loader />;
   }
+
+  // Extracting nested analytics data
+  const analytics = overviewData?.analytics;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -683,6 +720,9 @@ export default function SupportWorkerDashboard() {
           user={user}
           onLogout={logout}
           onViewProfile={() => navigate("/support-worker/profile")}
+          rightComponent={
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+          }
         />
 
         {user &&
@@ -694,74 +734,59 @@ export default function SupportWorkerDashboard() {
             </div>
           )}
 
+        {/* NEW: Document Alerts */}
+        <DocumentAlerts alerts={performanceData?.documentAlerts} />
+
         {/* Stats */}
-        {overviewLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 animate-pulse"
-              >
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                <div className="h-8 bg-gray-200 rounded w-2/3 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-            <StatCard
-              title="Hours Worked"
-              value={`${
-                overviewData?.workSummary?.hoursWorked?.current.toFixed(2) || 0
-              }h`}
-              icon={ClockCircle}
-              trend="From last Month"
-              trendDirection={getTrendDirection(
-                overviewData?.workSummary?.hoursWorked?.trend
-              )}
-            />
-            <StatCard
-              title="Active Clients"
-              value={overviewData?.workSummary?.activeClients.toFixed(0) || 0}
-              icon={UsersGroupTwoRounded}
-              trend="Currently Supporting"
-              trendDirection="stable"
-            />
-            <StatCard
-              title="Earnings"
-              value={`$${
-                overviewData?.workSummary?.earnings?.current.toFixed(2) || 0
-              }`}
-              icon={DollarMinimalistic}
-              trend="From last Month"
-              trendDirection={getTrendDirection(
-                overviewData?.workSummary?.earnings?.trend
-              )}
-            />
-            <StatCard
-              title="Performance Ratings"
-              value={
-                overviewData?.performanceMetrics?.averageRating.toFixed(2) || 0
-              }
-              icon={Star}
-              trend={`${
-                overviewData?.performanceMetrics?.onTimeRate || 0
-              }% on time rate`}
-              trendDirection="stable"
-            />
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+          <StatCard
+            title="Hours Worked"
+            value={`${
+              analytics?.workSummary?.hoursWorked?.current.toFixed(2) || 0
+            }h`}
+            icon={ClockCircle}
+            trend="From last period"
+            trendDirection={getTrendDirection(
+              analytics?.workSummary?.hoursWorked?.trend
+            )}
+          />
+          <StatCard
+            title="Acceptance Rate"
+            value={`${analytics?.performanceMetrics?.acceptanceRate || 0}%`}
+            icon={CheckCircle}
+            trend="All time"
+            trendDirection="stable"
+          />
+          <StatCard
+            title="On-Time Rate"
+            value={`${analytics?.performanceMetrics?.onTimeRate || 0}%`}
+            icon={UsersGroupTwoRounded}
+            trend="Based on completed shifts"
+            trendDirection="stable"
+          />
+          <StatCard
+            title="Avg. Rating"
+            value={
+              analytics?.performanceMetrics?.averageRating.toFixed(2) || "N/A"
+            }
+            icon={Star}
+            trend={`${
+              analytics?.performanceMetrics?.totalReviews || 0
+            } total reviews`}
+            trendDirection="stable"
+          />
+        </div>
+
+        {/* NEW: Availability & Utilization Section */}
+        <AvailabilityUtilization
+          overviewData={overviewData}
+          performanceData={performanceData}
+        />
 
         {/* Two columns layout for charts */}
         <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-6">
           {/* Performance Chart */}
-          <PerformanceChart
-            selectedOption={selectedOption}
-            onSelectedOptionChange={setSelectedOption}
-            customRange={customRange}
-            onCustomRangeChange={setCustomRange}
-          />
+          <PerformanceChart dateRange={dateRange} />
           {/* Upcoming Schedules */}
           <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
             <div className="flex justify-between items-center mb-6">
@@ -778,10 +803,10 @@ export default function SupportWorkerDashboard() {
                 View All
               </Button>
             </div>
-            {overviewData.workSummary?.upcomingShifts.length > 0 ? (
+            {analytics?.workSummary?.upcomingShifts.length > 0 ? (
               <Table className="mt-4">
                 <TableBody className="divide-y divide-gray-200 bg-white">
-                  {overviewData.workSummary.upcomingShifts.map((shift) => (
+                  {analytics.workSummary.upcomingShifts.map((shift) => (
                     <TableRow
                       key={shift.id}
                       className="hover:bg-gray-50 transition-colors"
@@ -806,7 +831,9 @@ export default function SupportWorkerDashboard() {
               <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
                 <div className="text-center p-8">
                   <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                  <p className="text-sm font-montserrat-semibold">No upcoming schedules</p>
+                  <p className="text-sm font-montserrat-semibold">
+                    No upcoming schedules
+                  </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Your upcoming shifts will appear here once scheduled
                   </p>

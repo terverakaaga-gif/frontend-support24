@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouteMemory } from '@/hooks/useRouteMemory';
+import { useRouteMemory } from "@/hooks/useRouteMemory";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import {
   ShareCircle,
   Buildings3,
   Calendar,
+  CalendarDate,
   ChatLine,
   ClipboardList,
   HamburgerMenu,
@@ -28,6 +29,9 @@ import {
   UsersGroupTwoRounded,
   Widget5,
   ShieldKeyholeMinimalistic,
+  Home,
+  SuitcaseTag,
+  Bookmark,
 } from "@solar-icons/react";
 
 interface DashboardLayoutProps {
@@ -35,7 +39,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  useRouteMemory(); // Add this hook
+  useRouteMemory();
 
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -231,6 +235,30 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/participant/chats")}
             />
+            <NavItem
+              to={"/participant/provider/dashboard"}
+              icon={<Widget5 className="w-6 h-6" />}
+              label="Dashboard"
+              active={isActive("/participant/provider/dashboard")}
+            />
+            <NavItem
+              to={"/participant/provider/events"}
+              icon={<CalendarDate className="w-6 h-6" />}
+              label="Events"
+              active={isActive("/participant/provider/events")}
+            />
+            <NavItem
+              to={"/participant/provider/accommodations"}
+              icon={<Home className="w-6 h-6" />}
+              label="Accommodations"
+              active={isActive("/participant/provider/accommodations")}
+            />
+            <NavItem
+              to={"/participant/provider/jobs"}
+              icon={<SuitcaseTag className="w-6 h-6" />}
+              label="Jobs"
+              active={isActive("/participant/provider/jobs")}
+            />
           </>
         );
       case "supportWorker":
@@ -272,6 +300,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
+            <NavItem
+              to="/support-worker/jobs"
+              icon={<SuitcaseTag className="w-6 h-6" />}
+              label="Jobs"
+              active={isActive("/support-worker/jobs")}
+            />
+            <NavItem
+              to="/support-worker/saved-jobs"
+              icon={<Bookmark className="w-6 h-6" />}
+              label="Saved Jobs"
+              active={isActive("/support-worker/saved-jobs")}
+            />
           </>
         );
       default:
@@ -280,7 +320,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full bg-primary-900">
+    <div className="flex flex-col h-full bg-primary-900 rounded-xl overflow-hidden">
       {/* Logo Section */}
       <div className="px-6 py-6">
         <Link to="/" className="flex items-center space-x-2">
@@ -328,9 +368,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Desktop Sidebar - Only show on large screens (1024px+) */}
-      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-64 border-r overflow-y-auto rounded-xl m-4 mb-0">
+      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-72 p-4">
         <Sidebar />
       </aside>
 
@@ -338,22 +378,26 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetTrigger asChild>
           <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden absolute left-2 top-2 z-40 hover:bg-transparent hover:text-black p-2"
+            variant="ghost"
+            size="icon"
+            className="lg:hidden fixed left-4 top-4 z-50 bg-white hover:bg-gray-100 shadow-md rounded-lg h-10 w-10"
           >
-        <HamburgerMenu className="w-10 h-10" />
+            <HamburgerMenu className="h-6 w-6 text-gray-700" />
+            <span className="sr-only">Open menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent
+          side="left"
+          className="w-72 p-4 bg-transparent border-none shadow-none"
+        >
           <Sidebar />
         </SheetContent>
       </Sheet>
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen lg:pl-64 flex flex-col overflow-hidden">
+      <main className="flex-1 min-h-screen lg:pl-72 flex flex-col overflow-hidden">
         {/* Content rendered by children */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
           {children}
         </div>
       </main>

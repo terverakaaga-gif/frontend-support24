@@ -247,23 +247,21 @@ const IncidentDetailsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <div className="max-w-6xl mx-10 p-6">
-          <div className="mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-[#008CFF] hover:text-[#1599D3]"
-            >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Incidents
-            </button>
-          </div>
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#008CFF]"></div>
-            <span className="ml-2 text-gray-600">
-              Loading incident details...
-            </span>
-          </div>
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <div className="mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-[#008CFF] hover:text-[#1599D3]"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Back to Incidents
+          </button>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#008CFF]"></div>
+          <span className="ml-2 text-gray-600">
+            Loading incident details...
+          </span>
         </div>
       </div>
     );
@@ -271,136 +269,133 @@ const IncidentDetailsPage = () => {
 
   if (error || !incident) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <div className="max-w-6xl mx-10 p-6">
-          <div className="mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-[#008CFF] hover:text-[#1599D3]"
-            >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Incidents
-            </button>
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <div className="mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-[#008CFF] hover:text-[#1599D3]"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Back to Incidents
+          </button>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <div className="text-red-500 text-center">
+            {error?.message || "Incident not found"}
           </div>
-          <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <div className="text-red-500 text-center">
-              {error?.message || "Incident not found"}
-            </div>
-            {!error && !incident && (
-              <p className="text-gray-1000 text-center">
-                The incident with ID "{id}" does not exist or has been deleted.
-              </p>
-            )}
-            <button
-              onClick={() =>
-                queryClient.invalidateQueries({
-                  queryKey: ["incident-details", id],
-                })
-              }
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700"
-            >
-              Retry
-            </button>
-          </div>
+          {!error && !incident && (
+            <p className="text-gray-1000 text-center">
+              The incident with ID "{id}" does not exist or has been deleted.
+            </p>
+          )}
+          <button
+            onClick={() =>
+              queryClient.invalidateQueries({
+                queryKey: ["incident-details", id],
+              })
+            }
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-6xl mx-10 p-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-montserrat-bold text-gray-900">
-                  Incident Details
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Review incident information and take actions
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                {/* Export Dropdown */}
-                <div className="relative group">
-                  <button className="flex items-center text-gray-600 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg">
-                    <Download className="h-4 w-4 mr-2" />
-                    Export
-                  </button>
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                    <button
-                      onClick={exportToPDF}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg"
-                    >
-                      Export as PDF
-                    </button>
-                    <button
-                      onClick={exportToCSV}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg"
-                    >
-                      Export as CSV
-                    </button>
-                  </div>
-                </div>
-
-                {user?.role === "admin" && incident.status !== "RESOLVED" && (
-                  <Link
-                    to={`/admin/incidents/${incident._id}/resolve`}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    Resolve Incident
-                  </Link>
-                )}
-
-                <button
-                  onClick={() => navigate(-1)}
-                  className="flex items-center text-[#008CFF] hover:text-[#1599D3] transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 mr-2" />
-                  Back
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Status Header */}
-          <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-montserrat-semibold text-gray-900">
-                {incident.title}
-              </h2>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusColor(
-                    incident.status
-                  )}`}
-                >
-                  {incident.status.replace("_", " ")}
-                </span>
-                <span
-                  className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityColor(
-                    incident.severity
-                  )}`}
-                >
-                  {incident.severity}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-6 space-y-6">
-            {/* Description with Rich Text Preview */}
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
-                Description
-              </h3>
-              <div className="bg-gray-100 rounded-lg p-4 border">
-                <div
-                  className="ql-editor-preview prose prose-sm max-w-none text-gray-700
+              <h1 className="text-2xl font-montserrat-bold text-gray-900">
+                Incident Details
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Review incident information and take actions
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {/* Export Dropdown */}
+              <div className="relative group">
+                <button className="flex items-center text-gray-600 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                  <button
+                    onClick={exportToPDF}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg"
+                  >
+                    Export as PDF
+                  </button>
+                  <button
+                    onClick={exportToCSV}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg"
+                  >
+                    Export as CSV
+                  </button>
+                </div>
+              </div>
+
+              {user?.role === "admin" && incident.status !== "RESOLVED" && (
+                <Link
+                  to={`/admin/incidents/${incident._id}/resolve`}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  Resolve Incident
+                </Link>
+              )}
+
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center text-[#008CFF] hover:text-[#1599D3] transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Header */}
+        <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-montserrat-semibold text-gray-900">
+              {incident.title}
+            </h2>
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusColor(
+                  incident.status
+                )}`}
+              >
+                {incident.status.replace("_", " ")}
+              </span>
+              <span
+                className={`inline-flex px-2 py-1 text-xs font-montserrat-semibold rounded-full ${getSeverityColor(
+                  incident.severity
+                )}`}
+              >
+                {incident.severity}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Description with Rich Text Preview */}
+          <div>
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+              Description
+            </h3>
+            <div className="bg-gray-100 rounded-lg p-4 border">
+              <div
+                className="ql-editor-preview prose prose-sm max-w-none text-gray-700
 										prose-headings:text-gray-900 prose-headings:font-montserrat-semibold prose-headings:mt-4 prose-headings:mb-2
 										prose-h1:text-xl prose-h1:font-montserrat-bold prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
 										prose-h2:text-lg prose-h2:font-montserrat-semibold
@@ -415,173 +410,172 @@ const IncidentDetailsPage = () => {
 										prose-blockquote:text-gray-600 prose-blockquote:border-l-gray-300 prose-blockquote:pl-4 prose-blockquote:italic
 										prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
 									"
-                  dangerouslySetInnerHTML={{ __html: incident.description }}
-                />
+                dangerouslySetInnerHTML={{ __html: incident.description }}
+              />
+            </div>
+          </div>
+
+          {/* Details Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
+                Reported By
+              </h4>
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5 text-gray-400" />
+                <span className="text-gray-900">
+                  {incident.reportedBy?.firstName || "Unknown"}{" "}
+                  {incident.reportedBy?.lastName || ""}
+                </span>
               </div>
             </div>
 
-            {/* Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
+                Reported On
+              </h4>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-gray-400" />
+                <span className="text-gray-900">
+                  {formatDate(incident.createdAt)}
+                </span>
+              </div>
+            </div>
+
+            {incident.shiftId && (
               <div>
                 <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
-                  Reported By
+                  Shift ID
+                </h4>
+                <p className="text-gray-900">{incident.shiftId}</p>
+              </div>
+            )}
+
+            {incident.reportedAgainst && (
+              <div>
+                <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
+                  Reported Against
                 </h4>
                 <div className="flex items-center gap-2">
                   <User className="h-5 w-5 text-gray-400" />
                   <span className="text-gray-900">
-                    {incident.reportedBy?.firstName || "Unknown"}{" "}
-                    {incident.reportedBy?.lastName || ""}
+                    {incident.reportedAgainst.firstName}{" "}
+                    {incident.reportedAgainst.lastName}
                   </span>
                 </div>
               </div>
+            )}
 
+            {incident.resolvedBy && (
               <div>
                 <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
-                  Reported On
+                  Resolved By
+                </h4>
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-gray-400" />
+                  <span className="text-gray-900">
+                    {incident.resolvedBy.firstName}{" "}
+                    {incident.resolvedBy.lastName}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {incident.resolvedAt && (
+              <div>
+                <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
+                  Resolved On
                 </h4>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-gray-400" />
                   <span className="text-gray-900">
-                    {formatDate(incident.createdAt)}
+                    {formatDate(incident.resolvedAt)}
                   </span>
-                </div>
-              </div>
-
-              {incident.shiftId && (
-                <div>
-                  <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
-                    Shift ID
-                  </h4>
-                  <p className="text-gray-900">{incident.shiftId}</p>
-                </div>
-              )}
-
-              {incident.reportedAgainst && (
-                <div>
-                  <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
-                    Reported Against
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-900">
-                      {incident.reportedAgainst.firstName}{" "}
-                      {incident.reportedAgainst.lastName}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {incident.resolvedBy && (
-                <div>
-                  <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
-                    Resolved By
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-900">
-                      {incident.resolvedBy.firstName}{" "}
-                      {incident.resolvedBy.lastName}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {incident.resolvedAt && (
-                <div>
-                  <h4 className="text-sm font-montserrat-semibold text-gray-1000 mb-2">
-                    Resolved On
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-900">
-                      {formatDate(incident.resolvedAt)}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Resolution Note */}
-            {incident.resolutionNote && (
-              <div>
-                <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
-                  Resolution Notes
-                </h3>
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                  <div
-                    className="ql-editor-preview prose prose-sm max-w-none text-gray-700"
-                    dangerouslySetInnerHTML={{
-                      __html: incident.resolutionNote,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Evidence */}
-            {incident.urlLinks && incident.urlLinks.length > 0 && (
-              <div>
-                <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
-                  Evidence Files
-                </h3>
-                <div className="space-y-2">
-                  {incident.urlLinks.map((link, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 text-sm bg-gray-100 p-3 rounded-lg border"
-                    >
-                      <FileText className="h-4 w-4 text-gray-1000 flex-shrink-0" />
-                      <span className="text-gray-700 break-all">{link}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Status Update (Admin only) */}
-            {user?.role === "admin" && (
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
-                  Update Status
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {incident.status !== "IN_REVIEW" && (
-                    <button
-                      onClick={() => handleStatusUpdate("IN_REVIEW")}
-                      disabled={updateStatusMutation.isPending}
-                      className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-md text-sm hover:bg-yellow-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {updateStatusMutation.isPending
-                        ? "Updating..."
-                        : "Mark as In Review"}
-                    </button>
-                  )}
-                  {incident.status !== "REJECTED" && (
-                    <button
-                      onClick={() => handleStatusUpdate("REJECTED")}
-                      disabled={updateStatusMutation.isPending}
-                      className="bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {updateStatusMutation.isPending
-                        ? "Updating..."
-                        : "Reject Incident"}
-                    </button>
-                  )}
-                  {incident.status !== "OPEN" && (
-                    <button
-                      onClick={() => handleStatusUpdate("OPEN")}
-                      disabled={updateStatusMutation.isPending}
-                      className="bg-red-100 text-red-800 px-3 py-2 rounded-md text-sm hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {updateStatusMutation.isPending
-                        ? "Updating..."
-                        : "Re-open Incident"}
-                    </button>
-                  )}
                 </div>
               </div>
             )}
           </div>
+
+          {/* Resolution Note */}
+          {incident.resolutionNote && (
+            <div>
+              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                Resolution Notes
+              </h3>
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                <div
+                  className="ql-editor-preview prose prose-sm max-w-none text-gray-700"
+                  dangerouslySetInnerHTML={{
+                    __html: incident.resolutionNote,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Evidence */}
+          {incident.urlLinks && incident.urlLinks.length > 0 && (
+            <div>
+              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                Evidence Files
+              </h3>
+              <div className="space-y-2">
+                {incident.urlLinks.map((link, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 text-sm bg-gray-100 p-3 rounded-lg border"
+                  >
+                    <FileText className="h-4 w-4 text-gray-1000 flex-shrink-0" />
+                    <span className="text-gray-700 break-all">{link}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Status Update (Admin only) */}
+          {user?.role === "admin" && (
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                Update Status
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {incident.status !== "IN_REVIEW" && (
+                  <button
+                    onClick={() => handleStatusUpdate("IN_REVIEW")}
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-md text-sm hover:bg-yellow-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updateStatusMutation.isPending
+                      ? "Updating..."
+                      : "Mark as In Review"}
+                  </button>
+                )}
+                {incident.status !== "REJECTED" && (
+                  <button
+                    onClick={() => handleStatusUpdate("REJECTED")}
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updateStatusMutation.isPending
+                      ? "Updating..."
+                      : "Reject Incident"}
+                  </button>
+                )}
+                {incident.status !== "OPEN" && (
+                  <button
+                    onClick={() => handleStatusUpdate("OPEN")}
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-red-100 text-red-800 px-3 py-2 rounded-md text-sm hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updateStatusMutation.isPending
+                      ? "Updating..."
+                      : "Re-open Incident"}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

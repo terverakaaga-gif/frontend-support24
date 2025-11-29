@@ -118,7 +118,6 @@ const IncidentsPage = () => {
       incidentService.createIncident(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["incidents"] });
-      toast.success("Incident created successfully");
       setReviewModalOpen(false);
       setIncidentForm({
         title: "",
@@ -130,8 +129,19 @@ const IncidentsPage = () => {
       });
     },
     onError: (error) => {
-      toast.error("Failed to create incident");
       console.error("Error creating incident:", error);
+    },
+  });
+
+  // Update incident status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      incidentService.updateIncidentStatus(id, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
+    },
+    onError: (error) => {
+      console.error("Error updating incident status:", error);
     },
   });
 
@@ -148,14 +158,13 @@ const IncidentsPage = () => {
     }) => incidentService.resolveIncident(id, { resolutionNote, resolvedBy }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["incidents"] });
-      toast.success("Incident resolved successfully");
       setResolvePreviewModalOpen(false);
       setResolveModalOpen(false);
       setResolutionNote("");
       setSelectedIncident(null);
+      setViewModalOpen(false);
     },
     onError: (error) => {
-      toast.error("Failed to resolve incident");
       console.error("Error resolving incident:", error);
     },
   });
@@ -250,6 +259,14 @@ const IncidentsPage = () => {
     });
   };
 
+  // Check if user can resolve incidents (admin or participant)
+  const canResolveIncident =
+    user?.role === "admin" || user?.role === "participant";
+
+  // Check if user can update status to IN_REVIEW (admin or participant)
+  const canUpdateStatus =
+    user?.role === "admin" || user?.role === "participant";
+
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -268,6 +285,17 @@ const IncidentsPage = () => {
     setSelectedIncident(incident);
     setResolutionNote("");
     setResolveModalOpen(true);
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    if (selectedIncident && newStatus !== selectedIncident.status) {
+      updateStatusMutation.mutate({
+        id: selectedIncident._id,
+        status: newStatus,
+      });
+      // Update local state to reflect change immediately
+      setSelectedIncident({ ...selectedIncident, status: newStatus });
+    }
   };
 
   const handleCreateIncident = () => {
@@ -367,7 +395,7 @@ const IncidentsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 md:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
       {/* Header */}
       <GeneralHeader
         title={
@@ -539,16 +567,15 @@ const IncidentsPage = () => {
                       <Eye className="h-4 w-4" />
                       View
                     </Button>
-                    {user.role === "admin" &&
-                      incident.status !== "RESOLVED" && (
-                        <Button
-                          onClick={() => handleResolveIncident(incident)}
-                          className="text-green-600 bg-white border border-green-600 hover:text-white hover:bg-green-600 flex items-center gap-2 text-sm font-montserrat-bold"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          Resolve
-                        </Button>
-                      )}
+                    {canResolveIncident && incident.status !== "RESOLVED" && (
+                      <Button
+                        onClick={() => handleResolveIncident(incident)}
+                        className="text-green-600 bg-white border border-green-600 hover:text-white hover:bg-green-600 flex items-center gap-2 text-sm font-montserrat-bold"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                        Resolve
+                      </Button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
@@ -568,10 +595,10 @@ const IncidentsPage = () => {
               <Button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="border-gray-200"
+                className=" h-9 w-9"
                 variant="outline"
               >
-                Previous
+                <AltArrowLeft className="h-4 w-4" />
               </Button>
               {Array.from(
                 { length: Math.min(totalPages, 5) },
@@ -580,7 +607,7 @@ const IncidentsPage = () => {
                 <Button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`px-4 py-1 text-sm rounded  h-9 min-w-[36px] ${
+                  className={`px-4 py-1 text-sm rounded  h-9 w-9 ${
                     currentPage === page
                       ? "bg-primary-600 text-white"
                       : " hover:bg-gray-100"
@@ -594,10 +621,10 @@ const IncidentsPage = () => {
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="border-gray-200"
+                className="h-9 w-9"
                 variant="outline"
               >
-                Next
+                <AltArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -642,17 +669,23 @@ const IncidentsPage = () => {
                   </div>
                   <div className="text-sm text-primary-700 space-y-1">
                     <p>
-                      <span className="font-montserrat-semibold">Reported By:</span>{" "}
+                      <span className="font-montserrat-semibold">
+                        Reported By:
+                      </span>{" "}
                       {selectedIncident.reportedBy?.firstName}{" "}
                       {selectedIncident.reportedBy?.lastName}
                     </p>
                     <p>
-                      <span className="font-montserrat-semibold">Reported On:</span>{" "}
+                      <span className="font-montserrat-semibold">
+                        Reported On:
+                      </span>{" "}
                       {formatDate(selectedIncident.createdAt)}
                     </p>
                     {selectedIncident.shiftId && (
                       <p>
-                        <span className="font-montserrat-semibold">Shift ID:</span>{" "}
+                        <span className="font-montserrat-semibold">
+                          Shift ID:
+                        </span>{" "}
                         {selectedIncident.shiftId}
                       </p>
                     )}
@@ -1173,17 +1206,19 @@ const IncidentsPage = () => {
               >
                 {createIncidentMutation.isPending ? (
                   <>
-                    <Spinner/>
+                    <Spinner />
                     <span className="ml-2">Saving...</span>
                   </>
-                ) : "Save"}
+                ) : (
+                  "Save"
+                )}
               </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* View Incident Dialog */}
+      {/* View Incident Dialog - Updated with Status Select */}
       {viewModalOpen && selectedIncident && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1260,23 +1295,26 @@ const IncidentsPage = () => {
                       Reported Against
                     </p>
                     <div className="flex items-center gap-2">
-                      <img
-                        src={`https://i.pravatar.cc/32?img=${
-                          (Math.abs(
-                            parseInt(selectedIncident._id.slice(-4), 16)
-                          ) %
-                            10) +
-                          2
-                        }`}
-                        alt="Reported Against"
-                        className="w-8 h-8 rounded-full"
-                      />
+                      <Avatar>
+                        <AvatarImage
+                          src={
+                            selectedIncident.reportedAgainst.profileImage ||
+                            `https://i.pravatar.cc/40?img=5`
+                          }
+                          alt="Reported Against"
+                        />
+                        <AvatarFallback>
+                          {selectedIncident.reportedAgainst.firstName.charAt(0)}
+                          {selectedIncident.reportedAgainst.lastName.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+
                       <div>
                         <p className="text-sm font-montserrat-bold text-gray-900">
-                          Michael Hishen
+                          {selectedIncident.reportedAgainst.firstName} {selectedIncident.reportedAgainst.lastName}
                         </p>
                         <p className="text-xs text-gray-1000">
-                          Michaels Foundation
+                          {/* TODO display the organization the reports comes from */}
                         </p>
                       </div>
                     </div>
@@ -1302,7 +1340,95 @@ const IncidentsPage = () => {
                   />
                 </div>
               </div>
+
+              {/* Status Update Section - Only for admin and participant */}
+              {canUpdateStatus && selectedIncident.status !== "RESOLVED" && (
+                <div className="border-t border-gray-200 pt-6">
+                  <h4 className="text-sm font-montserrat-bold text-gray-900 mb-3">
+                    Update Status
+                  </h4>
+                  <div className="flex items-center gap-4">
+                    <Select
+                      value={selectedIncident.status}
+                      onValueChange={handleStatusChange}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="OPEN">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-gray-500"></span>
+                            Opened
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="IN_REVIEW">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                            In Review
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Change the status to "In Review" to indicate this incident
+                    is being investigated.
+                  </p>
+                </div>
+              )}
+
+              {/* Resolution Info - Show if resolved */}
+              {selectedIncident.status === "RESOLVED" &&
+                selectedIncident.resolutionNote && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h4 className="text-sm font-montserrat-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      Resolution Details
+                    </h4>
+                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                      <div
+                        className="prose prose-sm max-w-none text-gray-700"
+                        dangerouslySetInnerHTML={{
+                          __html: selectedIncident.resolutionNote,
+                        }}
+                      />
+                      {selectedIncident.resolvedBy && (
+                        <p className="text-xs text-gray-500 mt-3">
+                          Resolved by {selectedIncident.resolvedBy.firstName}{" "}
+                          {selectedIncident.resolvedBy.lastName}
+                          {selectedIncident.resolvedAt &&
+                            ` on ${formatDate(selectedIncident.resolvedAt)}`}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
             </div>
+
+            {/* Footer Actions */}
+            {canResolveIncident && selectedIncident.status !== "RESOLVED" && (
+              <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+                <Button
+                  onClick={() => setViewModalOpen(false)}
+                  className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-montserrat-bold"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    setViewModalOpen(false);
+                    handleResolveIncident(selectedIncident);
+                  }}
+                  className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-montserrat-bold flex items-center gap-2"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  Resolve Incident
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

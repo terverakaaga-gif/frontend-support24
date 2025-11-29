@@ -28,6 +28,7 @@ import { WaveLoader } from "./Loader";
 import { SearchFilters } from "./SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Spinner } from "./Spinner";
 
 interface SearchSupportWorkersProps {
   open: boolean;
@@ -541,10 +542,7 @@ export function SearchSupportWorkers({
                         disabled={isLoading}
                       >
                         {isLoading ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
-                            Loading...
-                          </>
+                          <Spinner />
                         ) : (
                           `Load More (${pagination.totalResults - workers.length} remaining)`
                         )}

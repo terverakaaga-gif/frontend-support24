@@ -3,6 +3,7 @@ import ProfileAvatar from "./ProfileAvater";
 import { User } from "@/types/user.types";
 import { Button } from "./ui/button";
 import { ArrowLeft } from "@solar-icons/react";
+import { useNavigate } from "react-router-dom";
 
 interface GeneralHeaderProps {
   title: string;
@@ -27,22 +28,24 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
   stickyTop = false,
   showBackButton = false,
 }) => {
+  const navigate = useNavigate();
+  
   return (
     <>
-      {/* Desktop view */}
+      {/* Desktop view - lg and above */}
       <header
-        className={`hidden md:flex items-center justify-between mb-12 ${
-          stickyTop ? "sticky top-0 z-10" : ""
+        className={`hidden lg:flex items-center justify-between mb-8 ${
+          stickyTop ? "sticky top-0 z-10 bg-gray-100 py-4 -mx-8 px-8" : ""
         }`}
       >
         <div>
           {showBackButton && (
             <Button
-              variant="ghost"
-              className="flex gap-3 items-center hover:bg-transparent hover:text-black"
-              onClick={() => window.history.back()}
+              variant="link"
+              onClick={() => navigate(-1)}
+              className="text-primary hover:text-primary/80 p-0 mb-4"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
           )}
@@ -55,7 +58,7 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
             </p>
           )}
         </div>
-        <div className="flex items-center gap-1 mb-3">
+        <div className="flex items-center gap-3">
           {rightComponent && rightComponent}
           <ProfileAvatar
             user={user}
@@ -65,20 +68,69 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
           />
         </div>
       </header>
-      {/* Mobile view */}
-      <header className="md:hidden top-10 relative">
-        <div className="flex items-center gap-3 place-self-end -mt-3 mb-1">
+
+      {/* Tablet view - md to lg */}
+      <header
+        className={`hidden md:flex lg:hidden flex-col mb-6 ${
+          stickyTop ? "sticky top-0 z-10 bg-gray-100 py-4 -mx-6 px-6" : ""
+        }`}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            {showBackButton && (
+              <Button
+                variant="link"
+                onClick={() => navigate(-1)}
+                className="text-primary hover:text-primary/80 p-0"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {rightComponent && rightComponent}
+            <ProfileAvatar
+              user={user}
+              onLogout={onLogout}
+              onViewProfile={onViewProfile}
+              onSettings={onSettings}
+            />
+          </div>
+        </div>
+        <div>
+          <h1 className="text-xl font-montserrat-bold text-gray-900">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-sm font-montserrat-semibold text-gray-600 mt-1">
+              {subtitle}
+            </p>
+          )}
+        </div>
+      </header>
+
+      {/* Mobile view - below md */}
+      <header
+        className={`md:hidden mb-6 ${
+          stickyTop ? "sticky top-0 z-10 bg-gray-100 py-4 -mx-4 px-4" : ""
+        }`}
+      >
+        {/* Top row: Back button (if any) and actions - offset for hamburger menu */}
+        <div className="flex items-center justify-end gap-2 mb-4 pt-12">
           {showBackButton && (
             <Button
-              variant="ghost"
-              className="flex gap-3 items-center hover:bg-transparent hover:text-black text-xs font-montserrat-semibold"
-              onClick={() => window.history.back()}
+              variant="link"
+              onClick={() => navigate(-1)}
+              className="text-primary hover:text-primary/80 p-0 mr-auto"
             >
-              <ArrowLeft className="w-5 h-5" />
-              Back
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              <span className="text-sm">Back</span>
             </Button>
           )}
-          {rightComponent && rightComponent}
+          {rightComponent && (
+            <div className="flex-shrink-0">{rightComponent}</div>
+          )}
           <ProfileAvatar
             user={user}
             onLogout={onLogout}
@@ -86,12 +138,14 @@ const GeneralHeader: React.FC<GeneralHeaderProps> = ({
             onSettings={onSettings}
           />
         </div>
-        <div className="mb-3">
-          <h1 className="text-xl font-montserrat-bold text-gray-900">
+
+        {/* Title and subtitle */}
+        <div>
+          <h1 className="text-lg font-montserrat-bold text-gray-900 leading-tight">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-sm font-montserrat-semibold text-gray-600 mt-1">
+            <p className="text-xs font-montserrat-semibold text-gray-600 mt-1">
               {subtitle}
             </p>
           )}

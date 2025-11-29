@@ -79,6 +79,24 @@ import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 import SupportWorkersSearch from "./pages/SupportWorkersSearch";
 import ParticipantSetupPage from "./pages/ParticipantSetupPage";
 import ResendEmail from "./pages/ResendEmail";
+
+import ProviderAccommodationsPage from "./pages/ProviderAccommodationsPage";
+import ProviderAccommodationDetailsPage from "./pages/ProviderAccommodationDetailsPage";
+import ProviderAccommodationFormPage from "./pages/ProviderAccommodationFormPage";
+import ProviderAccommodationInterestedUsersPage from "./pages/ProviderAccommodationInterestedUsersPage";
+
+import ProviderDashboard from "./pages/ProviderDashboard";
+import ProviderEventsPage from "./pages/ProviderEventsPage";
+import ProviderEventDetailsPage from "./pages/ProviderEventDetailsPage";
+import ProviderEventFormPage from "./pages/ProviderEventFormPage";
+import ProviderRegisteredEventParticipantsPage from "./pages/ProviderRegisteredEventParticipantsPage";
+import ProviderJobsPage from "./pages/ProviderJobsPage";
+import ProviderJobDetailsPage from "./pages/ProviderJobDetailsPage";
+import ProviderJobFormPage from "./pages/ProviderJobFormPage";
+import ProviderJobApplicantsPage from "./pages/ProviderJobApplicantsPage";
+import SupportJobListingPage from "./pages/SupportJobListingPage";
+import SupportSavedJobsPage from "./pages/SupportSavedJobsPage";
+import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
 // import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 // import CoordinatorParticipants from "./pages/CoordinatorParticipants";
 
@@ -206,6 +224,7 @@ const AppRoutes = () => {
                   path="participants"
                   element={<ParticipantsManagementPage />}
                 />
+                
                 <Route
                   path="support-workers"
                   element={<SupportWorkersManagementPage />}
@@ -285,6 +304,22 @@ const AppRoutes = () => {
                   path="/organizations/:id"
                   element={<ParticipantOrganizationDetailsPage />}
                 />
+                <Route path="provider/dashboard" element={<ProviderDashboard />}   />
+                <Route path="provider/events" element={<ProviderEventsPage />} />
+                <Route path="provider/events/:eventId/participants" element={<ProviderRegisteredEventParticipantsPage />} />
+                <Route path="provider/events/:eventId" element={<ProviderEventDetailsPage />} />
+                <Route path="provider/events/:eventId/edit" element={<ProviderEventFormPage />} />
+                <Route path="provider/events/create" element={<ProviderEventFormPage />} />
+                <Route path="provider/accommodations" element={<ProviderAccommodationsPage />} />
+                <Route path="provider/accommodations/create" element={<ProviderAccommodationFormPage />} />
+                <Route path="provider/accommodations/:accommodationId" element={<ProviderAccommodationDetailsPage />} />
+                <Route path="provider/accommodations/:accommodationId/edit" element={<ProviderAccommodationFormPage />} />
+                <Route path="provider/accommodations/:accommodationId/interested" element={<ProviderAccommodationInterestedUsersPage />} />
+                <Route path="provider/jobs" element={<ProviderJobsPage />} />
+                <Route path="provider/jobs/:jobId" element={<ProviderJobDetailsPage />} />
+                <Route path="provider/jobs/:jobId/interested" element={<ProviderJobApplicantsPage />} />
+                <Route path="provider/jobs/create" element={<ProviderJobFormPage />} />
+                <Route path="provider/jobs/:jobId/edit" element={<ProviderJobFormPage />} />
                 {/* <Route
                   path="/organizations/:id"
                   element={<ParticipantOrganizationDetailsPage />}
@@ -358,6 +393,10 @@ const AppRoutes = () => {
                     )
                   }
                 />
+                {/* Jobs */}
+                <Route path="/jobs" element={<SupportJobListingPage />} />
+                <Route path="/jobs/:jobId" element={<SupportJobDetailsPage />} />
+                <Route path="/saved-jobs" element={<SupportSavedJobsPage />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>

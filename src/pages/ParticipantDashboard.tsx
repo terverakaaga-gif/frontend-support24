@@ -58,6 +58,9 @@ import {
 } from "@/components/ui/table";
 import { Participant } from "@/types/user.types";
 import { ParticipantSetupAlert } from "@/components/ParticipantSetupAlert";
+import { DateRangePicker } from "@/components/analytics/DateRangePicker";
+import { DateRange, DateRangeType } from "@/entities/Analytics";
+import { createDateRange } from "@/api/services/analyticsService";
 
 // Service type labels for display
 const SERVICE_TYPE_LABELS: Record<string, string> = {
@@ -149,11 +152,10 @@ function StatCard({
 function SpendingServiceChart({
   spendingData,
   serviceData,
-  period,
-  setPeriod,
-  dateRange,
-  setDateRange,
-}: any) {
+}: {
+  spendingData: any[];
+  serviceData: any[];
+}) {
   const chartData = useMemo(() => {
     // Combine spending and service data for the chart
     const months = spendingData?.map((item: any) => item.label) || [];
@@ -170,67 +172,6 @@ function SpendingServiceChart({
         <h2 className="text-lg font-montserrat-semibold text-gray-900">
           Monthly Spending Trend
         </h2>
-        <div className="flex items-center gap-3">
-          <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Select period" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 z-50">
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="week">Week</SelectItem>
-              <SelectItem value="month">Month</SelectItem>
-              <SelectItem value="year">Year</SelectItem>
-              {/* <SelectItem value="custom">Custom</SelectItem> */}
-            </SelectContent>
-          </Select>
-          {period === "custom" && (
-            <div className="flex gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[140px] justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from
-                      ? format(dateRange.from, "PPP")
-                      : "Start date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <CalendarComponent
-                    mode="single"
-                    selected={dateRange.from}
-                    onSelect={(date) =>
-                      setDateRange((prev) => ({ ...prev, from: date }))
-                    }
-                  />
-                </PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[140px] justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.to ? format(dateRange.to, "PPP") : "End date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <CalendarComponent
-                    mode="single"
-                    selected={dateRange.to}
-                    onSelect={(date) =>
-                      setDateRange((prev) => ({ ...prev, to: date }))
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-        </div>
       </div>
 
       <ResponsiveContainer width="100%" height={250}>
@@ -414,32 +355,21 @@ function ParticipantDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [searchOpen, setSearchOpen] = useState<boolean>(false);
-  const [period, setPeriod] = useState<string>("month");
-  const [dateRange, setDateRange] = useState<{
-    from: Date | null;
-    to: Date | null;
-  }>({
-    from: null,
-    to: null,
-  });
+  const [dateRange, setDateRange] = useState<DateRange>(
+    createDateRange(DateRangeType.MONTH)
+  );
 
   // Fetch analytics data - now reactive to period and dateRange
   const {
     data: overviewData,
     isLoading: overviewLoading,
     error: overviewError,
-  } = useGetParticipantOverview(
-    period === "custom" ? { period: "custom", dateRange } : period,
-    true
-  );
+  } = useGetParticipantOverview(dateRange, true);
   const {
     data: serviceData,
     isLoading: serviceLoading,
     error: serviceError,
-  } = useGetParticipantServices(
-    period === "custom" ? { period: "custom", dateRange } : period
-  );
+  } = useGetParticipantServices(dateRange);
 
   // Format data
   const spendingTrendData = overviewData?.financialSummary?.spendingTrend || [];
@@ -501,7 +431,6 @@ function ParticipantDashboard() {
   const budgetUsed = overviewData?.financialSummary?.budgetUtilization || 0;
   const budgetTrend = budgetUsed > 80 ? "up" : budgetUsed > 50 ? null : "down";
 
-
   return (
     <div className="min-h-screen font-montserrat bg-gray-100">
       <div className="p-8">
@@ -515,6 +444,9 @@ function ParticipantDashboard() {
           onViewProfile={() => {
             navigate("/participant/profile");
           }}
+          rightComponent={
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+          }
         />
 
         {user &&
@@ -579,10 +511,6 @@ function ParticipantDashboard() {
           {/* Left Column - Charts & Service Distribution */}
           <div className="lg:col-span-2 space-y-6">
             <SpendingServiceChart
-              period={period}
-              setPeriod={setPeriod}
-              dateRange={dateRange}
-              setDateRange={setDateRange}
               spendingData={spendingTrendData}
               serviceData={serviceTrendData}
             />

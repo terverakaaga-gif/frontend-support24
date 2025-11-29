@@ -58,7 +58,10 @@ import { commonLanguages } from "@/constants/common-languages";
 import { SupportWorkerOnboardingInput } from "@/types/user.types";
 
 const bioSchema = z.object({
-  bio: z.string().min(10, { message: "Bio must be at least 10 characters." }).max(500, { message: "Bio must be at most 500 characters." }),
+  bio: z
+    .string()
+    .min(10, { message: "Bio must be at least 10 characters." })
+    .max(500, { message: "Bio must be at most 500 characters." }),
   languages: z
     .array(z.string().min(1))
     .min(1, { message: "Please enter at least one language." }),
@@ -130,7 +133,6 @@ interface SupportWorkerSetupProps {
   onComplete: () => void;
   isSubmitting?: boolean;
 }
-
 
 const weekdays = [
   { value: "monday", label: "Monday" },
@@ -429,7 +431,9 @@ export function SupportWorkerSetup({
         address: data.address,
       };
 
-      await authService.completeSupportWorkerOnboarding(transformedData as unknown as SupportWorkerOnboardingInput);
+      await authService.completeSupportWorkerOnboarding(
+        transformedData as unknown as SupportWorkerOnboardingInput
+      );
       completeOnboarding();
       toast.success("Profile setup completed successfully!");
       onComplete();
@@ -509,8 +513,16 @@ export function SupportWorkerSetup({
     },
     { number: 2, label: "Skills", icon: <Suitcase className="h-4 w-4" /> },
     { number: 3, label: "Experience", icon: <Suitcase className="h-4 w-4" /> },
-    { number: 4, label: "Rates", icon: <DollarMinimalistic className="h-4 w-4" /> },
-    { number: 5, label: "Availability", icon: <ClockCircle className="h-4 w-4" /> },
+    {
+      number: 4,
+      label: "Rates",
+      icon: <DollarMinimalistic className="h-4 w-4" />,
+    },
+    {
+      number: 5,
+      label: "Availability",
+      icon: <ClockCircle className="h-4 w-4" />,
+    },
   ];
 
   const handleSkipSetup = () => {
@@ -518,7 +530,7 @@ export function SupportWorkerSetup({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 py-6 px-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
       {/* Back Button & Header */}
       <div className="">
         <button
