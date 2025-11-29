@@ -58,6 +58,7 @@ import {
   SERVICE_TYPE_LABELS,
   TIMESHEET_STATUS_CONFIG,
 } from "@/entities/Timesheet";
+import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
 
 const TimesheetsManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -240,8 +241,9 @@ const TimesheetsManagement: React.FC = () => {
             size="sm"
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1}
+            className='h-9 w-9'
           >
-            Previous
+            <AltArrowLeft className='h-4 w-4' />
           </Button>
 
           {Array.from(
@@ -253,6 +255,7 @@ const TimesheetsManagement: React.FC = () => {
               variant={pageNum === page ? "default" : "outline"}
               size="sm"
               onClick={() => handlePageChange(pageNum)}
+              className='h-9 w-9'
             >
               {pageNum}
             </Button>
@@ -263,8 +266,9 @@ const TimesheetsManagement: React.FC = () => {
             size="sm"
             onClick={() => handlePageChange(page + 1)}
             disabled={!hasMore}
+            className='h-9 w-9'
           >
-            Next
+            <AltArrowRight className='h-4 w-4' />
           </Button>
         </div>
       </div>

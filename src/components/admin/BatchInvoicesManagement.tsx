@@ -62,6 +62,7 @@ import {
   BATCH_INVOICE_STATUS_CONFIG,
   BatchInvoiceStatus
 } from "@/entities/BatchInvoice";
+import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
 
 const BatchInvoicesManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -225,9 +226,9 @@ const BatchInvoicesManagement: React.FC = () => {
             size="sm"
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1}
+            className='h-9 w-9'
           >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
+          <AltArrowLeft className="h-4 w-4" />
           </Button>
           
           <div className="flex items-center space-x-1">
@@ -241,7 +242,7 @@ const BatchInvoicesManagement: React.FC = () => {
                   variant={isActive ? "default" : "outline"}
                   size="sm"
                   onClick={() => handlePageChange(pageNum)}
-                  className="w-8 h-8 p-0"
+                  className="w-9 h-9 p-0"
                 >
                   {pageNum}
                 </Button>
@@ -254,9 +255,9 @@ const BatchInvoicesManagement: React.FC = () => {
             size="sm"
             onClick={() => handlePageChange(page + 1)}
             disabled={page >= totalPages}
+            className='h-9 w-9'
           >
-            Next
-            <ChevronRight className="h-4 w-4" />
+           <AltArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

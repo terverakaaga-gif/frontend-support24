@@ -65,6 +65,7 @@ import {
 import { useGetAdmins, useGetFilterOptions } from '@/hooks/useAdminUserHooks';
 import { AdminFilters, SortOptions, PaginationOptions } from '@/api/services/adminUserService';
 import { Admin, AdminTableFilters, PermissionSummary } from '@/entities/Admin';
+import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
 
 const AdminsList: React.FC = () => {
   const navigate = useNavigate();
@@ -216,8 +217,9 @@ const AdminsList: React.FC = () => {
             size="sm"
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1}
+            className='h-9 w-9'
           >
-            Previous
+           <AltArrowLeft className='h-4 w-4' />
           </Button>
           
           {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((pageNum) => (
@@ -226,6 +228,7 @@ const AdminsList: React.FC = () => {
               variant={pageNum === page ? "default" : "outline"}
               size="sm"
               onClick={() => handlePageChange(pageNum)}
+              className='h-9 w-9'
             >
               {pageNum}
             </Button>
@@ -236,8 +239,9 @@ const AdminsList: React.FC = () => {
             size="sm"
             onClick={() => handlePageChange(page + 1)}
             disabled={!hasMore}
+            className='h-9 w-9'
           >
-            Next
+            <AltArrowRight className='h-4 w-4' />
           </Button>
         </div>
       </div>
