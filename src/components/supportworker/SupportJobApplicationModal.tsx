@@ -18,6 +18,7 @@ import {
   AltArrowUp,
   File,
 } from "@solar-icons/react";
+import { FileDropZone, UploadedFile } from "@/components/ui/FileDropZone";
 
 interface ApplicationFormData {
   fullName: string;
@@ -50,6 +51,7 @@ export default function SupportJobApplicationModal({
     location: "123 Main Street, Anytown, AU",
     attachments: [],
   });
+  const [attachments, setAttachments] = useState<UploadedFile[]>([]);
   const [isPersonalDetailsOpen, setIsPersonalDetailsOpen] = useState(true);
   const [isDocumentsOpen, setIsDocumentsOpen] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -184,53 +186,14 @@ export default function SupportJobApplicationModal({
             {/* Upload Attachments */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">Upload Attachments</Label>
-              <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
-                onClick={() => fileInputRef.current?. click()}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-              >
-                <CloudUpload className="h-10 w-10 mx-auto text-primary mb-3" />
-                <p className="text-gray-600">
-                  Drop and drop your file or{" "}
-                  <span className="text-primary font-medium">Browse</span>
-                </p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Maximum file: 3, File type: PNG + JPG + PDF, File limit: 5MB
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".png,.jpg,. jpeg,.pdf"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => handleFileUpload(e.target.files)}
-                />
-              </div>
-
-              {/* Uploaded Files */}
-              {formData.attachments.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <File className="h-8 w-8 text-red-500" />
-                    <div>
-                      <p className="text-sm font-medium">{file.name}</p>
-                      <p className="text-xs text-gray-400">
-                        {formatFileSize(file. size)}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveFile(index)}
-                    className="p-2 hover:bg-gray-100 rounded-lg"
-                  >
-                    <TrashBinMinimalistic className="h-5 w-5 text-gray-400" />
-                  </button>
-                </div>
-              ))}
+              <FileDropZone
+                files={attachments}
+                onFilesChange={setAttachments}
+                maxFiles={3}
+                maxSizeMB={5}
+                compact={true}
+                subtitle="Maximum file: 3, File type: PNG + JPG + PDF, File limit: 5MB"
+              />
             </div>
 
             {/* Required Documents Checklist */}

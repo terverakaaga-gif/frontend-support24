@@ -52,6 +52,9 @@ interface JobPost extends BasePost {
   applicants: number;
   rating?: number;
   experience?: string;
+  stateId?:string;
+  regionId?:string;
+  serviceAreaIds?:string[];
 }
 
 export type Post = EventPost | AccommodationPost | JobPost;
@@ -100,7 +103,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
       default:
-        return "bg-blue-100 text-blue-800";
+        return "bg-primary-100 text-primary-800";
     }
   };
 
