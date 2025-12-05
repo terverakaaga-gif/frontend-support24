@@ -156,19 +156,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Since HTTP service already extracts data, response is the direct data
       const user = response.user;
       const userId = response.userId || user?._id;
-      const tokens = response.tokens;
 
       if (!userId) {
         throw new Error("Invalid registration response: missing userId");
       }
 
-      // If registration includes tokens (user is automatically logged in)
-      if (tokens && user) {
-        tokenStorage.setTokens(tokens);
-        setUser(user);
-        setIsAuthenticated(true);
-        localStorage.setItem("guardianCareUser", JSON.stringify(user));
-      }
+      // DON'T set user as authenticated here - they need to verify email first
+      // The user will be authenticated after email verification + login
 
       toast.success("Registration successful! Please verify your email.");
       return { userId };
@@ -184,19 +178,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(true);
 
     try {
-      const response = await authService.verifyEmail(data);
-      
-      // Since HTTP service already extracts data, response is the direct data
-      const verifiedUser = response.user;
+      // const response = await authService.verifyEmail(data);
 
-      if (!verifiedUser) {
-        throw new Error("Invalid verification response: missing user data");
-      }
+      // // Since HTTP service already extracts data, response is the direct data
+      // const verifiedUser = response.user;
 
-      setUser(verifiedUser);
-      setIsAuthenticated(true);
-      localStorage.setItem("guardianCareUser", JSON.stringify(verifiedUser));
+      // if (!verifiedUser) {
+      //   throw new Error("Invalid verification response: missing user data");
+      // }
 
+      // setUser(verifiedUser);
+      // setIsAuthenticated(true);
+      // localStorage.setItem("guardianCareUser", JSON.stringify(verifiedUser));
+      await authService.verifyEmail(data);
+      // DON'T set user as authenticated here
+      // User should login after email verification
+      // This just confirms the email is valid
       toast.success("Email verification successful!");
     } catch (error) {
       console.error("Email verification error:", error);
@@ -211,7 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const response = await authService.forgotPassword({ email });
-      
+
       // Since HTTP service already extracts data, response is the direct data
       const userId = response.userId;
 
@@ -253,7 +250,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const response = await authService.resendVerification({ email });
-      
+
       // Since HTTP service already extracts data, response is the direct data
       const userId = response.userId;
 
