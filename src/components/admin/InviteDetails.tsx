@@ -315,14 +315,14 @@ export function InviteDetails() {
 											{/* Add distance travel rate if available */}
 											{inviteDetails.proposedRates.distanceTravelRate && (
 												<div className="mt-4 pt-4 border-t border-border">
-													<div className="flex items-center justify-between p-3 bg-blue-50 rounded-md">
+													<div className="flex items-center justify-between p-3 bg-primary-50 rounded-md">
 														<div>
 															<p className="font-montserrat-semibold">Distance Travel Rate</p>
 															<p className="text-xs text-muted-foreground">
 																Additional rate for travel distance
 															</p>
 														</div>
-														<p className="text-lg font-montserrat-semibold text-blue-600">
+														<p className="text-lg font-montserrat-semibold text-primary-600">
 															{formatCurrency(inviteDetails.proposedRates.distanceTravelRate)} per km
 														</p>
 													</div>
