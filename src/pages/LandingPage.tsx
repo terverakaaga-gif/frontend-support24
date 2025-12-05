@@ -88,7 +88,7 @@ export default function Support24Landing() {
         className="absolute -top-52 -left-28 object-cover pointer-events-none"
       />
 
-      {/* Gradient blue circle at top right */}
+      {/* Gradient primary circle at top right */}
       <img
         src="/new-res/gradient-ckr.svg"
         alt=""
@@ -252,7 +252,7 @@ export default function Support24Landing() {
         alt=""
         className="absolute -top-20 -left-28 object-cover pointer-events-none"
       />
-         {/* Gradient blue circle at top right */}
+         {/* Gradient primary circle at top right */}
       <img
         src="/new-res/gradient-ckr.svg"
         alt=""

@@ -99,7 +99,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       transition={{ duration: 0.5, delay: index * 0.05 }}
       className={`relative rounded-2xl p-5 sm:p-6 backdrop-blur-xl border shadow-lg transition-all duration-300 ${getStaggerClass(index)} ${
         testimonial.hasVideo 
-          ? 'bg-gradient-to-br from-[#1e2a4a] to-[#0f1829] text-white border-gray-700/30 hover:shadow-2xl hover:shadow-blue-500/20' 
+          ? 'bg-gradient-to-br from-[#1e2a4a] to-[#0f1829] text-white border-gray-700/30 hover:shadow-2xl hover:shadow-primary-500/20' 
           : 'bg-white border-gray-200 hover:shadow-2xl hover:shadow-primary/20'
       } min-h-[320px] sm:min-h-[340px] flex flex-col`}
     >

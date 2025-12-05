@@ -323,7 +323,7 @@ export default function TermsOfUse() {
                   <li>Insurance coverage confirmation</li>
                 </ul>
 
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-4">
+                <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-4 mb-4">
                   <h3 className="text-lg font-semibold text-white mb-2">
                     Verification Timeline
                   </h3>
@@ -562,7 +562,7 @@ export default function TermsOfUse() {
                   services organization, to provide Participants with access to
                   complementary healthcare services when appropriate.
                 </p>
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-4">
+                <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-4 mb-4">
                   <p className="text-gray-300">
                     <strong className="text-white">Important:</strong> The Framer
                     Health partnership is optional. Participants are never

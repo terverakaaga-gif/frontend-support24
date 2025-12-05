@@ -79,7 +79,7 @@ export const HowItWorks = () => {
                 className="absolute top-56 -left-28 object-cover pointer-events-none"
             /> */}
 
-            {/* Gradient blue circle at top right */}
+            {/* Gradient primary circle at top right */}
             <img
                 src="/new-res/gradient-ckr.svg"
                 alt=""
