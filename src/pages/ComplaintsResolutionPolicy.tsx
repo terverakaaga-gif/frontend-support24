@@ -197,7 +197,7 @@ export default function ComplaintsResolutionPolicy() {
                 <h3 className="text-xl font-semibold text-white mb-3 mt-6">
                   3.3 Systemic Complaints
                 </h3>
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-4">
                   <p className="text-gray-300 mb-2">
                     <strong className="text-white">
                       Systemic complaints are particularly valuable
@@ -857,7 +857,7 @@ export default function ComplaintsResolutionPolicy() {
                   </div>
                 </div>
 
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 mb-6">
+                <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-6 mb-6">
                   <h3 className="text-xl font-semibold text-white mb-3">
                     Acknowledgment
                   </h3>
