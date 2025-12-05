@@ -235,6 +235,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/participant/chats")}
             />
+            {/* 
+            
             <NavItem
               to={"/participant/provider/dashboard"}
               icon={<Widget5 className="w-6 h-6" />}
@@ -258,7 +260,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<SuitcaseTag className="w-6 h-6" />}
               label="Jobs"
               active={isActive("/participant/provider/jobs")}
-            />
+            /> */}
           </>
         );
       case "supportWorker":
@@ -300,7 +302,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
-            <NavItem
+            {/* <NavItem
               to="/support-worker/jobs"
               icon={<SuitcaseTag className="w-6 h-6" />}
               label="Jobs"
@@ -311,7 +313,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Bookmark className="w-6 h-6" />}
               label="Saved Jobs"
               active={isActive("/support-worker/saved-jobs")}
-            />
+            /> */}
           </>
         );
       default:
