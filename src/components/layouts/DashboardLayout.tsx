@@ -32,6 +32,7 @@ import {
   Home,
   SuitcaseTag,
   Bookmark,
+  ShieldCheck,
 } from "@solar-icons/react";
 
 interface DashboardLayoutProps {
@@ -236,6 +237,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/participant/chats")}
             />
             <NavItem
+              to={"/participant/jobs"}
+              icon={<SuitcaseTag className="w-6 h-6" />}
+              label="Jobs"
+              active={isActive("/participant/jobs")}
+            />
+            <NavItem
               to={"/participant/provider/dashboard"}
               icon={<Widget5 className="w-6 h-6" />}
               label="Dashboard"
@@ -288,6 +295,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="My Timesheets"
               active={isActive("/support-worker/timesheets")}
             />
+            <NavItem
+              to="/support-worker/compliance"
+              icon={<ShieldCheck className="w-6 h-6" />}
+              label="Compliance"
+              active={isActive("/support-worker/compliance")}
+            />
+
             <NavItem
               to="/support-worker/incidents"
               icon={<ShieldUser className="w-6 h-6" />}
