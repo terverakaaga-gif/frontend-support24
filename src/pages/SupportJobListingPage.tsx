@@ -149,7 +149,7 @@ export default function SupportJobListingPage() {
       return { text: "Applied", class: "bg-green-100 text-green-800" };
     }
     if (job.isEarlyApplicant) {
-      return { text: "Early Applicant", class: "bg-blue-100 text-blue-800" };
+      return { text: "Early Applicant", class: "bg-primary-100 text-primary-800" };
     }
     return { text: "Open", class: "bg-primary/10 text-primary" };
   };
