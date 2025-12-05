@@ -348,7 +348,7 @@ function NotificationsPanel() {
             key={notification.id}
             className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
           >
-            <div className="p-2 bg-blue-50 rounded-full flex-shrink-0">
+            <div className="p-2 bg-primary-50 rounded-full flex-shrink-0">
               <notification.icon className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">

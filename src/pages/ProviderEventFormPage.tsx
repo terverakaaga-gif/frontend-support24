@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { FileDropZone, UploadedFile } from "@/components/ui/FileDropZone";
 
 // Mock event data for edit mode
 const mockEventData = {
@@ -70,7 +71,7 @@ export default function ProviderEventFormPage() {
         }
   );
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<UploadedFile[]>([]);
   const [errors, setErrors] = useState<
     Partial<Record<keyof EventFormData, string>>
   >({});
@@ -92,53 +93,12 @@ export default function ProviderEventFormPage() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.match(/^image\/(png|jpg|jpeg|pdf)$/)) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "File must be PNG, JPG, or PDF",
-        }));
-        return;
-      }
-
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "File size must be less than 5MB",
-        }));
-        return;
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      // Clear error
-      setErrors((prev) => ({
-        ...prev,
-        image: "",
-      }));
-    }
-  };
-
   const handleRemoveImage = () => {
     setFormData((prev) => ({
       ...prev,
       image: null,
     }));
-    setImagePreview(null);
+    setImageFiles([]);
   };
 
   const validateForm = (): boolean => {
@@ -229,47 +189,15 @@ export default function ProviderEventFormPage() {
           <Label className="text-sm font-semibold text-gray-700 mb-2 block">
             Upload Image Event
           </Label>
-
-          {imagePreview ? (
-            <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <img
-                src={imagePreview}
-                alt="Event preview"
-                className="w-full h-48 object-cover rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
-              >
-                <CloseCircle className="h-5 w-5 text-red-600" />
-              </button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-              <div className="text-center">
-                <UploadMinimalistic className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <p className="text-sm text-gray-600 mb-2">
-                  Drop and drop your file or{" "}
-                  <label className="text-primary cursor-pointer hover:underline">
-                    Browse
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/jpg,application/pdf"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                  </label>
-                </p>
-                <p className="text-xs text-gray-400">
-                  File type: PNG + JPG + PDF, File limit: 5MB
-                </p>
-              </div>
-            </div>
-          )}
-          {errors.image && (
-            <p className="text-xs text-red-600 mt-1">{errors.image}</p>
-          )}
+          <FileDropZone
+            files={imageFiles}
+            onFilesChange={setImageFiles}
+            maxFiles={1}
+            maxSizeMB={5}
+            acceptedTypes={["image/png", "image/jpeg"]}
+            showProgress={false}
+            title="Drop your image here or"
+          />
         </div>
 
         {/* Event Name */}

@@ -25,6 +25,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  ApprovalActionModal,
+  ActionType,
+  EntityData,
+} from "@/components/provider/ApprovalActionModal";
+import { toast } from "sonner";
 
 // Mock accommodation data
 const mockAccommodation = {
@@ -33,8 +39,20 @@ const mockAccommodation = {
   location: "123 Beach Road, Wollongong, NSW 2500",
 };
 
+// Define interested user type
+interface InterestedUser {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  ndisNumber: string;
+  message: string;
+  avatar: string | null;
+  submittedAt: string;
+}
+
 // Mock interested users data
-const mockInterestedUsers = {
+const mockInterestedUsers: Record<string, InterestedUser[]> = {
   new: Array(8)
     .fill({
       id: 1,
@@ -42,11 +60,12 @@ const mockInterestedUsers = {
       email: "sarah.johnson@gmail.com",
       phone: "+61 4123 456 789",
       ndisNumber: "123456789",
-      message: "I'm very interested in this property. It looks perfect for my needs.",
+      message:
+        "I'm very interested in this property. It looks perfect for my needs.",
       avatar: null,
       submittedAt: "2025-11-15T10:30:00Z",
     })
-    .map((p, i) => ({ ...p, id: i + 1 })),
+    .map((p, i) => ({ ...p, id: i + 1, name: `Sarah Johnson ${i + 1}` })),
   approved: Array(12)
     .fill({
       id: 0,
@@ -58,7 +77,7 @@ const mockInterestedUsers = {
       avatar: null,
       submittedAt: "2025-11-10T14:20:00Z",
     })
-    .map((p, i) => ({ ...p, id: i + 100 })),
+    .map((p, i) => ({ ...p, id: i + 100, name: `Michael Chen ${i + 1}` })),
   rejected: [
     {
       id: 300,
@@ -77,11 +96,17 @@ type TabType = "new" | "approved" | "rejected";
 
 export default function ProviderAccommodationInterestedUsersPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { accommodationId } = useParams();
   const [currentTab, setCurrentTab] = useState<TabType>("new");
   const [entriesPerPage, setEntriesPerPage] = useState("5");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<InterestedUser | null>(null);
+  const [actionType, setActionType] = useState<ActionType>("accept");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const currentUsers = mockInterestedUsers[currentTab];
 
@@ -96,12 +121,40 @@ export default function ProviderAccommodationInterestedUsersPage() {
     setCurrentPage(1);
   };
 
-  const handleApprove = (userId: number) => {
-    console.log("Approve user:", userId);
+  const openActionModal = (user: InterestedUser, action: ActionType) => {
+    setSelectedUser(user);
+    setActionType(action);
+    setIsModalOpen(true);
   };
 
-  const handleReject = (userId: number) => {
-    console.log("Reject user:", userId);
+  const handleConfirmAction = async (data: {
+    entityId: number | string;
+    reason?: string;
+  }) => {
+    setIsProcessing(true);
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      console.log(`${actionType} user:`, data);
+
+      if (actionType === "accept") {
+        toast.success(`${selectedUser?.name}'s enquiry has been approved`);
+      } else {
+        toast.success(`${selectedUser?.name}'s enquiry has been rejected`);
+      }
+
+      setIsModalOpen(false);
+      setSelectedUser(null);
+
+      // In real app, refetch data or update local state
+    } catch (error) {
+      console.error("Error processing action:", error);
+      toast.error("Failed to process action. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleContact = (userId: number) => {
@@ -117,6 +170,21 @@ export default function ProviderAccommodationInterestedUsersPage() {
     });
   };
 
+  // Convert user to EntityData format for the modal
+  const getEntityData = (user: InterestedUser | null): EntityData | null => {
+    if (!user) return null;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      ndisNumber: user.ndisNumber,
+      message: user.message,
+      reasonForEnquiry: user.message,
+      avatar: user.avatar,
+    };
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="">
@@ -127,7 +195,7 @@ export default function ProviderAccommodationInterestedUsersPage() {
           title={mockAccommodation.title}
           subtitle="Manage interested users"
           user={user}
-          onLogout={() => {}}
+          onLogout={logout}
           onViewProfile={() => navigate("/provider/profile")}
         />
 
@@ -195,155 +263,184 @@ export default function ProviderAccommodationInterestedUsersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-gray-200 bg-white">
-                {paginatedUsers.map((user, index) => (
-                  <TableRow
-                    key={user.id + index}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <TableCell className="px-4 md:px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0"></div>
-                        <span className="text-sm font-semibold text-gray-900">
-                          {user.name}
-                        </span>
-                      </div>
+                {paginatedUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="px-4 md:px-6 py-12 text-center text-gray-500"
+                    >
+                      No {currentTab} enquiries found
                     </TableCell>
-                    <TableCell className="px-4 md:px-6 py-4 hidden md:table-cell">
-                      <div className="text-sm text-gray-600">
-                        <p>{user.email}</p>
-                        <p className="text-gray-400">{user.phone}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
-                      {user.ndisNumber}
-                    </TableCell>
-                    <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
-                      <p className="line-clamp-2 max-w-xs">{user.message}</p>
-                    </TableCell>
-                    <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
-                      {formatDate(user.submittedAt)}
-                    </TableCell>
-                    <TableCell className="px-4 md:px-6 py-4 text-right">
-                      <div className="flex gap-2 justify-end">
-                        <button
-                          onClick={() => handleContact(user.id)}
-                          title="Message"
-                          className="p-1 hover:bg-gray-100 rounded"
-                        >
-                          <ChatLine className="h-5 w-5 text-primary" />
-                        </button>
-                        {currentTab === "new" ? (
-                          <>
+                  </TableRow>
+                ) : (
+                  paginatedUsers.map((user, index) => (
+                    <TableRow
+                      key={user.id + "-" + index}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="px-4 md:px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center text-gray-600 text-sm font-semibold">
+                            {user.name.charAt(0)}
+                          </div>
+                          <div>
+                            <span className="text-sm font-semibold text-gray-900 block">
+                              {user.name}
+                            </span>
+                            <span className="text-xs text-gray-500 md:hidden">
+                              {user.email}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-4 hidden md:table-cell">
+                        <div className="text-sm text-gray-600">
+                          <p>{user.email}</p>
+                          <p className="text-gray-400">{user.phone}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
+                        {user.ndisNumber}
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
+                        <p className="line-clamp-2 max-w-xs">{user.message}</p>
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
+                        {formatDate(user.submittedAt)}
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-4 text-right">
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => handleContact(user.id)}
+                            title="Message"
+                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <ChatLine className="h-5 w-5 text-primary" />
+                          </button>
+                          {currentTab === "new" ? (
+                            <>
+                              <button
+                                onClick={() => openActionModal(user, "accept")}
+                                title="Approve"
+                                className="p-1 hover:bg-green-50 rounded-full transition-colors"
+                              >
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              </button>
+                              <button
+                                onClick={() => openActionModal(user, "reject")}
+                                title="Reject"
+                                className="p-1 hover:bg-red-50 rounded-full transition-colors"
+                              >
+                                <CloseCircle className="h-5 w-5 text-red-600" />
+                              </button>
+                            </>
+                          ) : currentTab === "approved" ? (
                             <button
-                              onClick={() => handleApprove(user.id)}
-                              title="Approve"
-                              className="p-1 hover:bg-gray-100 rounded"
-                            >
-                              <CheckCircle className="h-5 w-5 text-green-600" />
-                            </button>
-                            <button
-                              onClick={() => handleReject(user.id)}
-                              title="Reject"
-                              className="p-1 hover:bg-gray-100 rounded"
+                              onClick={() => openActionModal(user, "reject")}
+                              title="Remove"
+                              className="p-1 hover:bg-red-50 rounded-full transition-colors"
                             >
                               <CloseCircle className="h-5 w-5 text-red-600" />
                             </button>
-                          </>
-                        ) : currentTab === "approved" ? (
-                          <button
-                            onClick={() => handleReject(user.id)}
-                            title="Remove"
-                            className="p-1 hover:bg-gray-100 rounded"
-                          >
-                            <CloseCircle className="h-5 w-5 text-red-600" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleApprove(user.id)}
-                            title="Approve"
-                            className="p-1 hover:bg-gray-100 rounded"
-                          >
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                          </button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          ) : (
+                            <button
+                              onClick={() => openActionModal(user, "accept")}
+                              title="Approve"
+                              className="p-1 hover:bg-green-50 rounded-full transition-colors"
+                            >
+                              <CheckCircle className="h-5 w-5 text-green-600" />
+                            </button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
 
-          {paginatedUsers.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
-              <p>No {currentTab} enquiries found.</p>
+          {/* Pagination */}
+          {paginatedUsers.length > 0 && (
+            <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span>Showing</span>
+                <Select
+                  value={entriesPerPage}
+                  onValueChange={(value) => {
+                    setEntriesPerPage(value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-20 h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>entries</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-200 h-9 w-9"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <AltArrowLeft className="h-4 w-4" />
+                </Button>
+                {Array.from(
+                  { length: Math.min(5, totalPages) },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <Button
+                    key={page}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className={`h-9 w-9 ${
+                      currentPage === page
+                        ? "bg-primary text-white hover:bg-primary/90"
+                        : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    {page}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-200 h-9 w-9"
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage === totalPages || totalPages === 0}
+                >
+                  <AltArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
-
-          {/* Pagination */}
-          <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span>Showing</span>
-              <Select
-                value={entriesPerPage}
-                onValueChange={(value) => {
-                  setEntriesPerPage(value);
-                  setCurrentPage(1);
-                }}
-              >
-                <SelectTrigger className="w-20 h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                </SelectContent>
-              </Select>
-              <span>entries</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-200 h-9 w-9"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                <AltArrowLeft className="h-4 w-4" />
-              </Button>
-              {Array.from(
-                { length: Math.min(5, totalPages) },
-                (_, i) => i + 1
-              ).map((page) => (
-                <Button
-                  key={page}
-                  size="sm"
-                  onClick={() => setCurrentPage(page)}
-                  className={`h-9 w-9 ${
-                    currentPage === page
-                      ? "bg-primary text-white hover:bg-primary/90"
-                      : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  {page}
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-200 h-9 w-9"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
-                <AltArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
+
+      {/* Approval Action Modal */}
+      <ApprovalActionModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={handleConfirmAction}
+        entity={getEntityData(selectedUser)}
+        entityType="accommodation-interest"
+        actionType={actionType}
+        isLoading={isProcessing}
+        contextTitle={mockAccommodation.title}
+      />
     </div>
   );
 }

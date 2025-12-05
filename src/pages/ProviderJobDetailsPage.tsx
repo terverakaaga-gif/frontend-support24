@@ -77,7 +77,7 @@ export default function ProviderJobDetailsPage() {
   const getAvailabilityColor = (availability: string) => {
     switch (availability.toLowerCase()) {
       case "full-time":
-        return "bg-blue-100 text-blue-800";
+        return "bg-primary-100 text-primary-800";
       case "part-time":
         return "bg-purple-100 text-purple-800";
       case "casual":
@@ -105,7 +105,7 @@ export default function ProviderJobDetailsPage() {
 
         {/* Profile Image */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
-          <div className="w-full h-64 md:h-80 bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center">
+          <div className="w-full h-64 md:h-80 bg-gradient-to-r from-primary-100 to-purple-100 flex items-center justify-center">
             <div className="text-center text-gray-400">
               <User className="h-16 w-16 mx-auto mb-2" />
               <p className="text-sm">Profile Image</p>
@@ -143,7 +143,7 @@ export default function ProviderJobDetailsPage() {
               </div>
             </div>
             <Button
-              onClick={() => navigate(`/provider/jobs/${jobId}/edit`)}
+              onClick={() => navigate(`/participant/provider/jobs/${jobId}/edit`)}
               className="bg-primary hover:bg-primary/90"
             >
               <Pen2 className="h-4 w-4 mr-2" />
@@ -276,7 +276,7 @@ export default function ProviderJobDetailsPage() {
           {/* Action Button */}
           <div className="border-t border-gray-200 pt-6 mt-6">
             <Button
-              onClick={() => navigate(`/participant/provider/jobs/${jobId}/interested`)}
+              onClick={() => navigate(`/participant/provider/jobs/${jobId}/applicants`)}
               className="w-full bg-primary hover:bg-primary/90"
             >
               View Interested Participants ({mockJob.applicants})

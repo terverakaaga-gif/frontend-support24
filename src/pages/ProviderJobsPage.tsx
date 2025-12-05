@@ -5,9 +5,9 @@ import {
   AltArrowRight,
   AddCircle,
   SuitcaseTag,
-  Star,
+  Tuning2,
   MapPoint,
-  DollarMinimalistic,
+  CloseCircle,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { PostCard, Post } from "@/components/provider/PostCard";
+import {
+  useStates,
+  useRegions,
+  useServiceAreasByRegion,
+} from "@/hooks/useLocationHooks";
+import { Badge } from "@/components/ui/badge";
 
 // Mock jobs/support workers data
 const mockJobs: Post[] = [
@@ -104,7 +110,12 @@ const mockJobs: Post[] = [
     id: 6,
     title: "Senior Care Specialist",
     workerName: "James Wilson",
-    skills: ["Personal Care", "Meal Prep", "Medication Support", "Mobility Assistance"],
+    skills: [
+      "Personal Care",
+      "Meal Prep",
+      "Medication Support",
+      "Mobility Assistance",
+    ],
     hourlyRate: 45,
     availability: "Full-time",
     location: "Canberra, ACT",
@@ -121,30 +132,87 @@ type AvailabilityType = "all" | "full-time" | "part-time" | "casual";
 
 export default function ProviderJobsPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentFilter, setCurrentFilter] = useState<FilterType>("all");
-  const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityType>("all");
+  const [availabilityFilter, setAvailabilityFilter] =
+    useState<AvailabilityType>("all");
   const [entriesPerPage, setEntriesPerPage] = useState("10");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Filter jobs based on status and availability
+  // Location filters
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [selectedRegionId, setSelectedRegionId] = useState("");
+  const [selectedServiceAreaIds, setSelectedServiceAreaIds] = useState<
+    string[]
+  >([]);
+
+  // Location hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateId,
+    !!selectedStateId
+  );
+  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreasByRegion(selectedRegionId, !!selectedRegionId);
+
+  // Handle state change
+  const handleStateChange = (stateId: string) => {
+    setSelectedStateId(stateId);
+    setSelectedRegionId("");
+    setSelectedServiceAreaIds([]);
+    setCurrentPage(1);
+  };
+
+  // Handle region change
+  const handleRegionChange = (regionId: string) => {
+    setSelectedRegionId(regionId);
+    setSelectedServiceAreaIds([]);
+    setCurrentPage(1);
+  };
+
+  // Handle service area toggle
+  const handleServiceAreaToggle = (serviceAreaId: string) => {
+    setSelectedServiceAreaIds((prev) =>
+      prev.includes(serviceAreaId)
+        ? prev.filter((id) => id !== serviceAreaId)
+        : [...prev, serviceAreaId]
+    );
+    setCurrentPage(1);
+  };
+
+  // Clear all location filters
+  const clearLocationFilters = () => {
+    setSelectedStateId("");
+    setSelectedRegionId("");
+    setSelectedServiceAreaIds([]);
+    setCurrentPage(1);
+  };
+
+  // Filter jobs based on status, availability, and location
   const filteredJobs = mockJobs.filter((job) => {
     if (job.type !== "job") return false;
-    
-    const matchesSearch = 
-      job.workerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+
+    const matchesSearch =
+      job.workerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.skills?.some((skill) =>
+        skill.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
     const matchesStatus =
       currentFilter === "all" ||
-      job.status.toLowerCase() === currentFilter;
-    
+      job.status?.toLowerCase() === currentFilter;
+
     const matchesAvailability =
       availabilityFilter === "all" ||
-      job.availability.toLowerCase() === availabilityFilter;
-    
-    return matchesSearch && matchesStatus && matchesAvailability;
+      job.availability?.toLowerCase() === availabilityFilter;
+
+    // Location filters would match against worker's service areas in real implementation
+    // For now, we'll just return true as mock data doesn't have location IDs
+    const matchesLocation = true;
+
+    return matchesSearch && matchesStatus && matchesAvailability && matchesLocation;
   });
 
   // Pagination
@@ -155,8 +223,10 @@ export default function ProviderJobsPage() {
 
   const handleDelete = (id: number | string) => {
     console.log("Delete job listing:", id);
-    // Add delete confirmation dialog and logic here
   };
+
+  const hasActiveLocationFilters =
+    selectedStateId || selectedRegionId || selectedServiceAreaIds.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
@@ -165,7 +235,7 @@ export default function ProviderJobsPage() {
         title="Support Workers"
         subtitle="Browse and manage support worker listings"
         user={user}
-        onLogout={() => {}}
+        onLogout={logout}
         onViewProfile={() => navigate("/provider/profile")}
         rightComponent={
           <div className="w-fit flex gap-2">
@@ -176,7 +246,20 @@ export default function ProviderJobsPage() {
               className="w-36 md:w-64"
             />
             <Button
-              onClick={() => navigate("/provider/jobs/create")}
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className={showFilters ? "bg-primary text-white" : ""}
+            >
+              <Tuning2 className="h-5 w-5 mr-2" />
+              Filters
+              {hasActiveLocationFilters && (
+                <Badge className="ml-2 bg-white text-primary h-5 w-5 p-0 flex items-center justify-center rounded-full">
+                  !
+                </Badge>
+              )}
+            </Button>
+            <Button
+              onClick={() => navigate("/participant/provider/jobs/create")}
               className="bg-primary hover:bg-primary-700"
             >
               <AddCircle className="h-5 w-5 mr-2" />
@@ -185,6 +268,151 @@ export default function ProviderJobsPage() {
           </div>
         }
       />
+
+      {/* Location Filters Panel */}
+      {showFilters && (
+        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <MapPoint className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold text-gray-900">Location Filters</h3>
+            </div>
+            {hasActiveLocationFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearLocationFilters}
+                className="text-gray-500 hover:text-red-600"
+              >
+                <CloseCircle className="h-4 w-4 mr-1" />
+                Clear All
+              </Button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* State Selection */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                State
+              </label>
+              <Select
+                value={selectedStateId}
+                onValueChange={handleStateChange}
+                disabled={isLoadingStates}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All States" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All States</SelectItem>
+                  {states.map((state) => (
+                    <SelectItem key={state._id} value={state._id}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Region Selection */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Region
+              </label>
+              <Select
+                value={selectedRegionId}
+                onValueChange={handleRegionChange}
+                disabled={!selectedStateId || isLoadingRegions}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      selectedStateId ? "All Regions" : "Select state first"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_">All Regions</SelectItem>
+                  {regions.map((region) => (
+                    <SelectItem key={region._id} value={region._id}>
+                      {region.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Service Areas */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Service Areas
+              </label>
+              {selectedRegionId && !isLoadingServiceAreas ? (
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border rounded-lg bg-gray-50">
+                  {serviceAreas.map((area) => (
+                    <Badge
+                      key={area._id}
+                      variant={
+                        selectedServiceAreaIds.includes(area._id)
+                          ? "default"
+                          : "outline"
+                      }
+                      className={`cursor-pointer transition-all ${
+                        selectedServiceAreaIds.includes(area._id)
+                          ? "bg-primary text-white"
+                          : "hover:bg-primary/10"
+                      }`}
+                      onClick={() => handleServiceAreaToggle(area._id)}
+                    >
+                      {area.name}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-3 border rounded-lg bg-gray-50 text-sm text-gray-500">
+                  {!selectedRegionId
+                    ? "Select a region first"
+                    : "Loading areas..."}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Selected Filters Summary */}
+          {hasActiveLocationFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-xs text-gray-500 mb-2">Active filters:</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedStateId && (
+                  <Badge variant="secondary" className="gap-1">
+                    {states.find((s) => s._id === selectedStateId)?.name}
+                    <button onClick={() => handleStateChange("")}>
+                      <CloseCircle className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+                {selectedRegionId && (
+                  <Badge variant="secondary" className="gap-1">
+                    {regions.find((r) => r._id === selectedRegionId)?.name}
+                    <button onClick={() => handleRegionChange("")}>
+                      <CloseCircle className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+                {selectedServiceAreaIds.map((areaId) => (
+                  <Badge key={areaId} variant="secondary" className="gap-1">
+                    {serviceAreas.find((a) => a._id === areaId)?.name}
+                    <button onClick={() => handleServiceAreaToggle(areaId)}>
+                      <CloseCircle className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Filter Tabs */}
       <div className="mb-8 md:mb-12 space-y-4">

@@ -89,7 +89,7 @@ export default function ProviderAccommodationDetailsPage() {
 
         {/* Accommodation Image */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
-          <div className="w-full h-64 md:h-80 bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center">
+          <div className="w-full h-64 md:h-80 bg-gradient-to-r from-primary-100 to-purple-100 flex items-center justify-center">
             <div className="text-center text-gray-400">
               <Home className="h-16 w-16 mx-auto mb-2" />
               <p className="text-sm">Accommodation Image</p>

@@ -1,12 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  CloseCircle,
-  UploadMinimalistic,
-  MapPoint,
-  AddCircle,
-  CloseSquare,
-} from "@solar-icons/react";
+import { MapPoint, AddCircle, CloseSquare, Magnifer } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +15,16 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
+import { FileDropZone, UploadedFile } from "@/components/ui/FileDropZone";
+import {
+  useStates,
+  useRegions,
+  useServiceAreasByRegion,
+} from "@/hooks/useLocationHooks";
+import { useGetServiceTypes } from "@/hooks/useServiceTypeHooks";
+import { cn } from "@/lib/utils";
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+import { commonLanguages } from "@/constants/common-languages";
 
 // Mock job data for edit mode
 const mockJobData = {
@@ -32,44 +36,32 @@ const mockJobData = {
   availability: "full-time",
   status: "available",
   experience: "5",
-  bio: "Sarah is an experienced and compassionate support worker...",
+  description:
+    "Sarah is an experienced and compassionate support worker with over 5 years of dedicated service in the disability support sector. She is passionate about empowering individuals to live their best lives and achieve their personal goals.",
   skills: ["personalCare", "mobilityAssistance", "mealPrep", "transport"],
   qualifications: ["certIII", "certIV", "firstAid", "ndisCheck"],
   languages: ["English", "Mandarin"],
-  serviceAreas: ["Sydney CBD", "Inner West"],
+  stateId: "",
+  regionId: "",
+  serviceAreaIds: [],
   image: null,
 };
 
 interface JobFormData {
-  workerName: string;
   title: string;
   location: string;
   hourlyRate: string;
   availability: string;
   status: string;
   experience: string;
-  bio: string;
+  description: string;
   skills: string[];
   qualifications: string[];
   languages: string[];
-  serviceAreas: string[];
-  image: File | null;
+  stateId: string;
+  regionId: string;
+  serviceAreaIds: string[];
 }
-
-const skillOptions = [
-  { id: "personalCare", label: "Personal Care" },
-  { id: "mobilityAssistance", label: "Mobility Assistance" },
-  { id: "mealPrep", label: "Meal Preparation" },
-  { id: "transport", label: "Transport" },
-  { id: "medicationSupport", label: "Medication Support" },
-  { id: "communityAccess", label: "Community Access" },
-  { id: "socialSupport", label: "Social Support" },
-  { id: "householdTasks", label: "Household Tasks" },
-  { id: "behaviorSupport", label: "Behavior Support" },
-  { id: "therapySupport", label: "Therapy Support" },
-  { id: "respiteCare", label: "Respite Care" },
-  { id: "overnightSupport", label: "Overnight Support" },
-];
 
 const qualificationOptions = [
   { id: "certIII", label: "Certificate III in Individual Support" },
@@ -95,49 +87,146 @@ const statusOptions = [
 
 export default function ProviderJobFormPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { jobId } = useParams();
   const isEditMode = !!jobId;
+
+  // Location hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [selectedRegionId, setSelectedRegionId] = useState("");
+
+  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateId,
+    !!selectedStateId
+  );
+
+  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreasByRegion(selectedRegionId, !!selectedRegionId);
+
+  // Service types hook
+  const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } =
+    useGetServiceTypes();
+
+  // Google Places Autocomplete
+  const { placePredictions, getPlacePredictions } = usePlacesService({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
+  const [showAddressPredictions, setShowAddressPredictions] = useState(false);
+  const [addressInputValue, setAddressInputValue] = useState("");
 
   // Initialize form with mock data if in edit mode
   const [formData, setFormData] = useState<JobFormData>(
     isEditMode
       ? {
-          workerName: mockJobData.workerName,
           title: mockJobData.title,
           location: mockJobData.location,
           hourlyRate: mockJobData.hourlyRate,
           availability: mockJobData.availability,
           status: mockJobData.status,
           experience: mockJobData.experience,
-          bio: mockJobData.bio,
+          description: mockJobData.description,
           skills: mockJobData.skills,
           qualifications: mockJobData.qualifications,
           languages: mockJobData.languages,
-          serviceAreas: mockJobData.serviceAreas,
-          image: null,
+          stateId: mockJobData.stateId,
+          regionId: mockJobData.regionId,
+          serviceAreaIds: mockJobData.serviceAreaIds,
         }
       : {
-          workerName: "",
           title: "",
           location: "",
           hourlyRate: "",
           availability: "",
           status: "available",
           experience: "",
-          bio: "",
+          description: "",
           skills: [],
           qualifications: [],
           languages: [],
-          serviceAreas: [],
-          image: null,
+          stateId: "",
+          regionId: "",
+          serviceAreaIds: [],
         }
   );
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // File upload state
+  const [profileImage, setProfileImage] = useState<UploadedFile[]>([]);
   const [newLanguage, setNewLanguage] = useState("");
-  const [newServiceArea, setNewServiceArea] = useState("");
-  const [errors, setErrors] = useState<Partial<Record<keyof JobFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof JobFormData | "image", string>>
+  >({});
+
+  // Sync selected state/region with form data
+  useEffect(() => {
+    if (isEditMode && mockJobData.stateId) {
+      setSelectedStateId(mockJobData.stateId);
+      setSelectedRegionId(mockJobData.regionId);
+      setAddressInputValue(mockJobData.location);
+    }
+  }, [isEditMode]);
+
+  // Reset dependent fields when state changes
+  useEffect(() => {
+    if (selectedStateId !== formData.stateId) {
+      setSelectedRegionId("");
+      setFormData((prev) => ({
+        ...prev,
+        stateId: selectedStateId,
+        regionId: "",
+        serviceAreaIds: [],
+      }));
+    }
+  }, [selectedStateId]);
+
+  // Reset service areas when region changes
+  useEffect(() => {
+    if (selectedRegionId !== formData.regionId) {
+      setFormData((prev) => ({
+        ...prev,
+        regionId: selectedRegionId,
+        serviceAreaIds: [],
+      }));
+    }
+  }, [selectedRegionId]);
+
+  // Handle address input
+  const handleAddressInputChange = (value: string) => {
+    setAddressInputValue(value);
+    setFormData((prev) => ({ ...prev, location: value }));
+
+    if (value.trim().length > 2) {
+      getPlacePredictions({ input: value });
+      setShowAddressPredictions(true);
+    } else {
+      setShowAddressPredictions(false);
+    }
+  };
+
+  const handleAddressSelect = (prediction: any) => {
+    const selectedAddress = prediction.description;
+    setAddressInputValue(selectedAddress);
+    setFormData((prev) => ({ ...prev, location: selectedAddress }));
+    setShowAddressPredictions(false);
+  };
+
+  // Close address dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest("#address-autocomplete-container")) {
+        setShowAddressPredictions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -162,17 +251,38 @@ export default function ProviderJobFormPage() {
     }));
   };
 
-  const handleCheckboxToggle = (id: string, field: "skills" | "qualifications") => {
+  const handleSkillToggle = (skillId: string) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].includes(id)
-        ? prev[field].filter((item) => item !== id)
-        : [...prev[field], id],
+      skills: prev.skills.includes(skillId)
+        ? prev.skills.filter((s) => s !== skillId)
+        : [...prev.skills, skillId],
+    }));
+  };
+
+  const handleQualificationToggle = (qualId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      qualifications: prev.qualifications.includes(qualId)
+        ? prev.qualifications.filter((q) => q !== qualId)
+        : [...prev.qualifications, qualId],
+    }));
+  };
+
+  const handleServiceAreaToggle = (areaId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      serviceAreaIds: prev.serviceAreaIds.includes(areaId)
+        ? prev.serviceAreaIds.filter((id) => id !== areaId)
+        : [...prev.serviceAreaIds, areaId],
     }));
   };
 
   const handleAddLanguage = () => {
-    if (newLanguage.trim() && !formData.languages.includes(newLanguage.trim())) {
+    if (
+      newLanguage.trim() &&
+      !formData.languages.includes(newLanguage.trim())
+    ) {
       setFormData((prev) => ({
         ...prev,
         languages: [...prev.languages, newLanguage.trim()],
@@ -188,74 +298,8 @@ export default function ProviderJobFormPage() {
     }));
   };
 
-  const handleAddServiceArea = () => {
-    if (newServiceArea.trim() && !formData.serviceAreas.includes(newServiceArea.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        serviceAreas: [...prev.serviceAreas, newServiceArea.trim()],
-      }));
-      setNewServiceArea("");
-    }
-  };
-
-  const handleRemoveServiceArea = (area: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      serviceAreas: prev.serviceAreas.filter((a) => a !== area),
-    }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.match(/^image\/(png|jpg|jpeg)$/)) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "File must be PNG or JPG",
-        }));
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "File size must be less than 5MB",
-        }));
-        return;
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      setErrors((prev) => ({
-        ...prev,
-        image: "",
-      }));
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setFormData((prev) => ({
-      ...prev,
-      image: null,
-    }));
-    setImagePreview(null);
-  };
-
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof JobFormData, string>> = {};
-
-    if (!formData.workerName.trim()) {
-      newErrors.workerName = "Worker name is required";
-    }
+    const newErrors: Partial<Record<keyof JobFormData | "image", string>> = {};
 
     if (!formData.title.trim()) {
       newErrors.title = "Job title is required";
@@ -267,7 +311,10 @@ export default function ProviderJobFormPage() {
 
     if (!formData.hourlyRate.trim()) {
       newErrors.hourlyRate = "Hourly rate is required";
-    } else if (isNaN(Number(formData.hourlyRate)) || Number(formData.hourlyRate) <= 0) {
+    } else if (
+      isNaN(Number(formData.hourlyRate)) ||
+      Number(formData.hourlyRate) <= 0
+    ) {
       newErrors.hourlyRate = "Please enter a valid hourly rate";
     }
 
@@ -279,12 +326,24 @@ export default function ProviderJobFormPage() {
       newErrors.experience = "Experience is required";
     }
 
-    if (!formData.bio.trim()) {
-      newErrors.bio = "Bio/description is required";
+    if (!formData.description.trim()) {
+      newErrors.description = "Bio/description is required";
     }
 
     if (formData.skills.length === 0) {
       newErrors.skills = "Select at least one skill";
+    }
+
+    if (!formData.stateId) {
+      newErrors.stateId = "Please select a state";
+    }
+
+    if (!formData.regionId) {
+      newErrors.regionId = "Please select a region";
+    }
+
+    if (formData.serviceAreaIds.length === 0) {
+      newErrors.serviceAreaIds = "Please select at least one service area";
     }
 
     setErrors(newErrors);
@@ -298,7 +357,9 @@ export default function ProviderJobFormPage() {
       return;
     }
 
-    console.log("Form data:", formData);
+    const imageFile = profileImage.length > 0 ? profileImage[0].file : null;
+
+    console.log("Form data:", { ...formData, image: imageFile });
 
     if (isEditMode) {
       console.log("Updating job listing:", jobId);
@@ -306,7 +367,7 @@ export default function ProviderJobFormPage() {
       console.log("Creating new job listing");
     }
 
-    navigate("/provider/jobs");
+    navigate("/participant/provider/jobs");
   };
 
   return (
@@ -318,8 +379,8 @@ export default function ProviderJobFormPage() {
         title={isEditMode ? "Edit Support Worker" : "Add Support Worker"}
         subtitle=""
         user={user}
-        onLogout={() => {}}
-        onViewProfile={() => navigate("/provider/profile")}
+        onLogout={logout}
+        onViewProfile={() => navigate("/participant/provider/profile")}
       />
 
       {/* Form */}
@@ -332,111 +393,237 @@ export default function ProviderJobFormPage() {
           <Label className="text-sm font-semibold text-gray-700 mb-2 block">
             Profile Photo
           </Label>
-
-          {imagePreview ? (
-            <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <img
-                src={imagePreview}
-                alt="Profile preview"
-                className="w-full h-48 object-cover rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
-              >
-                <CloseCircle className="h-5 w-5 text-red-600" />
-              </button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-              <div className="text-center">
-                <UploadMinimalistic className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <p className="text-sm text-gray-600 mb-2">
-                  Drop and drop your file or{" "}
-                  <label className="text-primary cursor-pointer hover:underline">
-                    Browse
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/jpg"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                  </label>
-                </p>
-                <p className="text-xs text-gray-400">
-                  File type: PNG + JPG, File limit: 5MB
-                </p>
-              </div>
-            </div>
-          )}
+          <FileDropZone
+            files={profileImage}
+            onFilesChange={setProfileImage}
+            maxFiles={1}
+            maxSizeMB={5}
+            acceptedTypes={["image/png", "image/jpeg"]}
+            showProgress={false}
+            simulateUpload={false}
+            title="Drop your photo here or"
+            subtitle="File type: PNG + JPG, File limit: 5MB"
+          />
           {errors.image && (
             <p className="text-xs text-red-600 mt-1">{errors.image}</p>
           )}
         </div>
 
-        {/* Worker Name and Job Title */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <Label htmlFor="workerName" className="text-sm font-semibold text-gray-700 mb-2 block">
-              Worker Name
-            </Label>
-            <Input
-              id="workerName"
-              name="workerName"
-              placeholder="e.g., Sarah Johnson"
-              value={formData.workerName}
-              onChange={handleInputChange}
-              className={errors.workerName ? "border-red-500" : ""}
-            />
-            {errors.workerName && (
-              <p className="text-xs text-red-600 mt-1">{errors.workerName}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="title" className="text-sm font-semibold text-gray-700 mb-2 block">
-              Job Title
-            </Label>
-            <Input
-              id="title"
-              name="title"
-              placeholder="e.g., Support Worker Position"
-              value={formData.title}
-              onChange={handleInputChange}
-              className={errors.title ? "border-red-500" : ""}
-            />
-            {errors.title && (
-              <p className="text-xs text-red-600 mt-1">{errors.title}</p>
-            )}
-          </div>
+        {/* Job Title */}
+        <div className="mb-6">
+          <Label
+            htmlFor="title"
+            className="text-sm font-semibold text-gray-700 mb-2 block"
+          >
+            Job Title
+          </Label>
+          <Input
+            id="title"
+            name="title"
+            placeholder="e.g., Personal Care Support Needed"
+            value={formData.title}
+            onChange={handleInputChange}
+            className={errors.title ? "border-red-500" : ""}
+          />
+          {errors.title && (
+            <p className="text-xs text-red-600 mt-1">{errors.title}</p>
+          )}
         </div>
 
-        {/* Location */}
+        {/* Description */}
         <div className="mb-6">
-          <Label htmlFor="location" className="text-sm font-semibold text-gray-700 mb-2 block">
-            Location
+          <Label
+            htmlFor="description"
+            className="text-sm font-semibold text-gray-700 mb-2 block"
+          >
+            Job Description
           </Label>
-          <div className="relative">
-            <Input
-              id="location"
-              name="location"
-              placeholder="Sydney, NSW"
-              value={formData.location}
-              onChange={handleInputChange}
-              className={errors.location ? "border-red-500 pr-10" : "pr-10"}
-            />
-            <MapPoint className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Textarea
+            id="description"
+            name="description"
+            placeholder="Describe what kind of support you need, your requirements, and any specific details..."
+            value={formData.description}
+            onChange={handleInputChange}
+            rows={6}
+            className={errors.description ? "border-red-500" : ""}
+          />
+          {errors.description && (
+            <p className="text-xs text-red-600 mt-1">{errors.description}</p>
+          )}
+        </div>
+
+        {/* Location with Google Places Autocomplete */}
+        <div className="mb-6">
+          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            Address
+          </Label>
+          <div id="address-autocomplete-container" className="relative">
+            <div className="relative">
+              <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+              <Input
+                type="text"
+                placeholder="Start typing your address..."
+                value={addressInputValue}
+                onChange={(e) => handleAddressInputChange(e.target.value)}
+                onFocus={() => {
+                  if (
+                    addressInputValue.trim().length > 2 &&
+                    placePredictions.length > 0
+                  ) {
+                    setShowAddressPredictions(true);
+                  }
+                }}
+                className={cn("pl-10", errors.location ? "border-red-500" : "")}
+                autoComplete="off"
+              />
+            </div>
+
+            {/* Predictions Dropdown */}
+            {showAddressPredictions && placePredictions.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {placePredictions.map((prediction) => (
+                  <div
+                    key={prediction.place_id}
+                    onClick={() => handleAddressSelect(prediction)}
+                    className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                  >
+                    <div className="flex items-start gap-3">
+                      <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900 font-medium truncate">
+                          {prediction.structured_formatting?.main_text ||
+                            prediction.description}
+                        </p>
+                        {prediction.structured_formatting?.secondary_text && (
+                          <p className="text-xs text-gray-500 truncate mt-0.5">
+                            {prediction.structured_formatting.secondary_text}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           {errors.location && (
             <p className="text-xs text-red-600 mt-1">{errors.location}</p>
           )}
         </div>
 
+        {/* Service Location Section */}
+        <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+          <div className="flex items-center gap-2 mb-4">
+            <Magnifer className="h-5 w-5 text-primary" />
+            <Label className="text-sm font-semibold text-gray-900">
+              Service Location (Where this worker provides services)
+            </Label>
+          </div>
+
+          <p className="text-xs text-gray-500 mb-4">
+            Select the location where this support worker provides services.
+            Participants in these areas will see this listing.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* State Selection */}
+            <div>
+              <Label className="text-sm mb-2 block">State</Label>
+              <Select
+                value={selectedStateId}
+                onValueChange={(value) => setSelectedStateId(value)}
+                disabled={isLoadingStates}
+              >
+                <SelectTrigger
+                  className={errors.stateId ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder="Select state..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((state) => (
+                    <SelectItem key={state._id} value={state._id}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.stateId && (
+                <p className="text-xs text-red-600 mt-1">{errors.stateId}</p>
+              )}
+            </div>
+
+            {/* Region Selection */}
+            <div>
+              <Label className="text-sm mb-2 block">Region</Label>
+              <Select
+                value={selectedRegionId}
+                onValueChange={(value) => setSelectedRegionId(value)}
+                disabled={!selectedStateId || isLoadingRegions}
+              >
+                <SelectTrigger
+                  className={errors.regionId ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder="Select region..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {regions.map((region) => (
+                    <SelectItem key={region._id} value={region._id}>
+                      {region.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.regionId && (
+                <p className="text-xs text-red-600 mt-1">{errors.regionId}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Service Areas */}
+          <div>
+            <Label className="text-sm mb-2 block">Service Areas</Label>
+            {selectedRegionId && !isLoadingServiceAreas ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {serviceAreas.map((area) => {
+                  const isSelected = formData.serviceAreaIds.includes(area._id);
+                  return (
+                    <div
+                      key={area._id}
+                      onClick={() => handleServiceAreaToggle(area._id)}
+                      className={cn(
+                        "cursor-pointer p-3 rounded-lg border-2 transition-all text-center",
+                        isSelected
+                          ? "bg-primary border-primary text-white"
+                          : "border-gray-200 hover:border-primary/50 hover:bg-gray-100 bg-white"
+                      )}
+                    >
+                      <span className="text-sm font-medium">{area.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-8 text-gray-500 text-sm bg-white rounded-lg border border-gray-200">
+                {!selectedRegionId
+                  ? "Please select a region first"
+                  : "Loading service areas..."}
+              </div>
+            )}
+            {errors.serviceAreaIds && (
+              <p className="text-xs text-red-600 mt-1">
+                {errors.serviceAreaIds}
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Hourly Rate, Availability, Status, Experience */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div>
-            <Label htmlFor="hourlyRate" className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label
+              htmlFor="hourlyRate"
+              className="text-sm font-semibold text-gray-700 mb-2 block"
+            >
               Hourly Rate ($)
             </Label>
             <Input
@@ -459,9 +646,13 @@ export default function ProviderJobFormPage() {
             </Label>
             <Select
               value={formData.availability}
-              onValueChange={(value) => handleSelectChange("availability", value)}
+              onValueChange={(value) =>
+                handleSelectChange("availability", value)
+              }
             >
-              <SelectTrigger className={errors.availability ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={errors.availability ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -499,7 +690,10 @@ export default function ProviderJobFormPage() {
           </div>
 
           <div>
-            <Label htmlFor="experience" className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label
+              htmlFor="experience"
+              className="text-sm font-semibold text-gray-700 mb-2 block"
+            >
               Experience (years)
             </Label>
             <Input
@@ -517,26 +711,7 @@ export default function ProviderJobFormPage() {
           </div>
         </div>
 
-        {/* Bio/Description */}
-        <div className="mb-6">
-          <Label htmlFor="bio" className="text-sm font-semibold text-gray-700 mb-2 block">
-            Bio / Description
-          </Label>
-          <Textarea
-            id="bio"
-            name="bio"
-            placeholder="Provide a detailed description of the support worker, their experience, and approach to care..."
-            value={formData.bio}
-            onChange={handleInputChange}
-            rows={6}
-            className={errors.bio ? "border-red-500" : ""}
-          />
-          {errors.bio && (
-            <p className="text-xs text-red-600 mt-1">{errors.bio}</p>
-          )}
-        </div>
-
-        {/* Skills */}
+        {/* Skills/Services */}
         <div className="mb-6">
           <Label className="text-sm font-semibold text-gray-700 mb-3 block">
             Skills & Services
@@ -544,46 +719,84 @@ export default function ProviderJobFormPage() {
           {errors.skills && (
             <p className="text-xs text-red-600 mb-2">{errors.skills}</p>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {skillOptions.map((skill) => (
-              <div key={skill.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={skill.id}
-                  checked={formData.skills.includes(skill.id)}
-                  onCheckedChange={() => handleCheckboxToggle(skill.id, "skills")}
-                />
-                <label
-                  htmlFor={skill.id}
-                  className="text-sm text-gray-700 cursor-pointer"
-                >
-                  {skill.label}
-                </label>
-              </div>
-            ))}
-          </div>
+          {isLoadingServiceTypes ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {serviceTypes.map((service) => {
+                const isSelected = formData.skills.includes(service._id);
+                return (
+                  <div
+                    key={service._id}
+                    onClick={() => handleSkillToggle(service._id)}
+                    className={cn(
+                      "cursor-pointer p-3 rounded-lg border-2 transition-all",
+                      isSelected
+                        ? "bg-primary border-primary text-white"
+                        : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={isSelected}
+                        className={isSelected ? "border-white" : ""}
+                      />
+                      <span className="text-sm font-medium">
+                        {service.name}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Qualifications */}
+        {/* Qualifications & Certifications - Two column layout */}
         <div className="mb-6">
           <Label className="text-sm font-semibold text-gray-700 mb-3 block">
             Qualifications & Certifications
           </Label>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {qualificationOptions.map((qual) => (
-              <div key={qual.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={qual.id}
-                  checked={formData.qualifications.includes(qual.id)}
-                  onCheckedChange={() => handleCheckboxToggle(qual.id, "qualifications")}
-                />
-                <label
-                  htmlFor={qual.id}
-                  className="text-sm text-gray-700 cursor-pointer"
+          <p className="text-xs text-gray-500 mb-3">
+            Select the qualifications this support worker holds
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {qualificationOptions.map((qual) => {
+              const isSelected = formData.qualifications.includes(qual.id);
+              return (
+                <div
+                  key={qual.id}
+                  onClick={() => handleQualificationToggle(qual.id)}
+                  className={cn(
+                    "cursor-pointer p-3 rounded-lg border-2 transition-all",
+                    isSelected
+                      ? "bg-green-50 border-green-500"
+                      : "border-gray-200 hover:border-green-300 hover:bg-gray-50"
+                  )}
                 >
-                  {qual.label}
-                </label>
-              </div>
-            ))}
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={isSelected}
+                      className={
+                        isSelected
+                          ? "border-green-500 data-[state=checked]:bg-green-500"
+                          : ""
+                      }
+                    />
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        isSelected ? "text-green-700" : "text-gray-700"
+                      )}
+                    >
+                      {qual.label}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -608,13 +821,23 @@ export default function ProviderJobFormPage() {
                 </button>
               </span>
             ))}
+            {formData.languages.length === 0 && (
+              <span className="text-sm text-gray-400">
+                No languages added yet
+              </span>
+            )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-3">
             <Input
               placeholder="Add a language"
               value={newLanguage}
               onChange={(e) => setNewLanguage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddLanguage())}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddLanguage();
+                }
+              }}
               className="flex-1"
             />
             <Button
@@ -627,47 +850,26 @@ export default function ProviderJobFormPage() {
               Add
             </Button>
           </div>
-        </div>
-
-        {/* Service Areas */}
-        <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">
-            Service Areas
-          </Label>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {formData.serviceAreas.map((area) => (
-              <span
-                key={area}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary text-sm rounded-full"
-              >
-                {area}
-                <button
+          <div className="flex flex-wrap gap-2">
+            {commonLanguages
+              .filter((lang) => !formData.languages.includes(lang))
+              .map((language) => (
+                <Button
+                  key={language}
                   type="button"
-                  onClick={() => handleRemoveServiceArea(area)}
-                  className="text-primary hover:text-red-600"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      languages: [...prev.languages, language],
+                    }));
+                  }}
+                  className="h-8 px-3 text-xs border hover:text-white hover:bg-primary hover:border-gray-600 text-black"
                 >
-                  <CloseSquare className="h-4 w-4" />
-                </button>
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Add a service area (e.g., Sydney CBD)"
-              value={newServiceArea}
-              onChange={(e) => setNewServiceArea(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddServiceArea())}
-              className="flex-1"
-            />
-            <Button
-              type="button"
-              onClick={handleAddServiceArea}
-              variant="outline"
-              className="shrink-0"
-            >
-              <AddCircle className="h-4 w-4 mr-1" />
-              Add
-            </Button>
+                  + {language}
+                </Button>
+              ))}
           </div>
         </div>
 
