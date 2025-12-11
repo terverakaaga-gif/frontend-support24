@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,7 +27,6 @@ import {
   useRegions,
   useServiceAreasByRegion,
   useStates,
-  useSuburbsByRegion,
 } from "@/hooks/useLocationHooks";
 import {
   AltArrowLeft,
@@ -57,14 +56,13 @@ import GeneralHeader from "../GeneralHeader";
 const personalInfoSchema = z.object({
   ndisNumber: z
     .string()
-    .min(12, { message: "NDIS number must be at least 12 characters." }),
+    .min(8, { message: "NDIS number must be at least 8 characters." }),
   preferredLanguages: z
     .array(z.string().min(1))
     .min(1, { message: "Please select at least one language." }),
   address: z.string().min(5, { message: "Please enter your address." }),
   stateId: z.string().min(1, { message: "Please select a state." }),
   regionId: z.string().min(1, { message: "Please select a region." }),
-  suburbId: z.string().min(1, { message: "Please select a suburb." }),
   serviceAreaId: z
     .string()
     .min(1, { message: "Please select a service area." }),
@@ -86,12 +84,20 @@ const emergencyContactSchema = z.object({
 
 const coordinationSchema = z.object({
   planManager: z.object({
-    name: z.string().min(2, { message: "Plan manager name is required." }),
-    email: z.string().email({ message: "Valid email is required." }),
+    name: z.string().optional(),
+    email: z
+      .string()
+      .email({ message: "Valid email is required." })
+      .optional()
+      .or(z.literal("")),
   }),
   coordinator: z.object({
-    name: z.string().min(2, { message: "Coordinator name is required." }),
-    email: z.string().email({ message: "Valid email is required." }),
+    name: z.string().optional(),
+    email: z
+      .string()
+      .email({ message: "Valid email is required." })
+      .optional()
+      .or(z.literal("")),
   }),
 });
 
@@ -110,41 +116,11 @@ export function ParticipantSetup({
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [languageInput, setLanguageInput] = useState("");
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+
+  // Address State
   const [showAddressPredictions, setShowAddressPredictions] = useState(false);
   const [addressInputValue, setAddressInputValue] = useState("");
-
-  // Google Places Autocomplete Hook
-  const {
-    placesService,
-    placePredictions,
-    getPlacePredictions,
-    isPlacePredictionsLoading,
-  } = usePlacesService({
-    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
-    options: {
-      types: ["address"],
-      componentRestrictions: { country: "au" },
-    },
-  });
-
-  const { data: supportNeeds = [], isLoading: isLoadingSupportNeeds } =
-    useGetActiveServiceTypes();
-
-  // Location hooks
-  const { data: states = [], isLoading: isLoadingStates } = useStates();
-  const [selectedStateId, setSelectedStateId] = useState("");
-  const [selectedRegionId, setSelectedRegionId] = useState("");
-
-  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
-    selectedStateId,
-    !!selectedStateId
-  );
-
-  const { data: suburbs = [], isLoading: isLoadingSuburbs } =
-    useSuburbsByRegion(selectedRegionId, !!selectedRegionId);
-
-  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
-    useServiceAreasByRegion(selectedRegionId, !!selectedRegionId);
+  const addressContainerRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     ndisNumber: "",
@@ -152,7 +128,6 @@ export function ParticipantSetup({
     address: "",
     stateId: "",
     regionId: "",
-    suburbId: "",
     serviceAreaId: "",
     supportNeeds: [] as string[],
     emergencyContact: {
@@ -170,6 +145,43 @@ export function ParticipantSetup({
     },
   });
 
+  // Google Places Autocomplete Hook
+  const {
+    placesService,
+    placePredictions,
+    getPlacePredictions,
+    isPlacePredictionsLoading,
+  } = usePlacesService({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
+  // Initialize address input value from form data if returning to step
+  useEffect(() => {
+    if (formData.address && !addressInputValue) {
+      setAddressInputValue(formData.address);
+    }
+  }, [formData.address]); // Removed addressInputValue from dependency to avoid loop
+
+  const { data: supportNeeds = [], isLoading: isLoadingSupportNeeds } =
+    useGetActiveServiceTypes();
+
+  // Location hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [selectedRegionId, setSelectedRegionId] = useState("");
+
+  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateId,
+    !!selectedStateId
+  );
+
+  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreasByRegion(selectedRegionId, !!selectedRegionId);
+
   const personalInfoForm = useForm<z.infer<typeof personalInfoSchema>>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
@@ -178,7 +190,6 @@ export function ParticipantSetup({
       address: formData.address,
       stateId: formData.stateId,
       regionId: formData.regionId,
-      suburbId: formData.suburbId,
       serviceAreaId: formData.serviceAreaId,
     },
   });
@@ -205,53 +216,67 @@ export function ParticipantSetup({
     },
   });
 
-  // Handle address input changes with debouncing
-  const handleAddressInputChange = React.useCallback(
-    (value: string) => {
-      setAddressInputValue(value);
-      setFormData({ ...formData, address: value });
-      personalInfoForm.setValue("address", value);
+  // Handle address input text changes (Typing)
+  const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAddressInputValue(value);
+    setFormData((prev) => ({ ...prev, address: value }));
+    personalInfoForm.setValue("address", value);
 
-      if (value.trim().length > 2) {
-        getPlacePredictions({ input: value });
-        setShowAddressPredictions(true);
-      } else {
-        setShowAddressPredictions(false);
-      }
-    },
-    [formData, getPlacePredictions, personalInfoForm]
-  );
-
-  // Handle address selection from predictions
-  const handleAddressSelect = React.useCallback(
-    (prediction: any) => {
-      const selectedAddress = prediction.description;
-      setAddressInputValue(selectedAddress);
-      setFormData({ ...formData, address: selectedAddress });
-      personalInfoForm.setValue("address", selectedAddress);
+    if (value.trim().length > 2) {
+      getPlacePredictions({ input: value });
+      setShowAddressPredictions(true);
+    } else {
       setShowAddressPredictions(false);
+    }
+  };
 
-      // Optional: Get detailed place information
-      if (placesService) {
-        placesService.getDetails(
-          {
-            placeId: prediction.place_id,
-          },
-          (placeDetails: any) => {
-            // You can extract additional information here if needed
-            // like latitude, longitude, formatted address components, etc.
+  // Handle address selection from predictions (Click)
+  const handleAddressSelect = (prediction: any) => {
+    // 1. Get the address string
+    const selectedAddress = prediction.description;
+
+    // 2. Update visual input immediately
+    setAddressInputValue(selectedAddress);
+
+    // 3. Close the predictions pane
+    setShowAddressPredictions(false);
+
+    // 4. Update Form Data
+    setFormData((prev) => ({ ...prev, address: selectedAddress }));
+
+    // 5. Update React Hook Form
+    personalInfoForm.setValue("address", selectedAddress, {
+      shouldValidate: true,
+    });
+
+    // 6. Optional: Get more details if needed
+    if (placesService) {
+      placesService.getDetails(
+        {
+          placeId: prediction.place_id,
+          fields: ["formatted_address", "geometry", "address_components"],
+        },
+        (placeDetails: any) => {
+          if (placeDetails?.formatted_address) {
+            // Ensure consistency if formatted address differs slightly
+            const finalAddress = placeDetails.formatted_address;
+            setAddressInputValue(finalAddress);
+            setFormData((prev) => ({ ...prev, address: finalAddress }));
+            personalInfoForm.setValue("address", finalAddress);
           }
-        );
-      }
-    },
-    [formData, placesService, personalInfoForm]
-  );
+        }
+      );
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest("#address-autocomplete-container")) {
+      if (
+        addressContainerRef.current &&
+        !addressContainerRef.current.contains(event.target as Node)
+      ) {
         setShowAddressPredictions(false);
       }
     };
@@ -267,24 +292,20 @@ export function ParticipantSetup({
       setFormData((prev) => ({
         ...prev,
         regionId: "",
-        suburbId: "",
         serviceAreaId: "",
       }));
       personalInfoForm.setValue("regionId", "");
-      personalInfoForm.setValue("suburbId", "");
       personalInfoForm.setValue("serviceAreaId", "");
     }
   }, [selectedStateId, formData.stateId, personalInfoForm]);
 
-  // Reset suburbs and service areas when region changes
+  // Reset service area when region changes
   React.useEffect(() => {
     if (selectedRegionId !== formData.regionId) {
       setFormData((prev) => ({
         ...prev,
-        suburbId: "",
         serviceAreaId: "",
       }));
-      personalInfoForm.setValue("suburbId", "");
       personalInfoForm.setValue("serviceAreaId", "");
     }
   }, [selectedRegionId, formData.regionId, personalInfoForm]);
@@ -318,7 +339,6 @@ export function ParticipantSetup({
         address: data.address,
         stateId: data.stateId,
         regionId: data.regionId,
-        suburbId: data.suburbId,
         serviceAreaId: data.serviceAreaId,
       });
       nextStep();
@@ -367,9 +387,8 @@ export function ParticipantSetup({
       setIsOnboarding(true);
 
       try {
-        // Transform data to match backend validation exactly
         const transformedData = {
-          supportNeeds: data.supportNeeds, // Already array of ObjectId strings
+          supportNeeds: data.supportNeeds,
           emergencyContact: data.emergencyContact,
           planManager: data.planManager,
           coordinator: data.coordinator,
@@ -377,12 +396,11 @@ export function ParticipantSetup({
           ndisNumber: data.ndisNumber,
           stateId: data.stateId,
           regionId: data.regionId,
-          suburbId: data.suburbId,
           serviceAreaId: data.serviceAreaId,
           location: data.address
             ? {
-                longitude: 0, // You'll need to get this from Google Places if needed
-                latitude: 0, // You'll need to get this from Google Places if needed
+                longitude: 0,
+                latitude: 0,
               }
             : undefined,
           address: data.address,
@@ -448,10 +466,6 @@ export function ParticipantSetup({
       icon: <HashtagSquare className="h-4 w-4" />,
     },
   ];
-
-  const handleSkipSetup = () => {
-    navigate(-1);
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
@@ -635,7 +649,7 @@ export function ParticipantSetup({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                              NDIS Number
+                              NDIS Number *
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -662,7 +676,7 @@ export function ParticipantSetup({
 
                       <div className="space-y-3">
                         <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                          Preferred Languages
+                          Preferred Languages *
                         </FormLabel>
 
                         {formData.preferredLanguages.length > 0 && (
@@ -754,33 +768,27 @@ export function ParticipantSetup({
                         <div className="flex items-center gap-2 mb-4">
                           <MapPoint className="h-5 w-5 text-primary" />
                           <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                            Address
+                            Address *
                           </FormLabel>
                         </div>
 
                         <FormField
-                          control={personalInfoForm.control}
                           name="address"
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
                                 <div
-                                  id="address-autocomplete-container"
                                   className="relative"
+                                  ref={addressContainerRef}
                                 >
                                   <div className="relative">
                                     <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
                                     <Input
-                                      {...field}
+                                      id="address"
                                       type="text"
                                       placeholder="Start typing your address..."
                                       value={addressInputValue}
-                                      onChange={(e) => {
-                                        field.onChange(e);
-                                        handleAddressInputChange(
-                                          e.target.value
-                                        );
-                                      }}
+                                      onChange={handleAddressInputChange}
                                       onFocus={() => {
                                         if (
                                           addressInputValue.trim().length > 2 &&
@@ -791,7 +799,6 @@ export function ParticipantSetup({
                                       }}
                                       className="pl-10 text-sm"
                                       autoComplete="off"
-                                      disabled={isPlacePredictionsLoading}
                                     />
                                     {isPlacePredictionsLoading && (
                                       <Refresh className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
@@ -805,6 +812,9 @@ export function ParticipantSetup({
                                         {placePredictions.map((prediction) => (
                                           <div
                                             key={prediction.place_id}
+                                            onMouseDown={(e) =>
+                                              e.preventDefault()
+                                            } // Keeps focus on input
                                             onClick={() =>
                                               handleAddressSelect(prediction)
                                             }
@@ -817,19 +827,20 @@ export function ParticipantSetup({
                                                   {prediction
                                                     .structured_formatting
                                                     ?.main_text ||
-                                                    prediction.description}
+                                                    prediction.description.split(
+                                                      ","
+                                                    )[0]}
                                                 </p>
-                                                {prediction
-                                                  .structured_formatting
-                                                  ?.secondary_text && (
-                                                  <p className="text-xs text-gray-500 truncate mt-0.5">
-                                                    {
-                                                      prediction
-                                                        .structured_formatting
-                                                        .secondary_text
-                                                    }
-                                                  </p>
-                                                )}
+                                                <p className="text-xs text-gray-500 truncate mt-0.5">
+                                                  {prediction
+                                                    .structured_formatting
+                                                    ?.secondary_text ||
+                                                    prediction.description
+                                                      .split(",")
+                                                      .slice(1)
+                                                      .join(",")
+                                                      .trim()}
+                                                </p>
                                               </div>
                                             </div>
                                           </div>
@@ -850,24 +861,25 @@ export function ParticipantSetup({
                           )}
                         />
                       </div>
-
                       {/* Location Section */}
                       <div className="space-y-4 border-t pt-6">
                         <div className="flex items-center gap-2 mb-4">
                           <Magnifer className="h-5 w-5 text-primary" />
                           <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                            Location Details
+                            Location Details *
                           </FormLabel>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {/* State Selection */}
                           <FormField
                             control={personalInfoForm.control}
                             name="stateId"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">State</FormLabel>
+                                <FormLabel className="text-sm">
+                                  State *
+                                </FormLabel>
                                 <Select
                                   value={field.value}
                                   onValueChange={(value) => {
@@ -908,7 +920,7 @@ export function ParticipantSetup({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-sm">
-                                  Region
+                                  Region *
                                 </FormLabel>
                                 <Select
                                   value={field.value}
@@ -944,51 +956,6 @@ export function ParticipantSetup({
                               </FormItem>
                             )}
                           />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Suburb Selection */}
-                          <FormField
-                            control={personalInfoForm.control}
-                            name="suburbId"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">
-                                  Suburb
-                                </FormLabel>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={(value) => {
-                                    field.onChange(value);
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      suburbId: value,
-                                    }));
-                                  }}
-                                  disabled={
-                                    !selectedRegionId || isLoadingSuburbs
-                                  }
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="text-sm">
-                                      <SelectValue placeholder="Select suburb..." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {suburbs.map((suburb) => (
-                                      <SelectItem
-                                        key={suburb._id}
-                                        value={suburb._id}
-                                      >
-                                        {suburb.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
 
                           {/* Service Area Selection */}
                           <FormField
@@ -997,7 +964,7 @@ export function ParticipantSetup({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-sm">
-                                  Service Area
+                                  Service Area *
                                 </FormLabel>
                                 <Select
                                   value={field.value}
@@ -1051,7 +1018,6 @@ export function ParticipantSetup({
                             formData.preferredLanguages.length === 0 ||
                             !formData.stateId ||
                             !formData.regionId ||
-                            !formData.suburbId ||
                             !formData.serviceAreaId
                           }
                         >
@@ -1088,6 +1054,9 @@ export function ParticipantSetup({
                         name="supportNeeds"
                         render={({ field }) => (
                           <FormItem>
+                            <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                              Select Support Types *
+                            </FormLabel>
                             {isLoadingSupportNeeds ? (
                               <div className="flex justify-center py-12">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -1217,7 +1186,7 @@ export function ParticipantSetup({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                              Contact Name
+                              Contact Name *
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1247,7 +1216,7 @@ export function ParticipantSetup({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                              Relationship
+                              Relationship *
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1277,7 +1246,7 @@ export function ParticipantSetup({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                              Phone Number
+                              Phone Number *
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1340,6 +1309,7 @@ export function ParticipantSetup({
                   </h3>
                   <p className="text-sm text-gray-600 mb-6">
                     Provide details of your plan manager and support coordinator
+                    (Optional)
                   </p>
 
                   <Form {...coordinationForm}>
@@ -1352,7 +1322,7 @@ export function ParticipantSetup({
                       {/* Plan Manager Section */}
                       <div className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-50">
                         <h4 className="font-montserrat-semibold text-gray-900 text-sm">
-                          Plan Manager Details
+                          Plan Manager Details (Optional)
                         </h4>
 
                         <FormField
@@ -1416,7 +1386,7 @@ export function ParticipantSetup({
                       {/* Support Coordinator Section */}
                       <div className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-50">
                         <h4 className="font-montserrat-semibold text-gray-900 text-sm">
-                          Support Coordinator Details
+                          Support Coordinator Details (Optional)
                         </h4>
 
                         <FormField
