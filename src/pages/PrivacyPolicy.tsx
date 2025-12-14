@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
 
           {/* Header */}
           <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-montserrat-bold text-white mb-4">
               Support24 Privacy Policy
             </h1>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-gray-400">
@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
             <div className="prose prose-invert prose-lg max-w-none">
               {/* 1. About This Policy */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   1. About This Policy
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -84,12 +84,12 @@ export default function PrivacyPolicy() {
 
               {/* 2. Key Definitions */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   2. Key Definitions
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Personal Information
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
@@ -100,7 +100,7 @@ export default function PrivacyPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Sensitive Information
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       User Types
                     </h3>
                     <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -142,7 +142,7 @@ export default function PrivacyPolicy() {
 
               {/* 3. Information We Collect */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   3. Information We Collect
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -153,7 +153,7 @@ export default function PrivacyPolicy() {
                   improve our services.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.1 Information From Support Workers
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -173,7 +173,7 @@ export default function PrivacyPolicy() {
                   <li>Performance metrics (reviews, ratings, response times)</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.2 Information From Participants
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -193,7 +193,7 @@ export default function PrivacyPolicy() {
                   <li>Guardian or representative details (if applicable)</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.3 Information From Providers
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -213,7 +213,7 @@ export default function PrivacyPolicy() {
                   <li>SIL/STA accommodation details (if applicable)</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.4 Information From Support Coordinators
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -225,7 +225,7 @@ export default function PrivacyPolicy() {
                   <li>Profile information</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.5 Information Collected Automatically
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -245,7 +245,7 @@ export default function PrivacyPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.6 Information From Third Parties
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -268,7 +268,7 @@ export default function PrivacyPolicy() {
 
               {/* 4. How We Use Your Information */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   4. How We Use Your Information
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -276,7 +276,7 @@ export default function PrivacyPolicy() {
                   connected to operating the Platform:
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Platform Operations
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -295,7 +295,7 @@ export default function PrivacyPolicy() {
                   <li>Providing customer support</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Platform Improvement
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -305,7 +305,7 @@ export default function PrivacyPolicy() {
                   <li>Conducting user research and gathering feedback</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Safety and Security
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -319,7 +319,7 @@ export default function PrivacyPolicy() {
                   <li>Enforcing our Terms and policies</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Legal Compliance
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -331,7 +331,7 @@ export default function PrivacyPolicy() {
                   <li>Conducting audits and maintaining compliance records</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   AI and Technology
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -354,11 +354,11 @@ export default function PrivacyPolicy() {
 
               {/* 5. How We Share Your Information */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   5. How We Share Your Information
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.1 Information Sharing Between Platform Users
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -386,7 +386,7 @@ export default function PrivacyPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.2 Information Sharing with Service Providers
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -401,7 +401,7 @@ export default function PrivacyPolicy() {
                   <li>Security and fraud prevention services</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.3 Information Sharing with Healthcare Partners
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -410,7 +410,7 @@ export default function PrivacyPolicy() {
                   coordination purposes.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.4 Information Sharing with RosterRelay
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -419,7 +419,7 @@ export default function PrivacyPolicy() {
                   subject to Support Worker consent.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.5 Legal Requirements and Safety Disclosures
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -439,7 +439,7 @@ export default function PrivacyPolicy() {
 
               {/* 6. How We Protect Your Information */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   6. How We Protect Your Information
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -447,7 +447,7 @@ export default function PrivacyPolicy() {
                   information:
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Technical Security
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -460,7 +460,7 @@ export default function PrivacyPolicy() {
                   <li>Automated backup systems with secure offsite storage</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Organizational Security
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -471,7 +471,7 @@ export default function PrivacyPolicy() {
                   <li>Regular security audits and assessments</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Your Responsibilities
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -486,7 +486,7 @@ export default function PrivacyPolicy() {
 
               {/* 7. Data Retention */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   7. Data Retention
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -530,14 +530,14 @@ export default function PrivacyPolicy() {
 
               {/* 8. Your Privacy Rights */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   8. Your Privacy Rights
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
                   Under Australian privacy law, you have several rights:
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Right to Access
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -552,7 +552,7 @@ export default function PrivacyPolicy() {
                   . We respond within 30 days.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Right to Correction
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -567,7 +567,7 @@ export default function PrivacyPolicy() {
                   .
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Right to Delete
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -575,7 +575,7 @@ export default function PrivacyPolicy() {
                   subject to retention requirements.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Right to Complain
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -603,7 +603,7 @@ export default function PrivacyPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Right to Opt Out
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -614,7 +614,7 @@ export default function PrivacyPolicy() {
 
               {/* 9. Cookies and Tracking Technologies */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   9. Cookies and Tracking Technologies
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -622,7 +622,7 @@ export default function PrivacyPolicy() {
                   functionality and improve user experience:
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Types of Cookies
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -640,7 +640,7 @@ export default function PrivacyPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Cookie Control
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -651,7 +651,7 @@ export default function PrivacyPolicy() {
 
               {/* 10. International Data Transfers */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   10. International Data Transfers
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -669,7 +669,7 @@ export default function PrivacyPolicy() {
 
               {/* 11. Information About Children and Minors */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   11. Information About Children and Minors
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -696,7 +696,7 @@ export default function PrivacyPolicy() {
 
               {/* 12. Changes to This Privacy Policy */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   12. Changes to This Privacy Policy
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -717,7 +717,7 @@ export default function PrivacyPolicy() {
 
               {/* 13. Contact Us */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   13. Contact Us
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -726,7 +726,7 @@ export default function PrivacyPolicy() {
 
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Privacy Officer
                     </h3>
                     <p className="text-gray-300">
@@ -741,7 +741,7 @@ export default function PrivacyPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       General Inquiries
                     </h3>
                     <p className="text-gray-300">
@@ -766,7 +766,7 @@ export default function PrivacyPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Incident Reports
                     </h3>
                     <p className="text-gray-300">
@@ -782,7 +782,7 @@ export default function PrivacyPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Support24 
                     </h3>
                     <p className="text-gray-300">ABN: 19673683817</p>

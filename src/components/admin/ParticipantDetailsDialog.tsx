@@ -80,12 +80,12 @@ export default function ParticipantDetailsDialog({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-xl font-montserrat-semibold text-gray-900">
                   {participant.firstName} {participant.lastName}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeStyle(
+                    className={`px-2 py-1 rounded-full text-xs font-montserrat-semibold ${getStatusBadgeStyle(
                       participant.status
                     )}`}
                   >
@@ -110,7 +110,7 @@ export default function ParticipantDetailsDialog({
 
             {/* Contact Information */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Contact Information
               </h4>
@@ -139,7 +139,7 @@ export default function ParticipantDetailsDialog({
 
             {/* Subscription Details */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <Crown className="h-4 w-4" />
                 Subscription Details
               </h4>
@@ -147,7 +147,7 @@ export default function ParticipantDetailsDialog({
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <p className="text-xs text-gray-500">Tier</p>
-                    <p className="font-semibold capitalize">
+                    <p className="font-montserrat-semibold capitalize">
                       {participant.subscription?.tier || "None"}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export default function ParticipantDetailsDialog({
 
             {/* Preferences */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <ClipboardText className="h-4 w-4" />
                 Preferences & Requirements
               </h4>
@@ -241,7 +241,7 @@ export default function ParticipantDetailsDialog({
 
             {/* Organizations */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <Buildings className="h-4 w-4" />
                 Organizations ({participant.organizationCount})
               </h4>
@@ -254,7 +254,7 @@ export default function ParticipantDetailsDialog({
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <h5 className="font-semibold text-gray-900">{org.name}</h5>
+                          <h5 className="font-montserrat-semibold text-gray-900">{org.name}</h5>
                           <p className="text-sm text-gray-500">{org.description}</p>
                         </div>
                         <Badge variant="outline">
@@ -289,7 +289,7 @@ export default function ParticipantDetailsDialog({
               <>
                 <Separator />
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <ShieldUser className="h-4 w-4" />
                     Guardians
                   </h4>

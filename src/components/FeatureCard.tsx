@@ -43,7 +43,7 @@ export const FeatureCard = ({
 
           {/* Title */}
           {title && (
-            <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black mb-1.5 sm:mb-2">
+            <h3 className="text-base sm:text-lg lg:text-xl font-montserrat-bold text-black mb-1.5 sm:mb-2">
               {title}
             </h3>
           )}
@@ -58,7 +58,7 @@ export const FeatureCard = ({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center gap-1.5 sm:gap-2 text-primary font-semibold text-xs sm:text-sm mt-3 sm:mt-4">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-primary font-montserrat-semibold text-xs sm:text-sm mt-3 sm:mt-4">
             <img src="/new-res/trending_up.svg" alt="Arrow" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>{footer}</span>
           </div>

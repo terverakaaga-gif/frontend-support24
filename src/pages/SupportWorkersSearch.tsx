@@ -540,7 +540,7 @@ export default function SearchSupportWorkersPage() {
                           size="sm"
                           variant="outline"
                           disabled
-                          className="flex-1 bg-blue-50 border-blue-200 text-blue-700"
+                          className="flex-1 bg-primary-50 border-primary-200 text-primary-700"
                         >
                           <CheckCircle size={16} className="mr-1" />
                           In Network

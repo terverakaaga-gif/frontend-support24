@@ -175,14 +175,14 @@ export default function SupportWorkerDetailsDialog({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-xl font-montserrat-semibold text-gray-900">
                   {worker.firstName} {worker.lastName}
                 </h3>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <div className="flex items-center gap-1">
                     {getStatusIcon(worker.status)}
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeStyle(
+                      className={`px-2 py-1 rounded-full text-xs font-montserrat-semibold ${getStatusBadgeStyle(
                         worker.status
                       )}`}
                     >
@@ -205,7 +205,7 @@ export default function SupportWorkerDetailsDialog({
                 {worker.ratings && worker.ratings.count > 0 ? (
                   <div className="flex items-center gap-1 mt-2">
                     <Star className="h-4 w-4 text-yellow-400" />
-                    <span className="font-semibold">{worker.ratings.average.toFixed(1)}</span>
+                    <span className="font-montserrat-semibold">{worker.ratings.average.toFixed(1)}</span>
                     <span className="text-xs text-gray-500">
                       ({worker.ratings.count} reviews)
                     </span>
@@ -223,7 +223,7 @@ export default function SupportWorkerDetailsDialog({
 
             {/* Contact Information */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Contact Information
               </h4>
@@ -257,14 +257,14 @@ export default function SupportWorkerDetailsDialog({
 
             {/* Verification Status */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <Shield className="h-4 w-4" />
                 Verification Status
               </h4>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm text-gray-600">Overall Progress</span>
-                  <span className="font-semibold">
+                  <span className="font-montserrat-semibold">
                     {verificationProgress.completed}/{verificationProgress.total} ({verificationProgress.percentage}%)
                   </span>
                 </div>
@@ -299,7 +299,7 @@ export default function SupportWorkerDetailsDialog({
 
             {/* Skills & Languages */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <ClipboardText className="h-4 w-4" />
                 Skills & Languages
               </h4>
@@ -340,7 +340,7 @@ export default function SupportWorkerDetailsDialog({
 
             {/* Service Areas & Availability */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <MapPoint className="h-4 w-4" />
                 Service Areas & Availability
               </h4>
@@ -388,7 +388,7 @@ export default function SupportWorkerDetailsDialog({
               <>
                 <Separator />
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MedalStar className="h-4 w-4" />
                     Qualifications
                   </h4>
@@ -418,7 +418,7 @@ export default function SupportWorkerDetailsDialog({
               <>
                 <Separator />
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-montserrat-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <Case className="h-4 w-4" />
                     Experience
                   </h4>

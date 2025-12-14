@@ -324,7 +324,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
       <div className="flex gap-2 mb-4 md:mb-6">
         <button
           onClick={() => setActiveTab("workers")}
-          className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
+          className={`rounded-full font-montserrat-semibold px-3 py-1 text-xs transition-all ${
             activeTab === "workers"
               ? "bg-primary text-white hover:bg-primary"
               : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
@@ -334,7 +334,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
         </button>
         <button
           onClick={() => setActiveTab("invites")}
-          className={`rounded-full font-semibold px-3 py-1 text-xs transition-all ${
+          className={`rounded-full font-montserrat-semibold px-3 py-1 text-xs transition-all ${
             activeTab === "invites"
               ? "bg-primary text-white hover:bg-primary"
               : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"

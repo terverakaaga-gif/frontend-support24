@@ -176,7 +176,7 @@ export const TestimonialCard = ({ testimonial }) => {
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4 pr-16">
+      <h3 className="text-xl font-montserrat-semibold text-gray-900 mt-8 mb-4 pr-16">
         {testimonial.title}
       </h3>
 
@@ -209,7 +209,7 @@ export const TestimonialCard = ({ testimonial }) => {
           className="w-12 h-12 rounded-full object-cover"
         />
         <div>
-          <p className="font-semibold text-gray-900">{testimonial.userName}</p>
+          <p className="font-montserrat-semibold text-gray-900">{testimonial.userName}</p>
           <p className="text-sm text-gray-600">{testimonial.userRole}</p>
         </div>
       </div>

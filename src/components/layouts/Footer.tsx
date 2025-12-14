@@ -12,7 +12,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
   return (
     <footer id="contact" className={` bg-[#05030B] text-white relative overflow-hidden scroll-mt-20 ${className}`}>
-       {/* Gradient blue circle at top right */}
+       {/* Gradient primary circle at top right */}
        {/* <img
         src="/new-res/gradient-ckr.svg"
         alt=""
@@ -22,7 +22,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 ">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <div className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
+            <div className="text-xl md:text-2xl font-montserrat-bold mb-3 md:mb-4">
               <img
                 className="h-8 md:h-12"
                 src="/new-res/support24logo-blk.svg"

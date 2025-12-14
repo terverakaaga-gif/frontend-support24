@@ -55,7 +55,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           >
             {/* Contact Now Badge */}
             <motion.div
-              className="inline-flex items-center gap-2 bg-blue-100 text-primary px-5 py-2.5 rounded-full text-sm font-montserrat-semibold w-fit"
+              className="inline-flex items-center gap-2 bg-primary-100 text-primary px-5 py-2.5 rounded-full text-sm font-montserrat-semibold w-fit"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -106,7 +106,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               <div className="relative w-full max-w-xl">
-                {/* Blue L-shaped background */}
+                {/* primary L-shaped background */}
                 <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-primary rounded-3xl" style={{ borderTopRightRadius: '0' }} />
                 
                 {/* Image */}

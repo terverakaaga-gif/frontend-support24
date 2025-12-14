@@ -99,7 +99,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       transition={{ duration: 0.5, delay: index * 0.05 }}
       className={`relative rounded-2xl p-5 sm:p-6 backdrop-blur-xl border shadow-lg transition-all duration-300 ${getStaggerClass(index)} ${
         testimonial.hasVideo 
-          ? 'bg-gradient-to-br from-[#1e2a4a] to-[#0f1829] text-white border-gray-700/30 hover:shadow-2xl hover:shadow-blue-500/20' 
+          ? 'bg-gradient-to-br from-[#1e2a4a] to-[#0f1829] text-white border-gray-700/30 hover:shadow-2xl hover:shadow-primary-500/20' 
           : 'bg-white border-gray-200 hover:shadow-2xl hover:shadow-primary/20'
       } min-h-[320px] sm:min-h-[340px] flex flex-col`}
     >
@@ -116,7 +116,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       </div>
 
       {/* Title */}
-      <h3 className={`text-base sm:text-lg lg:text-xl font-semibold mt-8 mb-3 sm:mb-4 pr-12 sm:pr-16 ${
+      <h3 className={`text-base sm:text-lg lg:text-xl font-montserrat-semibold mt-8 mb-3 sm:mb-4 pr-12 sm:pr-16 ${
         testimonial.hasVideo ? 'text-white' : 'text-gray-900'
       }`}>
         {testimonial.title}
@@ -153,7 +153,7 @@ const TestimonialCard = ({ testimonial, index }) => {
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
         /> */}
         <div>
-          <p className={`text-sm sm:text-base font-semibold ${
+          <p className={`text-sm sm:text-base font-montserrat-semibold ${
             testimonial.hasVideo ? 'text-white' : 'text-gray-900'
           }`}>
             {testimonial.userName}

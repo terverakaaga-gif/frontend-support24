@@ -272,7 +272,7 @@ export default function SupportWorkerOrganizationsPage() {
                         <span className="text-gray-600 font-montserrat-semibold">
                           Created on
                         </span>
-                        <span className="ml-auto text-gray-900 font-semibold">
+                        <span className="ml-auto text-gray-900 font-montserrat-semibold">
                           {new Date(org.createdAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -284,7 +284,7 @@ export default function SupportWorkerOrganizationsPage() {
                         <span className="text-gray-600 font-montserrat-semibold">
                           Last Updated
                         </span>
-                        <span className="ml-auto text-gray-900 font-semibold">
+                        <span className="ml-auto text-gray-900 font-montserrat-semibold">
                           {new Date(org.updatedAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -298,7 +298,7 @@ export default function SupportWorkerOrganizationsPage() {
                         <span className="text-gray-600 font-montserrat-semibold">
                           Organization ID
                         </span>
-                        <span className="ml-auto text-gray-900 font-semibold text-xs truncate max-w-[140px] md:max-w-[200px]">
+                        <span className="ml-auto text-gray-900 font-montserrat-semibold text-xs truncate max-w-[140px] md:max-w-[200px]">
                           {org._id}
                         </span>
                       </div>
@@ -306,7 +306,7 @@ export default function SupportWorkerOrganizationsPage() {
 
                     <Button
                       variant="outline"
-                      className="w-fit flex place-self-end border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700 font-semibold gap-2"
+                      className="w-fit flex place-self-end border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700 font-montserrat-semibold gap-2"
                       onClick={() =>
                         navigate(`/support-worker/organizations/${org._id}`)
                       }

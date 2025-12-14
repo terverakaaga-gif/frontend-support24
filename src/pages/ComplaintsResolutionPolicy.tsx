@@ -29,7 +29,7 @@ export default function ComplaintsResolutionPolicy() {
           <div className="mb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <MessageSquare className="w-10 h-10 text-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold text-white">
+              <h1 className="text-4xl md:text-5xl font-montserrat-bold text-white">
                 Complaints & Dispute Resolution Policy
               </h1>
             </div>
@@ -51,11 +51,11 @@ export default function ComplaintsResolutionPolicy() {
             <div className="prose prose-invert prose-lg max-w-none">
               {/* 1. Purpose and Scope */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   1. Purpose and Scope
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   1.1 Purpose
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -80,7 +80,7 @@ export default function ComplaintsResolutionPolicy() {
                   </ul>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   1.2 Scope
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -93,7 +93,7 @@ export default function ComplaintsResolutionPolicy() {
                   <li>Disputes between platform users</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   1.3 Relationship to Incident Management
                 </h3>
                 <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
@@ -123,12 +123,12 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 2. Definitions */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   2. Definitions
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Complaint
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
@@ -139,7 +139,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Dispute
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
@@ -149,7 +149,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Natural Justice
                     </h3>
                     <p className="text-gray-300 leading-relaxed mb-2">
@@ -166,11 +166,11 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 3. Types of Complaints */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   3. Types of Complaints
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.1 Complaints About Support24
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -183,7 +183,7 @@ export default function ComplaintsResolutionPolicy() {
                   <li>Policy and decision-making</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.2 Complaints About Platform Users
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -194,10 +194,10 @@ export default function ComplaintsResolutionPolicy() {
                   <li>Inappropriate content</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.3 Systemic Complaints
                 </h3>
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-4">
                   <p className="text-gray-300 mb-2">
                     <strong className="text-white">
                       Systemic complaints are particularly valuable
@@ -217,7 +217,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 4. Who Can Make a Complaint */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   4. Who Can Make a Complaint
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -253,16 +253,16 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 5. How to Make a Complaint */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   5. How to Make a Complaint
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.1 Complaint Channels
                 </h3>
                 <div className="space-y-3 mb-4">
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Email (Recommended)
                     </h4>
                     <p className="text-gray-300">
@@ -278,7 +278,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Phone
                     </h4>
                     <p className="text-gray-300">
@@ -292,7 +292,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Online Form
                     </h4>
                     <p className="text-gray-300">
@@ -307,7 +307,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       In-App
                     </h4>
                     <p className="text-gray-300">
@@ -316,7 +316,7 @@ export default function ComplaintsResolutionPolicy() {
                   </div>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.2 What Information to Include
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -330,7 +330,7 @@ export default function ComplaintsResolutionPolicy() {
                   <li>Desired outcome or resolution</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.3 Assistance Available
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -343,11 +343,11 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 6. Complaint Assessment */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   6. Complaint Assessment and Triage
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   6.1 Acknowledgment
                 </h3>
                 <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4 mb-4">
@@ -359,12 +359,12 @@ export default function ComplaintsResolutionPolicy() {
                   </p>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   6.2 Complaint Categories
                 </h3>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Category 1: Urgent (24-48 hours)
                     </h4>
                     <p className="text-gray-300">
@@ -373,7 +373,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Category 2: Serious (20 business days)
                     </h4>
                     <p className="text-gray-300">
@@ -381,7 +381,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Category 3: Standard (15 business days)
                     </h4>
                     <p className="text-gray-300">
@@ -389,7 +389,7 @@ export default function ComplaintsResolutionPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Category 4: Straightforward (5 business days)
                     </h4>
                     <p className="text-gray-300">
@@ -401,7 +401,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 7. Early Resolution */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   7. Early Resolution
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -410,7 +410,7 @@ export default function ComplaintsResolutionPolicy() {
                   maintain positive relationships.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Early Resolution Approaches
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -447,7 +447,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 8. Formal Investigation */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   8. Formal Investigation
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -456,7 +456,7 @@ export default function ComplaintsResolutionPolicy() {
                   accordance with natural justice principles.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   8.1 Investigation Principles
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -484,7 +484,7 @@ export default function ComplaintsResolutionPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   8.2 Investigation Process
                 </h3>
                 <ol className="list-decimal list-inside text-gray-300 space-y-2 mb-4">
@@ -496,7 +496,7 @@ export default function ComplaintsResolutionPolicy() {
                   <li>Communicate outcomes to parties</li>
                 </ol>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   8.3 Timeframes
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -509,7 +509,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 9. Resolution Options and Remedies */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   9. Resolution Options and Remedies
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -547,7 +547,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 10. Mediation and ADR */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   10. Mediation and Alternative Dispute Resolution
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -555,7 +555,7 @@ export default function ComplaintsResolutionPolicy() {
                   dispute resolution may be appropriate.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   When Mediation May Help
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -565,7 +565,7 @@ export default function ComplaintsResolutionPolicy() {
                   <li>Parties willing to participate constructively</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   External Mediation Services
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -578,14 +578,14 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 11. Review and Appeals */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   11. Review and Appeals
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
                   Complainants dissatisfied with outcomes can request:
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   11.1 Internal Review (15 business days)
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -600,7 +600,7 @@ export default function ComplaintsResolutionPolicy() {
                   </a>
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   11.2 CEO Review (20 business days)
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -614,7 +614,7 @@ export default function ComplaintsResolutionPolicy() {
                   </a>
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   11.3 Board Review (30-60 days)
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -631,7 +631,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 12. External Escalation */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   12. External Escalation Options
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -641,7 +641,7 @@ export default function ComplaintsResolutionPolicy() {
 
                 <div className="space-y-4">
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       NDIS Quality and Safeguards Commission
                     </h3>
                     <p className="text-gray-300 mb-2">
@@ -671,7 +671,7 @@ export default function ComplaintsResolutionPolicy() {
                   </div>
 
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Aged Care Quality and Safety Commission
                     </h3>
                     <p className="text-gray-300 mb-2">
@@ -700,7 +700,7 @@ export default function ComplaintsResolutionPolicy() {
                   </div>
 
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Commonwealth Ombudsman
                     </h3>
                     <p className="text-gray-300 mb-2">
@@ -730,7 +730,7 @@ export default function ComplaintsResolutionPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Additional Resources
                     </h3>
                     <ul className="list-disc list-inside text-gray-300 space-y-1">
@@ -774,7 +774,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 13. Confidentiality and Privacy */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   13. Confidentiality and Privacy
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -800,7 +800,7 @@ export default function ComplaintsResolutionPolicy() {
 
               {/* 14. Learning and Improvement */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   14. Learning and Continuous Improvement
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -820,7 +820,7 @@ export default function ComplaintsResolutionPolicy() {
               {/* Footer */}
               <div className="mt-12 pt-8 border-t border-white/10">
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">
+                  <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                     Contact for Complaints
                   </h3>
                   <div className="space-y-2 text-gray-300">
@@ -857,8 +857,8 @@ export default function ComplaintsResolutionPolicy() {
                   </div>
                 </div>
 
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 mb-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">
+                <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-6 mb-6">
+                  <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                     Acknowledgment
                   </h3>
                   <p className="text-gray-300 leading-relaxed">

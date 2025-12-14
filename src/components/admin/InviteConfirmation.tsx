@@ -78,7 +78,7 @@ export function InviteConfirmation() {
           description: "You're about to make this invitation available to the support worker.",
           confirmText: "This will notify the support worker that they have a new connection request. They will be able to view and respond to the invitation.",
           icon: <Send className="h-12 w-12 text-primary-500 mb-2" />,
-          color: "blue",
+          color: "primary",
           buttonText: "Make Available",
           successMessage: "Invitation has been made available to the support worker."
         };
@@ -149,7 +149,7 @@ export function InviteConfirmation() {
 
   const actionContent = getActionContent();
   const colorClass = {
-    blue: "border-primary-200 bg-primary-100",
+    primary: "border-primary-200 bg-primary-100",
     green: "border-green-200 bg-green-50",
     red: "border-red-200 bg-red-50",
     gray: "border-gray-200 bg-gray-100"
@@ -219,7 +219,7 @@ export function InviteConfirmation() {
                       className={`w-full ${
                         actionContent.color === "green" ? "bg-green-600 hover:bg-green-700" :
                         actionContent.color === "red" ? "bg-red-600 hover:bg-red-700" :
-                        actionContent.color === "blue" ? "bg-primary hover:bg-primary-700" : ""
+                        actionContent.color === "primary" ? "bg-primary hover:bg-primary-700" : ""
                       }`}
                     >
                       {confirming ? (
