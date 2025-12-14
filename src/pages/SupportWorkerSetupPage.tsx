@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
+// import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { SupportWorker } from "@/types/user.types";
+import SupportWorkerSetup from "@/components/supportworker/onboarding";
 
 export default function SupportWorkerSetupPage() {
   const navigate = useNavigate();
@@ -98,9 +99,7 @@ export default function SupportWorkerSetupPage() {
           <div className="w-24"></div> 
         </div>
       </div> */}
-      <SupportWorkerSetup 
-        onComplete={handleSetupComplete} 
-      />
+     <SupportWorkerSetup />
     </div>
   );
 }

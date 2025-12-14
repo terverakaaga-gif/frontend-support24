@@ -195,6 +195,18 @@ const authService = {
     return accessToken !== null && tokenStorage.isTokenExpired(accessToken);
   },
 
+  // Upload Resume
+  uploadResume: async (file: File): Promise<{ user: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return await post<{ user: string }>("/users/upload-resume", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
   // Complete Support Worker Onboarding
   completeSupportWorkerOnboarding: async (
     data: SupportWorkerOnboardingInput

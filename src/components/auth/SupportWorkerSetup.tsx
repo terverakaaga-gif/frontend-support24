@@ -91,7 +91,6 @@ const experienceSchema = z.object({
         description: z.string().min(10, {
           message: "Please provide a description of your experience.",
         }),
-        resume: z.instanceof(File).optional(),
       })
     )
     .min(1, { message: "Please add at least one experience." })
@@ -103,6 +102,7 @@ const experienceSchema = z.object({
     }, {
       message: "End date must be after start date.",
     }),
+  resume: z.instanceof(File),
 });
 
 const rateSchema = z.object({
@@ -225,9 +225,9 @@ export function SupportWorkerSetup({
         startDate: "",
         endDate: "",
         description: "",
-        resume: undefined as File | undefined,
       },
     ],
+    resume: undefined as File | undefined,
     shiftRates: [] as { rateTimeBandId: string; hourlyRate: string }[],
     availability: {
       weekdays: weekdays.map((day) => ({
@@ -268,6 +268,7 @@ export function SupportWorkerSetup({
     resolver: zodResolver(experienceSchema),
     defaultValues: {
       experience: formData.experience,
+      resume: formData.resume,
     },
   });
 
@@ -426,7 +427,11 @@ export function SupportWorkerSetup({
   const handleExperienceSubmit = async (
     data: z.infer<typeof experienceSchema>
   ) => {
-    setFormData({ ...formData, experience: data.experience as any });
+    setFormData({
+      ...formData,
+      experience: data.experience as any,
+      resume: data.resume,
+    });
     nextStep();
   };
 
@@ -516,7 +521,6 @@ export function SupportWorkerSetup({
         startDate: "",
         endDate: "",
         description: "",
-        resume: undefined as File | undefined,
       },
     ];
     setFormData({ ...formData, experience: newExperience });
@@ -552,13 +556,29 @@ export function SupportWorkerSetup({
 
   const addTimeSlot = (dayIndex: number) => {
     const newAvailability = { ...formData.availability };
-    const lastSlot = newAvailability.weekdays[dayIndex].slots[
-      newAvailability.weekdays[dayIndex].slots.length - 1
-    ];
+    const currentSlots = newAvailability.weekdays[dayIndex].slots;
+    
+    // Sort slots by start time to find the latest available time
+    const sortedSlots = [...currentSlots].sort((a, b) => a.start.localeCompare(b.start));
+    
+    let startTime = "09:00";
+    let endTime = "17:00";
+    
+    if (sortedSlots.length > 0) {
+      const lastSlot = sortedSlots[sortedSlots.length - 1];
+      const lastEndTime = lastSlot.end;
+      
+      // Use the last slot's end time as the new start time
+      startTime = lastEndTime;
+      const [hours, minutes] = lastEndTime.split(':').map(Number);
+      // Set end time to 8 hours later or end of day
+      const newHours = Math.min(hours + 8, 23);
+      endTime = `${String(newHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
     
     newAvailability.weekdays[dayIndex].slots.push({
-      start: lastSlot?.end || "09:00",
-      end: "17:00",
+      start: startTime,
+      end: endTime,
     });
 
     setFormData({ ...formData, availability: newAvailability });
@@ -1473,68 +1493,6 @@ export function SupportWorkerSetup({
                               </FormItem>
                             )}
                           />
-
-                          <FormField
-                            control={experienceForm.control}
-                            name={`experience.${index}.resume`}
-                            render={({ field: { onChange, value, ...field } }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">
-                                  Resume/CV
-                                  <span className="text-xs text-gray-500 ml-1">(Optional)</span>
-                                </FormLabel>
-                                <FormControl>
-                                  <div className="space-y-2">
-                                    <Input
-                                      type="file"
-                                      accept=".pdf,.doc,.docx"
-                                      onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                          onChange(file);
-                                          const newExp = [...formData.experience];
-                                          newExp[index].resume = file;
-                                          setFormData({
-                                            ...formData,
-                                            experience: newExp,
-                                          });
-                                        }
-                                      }}
-                                      className="text-sm bg-white"
-                                      {...field}
-                                    />
-                                    {formData.experience[index].resume && (
-                                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                                        <CheckCircle className="h-4 w-4 text-green-600" />
-                                        <span>{formData.experience[index].resume.name}</span>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => {
-                                            const newExp = [...formData.experience];
-                                            newExp[index].resume = undefined;
-                                            setFormData({
-                                              ...formData,
-                                              experience: newExp,
-                                            });
-                                            onChange(undefined);
-                                          }}
-                                          className="h-6 w-6 p-0"
-                                        >
-                                          <CloseCircle className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    )}
-                                  </div>
-                                </FormControl>
-                                <FormDescription className="text-xs text-gray-500">
-                                  Upload PDF, DOC, or DOCX (Max 5MB)
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
                         </div>
                       ))}
 
@@ -1546,6 +1504,66 @@ export function SupportWorkerSetup({
                       >
                         + Add Another Experience
                       </Button>
+
+                      {/* Resume Upload - Single for all experiences */}
+                      <div className="border-t pt-6">
+                        <FormField
+                          control={experienceForm.control}
+                          name="resume"
+                          render={({ field: { onChange, value, ...field } }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                                Resume/CV
+                              </FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  <Input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        onChange(file);
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          resume: file,
+                                        }));
+                                      }
+                                    }}
+                                    className="text-sm bg-white"
+                                    {...field}
+                                  />
+                                  {formData.resume && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                      <CheckCircle className="h-4 w-4 text-green-600" />
+                                      <span>{formData.resume.name}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          setFormData((prev) => ({
+                                            ...prev,
+                                            resume: undefined,
+                                          }));
+                                          onChange(undefined);
+                                        }}
+                                        className="h-6 w-6 p-0"
+                                      >
+                                        <CloseCircle className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormDescription className="text-xs text-gray-500">
+                                Upload PDF, DOC, or DOCX (Max 5MB)
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
                       <div className="flex justify-between pt-4">
                         <Button

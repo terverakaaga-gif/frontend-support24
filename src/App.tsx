@@ -79,6 +79,7 @@ import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 import SupportWorkersSearch from "./pages/SupportWorkersSearch";
 import ParticipantSetupPage from "./pages/ParticipantSetupPage";
 import ResendEmail from "./pages/ResendEmail";
+import ServiceCategoriesManagementPage from "./pages/ServiceCategoriesManagementPage";
 
 // import ProviderAccommodationsPage from "./pages/ProviderAccommodationsPage";
 // import ProviderAccommodationDetailsPage from "./pages/ProviderAccommodationDetailsPage";
@@ -245,9 +246,14 @@ const AppRoutes = () => {
                   element={<BatchInvoiceDetailPage />}
                 />
                 <Route
+                  path="service-categories"
+                  element={<ServiceCategoriesManagementPage />}
+                />
+                <Route
                   path="service-types"
                   element={<ServiceTypesManagementPage />}
                 />
+                
                 <Route
                   path="service-types/:id"
                   element={<ServiceTypeDetailPage />}

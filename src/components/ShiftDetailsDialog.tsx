@@ -551,7 +551,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
               {getStatusLabel(shift.status)}
             </Badge>
             {shift.isMultiWorkerShift && (
-              <Badge className="bg-blue-50 text-blue-700 border-blue-200">
+              <Badge className="bg-primary-50 text-primary-700 border-primary-200">
                 <UsersGroupRounded className="w-3 h-3 mr-1" />
                 Multi-Worker
               </Badge>
@@ -1031,7 +1031,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                 {!showTimesheetForm ? (
                   <Button
                     onClick={() => setShowTimesheetForm(true)}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                    className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700"
                   >
                     <Document className="w-4 h-4" />
                     Create Timesheet
@@ -1080,20 +1080,20 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                         </div>
                         {timesheetFormData.actualStartTime &&
                           timesheetFormData.actualEndTime && (
-                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                              <p className="text-sm text-blue-900">
+                            <div className="p-3 bg-primary-50 border border-primary-200 rounded-lg">
+                              <p className="text-sm text-primary-900">
                                 <span className="font-montserrat-semibold">
                                   Start:
                                 </span>{" "}
                                 {formatTime(timesheetFormData.actualStartTime)}
                               </p>
-                              <p className="text-sm text-blue-900 mt-1">
+                              <p className="text-sm text-primary-900 mt-1">
                                 <span className="font-montserrat-semibold">
                                   End:
                                 </span>{" "}
                                 {formatTime(timesheetFormData.actualEndTime)}
                               </p>
-                              <p className="text-sm text-blue-900 mt-1">
+                              <p className="text-sm text-primary-900 mt-1">
                                 <span className="font-montserrat-semibold">
                                   Duration:
                                 </span>{" "}

@@ -449,9 +449,9 @@ export default function ParticipantProfile() {
 
                 {/* Plan Manager Section */}
                 {participant.planManager && (
-                  <div className="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+                  <div className="mb-6 p-4 rounded-lg bg-primary-50 border border-primary-200">
                     <h4 className="font-montserrat-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <Buildings2 className="w-4 h-4 text-blue-600" />
+                      <Buildings2 className="w-4 h-4 text-primary-600" />
                       Plan Manager
                     </h4>
                     <div className="space-y-2">

@@ -4,6 +4,7 @@ export interface ServiceType {
   _id: string;
   name: string;
   code: string;
+  categoryId: string;
   status: ServiceTypeStatus;
   createdAt: string;
   updatedAt: string;
@@ -20,6 +21,7 @@ export interface CreateServiceTypeRequest {
   name: string;
   code: string;
   status?: ServiceTypeStatus;
+  categoryId: string;
 }
 
 export interface UpdateServiceTypeRequest {
