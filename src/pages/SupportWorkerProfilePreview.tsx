@@ -59,6 +59,16 @@ export default function SupportWorkerProfilePreview() {
     return `${worker.firstName || ""} ${worker.lastName || ""}`.trim();
   };
 
+  const getHourlyRate = (hourlyRate: any) => {
+    if (typeof hourlyRate === 'number') {
+      return hourlyRate;
+    }
+    if (typeof hourlyRate === 'object' && hourlyRate !== null) {
+      return hourlyRate.baseRate || 0;
+    }
+    return 0;
+  };
+
   const handleInvite = () => {
     if (workerProfile?.worker?._id) {
       navigate(`/participant/invite/${workerProfile.worker._id}`);
@@ -68,6 +78,8 @@ export default function SupportWorkerProfilePreview() {
   if (isLoading) {
     return <Loader />;
   }
+
+  console.log("Worker Profile:", workerProfile);
 
   if (isError || !workerProfile?.worker) {
     return (
@@ -202,7 +214,7 @@ export default function SupportWorkerProfilePreview() {
             <div className="relative p-3 text-center">
               <p className="text-xs text-gray-600 mb-1 font-montserrat-semibold">Base Hourly Rates</p>
               <p className="text-2xl font-montserrat-semibold text-primary">
-                ${worker.hourlyRate || 0}<span className="text-sm">/hr</span>
+                ${getHourlyRate(worker.hourlyRate)}<span className="text-sm">/hr</span>
               </p>
             </div>
           </div>
@@ -283,28 +295,28 @@ export default function SupportWorkerProfilePreview() {
             {worker.availability?.weekdays && worker.availability.weekdays.length > 0 ? (
               <div className="grid grid-cols-7 gap-2">
                 {[
-                  { day: "Mon", date: 22, index: 0 },
-                  { day: "Tue", date: 23, index: 1 },
-                  { day: "Wed", date: 24, index: 2 },
-                  { day: "Thu", date: 25, index: 3 },
-                  { day: "Fri", date: 26, index: 4 },
-                  { day: "Sat", date: 27, index: 5 },
-                  { day: "Sun", date: 28, index: 6 },
-                ].map(({ day, date, index }) => {
-                  const isAvailable = worker.availability?.weekdays?.some(
-                    (wd: any) => wd.day === index
-                  );
+                  { day: "Mon", index: 0 },
+                  { day: "Tue", index: 1 },
+                  { day: "Wed", index: 2 },
+                  { day: "Thu", index: 3 },
+                  { day: "Fri", index: 4 },
+                  { day: "Sat", index: 5 },
+                  { day: "Sun", index: 6 },
+                ].map(({ day, index }) => {
+                    const dayName = day.toLowerCase();
+                    const isAvailable = worker.availability?.weekdays?.find(
+                    (wd) => wd.day.toLowerCase().slice(0, 3) === dayName
+                    )?.available || false;
                   return (
                     <div
                       key={day}
                       className={`text-center p-3 rounded-lg ${
                         isAvailable
-                          ? "bg-primary-600 text-white font-montserrat-semibold"
-                          : "bg-gray-100 text-gray-400"
+                          ? "bg-primary-100 text-primary-700 font-montserrat-semibold"
+                          : "bg-gray-100 text-gray-400 font-montserrat-medium"
                       }`}
                     >
-                      <div className="text-xs mb-1">{date}</div>
-                      <div className="text-sm font-montserrat-medium">{day}</div>
+                      <div className="text-sm">{day}</div>
                     </div>
                   );
                 })}

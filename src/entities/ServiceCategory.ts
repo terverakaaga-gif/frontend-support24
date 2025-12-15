@@ -1,17 +1,9 @@
 // ServiceCategory entity interfaces and types
 
-export interface SubCategory {
-  _id: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface ServiceCategory {
   _id: string;
   name: string;
   status: ServiceCategoryStatus;
-  subCategories: SubCategory[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -26,13 +18,11 @@ export enum ServiceCategoryStatus {
 export interface CreateServiceCategoryRequest {
   name: string;
   status?: ServiceCategoryStatus;
-  subCategories: string[];
 }
 
 export interface UpdateServiceCategoryRequest {
   name?: string;
   status?: ServiceCategoryStatus;
-  subCategories?: string[];
 }
 
 // API response interfaces
@@ -50,7 +40,6 @@ export interface ServiceCategoryResponse {
 export interface ServiceCategoryStatisticsResponse {
   totalCategories: number;
   byStatus: Record<string, number>;
-  totalSubCategories: number;
 }
 
 // Filter and query interfaces

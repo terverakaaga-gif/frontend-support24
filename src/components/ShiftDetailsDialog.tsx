@@ -545,7 +545,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
 
           <div className="flex gap-2 mb-3 sm:mb-4 items-center flex-wrap">
             <Dialog.Title className="text-lg sm:text-xl font-montserrat-semibold text-gray-900">
-              {shift.serviceTypeId.name}
+              {shift.serviceTypeId?.name || "No Service Type"}
             </Dialog.Title>
             <Badge className={getStatusBadgeStyle(shift.status)}>
               {getStatusLabel(shift.status)}
@@ -628,7 +628,7 @@ const ShiftDetailsDialog: React.FC<ShiftDetailsDialogProps> = ({
                 <div className="flex justify-between items-center">
                   <p className="text-gray-1000">Service Type:</p>
                   <p className="font-montserrat-semibold text-gray-900">
-                    {shift.serviceTypeId.name}
+                  {shift.serviceTypeId?.name || "No Service Type"}
                   </p>
                 </div>
                 <div className="flex justify-between items-center">

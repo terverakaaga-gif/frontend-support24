@@ -83,7 +83,6 @@ import {
   UpdateServiceTypeRequest,
   SERVICE_TYPE_STATUS_CONFIG,
 } from "@/entities/ServiceType";
-import { useGetServiceCategories } from "@/hooks/useServiceCategoryHooks";
 import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
 
 const ServiceTypesManagement: React.FC = () => {
@@ -111,7 +110,6 @@ const ServiceTypesManagement: React.FC = () => {
     name: "",
     code: "",
     status: ServiceTypeStatus.ACTIVE,
-    categoryId: "",
   });
 
   // Update filters when page changes
@@ -121,11 +119,6 @@ const ServiceTypesManagement: React.FC = () => {
 
   // API calls
   const { data: serviceTypes = [], isLoading, error } = useGetServiceTypes(filters);
-  const { data: serviceCategories = [] } = useGetServiceCategories({});
-  const categories = useMemo(() => {
-       if (!serviceCategories) return [];
-       return Array.isArray(serviceCategories) ? [] : serviceCategories.categories.filter((cat) => cat.status === 'active').sort((a, b) => a.name.localeCompare(b.name));
-     }, [serviceCategories]);
   const createMutation = useCreateServiceType();
   const updateMutation = useUpdateServiceType();
   const deleteMutation = useDeleteServiceType();
@@ -188,7 +181,6 @@ const ServiceTypesManagement: React.FC = () => {
           name: "",
           code: "",
           status: ServiceTypeStatus.ACTIVE,
-          categoryId: "",
         });
       },
     });
@@ -208,7 +200,6 @@ const ServiceTypesManagement: React.FC = () => {
             name: "",
             code: "",
             status: ServiceTypeStatus.ACTIVE,
-            categoryId: "",
           });
         },
       }
@@ -221,7 +212,6 @@ const ServiceTypesManagement: React.FC = () => {
       name: serviceType.name,
       code: serviceType.code,
       status: serviceType.status,
-      categoryId: serviceType.categoryId || "",
     });
     setEditDialogOpen(true);
   };
@@ -373,24 +363,6 @@ const ServiceTypesManagement: React.FC = () => {
                       <SelectContent>
                         <SelectItem value={ServiceTypeStatus.ACTIVE}>Active</SelectItem>
                         <SelectItem value={ServiceTypeStatus.INACTIVE}>Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category._id} value={category._id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -665,24 +637,6 @@ const ServiceTypesManagement: React.FC = () => {
                   <SelectContent>
                     <SelectItem value={ServiceTypeStatus.ACTIVE}>Active</SelectItem>
                     <SelectItem value={ServiceTypeStatus.INACTIVE}>Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-category">Category</Label>
-                <Select
-                  value={formData.categoryId}
-                  onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category._id} value={category._id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </div>

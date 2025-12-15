@@ -108,9 +108,7 @@ const ServiceCategoriesManagement: React.FC = () => {
   const [formData, setFormData] = useState<CreateServiceCategoryRequest>({
     name: "",
     status: ServiceCategoryStatus.ACTIVE,
-    subCategories: [],
   });
-  const [subCategoryInput, setSubCategoryInput] = useState("");
 
   // Update filters when page changes
   React.useEffect(() => {
@@ -166,24 +164,6 @@ const ServiceCategoriesManagement: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // Subcategory handlers
-  const addSubCategory = () => {
-    if (subCategoryInput.trim() && !formData.subCategories.includes(subCategoryInput.trim())) {
-      setFormData({
-        ...formData,
-        subCategories: [...formData.subCategories, subCategoryInput.trim()],
-      });
-      setSubCategoryInput("");
-    }
-  };
-
-  const removeSubCategory = (index: number) => {
-    setFormData({
-      ...formData,
-      subCategories: formData.subCategories.filter((_, i) => i !== index),
-    });
-  };
-
   // Form handlers
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,7 +173,6 @@ const ServiceCategoriesManagement: React.FC = () => {
         setFormData({
           name: "",
           status: ServiceCategoryStatus.ACTIVE,
-          subCategories: [],
         });
       },
     });
@@ -212,7 +191,6 @@ const ServiceCategoriesManagement: React.FC = () => {
           setFormData({
             name: "",
             status: ServiceCategoryStatus.ACTIVE,
-            subCategories: [],
           });
         },
       }
@@ -224,7 +202,6 @@ const ServiceCategoriesManagement: React.FC = () => {
     setFormData({
       name: category.name,
       status: category.status,
-      subCategories: category.subCategories.map(sub => sub._id),
     });
     setEditDialogOpen(true);
   };
@@ -317,7 +294,7 @@ const ServiceCategoriesManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-montserrat-bold">Service Categories</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage service categories and subcategories</p>
+          <p className="text-sm text-gray-600 mt-1">Manage service categories</p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -504,7 +481,6 @@ const ServiceCategoriesManagement: React.FC = () => {
                     <TableRow>
                       <TableHead className="text-xs">Name</TableHead>
                       <TableHead className="text-xs">Status</TableHead>
-                      <TableHead className="text-xs">Subcategories</TableHead>
                       <TableHead className="text-xs">Created</TableHead>
                       <TableHead className="text-xs">Last Updated</TableHead>
                       <TableHead className="text-xs">Actions</TableHead>
@@ -518,20 +494,6 @@ const ServiceCategoriesManagement: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(category.status)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1 ">
-                            {category.subCategories.slice(0, 3).map((sub) => (
-                              <Badge key={sub._id} variant="outline" className="bg-gray-100 p-1 rounded text-xs">
-                                {sub.name}
-                              </Badge>
-                            ))}
-                            {category.subCategories.length > 3 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{category.subCategories.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
                         </TableCell>
                         <TableCell className="text-xs font-montserrat-semibold">
                           {formatDate(category.createdAt)}

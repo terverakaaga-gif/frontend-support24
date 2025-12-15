@@ -365,7 +365,7 @@ export default function ShiftCreationDialog({
           formData.routine
         );
         // The response is already a Routine object, not wrapped in {data: ...}
-        routineId = routineResponse.routineId || routineRespons
+        routineId = routineResponse.routineId || routineResponse._id;
       } catch (error: any) {
         console.error("Routine creation error:", error);
         // The error is already handled by the mutation's onError

@@ -29,6 +29,8 @@ export interface IWorker {
 }
 
 export interface PendingInvite {
+  serviceAgreement: null;
+  notes: string;
 	status: string;
 	proposedRates: {
 		baseHourlyRate: number;
@@ -37,6 +39,7 @@ export interface PendingInvite {
 	};
 	inviteId: string;
 	workerId: {
+    phone: string;
 		profileImage: string;
 		_id: string;
 		email: string;

@@ -18,7 +18,7 @@ import "react-quill-new/dist/quill.snow.css";
 import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { Input } from "@/components/ui/input";
-import { CreateIncidentDTO } from "@/types/incidents.types";
+import { CreateIncidentDTO, TIncidentStatus } from "@/types/incidents.types";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -135,7 +135,7 @@ const IncidentsPage = () => {
 
   // Update incident status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
+    mutationFn: ({ id, status }: { id: string; status: TIncidentStatus }) =>
       incidentService.updateIncidentStatus(id, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["incidents"] });
@@ -287,7 +287,7 @@ const IncidentsPage = () => {
     setResolveModalOpen(true);
   };
 
-  const handleStatusChange = (newStatus: string) => {
+  const handleStatusChange = (newStatus: TIncidentStatus) => {
     if (selectedIncident && newStatus !== selectedIncident.status) {
       updateStatusMutation.mutate({
         id: selectedIncident._id,
@@ -333,7 +333,7 @@ const IncidentsPage = () => {
       urlLinks: incidentForm.urlLinks,
     };
 
-    createIncidentMutation.mutate(submitData);
+    createIncidentMutation.mutate(submitData as CreateIncidentDTO);
   };
 
   const handleReviewResolution = () => {

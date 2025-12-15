@@ -22,6 +22,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
   viewMode = "grid",
 }) => {
   const { user } = useAuth();
+  console.log("Shift Data:", shift);
 
   const participant: {
     _id: string;
@@ -93,7 +94,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
           <div className="flex-shrink-0 min-w-0 w-full sm:w-auto">
             <div className="flex items-start gap-1 flex-1 min-w-0 mb-3">
               <h3 className="font-montserrat-semibold text-xs mt-1.5">
-                {shift.serviceTypeId.name}
+                {shift.serviceTypeId?.name || "No Service Type"}
               </h3>
               <span
                 className={`inline-flex px-2 sm:px-3 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusBadgeStyle(
@@ -149,7 +150,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
       <div className="flex justify-between items-start mb-3 sm:mb-4">
         <div className="flex items-start gap-1 flex-1 min-w-0">
           <h3 className="font-montserrat-semibold text-xs mt-1.5">
-            {shift.serviceTypeId.name}
+            {shift.serviceTypeId?.name || "No Service Type"}
           </h3>
           <span
             className={`inline-flex px-2 sm:px-3 py-1 text-xs font-montserrat-semibold rounded-full ${getStatusBadgeStyle(
