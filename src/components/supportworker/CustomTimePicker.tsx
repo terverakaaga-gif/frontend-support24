@@ -1,4 +1,6 @@
 import * as React from "react";
+import { format } from "date-fns";
+import { enAU } from "date-fns/locale";
 import { ClockCircle } from "@solar-icons/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -7,8 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FormControl } from "@/components/ui/form";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CustomTimePickerProps {
   value?: string;
@@ -29,14 +30,12 @@ export function CustomTimePicker({
 }: CustomTimePickerProps) {
   const [open, setOpen] = React.useState(false);
 
-  const hours = format === "24" 
-    ? Array.from({ length: 24 }, (_, i) => i)
-    : Array.from({ length: 12 }, (_, i) => i + 1);
-  
-  const minutes = Array.from({ length: 60 / minuteStep }, (_, i) => i * minuteStep);
-
   const parseTime = (timeString?: string) => {
-    if (!timeString) return { hour: 9, minute: 0, period: "AM" };
+    if (!timeString) {
+      return format === "12" 
+        ? { hour: 12, minute: 0, period: "AM" }
+        : { hour: 9, minute: 0, period: "AM" };
+    }
     const [hourStr, minuteStr] = timeString.split(":");
     let hour = parseInt(hourStr, 10);
     const minute = parseInt(minuteStr, 10);
@@ -50,15 +49,6 @@ export function CustomTimePicker({
     return { hour, minute, period: "AM" };
   };
 
-  const formatTime = (hour: number, minute: number, period?: string) => {
-    let h = hour;
-    if (format === "12" && period) {
-      h = period === "PM" && hour !== 12 ? hour + 12 : hour;
-      h = period === "AM" && hour === 12 ? 0 : h;
-    }
-    return `${String(h).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-  };
-
   const formatDisplayTime = (timeString?: string) => {
     if (!timeString) return placeholder;
     const { hour, minute, period } = parseTime(timeString);
@@ -68,176 +58,94 @@ export function CustomTimePicker({
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
   };
 
-  const { hour: currentHour, minute: currentMinute, period: currentPeriod } = parseTime(value);
-  const [selectedHour, setSelectedHour] = React.useState(currentHour);
-  const [selectedMinute, setSelectedMinute] = React.useState(currentMinute);
-  const [selectedPeriod, setSelectedPeriod] = React.useState<"AM" | "PM">(currentPeriod as "AM" | "PM");
+  const { hour, minute, period } = parseTime(value);
 
-  React.useEffect(() => {
-    const { hour, minute, period } = parseTime(value);
-    setSelectedHour(hour);
-    setSelectedMinute(minute);
-    setSelectedPeriod(period as "AM" | "PM");
-  }, [value, format]);
-
-  const handleSelect = (hour: number, minute: number, period?: "AM" | "PM") => {
-    const time = formatTime(hour, minute, period);
+  const updateTime = (newHour: number, newMinute: number, newPeriod: string) => {
+    let hours24 = newHour;
+    if (format === "12") {
+      if (newPeriod === 'PM' && newHour !== 12) {
+        hours24 = newHour + 12;
+      } else if (newPeriod === 'AM' && newHour === 12) {
+        hours24 = 0;
+      }
+    }
+    const time = `${String(hours24).padStart(2, "0")}:${String(newMinute).padStart(2, "0")}`;
     onChange(time);
-    setOpen(false);
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <FormControl>
-          <Button
-            variant="outline"
-            disabled={disabled}
-            className={cn(
-              "w-full pl-3 text-left font-normal h-12 rounded-lg border-gray-200",
-              !value && "text-muted-foreground"
-            )}
-          >
-            {value ? (
-              formatDisplayTime(value)
-            ) : (
-              <span className="text-gray-400">{placeholder}</span>
-            )}
-            <ClockCircle className="ml-auto h-4 w-4 opacity-50" />
-          </Button>
-        </FormControl>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <div className="flex gap-2 p-3">
-          {/* Hours */}
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-gray-500 mb-2 text-center">
-              Hour
-            </span>
-            <ScrollArea className="h-[200px] w-[60px] rounded-md border">
-              <div className="p-1">
-                {hours.map((hour) => (
-                  <button
-                    key={hour}
-                    type="button"
-                    onClick={() => {
-                      setSelectedHour(hour);
-                      if (format === "24") {
-                        handleSelect(hour, selectedMinute);
-                      }
-                    }}
-                    className={cn(
-                      "w-full rounded px-2 py-1.5 text-sm hover:bg-primary-100 transition-colors",
-                      selectedHour === hour && "bg-primary-600 text-white hover:bg-primary-700"
-                    )}
-                  >
-                    {String(hour).padStart(2, "0")}
-                  </button>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-
-          {/* Minutes */}
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-gray-500 mb-2 text-center">
-              Min
-            </span>
-            <ScrollArea className="h-[200px] w-[60px] rounded-md border">
-              <div className="p-1">
-                {minutes.map((minute) => (
-                  <button
-                    key={minute}
-                    type="button"
-                    onClick={() => {
-                      setSelectedMinute(minute);
-                      if (format === "24") {
-                        handleSelect(selectedHour, minute);
-                      }
-                    }}
-                    className={cn(
-                      "w-full rounded px-2 py-1.5 text-sm hover:bg-primary-100 transition-colors",
-                      selectedMinute === minute && "bg-primary-600 text-white hover:bg-primary-700"
-                    )}
-                  >
-                    {String(minute).padStart(2, "0")}
-                  </button>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-
-          {/* AM/PM for 12-hour format */}
-          {format === "12" && (
-            <div className="flex flex-col">
-              <span className="text-xs font-medium text-gray-500 mb-2 text-center">
-                Period
-              </span>
-              <div className="flex flex-col gap-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedPeriod("AM");
-                    handleSelect(selectedHour, selectedMinute, "AM");
-                  }}
-                  className={cn(
-                    "w-[60px] rounded px-2 py-2 text-sm hover:bg-primary-100 transition-colors",
-                    selectedPeriod === "AM" && "bg-primary-600 text-white hover:bg-primary-700"
-                  )}
-                >
-                  AM
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedPeriod("PM");
-                    handleSelect(selectedHour, selectedMinute, "PM");
-                  }}
-                  className={cn(
-                    "w-[60px] rounded px-2 py-2 text-sm hover:bg-primary-100 transition-colors",
-                    selectedPeriod === "PM" && "bg-primary-600 text-white hover:bg-primary-700"
-                  )}
-                >
-                  PM
-                </button>
-              </div>
-            </div>
+        <Button
+          variant="outline"
+          disabled={disabled}
+          className={cn(
+            "w-full pl-3 text-left font-normal h-12 rounded-lg border-gray-200",
+            !value && "text-muted-foreground"
           )}
-        </div>
-
-        {/* Quick selection buttons */}
-        {format === "24" && (
-          <div className="border-t p-2 flex gap-1 flex-wrap">
-            <button
-              type="button"
-              onClick={() => handleSelect(9, 0)}
-              className="text-xs px-2 py-1 rounded hover:bg-gray-100"
+        >
+          <ClockCircle className="mr-2 h-4 w-4" />
+          {value ? (
+            formatDisplayTime(value)
+          ) : (
+            <span className="text-gray-400">{placeholder}</span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-4">
+        <div className="flex flex-col gap-3">
+          <div className="text-sm font-semibold">Select Time</div>
+          <div className="flex gap-2 items-center">
+            <Select
+              value={hour.toString()}
+              onValueChange={(val) => updateTime(parseInt(val), minute, period)}
             >
-              09:00
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSelect(12, 0)}
-              className="text-xs px-2 py-1 rounded hover:bg-gray-100"
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: format === "12" ? 12 : 24 }, (_, i) => format === "12" ? i + 1 : i).map((h) => (
+                  <SelectItem key={h} value={h.toString()}>
+                    {h.toString().padStart(2, '0')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <span className="text-lg font-semibold">:</span>
+            
+            <Select
+              value={minute.toString()}
+              onValueChange={(val) => updateTime(hour, parseInt(val), period)}
             >
-              12:00
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSelect(17, 0)}
-              className="text-xs px-2 py-1 rounded hover:bg-gray-100"
-            >
-              17:00
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSelect(18, 0)}
-              className="text-xs px-2 py-1 rounded hover:bg-gray-100"
-            >
-              18:00
-            </button>
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 60 / minuteStep }, (_, i) => i * minuteStep).map((m) => (
+                  <SelectItem key={m} value={m.toString()}>
+                    {m.toString().padStart(2, '0')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {format === "12" && (
+              <Select
+                value={period}
+                onValueChange={(val) => updateTime(hour, minute, val)}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="AM">AM</SelectItem>
+                  <SelectItem value="PM">PM</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
-        )}
+        </div>
       </PopoverContent>
     </Popover>
   );
