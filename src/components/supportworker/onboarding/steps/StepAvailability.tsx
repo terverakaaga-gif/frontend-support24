@@ -16,6 +16,7 @@ import {
   AltArrowLeft,
 } from "@solar-icons/react";
 import { CustomTimePicker } from "@/components/supportworker/CustomTimePicker";
+import React from "react";
 
 type SchemaType = z.infer<typeof availabilitySchema>;
 
@@ -26,7 +27,7 @@ interface Props {
   isSubmitting?: boolean;
 }
 
-export function StepAvailability({ defaultValues, onSubmit, onBack, isSubmitting = false }: Props) {
+export const StepAvailability = React.memo(({ defaultValues, onSubmit, onBack, isSubmitting = false }: Props) => {
   const form = useForm<SchemaType>({
     resolver: zodResolver(availabilitySchema),
     defaultValues: {
@@ -232,4 +233,4 @@ export function StepAvailability({ defaultValues, onSubmit, onBack, isSubmitting
       </form>
     </Form>
   );
-}
+})

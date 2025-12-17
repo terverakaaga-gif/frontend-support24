@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Buildings2 } from "@solar-icons/react";
 
-export const CareTeamStep = ({ formData, onNestedChange }: any) => {
+export const CareTeamStep = React.memo(({ formData, onNestedChange }: any) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
@@ -83,4 +83,4 @@ export const CareTeamStep = ({ formData, onNestedChange }: any) => {
       </div>
     </div>
   );
-};
+});

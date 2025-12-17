@@ -27,8 +27,15 @@ export const formatDateRange = (
   return endDate ? `${start} - ${formatDate(endDate)}` : `${start} - Present`;
 };
 
-export const formatSkill = (skill: string) => {
-  return skill
+export const formatSkill = (skill: string | any) => {
+  if (!skill) return "";
+  
+  // If skill is an object with a name property, use that
+  const skillName = typeof skill === 'string' ? skill : skill?.name;
+  
+  if (!skillName) return "";
+  
+  return skillName
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");

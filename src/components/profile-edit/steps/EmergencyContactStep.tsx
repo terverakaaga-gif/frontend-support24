@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { DangerCircle } from "@solar-icons/react";
 
-export const EmergencyContactStep = ({ formData, onNestedChange }: any) => {
+export const EmergencyContactStep = React.memo(({ formData, onNestedChange }: any) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
@@ -42,4 +42,4 @@ export const EmergencyContactStep = ({ formData, onNestedChange }: any) => {
       </div>
     </div>
   );
-};
+});

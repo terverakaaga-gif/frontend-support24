@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { cn } from "@/lib/utils";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+import { useStates, useRegions, useServiceAreas } from "@/hooks/useLocationHooks";
+import { useGetServiceTypes } from "@/hooks/useServiceTypeHooks";
 
 // Shared
 import { ProfilePreviewStep } from "@/components/profile-edit/steps/ProfilePreviewStep";
@@ -28,7 +30,7 @@ import { ExperienceStep } from "@/components/profile-edit/steps/ExperienceStep";
 import { ServiceLocationStep } from "@/components/profile-edit/steps/ServiceLocationStep";
 import { RatesStep } from "@/components/profile-edit/steps/RatesStep";
 
-export default function EditProfile() {
+export default React.memo(function EditProfile() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   
@@ -45,12 +47,75 @@ export default function EditProfile() {
 
   const STEPS = isParticipant ? PARTICIPANT_STEPS : SUPPORT_WORKER_STEPS;
 
+  // Location State Management
+  const [selectedStateId, setSelectedStateId] = useState<string>("");
+  const [selectedRegionId, setSelectedRegionId] = useState<string>("");
+
+  // Location Hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateId,
+    !!selectedStateId
+  );
+  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreas(selectedStateId || undefined, selectedRegionId || undefined);
+
+  // Service Types / Skills / Support Needs
+  const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } = useGetServiceTypes();
+
   // Google Places (Shared Logic)
   const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } = usePlacesService({
     apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY,
     options: { types: ["address"], componentRestrictions: { country: "au" } },
   });
   const [showPredictions, setShowPredictions] = useState(false);
+
+  // Initialize location state from formData
+  useEffect(() => {
+    if (formData.stateId && formData.stateId !== selectedStateId) {
+      setSelectedStateId(formData.stateId);
+    }
+    if (formData.regionId && formData.regionId !== selectedRegionId) {
+      setSelectedRegionId(formData.regionId);
+    }
+  }, [formData.stateId, formData.regionId]);
+
+  // Reset dependent fields when state changes
+  useEffect(() => {
+    if (selectedStateId && selectedStateId !== formData.stateId) {
+      handleInputChange("stateId", selectedStateId);
+      // Reset region and service area when state changes
+      if (formData.regionId) {
+        handleInputChange("regionId", "");
+        setSelectedRegionId("");
+      }
+      if (formData.serviceAreaId) {
+        handleInputChange("serviceAreaId", "");
+      }
+      // For support workers, reset arrays
+      if (!isParticipant) {
+        if (formData.serviceAreaIds && formData.serviceAreaIds.length > 0) {
+          handleInputChange("serviceAreaIds", []);
+        }
+      }
+    }
+  }, [selectedStateId]);
+
+  // Reset service area when region changes
+  useEffect(() => {
+    if (selectedRegionId && selectedRegionId !== formData.regionId) {
+      handleInputChange("regionId", selectedRegionId);
+      if (formData.serviceAreaId) {
+        handleInputChange("serviceAreaId", "");
+      }
+      // For support workers, reset arrays
+      if (!isParticipant) {
+        if (formData.serviceAreaIds && formData.serviceAreaIds.length > 0) {
+          handleInputChange("serviceAreaIds", []);
+        }
+      }
+    }
+  }, [selectedRegionId]);
 
   const handleAddressChange = (val: string) => {
       handleInputChange("address", val);
@@ -65,7 +130,19 @@ export default function EditProfile() {
     predictions: placePredictions,
     showPredictions: showPredictions,
     isLoadingPredictions: isPlacePredictionsLoading,
-    onPredictionSelect: (p: any) => { handleInputChange("address", p.description); setShowPredictions(false); }
+    onPredictionSelect: (p: any) => { handleInputChange("address", p.description); setShowPredictions(false); },
+    formData,
+    onChange: handleInputChange,
+    states,
+    regions,
+    serviceAreas,
+    isLoadingStates,
+    isLoadingRegions,
+    isLoadingServiceAreas,
+    selectedStateId,
+    setSelectedStateId,
+    selectedRegionId,
+    setSelectedRegionId
   };
 
   const handleNext = async () => {
@@ -85,7 +162,7 @@ export default function EditProfile() {
   const handleFinish = async () => {
     const saved = await saveCurrentStep();
     if (saved) {
-      navigate(isParticipant ? "/participant/profile" : "/support-worker/profile");
+      navigate(-1);
     }
   };
 
@@ -98,8 +175,33 @@ export default function EditProfile() {
 
     if (isParticipant) {
       switch(currentStep) {
-        case 2: return <LocationStep {...locationProps} />;
-        case 3: return <NDISSupportStep formData={formData} onChange={handleInputChange} />;
+        case 2: return (
+          <LocationStep 
+            {...locationProps}
+            formData={formData}
+            onChange={handleInputChange}
+            states={states}
+            regions={regions}
+            serviceAreas={serviceAreas}
+            isLoadingStates={isLoadingStates}
+            isLoadingRegions={isLoadingRegions}
+            isLoadingServiceAreas={isLoadingServiceAreas}
+            selectedStateId={selectedStateId}
+            setSelectedStateId={setSelectedStateId}
+            selectedRegionId={selectedRegionId}
+            setSelectedRegionId={setSelectedRegionId}
+          />
+        );
+        case 3: return (
+          <NDISSupportStep 
+            formData={formData} 
+            onChange={handleInputChange}
+            supportNeeds={serviceTypes}
+            isLoadingSupportNeeds={isLoadingServiceTypes}
+            addItem={addItem}
+            removeItem={removeItem}
+          />
+        );
         case 4: return <EmergencyContactStep formData={formData} onNestedChange={handleNestedChange} />;
         case 5: return <CareTeamStep formData={formData} onNestedChange={handleNestedChange} />;
         case 6: return <PreferencesStep formData={formData} onChange={handleInputChange} addItem={addItem} removeItem={removeItem} newLanguage={newLanguage} setNewLanguage={setNewLanguage} />;
@@ -108,10 +210,35 @@ export default function EditProfile() {
     } else {
       switch(currentStep) {
         case 2: return <WorkerBioStep formData={formData} onChange={handleInputChange} addressProps={locationProps} />;
-        case 3: return <SkillsLanguagesStep formData={formData} addItem={addItem} removeItem={removeItem} newLanguage={newLanguage} setNewLanguage={setNewLanguage} />;
+        case 3: return (
+          <SkillsLanguagesStep 
+            formData={formData} 
+            addItem={addItem} 
+            removeItem={removeItem} 
+            newLanguage={newLanguage} 
+            setNewLanguage={setNewLanguage}
+            skills={serviceTypes}
+            isLoadingSkills={isLoadingServiceTypes}
+          />
+        );
         case 4: return <ExperienceStep formData={formData} removeExperience={removeExperience} addExperience={addExperience} newExperience={newExperience} setNewExperience={setNewExperience} resumeFile={resumeFile} setResumeFile={setResumeFile} />;
-        case 5: return <ServiceLocationStep formData={formData} onChange={handleInputChange} />;
-        case 6: return <RatesStep formData={formData} />;
+        case 5: return (
+          <ServiceLocationStep 
+            formData={formData} 
+            onChange={handleInputChange}
+            states={states}
+            regions={regions}
+            serviceAreas={serviceAreas}
+            isLoadingStates={isLoadingStates}
+            isLoadingRegions={isLoadingRegions}
+            isLoadingServiceAreas={isLoadingServiceAreas}
+            selectedStateId={selectedStateId}
+            setSelectedStateId={setSelectedStateId}
+            selectedRegionId={selectedRegionId}
+            setSelectedRegionId={setSelectedRegionId}
+          />
+        );
+        case 6: return <RatesStep formData={formData} onChange={handleInputChange} />;
         default: return null;
       }
     }
@@ -240,4 +367,4 @@ export default function EditProfile() {
       </div>
     </div>
   );
-}
+})
