@@ -1,5 +1,6 @@
 import { useCallback, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { format, parseISO } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -154,6 +155,39 @@ export default function ParticipantOrganizationDetailsPage() {
           }}
           onLogout={logout}
         />
+
+        {/* Organization Info Card */}
+        <Card className="border-0 shadow-lg mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <Buildings3 className="w-8 h-8 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-montserrat-bold text-gray-900 mb-2">{organization.name}</h2>
+                {organization.description && (
+                  <p className="text-gray-600 mb-4">{organization.description}</p>
+                )}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Active Workers</p>
+                    <p className="text-2xl font-montserrat-bold text-primary">{activeWorkers.length}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Pending Invites</p>
+                    <p className="text-2xl font-montserrat-bold text-orange-600">{pendingInvites.length}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Created</p>
+                    <p className="text-sm font-montserrat-semibold text-gray-900">
+                      {format(parseISO(organization.createdAt), "MMM dd, yyyy")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Tabs */}
         <div className="flex gap-2 mb-4 md:mb-6">

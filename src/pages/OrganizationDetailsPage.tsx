@@ -1,22 +1,19 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
+import { format, parseISO } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { DangerCircle, Buildings3, CloseCircle } from "@solar-icons/react";
+import { DangerCircle, Buildings3 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { get } from "@/api/apiClient";
-import { Organization, Worker } from "@/types/organization.types";
-import { getWorkerDisplayName, getWorkerEmail } from "@/lib/support-worker-organization";
+import { Organization } from "@/types/organization.types";
 
 // Refactored Components
-import { SupportWorkerDetails } from "@/components/organization/SupportWorkerDetails";
-import { ActiveSupportWorkersList, PendingInvitesList } from "@/components/organization/SupportWorkerLists";
-import { useGetSupportWorkerById } from "@/hooks/useSupportWorkerHooks";
+import { PendingInvitesList } from "@/components/organization/SupportWorkerLists";
 
 // API Service (Inline or move to file)
 const organizationDetailService = {
@@ -34,11 +31,6 @@ export default function SupportWorkerOrganizationDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  
-  const [activeTab, setActiveTab] = useState<"workers" | "invites">("workers");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
-  const [showWorkerDetails, setShowWorkerDetails] = useState(false);
 
   const {
     data: organization,
@@ -51,38 +43,11 @@ export default function SupportWorkerOrganizationDetailsPage() {
     enabled: !!id,
   });
 
-  // Memoize active workers derived from data
-  const activeWorkers = useMemo(() => organization?.workers || [], [organization]);
-  // get actual selected worker info by it ID
-  const {data: selectedWorkerDetails} = useGetSupportWorkerById(selectedWorker?.workerId as string || "");
-  
-  // Memoize filtered workers based on search term
-  // Optimization: Lowercase search term once
-  const filteredWorkers = useMemo(() => {
-    if (!searchTerm) return activeWorkers;
-    const lowerTerm = searchTerm.toLowerCase();
-    
-    return activeWorkers.filter((worker) => {
-      const name = getWorkerDisplayName(worker.workerId).toLowerCase();
-      const email = getWorkerEmail(worker.workerId).toLowerCase();
-      return name.includes(lowerTerm) || email.includes(lowerTerm);
-    });
-  }, [activeWorkers, searchTerm]);
-
   // Memoize pending invites
   const pendingInvites = useMemo(() => 
     organization?.pendingInvites.filter((inv) => inv.status === "pending") || [], 
     [organization]
   );
-
-  // Handlers
-  const handleWorkerSelect = useCallback((worker: Worker) => {
-    setSelectedWorker(worker);
-    // Only open dialog on mobile (will be handled by conditional rendering)
-    if (window.innerWidth < 1024) {
-      setShowWorkerDetails(true);
-    }
-  }, []);
 
   const handleProfileNavigation = useCallback(() => {
     const profilePath = Object.keys(pageTitles.supportWorker).find(
@@ -143,75 +108,50 @@ export default function SupportWorkerOrganizationDetailsPage() {
         title={pageTitles.supportWorker["/support-worker/organizations"].title}
         subtitle={pageTitles.supportWorker["/support-worker/organizations"].subtitle}
         user={user}
-        onViewProfile={handleProfileNavigation}
+        onViewProfile={() => navigate("/support-worker/profile")}
         onLogout={logout}
       />
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-4 md:mb-6">
-        {(["workers", "invites"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`rounded-full font-montserrat-semibold px-3 py-1 text-xs transition-all ${
-              activeTab === tab
-                ? "bg-primary text-white hover:bg-primary"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-            }`}
-          >
-            {tab === "workers" ? "Active Workers" : "Pending Invites"}
-          </button>
-        ))}
-      </div>
-
-      {/* Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <div className="lg:col-span-2">
-          <h2 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
-            {activeTab === "workers"
-              ? `Active Workers (${filteredWorkers.length})`
-              : `Pending Invites (${pendingInvites.length})`}
-          </h2>
-
-          {activeTab === "workers" ? (
-            <ActiveSupportWorkersList 
-              workers={filteredWorkers} 
-              onSelect={handleWorkerSelect}
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-            />
-          ) : (
-            <PendingInvitesList invites={pendingInvites} />
-          )}
-        </div>
-
-        {/* Worker Details Sidebar - Desktop */}
-        {selectedWorker && (
-          <div className="hidden lg:block">
-            <Card className="border-0 shadow-sm sticky top-6">
-              <CardContent className="p-0">
-                <div className="p-3 md:p-4 border-b flex items-center justify-between">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedWorker(null)}>
-                    <CloseCircle className="w-5 h-5 text-gray-400" />
-                  </Button>
-                </div>
-                <SupportWorkerDetails worker={selectedWorkerDetails} />
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
-
-      {/* Worker Details Modal - Mobile */}
-      {showWorkerDetails && selectedWorker && (
-        <Dialog open={showWorkerDetails} onOpenChange={setShowWorkerDetails}>
-          <DialogContent className="lg:hidden max-w-full w-[90vw] mx-auto h-[90vh] p-0 rounded-t-2xl">
-            <div className="overflow-y-auto h-full">
-               <SupportWorkerDetails worker={selectedWorkerDetails} />
+      {/* Organization Info Card */}
+      <Card className="border-0 shadow-lg mb-6">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+              <Buildings3 className="w-8 h-8 text-primary" />
             </div>
-          </DialogContent>
-        </Dialog>
-      )}
+            <div className="flex-1">
+              <h2 className="text-2xl font-montserrat-bold text-gray-900 mb-2">{organization.name}</h2>
+              {organization.description && (
+                <p className="text-gray-600 mb-4">{organization.description}</p>
+              )}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-600 mb-1">Total Workers</p>
+                  <p className="text-2xl font-montserrat-bold text-primary">{organization.workers?.length || 0}</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-600 mb-1">Pending Invites</p>
+                  <p className="text-2xl font-montserrat-bold text-orange-600">{pendingInvites.length}</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-600 mb-1">Created</p>
+                  <p className="text-sm font-montserrat-semibold text-gray-900">
+                    {format(parseISO(organization.createdAt), "MMM dd, yyyy")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pending Invites Section */}
+      <div>
+        <h2 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
+          Pending Invites ({pendingInvites.length})
+        </h2>
+        <PendingInvitesList invites={pendingInvites} />
+      </div>
     </div>
   );
 }
