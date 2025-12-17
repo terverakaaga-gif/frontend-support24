@@ -296,7 +296,7 @@ export default function SearchSupportWorkersPage() {
             </Select>
 
             {/* Service Area Filter */}
-            {/* <Select
+            <Select
               value={selectedServiceArea}
               onValueChange={setSelectedServiceArea}
               disabled={!selectedState}
@@ -321,7 +321,7 @@ export default function SearchSupportWorkersPage() {
                   </SelectItem>
                 )}
               </SelectContent>
-            </Select> */}
+            </Select>
 
             {/* Max Distance Filter */}
             <Select value={maxDistance} onValueChange={setMaxDistance}>
@@ -425,9 +425,9 @@ export default function SearchSupportWorkersPage() {
             <div className="mb-4">
               <p className="text-sm text-muted-foreground">
                 Found{" "}
-                {searchResponse?.pagination?.total || searchResults.length}{" "}
+                {searchResponse?.pagination?.totalResults || searchResults.length}{" "}
                 support worker
-                {(searchResponse?.pagination?.total || searchResults.length) !==
+                {(searchResponse?.pagination?.totalResults || searchResults.length) !==
                 1
                   ? "s"
                   : ""}
