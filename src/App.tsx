@@ -99,12 +99,6 @@ import ProviderJobApplicantsPage from "./pages/ProviderJobApplicantsPage";
 import SupportJobListingPage from "./pages/SupportJobListingPage";
 import SupportSavedJobsPage from "./pages/SupportSavedJobsPage";
 import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
-import ComplianceCheckPage from "./pages/ComplianceCheckPage";
-import ComplianceFormPage from "./pages/ComplianceFormPage";
-import ParticipantJobsPage from "./pages/ParticipantJobsPage";
-import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
-import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
-import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
 
 import ComplianceCheckPage from "./pages/ComplianceCheckPage";
 import ComplianceFormPage from "./pages/ComplianceFormPage";
