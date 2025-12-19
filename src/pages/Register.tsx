@@ -367,7 +367,14 @@ export default function Register() {
                       I am a...
                     </FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        if (value === "provider") {
+                          // Redirect to provider registration page
+                          navigate("/register-provider");
+                        } else {
+                          field.onChange(value);
+                        }
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -380,6 +387,9 @@ export default function Register() {
                         {/* <SelectItem value="guardian">Guardian</SelectItem> */}
                         <SelectItem value="supportWorker">
                           Support Worker
+                        </SelectItem>
+                        <SelectItem value="provider">
+                          Service Provider
                         </SelectItem>
                       </SelectContent>
                     </Select>

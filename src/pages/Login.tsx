@@ -133,6 +133,8 @@ export default function Login() {
         return "/coordinator";
       case "supportWorker":
         return "/support-worker";
+      case "provider":
+        return "/provider";
       default:
         return "/login";
     }
@@ -146,6 +148,7 @@ export default function Login() {
       guardian: "/guardian",
       coordinator: "/coordinator",
       supportWorker: "/support-worker",
+      provider: "/provider",
     };
 
     const expectedPath = rolePathMap[role];

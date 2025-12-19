@@ -242,30 +242,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Jobs"
               active={isActive("/participant/jobs")}
             />
-            <NavItem
-              to={"/participant/provider/dashboard"}
-              icon={<Widget5 className="w-6 h-6" />}
-              label="Dashboard"
-              active={isActive("/participant/provider/dashboard")}
-            />
-            <NavItem
-              to={"/participant/provider/events"}
-              icon={<CalendarDate className="w-6 h-6" />}
-              label="Events"
-              active={isActive("/participant/provider/events")}
-            />
-            <NavItem
-              to={"/participant/provider/accommodations"}
-              icon={<Home className="w-6 h-6" />}
-              label="Accommodations"
-              active={isActive("/participant/provider/accommodations")}
-            />
-            <NavItem
-              to={"/participant/provider/jobs"}
-              icon={<SuitcaseTag className="w-6 h-6" />}
-              label="Jobs"
-              active={isActive("/participant/provider/jobs")}
-            />
           </>
         );
       case "supportWorker":
@@ -325,6 +301,41 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Bookmark className="w-6 h-6" />}
               label="Saved Jobs"
               active={isActive("/support-worker/saved-jobs")}
+            />
+          </>
+        );
+      case "provider":
+        return (
+          <>
+            <NavItem
+              to="/provider"
+              icon={<Widget5 className="w-6 h-6" />}
+              label="Dashboard"
+              active={isActive("/provider")}
+            />
+            <NavItem
+              to="/provider/events"
+              icon={<CalendarDate className="w-6 h-6" />}
+              label="Events"
+              active={isActive("/provider/events")}
+            />
+            <NavItem
+              to="/provider/accommodations"
+              icon={<Home className="w-6 h-6" />}
+              label="Accommodations"
+              active={isActive("/provider/accommodations")}
+            />
+            <NavItem
+              to="/provider/jobs"
+              icon={<SuitcaseTag className="w-6 h-6" />}
+              label="Jobs"
+              active={isActive("/provider/jobs")}
+            />
+            <NavItem
+              to="/provider/chats"
+              icon={<ChatLine className="w-6 h-6" />}
+              label="Messages"
+              active={isActive("/provider/chats")}
             />
           </>
         );

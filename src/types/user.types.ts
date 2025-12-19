@@ -1,5 +1,5 @@
 // Enums and basic types
-export type UserRole = "admin" | "participant" | "supportWorker" | "guardian" | "coordinator";
+export type UserRole = "admin" | "participant" | "supportWorker" | "guardian" | "coordinator" | "provider";
 export type UserStatus = "active" | "pending" | "suspended" | "inactive";
 export type Gender = "male" | "female" | "other" | "prefer-not-to-say";
 export type NotificationPreference = "all" | "important" | "none";
@@ -9,7 +9,8 @@ export enum EUserRole {
   PARTICIPANT = "participant",
   SUPPORT_WORKER = "supportWorker",
   GUARDIAN = "guardian",
-  COORDINATOR = "coordinator", // Add this
+  COORDINATOR = "coordinator",
+  PROVIDER = "provider",
 }
 export enum EUserStatus {
   ACTIVE = "active",
@@ -238,8 +239,37 @@ export interface Coordinator extends BaseUser {
   serviceAreas: string[];
 }
 
+export interface Provider extends BaseUser {
+  organizationName: string;
+  abn: string;
+  providerType: string;
+  primaryContactName: string;
+  primaryContactPhone: string;
+  primaryContactEmail: string;
+  businessAddress?: {
+    street: string;
+    city: string;
+    state: string;
+    postcode: string;
+  };
+  settings?: {
+    autoCreateWorkers: boolean;
+    autoCreateParticipants: boolean;
+    requireWorkerApproval: boolean;
+    enableAutoCancellationReplacement: boolean;
+    smsNotifications: boolean;
+  };
+  stateIds: string[];
+  regionIds: string[];
+  totalRostersUploaded: number;
+  totalShiftsManaged: number;
+  subscriptionTier: string;
+  subscriptionStatus: string;
+  subscriptionStartDate: Date;
+}
+
 // Union type for all user types
-export type User = SupportWorker | Participant | Guardian | Admin | Coordinator;
+export type User = SupportWorker | Participant | Guardian | Admin | Coordinator | Provider;
 
 // Input types for onboarding
 export interface ParticipantOnboardingInput {
@@ -286,6 +316,19 @@ export interface UserRegistrationInput {
   lastName: string;
   phone: string;
   role: UserRole;
+  // Provider-specific fields (optional, required only for provider role)
+  organizationName?: string;
+  abn?: string;
+  businessAddress?: {
+    street: string;
+    city: string;
+    state: string;
+    postcode: string;
+  };
+  providerType?: string;
+  primaryContactName?: string;
+  primaryContactPhone?: string;
+  primaryContactEmail?: string;
 }
 
 export interface EmailVerificationInput {

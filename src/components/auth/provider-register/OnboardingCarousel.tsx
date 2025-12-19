@@ -4,19 +4,22 @@ import { Button } from "@/components/ui/button";
 
 const onboardingSlides = [
   {
-    image: "/new-res/onboarding1.svg",
-    title: "Effortless NDIS Support Service",
-    subtitle: "Manage your care plans, services, and routine in one place",
+    image: "/new-res/provider/onboarding-1.svg",
+    title: "Connect with Participants Across Australia",
+    subtitle:
+      "Join Support24 Providers and connect with verified participant across Australia looking for accommodation, jobs opportunities and local events.",
   },
   {
-    image: "/new-res/onboarding2.svg",
-    title: "Trusted & Verified Workers",
-    subtitle: "Connect with only background check qualified professionals",
+    image: "/new-res/provider/onboarding-2.svg",
+    title: "Post, Manage, and Track with Ease",
+    subtitle:
+      "From creating accommodation, jobs or event posts to tracking interest, manage everything in one place.",
   },
   {
-    image: "/new-res/onboarding3.svg",
-    title: "24/7 Support Network",
-    subtitle: "Access help and resources whenever you need them most",
+    image: "/new-res/provider/onboarding-3.svg",
+    title: "Grow Your Reach and Impact",
+    subtitle:
+      "Gain visibility, connect with active participants, and grow your community through real time engagement and insights.",
   },
 ];
 
