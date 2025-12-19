@@ -389,7 +389,7 @@ export default function ParticipantsManagementPage() {
       {activeFiltersCount > 0 && (
         <div className="flex items-center gap-2 mb-4">
           <span className="text-sm text-gray-600">Active filters:</span>
-          <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-semibold">
+          <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-montserrat-semibold">
             {activeFiltersCount} filter{activeFiltersCount !== 1 ? "s" : ""}{" "}
             applied
           </span>
@@ -411,7 +411,7 @@ export default function ParticipantsManagementPage() {
           <TableHeader>
             <TableRow className="border-b border-gray-200 bg-gray-50 hover:bg-gray-50">
               <TableHead
-                className="px-6 py-3 text-left text-xs font-semibold text-black uppercase cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSortChange("firstName")}
               >
                 <div className="flex items-center gap-1">
@@ -426,7 +426,7 @@ export default function ParticipantsManagementPage() {
                 </div>
               </TableHead>
               <TableHead
-                className="px-6 py-3 text-left text-xs font-semibold text-black uppercase cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSortChange("email")}
               >
                 <div className="flex items-center gap-1">
@@ -440,17 +440,17 @@ export default function ParticipantsManagementPage() {
                   )}
                 </div>
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase">
                 Status
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase">
                 Organizations
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase">
                 Email Verified
               </TableHead>
               <TableHead
-                className="px-6 py-3 text-left text-xs font-semibold text-black uppercase cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSortChange("createdAt")}
               >
                 <div className="flex items-center gap-1">
@@ -464,7 +464,7 @@ export default function ParticipantsManagementPage() {
                   )}
                 </div>
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <TableHead className="px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase">
                 Actions
               </TableHead>
             </TableRow>
@@ -488,7 +488,7 @@ export default function ParticipantsManagementPage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-montserrat-semibold text-gray-900">
                         {participant.firstName} {participant.lastName}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -510,7 +510,7 @@ export default function ParticipantsManagementPage() {
                   <div className="flex items-center gap-2">
                     {getStatusIcon(participant.status)}
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeStyle(
+                      className={`px-2 py-1 rounded-full text-xs font-montserrat-semibold ${getStatusBadgeStyle(
                         participant.status
                       )}`}
                     >
@@ -572,7 +572,7 @@ export default function ParticipantsManagementPage() {
         {participantsData?.users?.length === 0 && (
           <div className="text-center py-12">
             <UsersGroupTwoRounded className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900">
               No participants found
             </h3>
             <p className="text-gray-500 mt-1">

@@ -106,7 +106,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               <div className="relative w-full max-w-xl">
-                {/* Blue L-shaped background */}
+                {/* primary L-shaped background */}
                 <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-primary rounded-3xl" style={{ borderTopRightRadius: '0' }} />
                 
                 {/* Image */}

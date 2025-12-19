@@ -29,7 +29,7 @@ export default function TermsOfUse() {
           <div className="mb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <FileText className="w-10 h-10 text-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold text-white">
+              <h1 className="text-4xl md:text-5xl font-montserrat-bold text-white">
                 Support24 Terms of Use
               </h1>
             </div>
@@ -48,7 +48,7 @@ export default function TermsOfUse() {
               {/* Important Information */}
               <section className="mb-10">
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                     Important Information
                   </h2>
                   <p className="text-gray-300 leading-relaxed mb-4">
@@ -59,7 +59,7 @@ export default function TermsOfUse() {
                     website, and mobile applications (together, the "Platform").
                     Please read these Terms carefully before using Support24.
                   </p>
-                  <h3 className="text-xl font-semibold text-white mb-3 mt-4">
+                  <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-4">
                     Key Points You Should Know:
                   </h3>
                   <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -91,7 +91,7 @@ export default function TermsOfUse() {
 
               {/* 1. Definitions */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   1. Definitions
                 </h2>
                 <div className="space-y-4">
@@ -145,7 +145,7 @@ export default function TermsOfUse() {
 
               {/* 2. Acceptance of Terms */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   2. Acceptance of Terms
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -161,7 +161,7 @@ export default function TermsOfUse() {
                   to these Terms.
                 </p>
                 <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                     Order of Precedence
                   </h3>
                   <p className="text-gray-300 mb-2">
@@ -184,7 +184,7 @@ export default function TermsOfUse() {
 
               {/* 3. Account Registration and Eligibility */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   3. Account Registration and Eligibility
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -198,7 +198,7 @@ export default function TermsOfUse() {
                   <li>Agreeing to these Terms and all associated policies</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Account Security
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -217,12 +217,12 @@ export default function TermsOfUse() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Eligibility Requirements
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Participants
                     </h4>
                     <p className="text-gray-300">
@@ -231,7 +231,7 @@ export default function TermsOfUse() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Support Workers
                     </h4>
                     <ul className="list-disc list-inside text-gray-300 space-y-1">
@@ -244,7 +244,7 @@ export default function TermsOfUse() {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Providers
                     </h4>
                     <ul className="list-disc list-inside text-gray-300 space-y-1">
@@ -258,7 +258,7 @@ export default function TermsOfUse() {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Support Coordinators
                     </h4>
                     <ul className="list-disc list-inside text-gray-300 space-y-1">
@@ -278,7 +278,7 @@ export default function TermsOfUse() {
 
               {/* 4. Verification Requirements */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   4. Verification Requirements
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -287,7 +287,7 @@ export default function TermsOfUse() {
                   safety and trust.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Identity Verification (All Users)
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -299,7 +299,7 @@ export default function TermsOfUse() {
                   <li>Confirmation that registration details match ID</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Support Worker Verification
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -313,7 +313,7 @@ export default function TermsOfUse() {
                   <li>Proof of insurance coverage</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Provider Verification
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -324,7 +324,7 @@ export default function TermsOfUse() {
                 </ul>
 
                 <div className="bg-primary-900/20 border border-primary-500/30 rounded-lg p-4 mb-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                     Verification Timeline
                   </h3>
                   <p className="text-gray-300">
@@ -344,7 +344,7 @@ export default function TermsOfUse() {
 
               {/* 5. Platform Use and Conduct Standards */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   5. Platform Use and Conduct Standards
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -354,7 +354,7 @@ export default function TermsOfUse() {
                   related to disability support services.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Required Conduct
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -376,7 +376,7 @@ export default function TermsOfUse() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Prohibited Conduct
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -418,7 +418,7 @@ export default function TermsOfUse() {
                 </ul>
 
                 <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                     Consequences
                   </h3>
                   <p className="text-gray-300">
@@ -430,7 +430,7 @@ export default function TermsOfUse() {
 
               {/* 6. Service Arrangements and Agreements */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   6. Service Arrangements and Agreements
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -440,7 +440,7 @@ export default function TermsOfUse() {
                   or guarantee the services provided.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Service Agreement Requirements
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -456,7 +456,7 @@ export default function TermsOfUse() {
                 </ul>
 
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                     Minimum Rate Requirement
                   </h3>
                   <p className="text-gray-300">
@@ -466,7 +466,7 @@ export default function TermsOfUse() {
                   </p>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Compliance Requirements
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -487,11 +487,11 @@ export default function TermsOfUse() {
 
               {/* 7. Platform Features and Limitations */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   7. Platform Features and Limitations
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Platform Features
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -530,7 +530,7 @@ export default function TermsOfUse() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Our Role and Limitations
                 </h3>
                 <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
@@ -554,7 +554,7 @@ export default function TermsOfUse() {
 
               {/* 8. Partnership with Framer Health */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   8. Partnership with Framer Health
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -580,11 +580,11 @@ export default function TermsOfUse() {
 
               {/* 9. Payment Terms and Fees */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   9. Payment Terms and Fees
                 </h2>
                 <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4 mb-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                     Current Status: Free to Use
                   </h3>
                   <p className="text-gray-300">
@@ -599,7 +599,7 @@ export default function TermsOfUse() {
                   will provide at least 60 days' advance notice via email,
                   platform notices, and detailed information about fee structures.
                 </p>
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Potential Future Fees
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -612,7 +612,7 @@ export default function TermsOfUse() {
 
               {/* 10. Intellectual Property Rights */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   10. Intellectual Property Rights
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -621,7 +621,7 @@ export default function TermsOfUse() {
                   and databases. These rights are protected by copyright,
                   trademark, and other intellectual property laws.
                 </p>
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Your Content
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -644,7 +644,7 @@ export default function TermsOfUse() {
 
               {/* 11. Privacy and Data Protection */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   11. Privacy and Data Protection
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -652,7 +652,7 @@ export default function TermsOfUse() {
                   comprehensive information about how we collect, use, store,
                   share, and protect your personal information.
                 </p>
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Key Privacy Principles
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -684,7 +684,7 @@ export default function TermsOfUse() {
 
               {/* 12. Disclaimers and Limitations of Liability */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   12. Disclaimers and Limitations of Liability
                 </h2>
                 <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
@@ -700,7 +700,7 @@ export default function TermsOfUse() {
                   </p>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   "As Is" Service
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -716,7 +716,7 @@ export default function TermsOfUse() {
                   <li>That disputes will be resolved satisfactorily</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Australian Consumer Law
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -726,7 +726,7 @@ export default function TermsOfUse() {
                   between users.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Limitation of Liability
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -736,7 +736,7 @@ export default function TermsOfUse() {
                   in the prior 12 months, or $100 if no fees paid.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Indemnification
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -748,11 +748,11 @@ export default function TermsOfUse() {
 
               {/* 13. Dispute Resolution */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   13. Dispute Resolution
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   User-to-User Disputes
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -775,7 +775,7 @@ export default function TermsOfUse() {
                   <li>Assistance from Support Coordinators</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Disputes with Support24
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -793,11 +793,11 @@ export default function TermsOfUse() {
 
               {/* 14. Termination */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   14. Termination
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Your Right to Terminate
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -812,7 +812,7 @@ export default function TermsOfUse() {
                   within 5-10 business days.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Our Right to Terminate
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -836,7 +836,7 @@ export default function TermsOfUse() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   Surviving Obligations
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -848,7 +848,7 @@ export default function TermsOfUse() {
 
               {/* 15. General Legal Provisions */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   15. General Legal Provisions
                 </h2>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -882,7 +882,7 @@ export default function TermsOfUse() {
 
               {/* 16. Changes to These Terms */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   16. Changes to These Terms
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -904,12 +904,12 @@ export default function TermsOfUse() {
 
               {/* 17. Contact Information */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   17. Contact Information
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       General Inquiries and Support
                     </h3>
                     <p className="text-gray-300">
@@ -933,7 +933,7 @@ export default function TermsOfUse() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Privacy Matters
                     </h3>
                     <p className="text-gray-300">
@@ -947,7 +947,7 @@ export default function TermsOfUse() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Incident Reports and Safety Concerns
                     </h3>
                     <p className="text-gray-300">
@@ -971,7 +971,7 @@ export default function TermsOfUse() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className="text-lg font-montserrat-semibold text-white mb-2">
                       Support24 
                     </h3>
                     <p className="text-gray-300">ABN: 19673683817</p>
@@ -993,7 +993,7 @@ export default function TermsOfUse() {
               {/* Footer */}
               <div className="mt-12 pt-8 border-t border-white/10">
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">
+                  <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                     Acknowledgment
                   </h3>
                   <p className="text-gray-300 leading-relaxed mb-4">

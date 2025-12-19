@@ -80,17 +80,17 @@ function StatCard({
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
       <div className="flex items-center justify-between mb-3">
-        <div className="text-sm font-semibold text-gray-600">{title}</div>
+        <div className="text-sm font-montserrat-semibold text-gray-600">{title}</div>
         <div className="p-2 rounded-full bg-primary-300/20">
           <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
         </div>
       </div>
-      <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+      <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900 mb-1">
         {value}
       </div>
       {trend && (
         <div
-          className={`text-xs font-semibold flex items-center gap-1 ${
+          className={`text-xs font-montserrat-semibold flex items-center gap-1 ${
             trendDirection === "up"
               ? "text-green-600"
               : trendDirection === "down"
@@ -159,7 +159,7 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-montserrat-semibold text-gray-900">
             Performance Overview
           </h2>
         </div>
@@ -182,14 +182,14 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">
           Performance Overview
         </h2>
       </div>
 
       <div className="flex flex-wrap items-center gap-4 md:gap-8 mb-6">
         <div className="flex gap-3 items-center">
-          <div className="text-2xl md:text-3xl font-bold text-gray-900">
+          <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900">
             {metrics.completionRate}%
           </div>
           {metrics.percentageChange > 0 && (
@@ -279,7 +279,7 @@ function DocumentAlerts({ alerts }) {
       <div className="flex items-start">
         <InfoCircle className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
         <div>
-          <h3 className="font-semibold">Action Required</h3>
+          <h3 className="font-montserrat-semibold">Action Required</h3>
           <ul className="list-disc list-inside text-sm mt-1">
             {alerts.map((alert, index) => (
               <li key={index}>{alert.message}</li> // Assuming alert has a 'message' property
@@ -305,13 +305,13 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
       {/* Availability Card */}
       <div className="lg:col-span-1 bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
           Availability
         </h2>
         <div className="space-y-4">
           <div>
             <p className="text-sm text-gray-600">Utilization Rate</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-2xl font-montserrat-bold text-gray-900">
               {comparison.utilizationPercentage?.toFixed(1) || 0}%
             </p>
             <Progress
@@ -322,13 +322,13 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
           <div className="flex justify-between">
             <div>
               <p className="text-sm text-gray-600">Booked Hours</p>
-              <p className="font-semibold text-gray-900">
+              <p className="font-montserrat-semibold text-gray-900">
                 {comparison.bookedHours?.toFixed(1) || 0}h
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Available Hours</p>
-              <p className="font-semibold text-gray-900">
+              <p className="font-montserrat-semibold text-gray-900">
                 {comparison.availableHours?.toFixed(1) || 0}h
               </p>
             </div>
@@ -336,13 +336,13 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
           <hr />
           <div>
             <p className="text-sm text-gray-600">Peak Work Days</p>
-            <p className="font-semibold text-gray-900">
+            <p className="font-montserrat-semibold text-gray-900">
               {availability.peakWorkDays?.join(", ") || "N/A"}
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Average Shift Length</p>
-            <p className="font-semibold text-gray-900">
+            <p className="font-montserrat-semibold text-gray-900">
               {availability.averageShiftLength?.toFixed(1) || 0} hours
             </p>
           </div>
@@ -351,7 +351,7 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
 
       {/* Skill Utilization Card */}
       <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
           Skill Utilization
         </h2>
         {skills && skills.length > 0 ? (
@@ -391,7 +391,7 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
                       className="h-3 w-3 rounded-full mr-3"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     ></span>
-                    <span className="font-semibold text-gray-800 mr-2">
+                    <span className="font-montserrat-semibold text-gray-800 mr-2">
                       {skill.skill || "General"}:
                     </span>
                     <span className="text-gray-600">
@@ -440,7 +440,7 @@ function InvitationsTable({ invitations, isLoading }) {
     return (
       <div className="bg-white mt-8 rounded-lg border border-gray-200">
         <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-montserrat-semibold text-gray-900">
             All Invitations
           </h2>
         </div>
@@ -493,7 +493,7 @@ function InvitationsTable({ invitations, isLoading }) {
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
       <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-lg font-semibold text-gray-900">All Invitations</h2>
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">All Invitations</h2>
         <Button
           onClick={() => {
             navigate("/support-worker/organizations");
@@ -537,7 +537,7 @@ function InvitationsTable({ invitations, isLoading }) {
               >
                 <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-montserrat-semibold text-sm flex-shrink-0">
                       {invitation.clientName.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm font-montserrat-semibold text-gray-900">
@@ -790,7 +790,7 @@ export default function SupportWorkerDashboard() {
           {/* Upcoming Schedules */}
           <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-montserrat-semibold text-gray-900">
                 Upcoming Schedules
               </h2>
               <Button

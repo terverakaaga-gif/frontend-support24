@@ -116,7 +116,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       </div>
 
       {/* Title */}
-      <h3 className={`text-base sm:text-lg lg:text-xl font-semibold mt-8 mb-3 sm:mb-4 pr-12 sm:pr-16 ${
+      <h3 className={`text-base sm:text-lg lg:text-xl font-montserrat-semibold mt-8 mb-3 sm:mb-4 pr-12 sm:pr-16 ${
         testimonial.hasVideo ? 'text-white' : 'text-gray-900'
       }`}>
         {testimonial.title}
@@ -153,7 +153,7 @@ const TestimonialCard = ({ testimonial, index }) => {
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
         /> */}
         <div>
-          <p className={`text-sm sm:text-base font-semibold ${
+          <p className={`text-sm sm:text-base font-montserrat-semibold ${
             testimonial.hasVideo ? 'text-white' : 'text-gray-900'
           }`}>
             {testimonial.userName}

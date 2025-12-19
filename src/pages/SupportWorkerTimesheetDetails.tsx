@@ -137,7 +137,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
               <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
                 Failed to load timesheet
               </h3>
               <p className="text-gray-600 mb-6">
@@ -183,7 +183,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
         <div className="flex gap-2 mb-6">
           <Button
             onClick={() => setActiveTab("details")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all ${
+            className={`rounded-full font-montserrat-semibold px-5 py-2 text-sm transition-all ${
               activeTab === "details"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
@@ -193,7 +193,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
           </Button>
           <Button
             onClick={() => setActiveTab("expenses")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all ${
+            className={`rounded-full font-montserrat-semibold px-5 py-2 text-sm transition-all ${
               activeTab === "expenses"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
@@ -203,7 +203,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
           </Button>
           <Button
             onClick={() => setActiveTab("payments")}
-            className={`rounded-full font-semibold px-5 py-2 text-sm transition-all ${
+            className={`rounded-full font-montserrat-semibold px-5 py-2 text-sm transition-all ${
               activeTab === "payments"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
@@ -220,7 +220,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             {/* Shift Details Tab */}
             {activeTab === "details" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-montserrat-bold text-gray-900">
                   Shift Information
                 </h2>
 
@@ -229,20 +229,20 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Basic Info */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <h3 className="font-montserrat-semibold text-gray-900 mb-3 flex items-center gap-2">
                           <FileText className="w-4 h-4 text-primary-600" />
                           Shift Details
                         </h3>
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Shift ID:</span>
-                            <span className="font-semibold text-gray-900 font-mono">
+                            <span className="font-montserrat-semibold text-gray-900 font-mono">
                               {timesheet.shiftIdRef}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Service Type:</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {SERVICE_TYPE_LABELS[
                                 timesheet.shiftId.serviceType
                               ] || timesheet.shiftId.serviceType}
@@ -250,13 +250,13 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Organization:</span>
-                            <span className="font-semibold text-gray-900 truncate max-w-[180px]">
+                            <span className="font-montserrat-semibold text-gray-900 truncate max-w-[180px]">
                               {timesheet.organizationId.name}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Multi-Worker:</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {timesheet.isMultiWorkerShift ? "Yes" : "No"}
                             </span>
                           </div>
@@ -265,28 +265,28 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
                       {/* Time Details */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <h3 className="font-montserrat-semibold text-gray-900 mb-3 flex items-center gap-2">
                           <ClockCircle className="w-4 h-4 text-green-600" />
                           Time Tracking
                         </h3>
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Scheduled:</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {formatTime(timesheet.scheduledStartTime)} -{" "}
                               {formatTime(timesheet.scheduledEndTime)}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Actual:</span>
-                            <span className="font-semibold text-green-600">
+                            <span className="font-montserrat-semibold text-green-600">
                               {formatTime(timesheet.actualStartTime)} -{" "}
                               {formatTime(timesheet.actualEndTime)}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Duration:</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {formatDuration(
                                 timesheet.actualStartTime,
                                 timesheet.actualEndTime
@@ -296,7 +296,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                           {timesheet.extraTime > 0 && (
                             <div className="flex justify-between">
                               <span className="text-gray-600">Extra Time:</span>
-                              <span className="font-semibold text-primary-600">
+                              <span className="font-montserrat-semibold text-primary-600">
                                 +{timesheet.extraTime} minutes
                               </span>
                             </div>
@@ -308,26 +308,26 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                     {/* Travel Information */}
                     {timesheet.distanceTravelKm > 0 && (
                       <div className="mt-6 pt-6 border-t">
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <h3 className="font-montserrat-semibold text-gray-900 mb-3 flex items-center gap-2">
                           <MapPoint className="w-4 h-4 text-purple-600" />
                           Travel Information
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Distance:</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {timesheet.distanceTravelKm} km
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Rate:</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {formatCurrency(timesheet.distanceTravelRate)}/km
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Travel Pay:</span>
-                            <span className="font-semibold text-purple-600">
+                            <span className="font-montserrat-semibold text-purple-600">
                               {formatCurrency(timesheet.distanceTravelAmount)}
                             </span>
                           </div>
@@ -338,7 +338,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                     {/* Notes */}
                     {timesheet.notes && (
                       <div className="mt-6 pt-6 border-t">
-                        <h3 className="font-semibold text-gray-900 mb-3">
+                        <h3 className="font-montserrat-semibold text-gray-900 mb-3">
                           Notes
                         </h3>
                         <div className="p-4 bg-gray-100 rounded-lg">
@@ -356,7 +356,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             {/* Expenses Tab */}
             {activeTab === "expenses" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-montserrat-bold text-gray-900">
                   Expenses ({timesheet.expenses.length})
                 </h2>
 
@@ -364,7 +364,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   <Card className="border-0 shadow-sm">
                     <CardContent className="p-12 text-center">
                       <Bill2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
                         No expenses
                       </h3>
                       <p className="text-gray-600">
@@ -380,7 +380,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold text-gray-900">
+                                <h3 className="font-montserrat-semibold text-gray-900">
                                   {expense.title}
                                 </h3>
                                 <Badge
@@ -410,7 +410,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                               )}
                             </div>
                             <div className="text-right">
-                              <p className="text-xl font-bold text-primary-600">
+                              <p className="text-xl font-montserrat-bold text-primary-600">
                                 {formatCurrency(expense.amount)}
                               </p>
                             </div>
@@ -427,7 +427,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                             <span className="text-gray-700">
                               Participant Expenses:
                             </span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {formatCurrency(
                                 timesheet.participantExpensesTotal
                               )}
@@ -437,15 +437,15 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                             <span className="text-gray-700">
                               Worker Expenses:
                             </span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {formatCurrency(timesheet.workerExpensesTotal)}
                             </span>
                           </div>
                           <div className="flex justify-between pt-2 border-t border-primary-200">
-                            <span className="font-bold text-primary-900">
+                            <span className="font-montserrat-bold text-primary-900">
                               Total Expenses:
                             </span>
-                            <span className="font-bold text-primary-900">
+                            <span className="font-montserrat-bold text-primary-900">
                               {formatCurrency(timesheet.totalExpenses)}
                             </span>
                           </div>
@@ -460,13 +460,13 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             {/* Payment Breakdown Tab */}
             {activeTab === "payments" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-montserrat-bold text-gray-900">
                   Payment Breakdown
                 </h2>
 
                 <Card className="border-0 shadow-sm">
                   <CardContent className="p-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">
+                    <h3 className="font-montserrat-semibold text-gray-900 mb-4">
                       Rate Calculations
                     </h3>
                     <div className="space-y-3">
@@ -477,7 +477,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                         >
                           <div className="flex justify-between items-start mb-1">
                             <div>
-                              <h4 className="font-semibold text-gray-900">
+                              <h4 className="font-montserrat-semibold text-gray-900">
                                 {calc.name}
                               </h4>
                               <p className="text-sm text-gray-600 mt-1">
@@ -485,7 +485,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                                 {formatCurrency(calc.hourlyRate)}/hour
                               </p>
                             </div>
-                            <span className="font-bold text-primary-600 text-lg">
+                            <span className="font-montserrat-bold text-primary-600 text-lg">
                               {formatCurrency(calc.amount)}
                             </span>
                           </div>
@@ -494,7 +494,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                     </div>
 
                     <div className="mt-6 pt-6 border-t">
-                      <h3 className="font-semibold text-gray-900 mb-4">
+                      <h3 className="font-montserrat-semibold text-gray-900 mb-4">
                         Payment Summary
                       </h3>
                       <div className="space-y-3 text-sm">
@@ -502,7 +502,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                           <span className="text-gray-600">
                             Subtotal (Hours worked):
                           </span>
-                          <span className="font-semibold text-gray-900">
+                          <span className="font-montserrat-semibold text-gray-900">
                             {formatCurrency(timesheet.subtotal)}
                           </span>
                         </div>
@@ -511,30 +511,30 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                             <span className="text-gray-600">
                               Travel allowance:
                             </span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {formatCurrency(timesheet.distanceTravelAmount)}
                             </span>
                           </div>
                         )}
                         <div className="flex justify-between">
                           <span className="text-gray-600">Total expenses:</span>
-                          <span className="font-semibold text-gray-900">
+                          <span className="font-montserrat-semibold text-gray-900">
                             {formatCurrency(timesheet.totalExpenses)}
                           </span>
                         </div>
                         <div className="flex justify-between pt-3 border-t">
-                          <span className="font-semibold text-gray-900">
+                          <span className="font-montserrat-semibold text-gray-900">
                             Total Amount:
                           </span>
-                          <span className="font-semibold text-primary-600">
+                          <span className="font-montserrat-semibold text-primary-600">
                             {formatCurrency(timesheet.totalAmount)}
                           </span>
                         </div>
                         <div className="flex justify-between pt-2 border-t-2 border-primary-600">
-                          <span className="font-bold text-gray-900 text-lg">
+                          <span className="font-montserrat-bold text-gray-900 text-lg">
                             Grand Total:
                           </span>
-                          <span className="font-bold text-primary-600 text-xl">
+                          <span className="font-montserrat-bold text-primary-600 text-xl">
                             {formatCurrency(timesheet.grandTotal)}
                           </span>
                         </div>
@@ -551,7 +551,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             <Card className="border-0 shadow-sm sticky top-6">
               <CardContent className="p-0">
                 <div className="p-4 border-b">
-                  <h3 className="font-bold text-gray-900">Participant</h3>
+                  <h3 className="font-montserrat-bold text-gray-900">Participant</h3>
                 </div>
 
                 <div className="p-4 space-y-4">
@@ -559,12 +559,12 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   <div className="text-center">
                     <Avatar className="w-20 h-20 mx-auto mb-3">
                       <AvatarImage src={timesheet.participantId.profileImage} />
-                      <AvatarFallback className="bg-primary-100 text-primary-700 text-2xl font-semibold">
+                      <AvatarFallback className="bg-primary-100 text-primary-700 text-2xl font-montserrat-semibold">
                         {timesheet.participantId.firstName.charAt(0)}
                         {timesheet.participantId.lastName.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <h4 className="font-bold text-gray-900 mb-1">
+                    <h4 className="font-montserrat-bold text-gray-900 mb-1">
                       {getFullName(timesheet.participantId)}
                     </h4>
                     <p className="text-sm text-gray-600 mb-0.5">
@@ -577,7 +577,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
                   {/* Status Timeline */}
                   <div className="pt-4 border-t">
-                    <h5 className="font-semibold text-gray-900 mb-3">
+                    <h5 className="font-montserrat-semibold text-gray-900 mb-3">
                       Status Timeline
                     </h5>
                     <div className="space-y-3">
@@ -644,19 +644,19 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
                   {/* Quick Summary */}
                   <div className="pt-4 border-t">
-                    <h5 className="font-semibold text-gray-900 mb-3">
+                    <h5 className="font-montserrat-semibold text-gray-900 mb-3">
                       Quick Summary
                     </h5>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Date:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-montserrat-semibold text-gray-900">
                           {formatDate(timesheet.scheduledStartTime)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Duration:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-montserrat-semibold text-gray-900">
                           {formatDuration(
                             timesheet.actualStartTime,
                             timesheet.actualEndTime
@@ -665,16 +665,16 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Service:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-montserrat-semibold text-gray-900">
                           {SERVICE_TYPE_LABELS[timesheet.shiftId.serviceType] ||
                             timesheet.shiftId.serviceType}
                         </span>
                       </div>
                       <div className="flex justify-between pt-3 border-t">
-                        <span className="text-gray-600 font-semibold">
+                        <span className="text-gray-600 font-montserrat-semibold">
                           Total Earned:
                         </span>
-                        <span className="font-bold text-primary-600">
+                        <span className="font-montserrat-bold text-primary-600">
                           {formatCurrency(timesheet.grandTotal)}
                         </span>
                       </div>
@@ -690,18 +690,18 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
         <div className="lg:hidden mt-6 space-y-4">
           <Card className="border-0 shadow-sm">
             <CardContent className="p-4">
-              <h3 className="font-bold text-gray-900 mb-4">Participant</h3>
+              <h3 className="font-montserrat-bold text-gray-900 mb-4">Participant</h3>
 
               <div className="flex items-center gap-3 mb-4">
                 <Avatar className="w-12 h-12">
                   <AvatarImage src={timesheet.participantId.profileImage} />
-                  <AvatarFallback className="bg-primary-100 text-primary-700 font-semibold">
+                  <AvatarFallback className="bg-primary-100 text-primary-700 font-montserrat-semibold">
                     {timesheet.participantId.firstName.charAt(0)}
                     {timesheet.participantId.lastName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-semibold text-gray-900">
+                  <h4 className="font-montserrat-semibold text-gray-900">
                     {getFullName(timesheet.participantId)}
                   </h4>
                   <p className="text-sm text-gray-600">
@@ -713,13 +713,13 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Date:</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-montserrat-semibold text-gray-900">
                     {formatDate(timesheet.scheduledStartTime)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Duration:</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-montserrat-semibold text-gray-900">
                     {formatDuration(
                       timesheet.actualStartTime,
                       timesheet.actualEndTime
@@ -727,10 +727,10 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex justify-between pt-3 border-t">
-                  <span className="text-gray-600 font-semibold">
+                  <span className="text-gray-600 font-montserrat-semibold">
                     Total Earned:
                   </span>
-                  <span className="font-bold text-primary-600">
+                  <span className="font-montserrat-bold text-primary-600">
                     {formatCurrency(timesheet.grandTotal)}
                   </span>
                 </div>
@@ -740,7 +740,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
           <Card className="border-0 shadow-sm">
             <CardContent className="p-4">
-              <h3 className="font-bold text-gray-900 mb-4">Status Timeline</h3>
+              <h3 className="font-montserrat-bold text-gray-900 mb-4">Status Timeline</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 rounded-full bg-primary-600 mt-2 flex-shrink-0"></div>

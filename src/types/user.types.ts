@@ -273,7 +273,7 @@ export type User = SupportWorker | Participant | Guardian | Admin | Coordinator 
 
 // Input types for onboarding
 export interface ParticipantOnboardingInput {
-  supportNeeds: string[];
+  serviceCategories: string[];
   emergencyContact?: EmergencyContact;
   planManager?: PlanManager;
   coordinator?: Coordinator;
@@ -292,9 +292,10 @@ export interface ParticipantOnboardingInput {
 
 export interface SupportWorkerOnboardingInput {
   bio: string;
-  skills: string[];
+  serviceCategories: string[];
   languages: string[];
   experience?: Experience[];
+  resume?: string;
   shiftRates: ShiftRate[];
   availability: Availability;
   stateIds?: string[];

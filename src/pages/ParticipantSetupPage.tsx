@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Participant } from "@/types/user.types";
 import Loader from "@/components/Loader";
-import { ParticipantSetup } from "@/components/auth/ParticipantSetup";
+import ParticipantSetup from "@/components/participant/onboarding";
+// import { ParticipantSetup } from "@/components/auth/ParticipantSetup";
 
 export default function ParticipantSetupPage() {
   const navigate = useNavigate();
@@ -97,9 +98,7 @@ export default function ParticipantSetupPage() {
           <div className="w-24"></div> 
         </div>
       </div> */}
-      <ParticipantSetup 
-        onComplete={handleSetupComplete} 
-      />
+      <ParticipantSetup />
     </div>
   );
 }

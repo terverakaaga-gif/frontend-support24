@@ -57,6 +57,8 @@ import {
   Plus,
   ChevronDown,
   MoreVertical,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -81,10 +83,17 @@ import {
   UpdateServiceTypeRequest,
   SERVICE_TYPE_STATUS_CONFIG,
 } from "@/entities/ServiceType";
+import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
 
 const ServiceTypesManagement: React.FC = () => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   // Filter states
   const [filters, setFilters] = useState<ServiceTypeFilters>({
+    page: currentPage,
+    limit: pageSize,
     sortField: "createdAt",
     sortDirection: "desc",
   });
@@ -102,6 +111,11 @@ const ServiceTypesManagement: React.FC = () => {
     code: "",
     status: ServiceTypeStatus.ACTIVE,
   });
+
+  // Update filters when page changes
+  React.useEffect(() => {
+    setFilters(prev => ({ ...prev, page: currentPage, limit: pageSize }));
+  }, [currentPage, pageSize]);
 
   // API calls
   const { data: serviceTypes = [], isLoading, error } = useGetServiceTypes(filters);
@@ -125,25 +139,37 @@ const ServiceTypesManagement: React.FC = () => {
     );
   }, [serviceTypes, searchTerm]);
 
-  // Filter change handlers
-  const handleFilterChange = (key: keyof ServiceTypeFilters, value: any) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value === "all" || value === "" ? undefined : value,
-    }));
-  };
+  // Paginated service types
+  const paginatedServiceTypes = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredServiceTypes.slice(startIndex, endIndex);
+  }, [filteredServiceTypes, currentPage, pageSize]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const handleFilterChange = (field: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value === 'all' ? undefined : value,
+    }));
+    setCurrentPage(1);
   };
 
   const handleResetFilters = () => {
     setFilters({
+      page: 1,
+      limit: pageSize,
       sortField: "createdAt",
       sortDirection: "desc",
     });
     setSearchTerm("");
+    setCurrentPage(1);
   };
+
 
   // Form handlers
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -192,6 +218,17 @@ const ServiceTypesManagement: React.FC = () => {
 
   const handleDelete = (id: string) => {
     deleteMutation.mutate(id);
+  };
+
+  // Pagination handlers
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
   };
 
   // Check if any filters are active
@@ -428,8 +465,9 @@ const ServiceTypesManagement: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
+            <>
+              <div className="overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs">Name</TableHead>
@@ -441,7 +479,7 @@ const ServiceTypesManagement: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredServiceTypes.map((serviceType) => (
+                  {paginatedServiceTypes.map((serviceType) => (
                     <TableRow key={serviceType._id}>
                       <TableCell className="font-montserrat-semibold text-sm">
                         {serviceType.name}
@@ -505,7 +543,53 @@ const ServiceTypesManagement: React.FC = () => {
                   ))}
                 </TableBody>
               </Table>
-            </div>
+              </div>
+              
+              {/* Pagination */}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Rows per page:</span>
+                <Select
+                  value={pageSize.toString()}
+                  onValueChange={(value) => handlePageSizeChange(Number(value))}
+                >
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  Showing {Math.min((currentPage - 1) * pageSize + 1, filteredServiceTypes.length)} - {Math.min(currentPage * pageSize, filteredServiceTypes.length)} of {filteredServiceTypes.length}
+                </span>
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <AltArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage * pageSize >= filteredServiceTypes.length}
+                  >
+                    <AltArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

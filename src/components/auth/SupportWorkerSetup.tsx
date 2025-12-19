@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { useEffect, useMemo } from "react";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 
 import {
@@ -94,7 +93,16 @@ const experienceSchema = z.object({
         }),
       })
     )
-    .min(1, { message: "Please add at least one experience." }),
+    .min(1, { message: "Please add at least one experience." })
+    .refine((experiences) => {
+      return experiences.every((exp) => {
+        if (!exp.endDate) return true;
+        return new Date(exp.startDate) <= new Date(exp.endDate);
+      });
+    }, {
+      message: "End date must be after start date.",
+    }),
+  resume: z.instanceof(File),
 });
 
 const rateSchema = z.object({
@@ -104,15 +112,15 @@ const rateSchema = z.object({
         rateTimeBandId: z
           .string()
           .min(1, { message: "Rate time band is required." }),
-        hourlyRate: z.string().min(1, { message: "Hourly rate is required." }),
+        hourlyRate: z
+          .string()
+          .min(1, { message: "Hourly rate is required." })
+          .refine((val) => parseFloat(val) >= 38, {
+            message: "Hourly rate must be at least $38",
+          }),
       })
     )
     .min(1, { message: "Please set at least one rate." }),
-});
-
-const timeSlotSchema = z.object({
-  start: z.string().min(1, { message: "Start time is required." }),
-  end: z.string().min(1, { message: "End time is required." }),
 });
 
 const availabilitySchema = z.object({
@@ -122,7 +130,16 @@ const availabilitySchema = z.object({
         z.object({
           day: z.string(),
           available: z.boolean(),
-          slots: z.array(timeSlotSchema),
+          slots: z.array(
+            z.object({
+              start: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+                message: "Start time must be in HH:mm format",
+              }),
+              end: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+                message: "End time must be in HH:mm format",
+              }),
+            })
+          ),
         })
       )
       .min(1, { message: "Please set your availability." }),
@@ -154,8 +171,12 @@ export function SupportWorkerSetup({
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [languageInput, setLanguageInput] = useState("");
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  
+  // Address State
   const [showAddressPredictions, setShowAddressPredictions] = useState(false);
   const [addressInputValue, setAddressInputValue] = useState("");
+  // FIX 1: Defined the missing Ref
+  const addressContainerRef = useRef<HTMLDivElement>(null);
 
   // Google Places Autocomplete Hook
   const {
@@ -206,6 +227,7 @@ export function SupportWorkerSetup({
         description: "",
       },
     ],
+    resume: undefined as File | undefined,
     shiftRates: [] as { rateTimeBandId: string; hourlyRate: string }[],
     availability: {
       weekdays: weekdays.map((day) => ({
@@ -215,6 +237,13 @@ export function SupportWorkerSetup({
       })),
     },
   });
+
+  // FIX 2: Initialize address input value from form data (for persistence when navigating back)
+  useEffect(() => {
+    if (formData.address && !addressInputValue) {
+      setAddressInputValue(formData.address);
+    }
+  }, [formData.address]);
 
   const bioForm = useForm<z.infer<typeof bioSchema>>({
     resolver: zodResolver(bioSchema),
@@ -239,6 +268,7 @@ export function SupportWorkerSetup({
     resolver: zodResolver(experienceSchema),
     defaultValues: {
       experience: formData.experience,
+      resume: formData.resume,
     },
   });
 
@@ -256,10 +286,11 @@ export function SupportWorkerSetup({
     },
   });
 
-  // Handle address input changes with debouncing
-  const handleAddressInputChange = (value: string) => {
+  // Handle address input changes (Typing)
+  const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     setAddressInputValue(value);
-    setFormData({ ...formData, address: value });
+    setFormData((prev) => ({ ...prev, address: value }));
     bioForm.setValue("address", value);
 
     if (value.trim().length > 2) {
@@ -270,23 +301,35 @@ export function SupportWorkerSetup({
     }
   };
 
-  // Handle address selection from predictions
+  // Handle address selection from predictions (Click)
   const handleAddressSelect = (prediction: any) => {
+    // 1. Get address string
     const selectedAddress = prediction.description;
+    
+    // 2. Update visual input immediately
     setAddressInputValue(selectedAddress);
-    setFormData({ ...formData, address: selectedAddress });
-    bioForm.setValue("address", selectedAddress);
+    
+    // 3. Close prediction pane
     setShowAddressPredictions(false);
 
-    // Optional: Get detailed place information
+    // 4. Update form data and validation
+    setFormData((prev) => ({ ...prev, address: selectedAddress }));
+    bioForm.setValue("address", selectedAddress, { shouldValidate: true });
+
+    // 5. Get detailed info if needed
     if (placesService) {
       placesService.getDetails(
         {
           placeId: prediction.place_id,
+          fields: ["formatted_address", "geometry", "address_components"],
         },
         (placeDetails: any) => {
-          // You can extract additional information here if needed
-          // like latitude, longitude, formatted address components, etc.
+          if (placeDetails?.formatted_address) {
+            const finalAddress = placeDetails.formatted_address;
+            setAddressInputValue(finalAddress);
+            setFormData((prev) => ({ ...prev, address: finalAddress }));
+            bioForm.setValue("address", finalAddress);
+          }
         }
       );
     }
@@ -295,8 +338,10 @@ export function SupportWorkerSetup({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest("#address-autocomplete-container")) {
+      if (
+        addressContainerRef.current &&
+        !addressContainerRef.current.contains(event.target as Node)
+      ) {
         setShowAddressPredictions(false);
       }
     };
@@ -382,7 +427,11 @@ export function SupportWorkerSetup({
   const handleExperienceSubmit = async (
     data: z.infer<typeof experienceSchema>
   ) => {
-    setFormData({ ...formData, experience: data.experience as any });
+    setFormData({
+      ...formData,
+      experience: data.experience as any,
+      resume: data.resume,
+    });
     nextStep();
   };
 
@@ -500,6 +549,45 @@ export function SupportWorkerSetup({
     } else if (!newAvailability.weekdays[dayIndex].available) {
       newAvailability.weekdays[dayIndex].slots = [];
     }
+
+    setFormData({ ...formData, availability: newAvailability });
+    availabilityForm.setValue("availability", newAvailability);
+  };
+
+  const addTimeSlot = (dayIndex: number) => {
+    const newAvailability = { ...formData.availability };
+    const currentSlots = newAvailability.weekdays[dayIndex].slots;
+    
+    // Sort slots by start time to find the latest available time
+    const sortedSlots = [...currentSlots].sort((a, b) => a.start.localeCompare(b.start));
+    
+    let startTime = "09:00";
+    let endTime = "17:00";
+    
+    if (sortedSlots.length > 0) {
+      const lastSlot = sortedSlots[sortedSlots.length - 1];
+      const lastEndTime = lastSlot.end;
+      
+      // Use the last slot's end time as the new start time
+      startTime = lastEndTime;
+      const [hours, minutes] = lastEndTime.split(':').map(Number);
+      // Set end time to 8 hours later or end of day
+      const newHours = Math.min(hours + 8, 23);
+      endTime = `${String(newHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
+    
+    newAvailability.weekdays[dayIndex].slots.push({
+      start: startTime,
+      end: endTime,
+    });
+
+    setFormData({ ...formData, availability: newAvailability });
+    availabilityForm.setValue("availability", newAvailability);
+  };
+
+  const removeTimeSlot = (dayIndex: number, slotIndex: number) => {
+    const newAvailability = { ...formData.availability };
+    newAvailability.weekdays[dayIndex].slots.splice(slotIndex, 1);
 
     setFormData({ ...formData, availability: newAvailability });
     availabilityForm.setValue("availability", newAvailability);
@@ -828,7 +916,7 @@ export function SupportWorkerSetup({
                         <div className="flex items-center gap-2 mb-4">
                           <MapPoint className="h-5 w-5 text-primary" />
                           <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
-                            Address
+                            Address *
                           </FormLabel>
                         </div>
 
@@ -838,23 +926,15 @@ export function SupportWorkerSetup({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <div
-                                  id="address-autocomplete-container"
-                                  className="relative"
-                                >
+                                <div className="relative" ref={addressContainerRef}>
                                   <div className="relative">
                                     <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
                                     <Input
-                                      {...field}
+                                      id="address"
                                       type="text"
                                       placeholder="Start typing your address..."
                                       value={addressInputValue}
-                                      onChange={(e) => {
-                                        field.onChange(e);
-                                        handleAddressInputChange(
-                                          e.target.value
-                                        );
-                                      }}
+                                      onChange={handleAddressInputChange}
                                       onFocus={() => {
                                         if (
                                           addressInputValue.trim().length > 2 &&
@@ -865,7 +945,6 @@ export function SupportWorkerSetup({
                                       }}
                                       className="pl-10 text-sm"
                                       autoComplete="off"
-                                      disabled={isPlacePredictionsLoading}
                                     />
                                     {isPlacePredictionsLoading && (
                                       <Refresh className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
@@ -873,51 +952,41 @@ export function SupportWorkerSetup({
                                   </div>
 
                                   {/* Predictions Dropdown */}
-                                  {showAddressPredictions &&
-                                    placePredictions.length > 0 && (
-                                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                        {placePredictions.map((prediction) => (
-                                          <div
-                                            key={prediction.place_id}
-                                            onClick={() =>
-                                              handleAddressSelect(prediction)
-                                            }
-                                            className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
-                                          >
-                                            <div className="flex items-start gap-3">
-                                              <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
-                                              <div className="flex-1 min-w-0">
-                                                <p className="text-sm text-gray-900 font-medium truncate">
-                                                  {prediction
-                                                    .structured_formatting
-                                                    ?.main_text ||
-                                                    prediction.description}
-                                                </p>
-                                                {prediction
-                                                  .structured_formatting
-                                                  ?.secondary_text && (
-                                                  <p className="text-xs text-gray-500 truncate mt-0.5">
-                                                    {
-                                                      prediction
-                                                        .structured_formatting
-                                                        .secondary_text
-                                                    }
-                                                  </p>
-                                                )}
-                                              </div>
+                                  {showAddressPredictions && placePredictions.length > 0 && (
+                                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                      {placePredictions.map((prediction) => (
+                                        <div
+                                          key={prediction.place_id}
+                                          onMouseDown={(e) => e.preventDefault()} // Keeps focus on input
+                                          onClick={() => handleAddressSelect(prediction)}
+                                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                        >
+                                          <div className="flex items-start gap-3">
+                                            <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm text-gray-900 font-medium truncate">
+                                                {prediction.structured_formatting?.main_text ||
+                                                  prediction.description.split(",")[0]}
+                                              </p>
+                                              <p className="text-xs text-gray-500 truncate mt-0.5">
+                                                {prediction.structured_formatting?.secondary_text ||
+                                                  prediction.description
+                                                    .split(",")
+                                                    .slice(1)
+                                                    .join(",")
+                                                    .trim()}
+                                              </p>
                                             </div>
                                           </div>
-                                        ))}
-                                      </div>
-                                    )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               </FormControl>
                               <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
                                 <span className="text-primary mt-0.5">ⓘ</span>
-                                <span>
-                                  Start typing to search for your address in
-                                  Australia
-                                </span>
+                                <span>Start typing to search for your address in Australia</span>
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -1119,6 +1188,7 @@ export function SupportWorkerSetup({
             {/* Step 2: Skills */}
             {step === 2 && (
               <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 2 ... */}
                 <div className="p-6 lg:p-8">
                   <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                     Skills & Services
@@ -1242,19 +1312,18 @@ export function SupportWorkerSetup({
             {/* Step 3: Experience */}
             {step === 3 && (
               <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 3 ... */}
                 <div className="p-6 lg:p-8">
                   <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                     Work Experience
                   </h3>
                   <p className="text-sm text-gray-600 mb-6">
-                    Add your relevant work experience
+                    Add your relevant work experience and upload your resume
                   </p>
 
                   <Form {...experienceForm}>
                     <form
-                      onSubmit={experienceForm.handleSubmit(
-                        handleExperienceSubmit
-                      )}
+                      onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)}
                       className="space-y-6"
                     >
                       {formData.experience.map((exp, index) => (
@@ -1284,9 +1353,7 @@ export function SupportWorkerSetup({
                             name={`experience.${index}.title`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">
-                                  Job Title
-                                </FormLabel>
+                                <FormLabel className="text-sm">Job Title *</FormLabel>
                                 <FormControl>
                                   <Input
                                     placeholder="e.g Support Worker"
@@ -1313,18 +1380,15 @@ export function SupportWorkerSetup({
                             name={`experience.${index}.organization`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">
-                                  Organization
-                                </FormLabel>
+                                <FormLabel className="text-sm">Organization *</FormLabel>
                                 <FormControl>
                                   <Input
-                                    placeholder="e.g Support Worker"
+                                    placeholder="e.g NDIS Care Services"
                                     {...field}
                                     onChange={(e) => {
                                       field.onChange(e);
                                       const newExp = [...formData.experience];
-                                      newExp[index].organization =
-                                        e.target.value;
+                                      newExp[index].organization = e.target.value;
                                       setFormData({
                                         ...formData,
                                         experience: newExp,
@@ -1344,19 +1408,16 @@ export function SupportWorkerSetup({
                               name={`experience.${index}.startDate`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-sm">
-                                    Start Date
-                                  </FormLabel>
+                                  <FormLabel className="text-sm">Start Date *</FormLabel>
                                   <FormControl>
                                     <Input
                                       type="date"
-                                      placeholder="dd/mm/yy"
                                       {...field}
+                                      max={new Date().toISOString().split('T')[0]}
                                       onChange={(e) => {
                                         field.onChange(e);
                                         const newExp = [...formData.experience];
-                                        newExp[index].startDate =
-                                          e.target.value;
+                                        newExp[index].startDate = e.target.value;
                                         setFormData({
                                           ...formData,
                                           experience: newExp,
@@ -1377,12 +1438,14 @@ export function SupportWorkerSetup({
                                 <FormItem>
                                   <FormLabel className="text-sm">
                                     End Date
+                                    <span className="text-xs text-gray-500 ml-1">(Optional)</span>
                                   </FormLabel>
                                   <FormControl>
                                     <Input
                                       type="date"
-                                      placeholder="dd/mm/yy"
                                       {...field}
+                                      min={formData.experience[index].startDate}
+                                      max={new Date().toISOString().split('T')[0]}
                                       onChange={(e) => {
                                         field.onChange(e);
                                         const newExp = [...formData.experience];
@@ -1395,6 +1458,9 @@ export function SupportWorkerSetup({
                                       className="text-sm bg-white"
                                     />
                                   </FormControl>
+                                  <FormDescription className="text-xs text-gray-500">
+                                    Leave empty if current position
+                                  </FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -1406,19 +1472,16 @@ export function SupportWorkerSetup({
                             name={`experience.${index}.description`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">
-                                  Description
-                                </FormLabel>
+                                <FormLabel className="text-sm">Description *</FormLabel>
                                 <FormControl>
                                   <Textarea
-                                    placeholder="Enter job experience here....."
+                                    placeholder="Describe your responsibilities and achievements..."
                                     className="min-h-[80px] text-sm resize-none bg-white"
                                     {...field}
                                     onChange={(e) => {
                                       field.onChange(e);
                                       const newExp = [...formData.experience];
-                                      newExp[index].description =
-                                        e.target.value;
+                                      newExp[index].description = e.target.value;
                                       setFormData({
                                         ...formData,
                                         experience: newExp,
@@ -1441,6 +1504,66 @@ export function SupportWorkerSetup({
                       >
                         + Add Another Experience
                       </Button>
+
+                      {/* Resume Upload - Single for all experiences */}
+                      <div className="border-t pt-6">
+                        <FormField
+                          control={experienceForm.control}
+                          name="resume"
+                          render={({ field: { onChange, value, ...field } }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                                Resume/CV
+                              </FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  <Input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        onChange(file);
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          resume: file,
+                                        }));
+                                      }
+                                    }}
+                                    className="text-sm bg-white"
+                                    {...field}
+                                  />
+                                  {formData.resume && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                      <CheckCircle className="h-4 w-4 text-green-600" />
+                                      <span>{formData.resume.name}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          setFormData((prev) => ({
+                                            ...prev,
+                                            resume: undefined,
+                                          }));
+                                          onChange(undefined);
+                                        }}
+                                        className="h-6 w-6 p-0"
+                                      >
+                                        <CloseCircle className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormDescription className="text-xs text-gray-500">
+                                Upload PDF, DOC, or DOCX (Max 5MB)
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
                       <div className="flex justify-between pt-4">
                         <Button
@@ -1469,12 +1592,13 @@ export function SupportWorkerSetup({
             {/* Step 4: Rates */}
             {step === 4 && (
               <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 4 ... */}
                 <div className="p-6 lg:p-8">
                   <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                     Hourly Rates
                   </h3>
                   <p className="text-sm text-gray-600 mb-6">
-                    Set your hourly rates for different time bands
+                    Set your hourly rates for different time bands (Minimum $38/hour)
                   </p>
 
                   <Form {...rateForm}>
@@ -1534,12 +1658,14 @@ export function SupportWorkerSetup({
                                   render={({ field }) => (
                                     <FormItem>
                                       <FormLabel className="text-sm text-gray-700">
-                                        Hourly Rate ($)
+                                        Hourly Rate ($) *
                                       </FormLabel>
                                       <FormControl>
                                         <Input
                                           type="number"
-                                          placeholder="35"
+                                          step="0.01"
+                                          min="38"
+                                          placeholder="38.00"
                                           {...field}
                                           onChange={(e) => {
                                             field.onChange(e);
@@ -1558,6 +1684,9 @@ export function SupportWorkerSetup({
                                           className="text-sm"
                                         />
                                       </FormControl>
+                                      <FormDescription className="text-xs text-gray-500">
+                                        Minimum $38/hour
+                                      </FormDescription>
                                       <FormMessage />
                                     </FormItem>
                                   )}
@@ -1602,12 +1731,13 @@ export function SupportWorkerSetup({
             {/* Step 5: Availability */}
             {step === 5 && (
               <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 5 ... */}
                 <div className="p-6 lg:p-8">
                   <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
                     Availability
                   </h3>
                   <p className="text-sm text-gray-600 mb-6">
-                    Set your weekly availability
+                    Set your weekly availability with multiple time slots per day
                   </p>
 
                   <Form {...availabilityForm}>
@@ -1631,9 +1761,7 @@ export function SupportWorkerSetup({
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <div
-                                  onClick={() =>
-                                    toggleDayAvailability(dayIndex)
-                                  }
+                                  onClick={() => toggleDayAvailability(dayIndex)}
                                   className={cn(
                                     "w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all",
                                     day.available
@@ -1647,13 +1775,22 @@ export function SupportWorkerSetup({
                                 </div>
                                 <label
                                   className="font-montserrat-semibold text-gray-900 capitalize cursor-pointer text-base"
-                                  onClick={() =>
-                                    toggleDayAvailability(dayIndex)
-                                  }
+                                  onClick={() => toggleDayAvailability(dayIndex)}
                                 >
                                   {day.day}
                                 </label>
                               </div>
+                              {day.available && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => addTimeSlot(dayIndex)}
+                                  className="text-xs text-primary hover:text-primary hover:bg-primary/10"
+                                >
+                                  + Add Time Slot
+                                </Button>
+                              )}
                             </div>
 
                             {day.available && day.slots.length > 0 && (
@@ -1663,53 +1800,77 @@ export function SupportWorkerSetup({
                                     key={slotIndex}
                                     className="bg-white rounded-lg p-3 border border-gray-200"
                                   >
-                                    <div className="grid grid-cols-2 gap-3">
-                                      <div>
-                                        <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
-                                          Start Time
-                                        </label>
-                                        <Input
-                                          type="time"
-                                          value={slot.start}
-                                          onChange={(e) => {
-                                            const newAvailability = {
-                                              ...formData.availability,
-                                            };
-                                            newAvailability.weekdays[
-                                              dayIndex
-                                            ].slots[slotIndex].start =
-                                              e.target.value;
-                                            setFormData({
-                                              ...formData,
-                                              availability: newAvailability,
-                                            });
-                                          }}
-                                          className="text-sm"
-                                        />
+                                    <div className="flex items-center gap-3">
+                                      <div className="grid grid-cols-2 gap-3 flex-1">
+                                        <div>
+                                          <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
+                                            Start Time
+                                          </label>
+                                          <Input
+                                            type="time"
+                                            value={slot.start}
+                                            onChange={(e) => {
+                                              const newAvailability = {
+                                                ...formData.availability,
+                                              };
+                                              newAvailability.weekdays[
+                                                dayIndex
+                                              ].slots[slotIndex].start =
+                                                e.target.value;
+                                              setFormData({
+                                                ...formData,
+                                                availability: newAvailability,
+                                              });
+                                              availabilityForm.setValue(
+                                                "availability",
+                                                newAvailability
+                                              );
+                                            }}
+                                            className="text-sm"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
+                                            End Time
+                                          </label>
+                                          <Input
+                                            type="time"
+                                            value={slot.end}
+                                            min={slot.start}
+                                            onChange={(e) => {
+                                              const newAvailability = {
+                                                ...formData.availability,
+                                              };
+                                              newAvailability.weekdays[
+                                                dayIndex
+                                              ].slots[slotIndex].end =
+                                                e.target.value;
+                                              setFormData({
+                                                ...formData,
+                                                availability: newAvailability,
+                                              });
+                                              availabilityForm.setValue(
+                                                "availability",
+                                                newAvailability
+                                              );
+                                            }}
+                                            className="text-sm"
+                                          />
+                                        </div>
                                       </div>
-                                      <div>
-                                        <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
-                                          End Time
-                                        </label>
-                                        <Input
-                                          type="time"
-                                          value={slot.end}
-                                          onChange={(e) => {
-                                            const newAvailability = {
-                                              ...formData.availability,
-                                            };
-                                            newAvailability.weekdays[
-                                              dayIndex
-                                            ].slots[slotIndex].end =
-                                              e.target.value;
-                                            setFormData({
-                                              ...formData,
-                                              availability: newAvailability,
-                                            });
-                                          }}
-                                          className="text-sm"
-                                        />
-                                      </div>
+                                      {day.slots.length > 1 && (
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() =>
+                                            removeTimeSlot(dayIndex, slotIndex)
+                                          }
+                                          className="h-8 w-8 p-0 mt-5"
+                                        >
+                                          <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                      )}
                                     </div>
                                   </div>
                                 ))}

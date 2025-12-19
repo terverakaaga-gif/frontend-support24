@@ -79,6 +79,7 @@ import ComplaintsResolutionPolicy from "./pages/ComplaintsResolutionPolicy";
 import SupportWorkersSearch from "./pages/SupportWorkersSearch";
 import ParticipantSetupPage from "./pages/ParticipantSetupPage";
 import ResendEmail from "./pages/ResendEmail";
+import ServiceCategoriesManagementPage from "./pages/ServiceCategoriesManagementPage";
 
 import ProviderAccommodationsPage from "./pages/ProviderAccommodationsPage";
 import ProviderAccommodationDetailsPage from "./pages/ProviderAccommodationDetailsPage";
@@ -98,6 +99,12 @@ import ProviderJobApplicantsPage from "./pages/ProviderJobApplicantsPage";
 import SupportJobListingPage from "./pages/SupportJobListingPage";
 import SupportSavedJobsPage from "./pages/SupportSavedJobsPage";
 import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
+import ComplianceCheckPage from "./pages/ComplianceCheckPage";
+import ComplianceFormPage from "./pages/ComplianceFormPage";
+import ParticipantJobsPage from "./pages/ParticipantJobsPage";
+import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
+import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
+import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
 
 import ComplianceCheckPage from "./pages/ComplianceCheckPage";
 import ComplianceFormPage from "./pages/ComplianceFormPage";
@@ -251,9 +258,14 @@ const AppRoutes = () => {
                   element={<BatchInvoiceDetailPage />}
                 />
                 <Route
+                  path="service-categories"
+                  element={<ServiceCategoriesManagementPage />}
+                />
+                <Route
                   path="service-types"
                   element={<ServiceTypesManagementPage />}
                 />
+                
                 <Route
                   path="service-types/:id"
                   element={<ServiceTypeDetailPage />}
@@ -332,6 +344,10 @@ const AppRoutes = () => {
                   element={<ParticipantJobFormPage />}
                 />
 
+                {/* <Route
+                  path="/organizations/:id"
+                  element={<ParticipantOrganizationDetailsPage />}
+                /> */}
                 <Route path="/timesheets" element={<ParticipantTimesheets />} />
                 <Route
                   path="/timesheets/:id"

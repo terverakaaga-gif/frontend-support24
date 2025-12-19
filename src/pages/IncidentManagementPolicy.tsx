@@ -29,7 +29,7 @@ export default function IncidentManagementPolicy() {
           <div className="mb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <AlertCircle className="w-10 h-10 text-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold text-white">
+              <h1 className="text-4xl md:text-5xl font-montserrat-bold text-white">
                 Incident Management Policy
               </h1>
             </div>
@@ -50,11 +50,11 @@ export default function IncidentManagementPolicy() {
             <div className="prose prose-invert prose-lg max-w-none">
               {/* 1. Purpose and Scope */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   1. Purpose and Scope
                 </h2>
                 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   1.1 Purpose
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -96,7 +96,7 @@ export default function IncidentManagementPolicy() {
                   <li>Ensure accountability at all levels of the organization</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   1.2 Scope
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -107,7 +107,7 @@ export default function IncidentManagementPolicy() {
                   person involved in services arranged through Support24.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   1.3 Legislative and Regulatory Framework
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -127,12 +127,12 @@ export default function IncidentManagementPolicy() {
 
               {/* 2. Definitions */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   2. Definitions
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Incident
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
@@ -144,7 +144,7 @@ export default function IncidentManagementPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Reportable Incident (NDIS)
                     </h3>
                     <p className="text-gray-300 leading-relaxed mb-2">
@@ -162,7 +162,7 @@ export default function IncidentManagementPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Serious Incident (Aged Care)
                     </h3>
                     <p className="text-gray-300 leading-relaxed mb-2">
@@ -181,7 +181,7 @@ export default function IncidentManagementPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-2">
                       Other Key Terms
                     </h3>
                     <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -210,11 +210,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 3. Types of Incidents and Reporting Categories */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   3. Types of Incidents and Reporting Categories
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.1 NDIS Reportable Incidents
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -254,7 +254,7 @@ export default function IncidentManagementPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.2 Aged Care Serious Incidents
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -272,7 +272,7 @@ export default function IncidentManagementPolicy() {
                   <li>Stealing or financial coercion</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.3 Platform-Specific Incidents
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -287,11 +287,11 @@ export default function IncidentManagementPolicy() {
                   <li>Complaints escalated to incidents</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   3.4 Reporting Timeframes
                 </h3>
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-4">
-                  <h4 className="text-lg font-semibold text-white mb-2">
+                  <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                     NDIS Reportable Incidents
                   </h4>
                   <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -308,7 +308,7 @@ export default function IncidentManagementPolicy() {
                   </ul>
                 </div>
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-white mb-2">
+                  <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                     Aged Care Serious Incidents
                   </h4>
                   <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -327,11 +327,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 4. Reporting Obligations and Responsibilities */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   4. Reporting Obligations and Responsibilities
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   4.1 Who Must Report
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -365,11 +365,11 @@ export default function IncidentManagementPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   4.2 How to Report
                 </h3>
                 <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-4">
-                  <h4 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                  <h4 className="text-lg font-montserrat-semibold text-white mb-2 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 text-red-400" />
                     For Immediate Emergencies
                   </h4>
@@ -377,7 +377,7 @@ export default function IncidentManagementPolicy() {
                     Call emergency services on{" "}
                     <a
                       href="tel:000"
-                      className="text-primary hover:underline font-bold"
+                      className="text-primary hover:underline font-montserrat-bold"
                     >
                       000
                     </a>{" "}
@@ -386,7 +386,7 @@ export default function IncidentManagementPolicy() {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Urgent Incidents (Business Hours)
                     </h4>
                     <p className="text-gray-300">
@@ -400,7 +400,7 @@ export default function IncidentManagementPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Serious Incidents (Anytime)
                     </h4>
                     <p className="text-gray-300">
@@ -414,7 +414,7 @@ export default function IncidentManagementPolicy() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                    <h4 className="text-lg font-montserrat-semibold text-white mb-2">
                       Non-Urgent Incidents
                     </h4>
                     <p className="text-gray-300">
@@ -424,7 +424,7 @@ export default function IncidentManagementPolicy() {
                   </div>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   4.3 What Information to Include
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -439,7 +439,7 @@ export default function IncidentManagementPolicy() {
                   <li>Your contact details and relationship to the incident</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   4.4 Protection for Reporters
                 </h3>
                 <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4 mb-4">
@@ -454,7 +454,7 @@ export default function IncidentManagementPolicy() {
                   </p>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   4.5 Mandatory Reporting to External Authorities
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -485,11 +485,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 5. Immediate Response Procedures */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   5. Immediate Response Procedures
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.1 Ensure Immediate Safety
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -503,7 +503,7 @@ export default function IncidentManagementPolicy() {
                   <li>Do not leave victims alone unless necessary for safety</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.2 Provide Immediate Medical Attention
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -517,7 +517,7 @@ export default function IncidentManagementPolicy() {
                   <li>Obtain medical documentation of injuries</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.3 Preserve Evidence
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -533,7 +533,7 @@ export default function IncidentManagementPolicy() {
                   <li>Preserve electronic evidence (messages, emails, photos)</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   5.4 Notification and Escalation
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -551,11 +551,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 6. Investigation Process */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   6. Investigation Process
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   6.1 Investigation Principles
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -586,7 +586,7 @@ export default function IncidentManagementPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   6.2 Investigation Procedure
                 </h3>
                 <ol className="list-decimal list-inside text-gray-300 space-y-3 mb-4">
@@ -617,7 +617,7 @@ export default function IncidentManagementPolicy() {
                   </li>
                 </ol>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   6.3 Timeframes for Investigation
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -639,7 +639,7 @@ export default function IncidentManagementPolicy() {
                   </li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   6.4 Communication of Outcomes
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -652,11 +652,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 7. Support for Affected Parties */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   7. Support for Affected Parties
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   7.1 Immediate Support
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -669,7 +669,7 @@ export default function IncidentManagementPolicy() {
                   <li>Do not leave affected parties alone if distressed</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   7.2 Ongoing Support
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
@@ -680,7 +680,7 @@ export default function IncidentManagementPolicy() {
                   <li>Access to community services and resources</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   7.3 Support for Witnesses and Others Impacted
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -699,11 +699,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 8. Regulatory Reporting and Notifications */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   8. Regulatory Reporting and Notifications
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   8.1 NDIS Commission Reporting
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -713,7 +713,7 @@ export default function IncidentManagementPolicy() {
                   final investigation reports submitted within 60 days.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   8.2 Aged Care Commission Reporting
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -722,7 +722,7 @@ export default function IncidentManagementPolicy() {
                   (Priority 1) or 40 days (Priority 2).
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   8.3 Other Regulatory Notifications
                 </h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -736,11 +736,11 @@ export default function IncidentManagementPolicy() {
 
               {/* 9. Actions to Prevent Recurrence */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   9. Actions to Prevent Recurrence
                 </h2>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   9.1 Root Cause Analysis
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -750,7 +750,7 @@ export default function IncidentManagementPolicy() {
                   and organizational factors.
                 </p>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   9.2 Corrective and Preventive Actions
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -766,7 +766,7 @@ export default function IncidentManagementPolicy() {
                   <li>Communication improvements</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold text-white mb-3 mt-6">
+                <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
                   9.3 Learning and Continuous Improvement
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -778,7 +778,7 @@ export default function IncidentManagementPolicy() {
 
               {/* 10. Record Keeping and Documentation */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   10. Record Keeping and Documentation
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -808,7 +808,7 @@ export default function IncidentManagementPolicy() {
 
               {/* 11. Training and Awareness */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   11. Training and Awareness
                 </h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
@@ -827,7 +827,7 @@ export default function IncidentManagementPolicy() {
 
               {/* 12. Review and Continuous Improvement */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   12. Review and Continuous Improvement
                 </h2>
                 <p className="text-gray-300 leading-relaxed">
@@ -841,7 +841,7 @@ export default function IncidentManagementPolicy() {
 
               {/* 13. Governance and Accountability */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   13. Governance and Accountability
                 </h2>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -874,13 +874,13 @@ export default function IncidentManagementPolicy() {
 
               {/* 14. Contact Information */}
               <section className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="text-2xl md:text-3xl font-montserrat-bold text-white mb-4">
                   14. Contact Information
                 </h2>
 
                 <div className="space-y-6">
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                    <h3 className="text-xl font-semibold text-white mb-3">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                       Incident Reporting (24/7)
                     </h3>
                     <p className="text-gray-300">
@@ -906,7 +906,7 @@ export default function IncidentManagementPolicy() {
                       <strong className="text-white">Emergency:</strong> Call{" "}
                       <a
                         href="tel:000"
-                        className="text-red-400 hover:underline font-bold"
+                        className="text-red-400 hover:underline font-montserrat-bold"
                       >
                         000
                       </a>{" "}
@@ -915,7 +915,7 @@ export default function IncidentManagementPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-3">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                       External Regulatory Bodies
                     </h3>
                     <div className="space-y-2 text-gray-300">
@@ -945,7 +945,7 @@ export default function IncidentManagementPolicy() {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-3">
+                    <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                       Support Services
                     </h3>
                     <div className="space-y-2 text-gray-300">
@@ -968,7 +968,7 @@ export default function IncidentManagementPolicy() {
                         </a>
                       </p>
                       <p>
-                        <strong className="text-white">Beyond Blue:</strong>{" "}
+                        <strong className="text-white">Beyond primary:</strong>{" "}
                         <a
                           href="tel:1300224636"
                           className="text-primary hover:underline"
@@ -995,7 +995,7 @@ export default function IncidentManagementPolicy() {
               {/* Footer */}
               <div className="mt-12 pt-8 border-t border-white/10">
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">
+                  <h3 className="text-xl font-montserrat-semibold text-white mb-3">
                     Acknowledgment
                   </h3>
                   <p className="text-gray-300 leading-relaxed">

@@ -78,7 +78,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
 
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-montserrat-bold tracking-tight text-white/90">
+              <h2 className="mb-2 px-4 text-md font-montserrat-bold tracking-tight text-white/90">
                 Management
               </h2>
               <div className="space-y-1">
@@ -107,6 +107,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   active={isActive("/admin/invites")}
                 />
                 <NavItem
+                  to="/admin/service-categories"
+                  icon={<Settings className="w-6 h-6" />}
+                  label="Service Categories"
+                  active={isActive("/admin/service-categories")}
+                />
+                <NavItem
                   to="/admin/service-types"
                   icon={<Settings className="w-6 h-6" />}
                   label="Service Types"
@@ -116,7 +122,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-montserrat-bold tracking-tight text-white/90">
+              <h2 className="mb-2 px-4 text-md font-montserrat-bold tracking-tight text-white/90">
                 Bookings
               </h2>
               <div className="space-y-1">
@@ -148,8 +154,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-lg font-montserrat-bold tracking-tight text-white/90">
-                Other
+              <h2 className="mb-2 px-4 text-md font-montserrat-bold tracking-tight text-white/90">
+                Others
               </h2>
               <div className="space-y-1">
                 <NavItem
@@ -236,6 +242,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/participant/chats")}
             />
+            {/* 
+            
             <NavItem
               to={"/participant/jobs"}
               icon={<SuitcaseTag className="w-6 h-6" />}
@@ -290,7 +298,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
-            <NavItem
+            {/* <NavItem
               to="/support-worker/jobs"
               icon={<SuitcaseTag className="w-6 h-6" />}
               label="Jobs"
@@ -301,6 +309,41 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Bookmark className="w-6 h-6" />}
               label="Saved Jobs"
               active={isActive("/support-worker/saved-jobs")}
+            /> */}
+          </>
+        );
+      case "provider":
+        return (
+          <>
+            <NavItem
+              to="/provider"
+              icon={<Widget5 className="w-6 h-6" />}
+              label="Dashboard"
+              active={isActive("/provider")}
+            />
+            <NavItem
+              to="/provider/events"
+              icon={<CalendarDate className="w-6 h-6" />}
+              label="Events"
+              active={isActive("/provider/events")}
+            />
+            <NavItem
+              to="/provider/accommodations"
+              icon={<Home className="w-6 h-6" />}
+              label="Accommodations"
+              active={isActive("/provider/accommodations")}
+            />
+            <NavItem
+              to="/provider/jobs"
+              icon={<SuitcaseTag className="w-6 h-6" />}
+              label="Jobs"
+              active={isActive("/provider/jobs")}
+            />
+            <NavItem
+              to="/provider/chats"
+              icon={<ChatLine className="w-6 h-6" />}
+              label="Messages"
+              active={isActive("/provider/chats")}
             />
           </>
         );
@@ -447,7 +490,7 @@ const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
   <Link
     to={to}
     className={cn(
-      "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-montserrat-semibold transition-colors relative",
+      "flex items-center gap-3 rounded-lg px-4 py-3 text-xs font-montserrat-semibold transition-colors relative",
       active
         ? "bg-primary text-white"
         : "text-white/80 hover:bg-primary-700 hover:text-white"

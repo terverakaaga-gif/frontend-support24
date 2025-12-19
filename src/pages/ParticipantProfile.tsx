@@ -5,110 +5,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Calendar,
-  MapPoint,
-  Phone,
-  Letter,
-  User,
-  Pen2,
-  ClockCircle,
-  DangerCircle,
-  UserHeart,
-  Home,
-  Shield,
-  Buildings2,
-  Star,
+  Calendar, Phone, Letter, Pen2, ClockCircle, UserHeart
 } from "@solar-icons/react";
-import { Participant } from "@/types/user.types";
 import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import EditableAvatar from "@/components/EditableAvatar";
+import { Participant } from "@/types/participant";
+import { StatsCard } from "@/components/participant/profile/ProfileUtils";
 import { cn } from "@/lib/utils";
 
-// Stats Card Component
-function StatsCard({
-  stats,
-  title,
-  Icon,
-  subtitle,
-}: {
-  stats: { total: number; subtitle: string };
-  title: string;
-  Icon: any;
-  subtitle: string;
-}) {
-  return (
-    <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-      <CardContent className="p-4 sm:p-6 relative">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-xs md:text-sm font-montserrat-bold text-gray-600">
-              {title}
-            </p>
-            <p className="md:text-2xl text-3xl font-montserrat-bold text-gray-900 group-hover:text-primary transition-colors">
-              {stats.total}
-            </p>
-            <p className="text-xs text-gray-600 font-montserrat-semibold">
-              {subtitle}
-            </p>
-          </div>
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <Icon className="w-6 h-6 md:w-7 md:h-7 text-primary" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+// Tabs
+import { SupportTab } from "@/components/participant/profile/tabs/SupportTab";
+import { PersonalTab } from "@/components/participant/profile/tabs/PersonalTab";
+import { LocationTab } from "@/components/participant/profile/tabs/LocationTab";
+import { EmergencyTab } from "@/components/participant/profile/tabs/EmergencyTab";
+import { CareTeamTab } from "@/components/participant/profile/tabs/CareTeamTab";
+import { PreferencesTab } from "@/components/participant/profile/tabs/PreferencesTab";
 
 export default function ParticipantProfile() {
   const navigate = useNavigate();
-  const {
-    data: profileData,
-    isLoading,
-    error,
-    isError,
-    refetch,
-  } = useProfile();
+  const { data: profileData, isLoading, error, isError, refetch } = useProfile();
   const [activeTab, setActiveTab] = useState("support");
 
-  if (isLoading) {
-    return <Loader type="pulse" />;
-  }
-
+  if (isLoading) return <Loader type="pulse" />;
   if (isError || !profileData) {
-    return (
-      <ErrorDisplay
-        title="Failed to load profile"
-        message={error?.message || "Unable to load profile data"}
-        onRetry={refetch}
-        showRetry={true}
-      />
-    );
+    return <ErrorDisplay title="Failed to load profile" message={error?.message || "Unable to load profile data"} onRetry={refetch} showRetry={true} />;
   }
 
-  const participant = profileData.user as Participant;
+  const participant = profileData.user as unknown as Participant;
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const handleEditProfile = () => {
-    navigate("/participant/profile/edit");
-  };
-
-  // Calculate stats from actual data
   const stats = {
-    totalSessions: { total: 0, subtitle: "All time" },
+    totalSessions: { total: 0, subtitle: "All time" }, // Can map from data if available
     upcomingSessions: { total: 0, subtitle: "Scheduled" },
-    supportNeeds: {
-      total: participant.supportNeeds?.length || 0,
-      subtitle: "Active needs",
-    },
+    supportNeeds: { total: participant.supportNeeds?.length || 0, subtitle: "Active needs" },
   };
 
   const tabButtons = [
@@ -126,68 +55,42 @@ export default function ParticipantProfile() {
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
-              My Profile
-            </h1>
-            <p className="text-gray-600">
-              Manage your personal information and care preferences
-            </p>
+            <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">My Profile</h1>
+            <p className="text-gray-600">Manage your personal information and care preferences</p>
           </div>
-          <Button
-            onClick={handleEditProfile}
-            className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <Pen2 className="w-5 h-5" />
-            Edit Profile
+          <Button onClick={() => navigate("/participant/profile/edit")} className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Pen2 className="w-5 h-5" /> Edit Profile
           </Button>
         </div>
 
-        {/* Profile Card with Avatar */}
+        {/* Profile Card */}
         <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-              <div className="flex justify-center">
-                <EditableAvatar />
-              </div>
-
+              <div className="flex justify-center"><EditableAvatar /></div>
               <div className="flex-1 space-y-3">
                 <div>
-                  <h2 className="text-2xl font-montserrat-bold text-gray-900">
-                    {participant.firstName} {participant.lastName}
-                  </h2>
-                  <Badge className="mt-2 bg-primary text-white hover:bg-primary/90">
-                    {participant.role.charAt(0).toUpperCase() +
-                      participant.role.slice(1)}
-                  </Badge>
+                  <h2 className="text-2xl font-montserrat-bold text-gray-900">{participant.firstName} {participant.lastName}</h2>
+                  <Badge className="mt-2 bg-primary text-white hover:bg-primary/90 capitalize">{participant.role}</Badge>
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary/5 transition-colors">
                     <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
                       <Letter className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-600 font-montserrat-semibold">
-                        Email
-                      </p>
-                      <p className="text-sm text-gray-900 truncate">
-                        {participant.email}
-                      </p>
+                      <p className="text-xs text-gray-600 font-montserrat-semibold">Email</p>
+                      <p className="text-sm text-gray-900 truncate">{participant.email}</p>
                     </div>
                   </div>
-
                   {participant.phone && (
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary/5 transition-colors">
                       <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
                         <Phone className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-gray-600 font-montserrat-semibold">
-                          Phone
-                        </p>
-                        <p className="text-sm text-gray-900">
-                          {participant.phone}
-                        </p>
+                        <p className="text-xs text-gray-600 font-montserrat-semibold">Phone</p>
+                        <p className="text-sm text-gray-900">{participant.phone}</p>
                       </div>
                     </div>
                   )}
@@ -197,40 +100,23 @@ export default function ParticipantProfile() {
           </CardContent>
         </Card>
 
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <StatsCard
-            stats={stats.totalSessions}
-            title="Total Sessions"
-            subtitle={stats.totalSessions.subtitle}
-            Icon={Calendar}
-          />
-          <StatsCard
-            stats={stats.upcomingSessions}
-            title="Upcoming Sessions"
-            subtitle={stats.upcomingSessions.subtitle}
-            Icon={ClockCircle}
-          />
-          <StatsCard
-            stats={stats.supportNeeds}
-            title="Support Needs"
-            subtitle={stats.supportNeeds.subtitle}
-            Icon={UserHeart}
-          />
+          <StatsCard stats={stats.totalSessions} title="Total Sessions" subtitle={stats.totalSessions.subtitle} Icon={Calendar} />
+          <StatsCard stats={stats.upcomingSessions} title="Upcoming Sessions" subtitle={stats.upcomingSessions.subtitle} Icon={ClockCircle} />
+          <StatsCard stats={stats.supportNeeds} title="Support Needs" subtitle={stats.supportNeeds.subtitle} Icon={UserHeart} />
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tabs Navigation */}
         <div className="flex gap-2 mb-6 overflow-x-auto">
           {tabButtons.map((tab) => (
             <Button
-              variant="ghost"
               key={tab.id}
+              variant="ghost"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "rounded-full h-6 text-xs font-montserrat-semibold whitespace-nowrap transition-all duration-200  hover:bg-primary-700",
-                activeTab === tab.id
-                  ? "bg-primary text-white shadow-lg"
-                  : "bg-white text-gray-600 border border-gray-300 hover:bg-primary-700"
+                "rounded-full h-6 text-xs font-montserrat-semibold whitespace-nowrap transition-all duration-200 hover:bg-primary-700",
+                activeTab === tab.id ? "bg-primary text-white shadow-lg" : "bg-white text-gray-600 border border-gray-300 hover:bg-primary-700"
               )}
             >
               {tab.label}
@@ -239,349 +125,12 @@ export default function ParticipantProfile() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === "support" && (
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6 space-y-6">
-              <div>
-                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <UserHeart className="w-5 h-5 text-primary" />
-                  Support Needs
-                </h3>
-                {participant.supportNeeds &&
-                participant.supportNeeds.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {participant.supportNeeds.map((need, index) => (
-                      <Badge
-                        key={index}
-                        className="bg-primary-100 h-6 text-primary border-0 hover:bg-primary-200 transition-colors px-4 py-2 text-xs"
-                      >
-                        {need.name}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                      <UserHeart className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <p className="text-gray-600 mb-3 font-montserrat-semibold">
-                      No support needs specified
-                    </p>
-                    <Button
-                      onClick={handleEditProfile}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Add Support Needs
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "personal" && (
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6 space-y-6">
-              <div>
-                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <User className="w-5 h-5 text-primary" />
-                  Personal Information
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 hover:bg-primary/5 transition-colors">
-                    <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
-                      Date of Birth
-                    </p>
-                    <p className="text-sm text-gray-900 font-montserrat-semibold">
-                      {participant.dateOfBirth
-                        ? formatDate(participant.dateOfBirth)
-                        : "Not provided"}
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 hover:bg-primary/5 transition-colors">
-                    <p className="text-xs text-gray-600 font-montserrat-semibold mb-1">
-                      Gender
-                    </p>
-                    <p className="text-sm text-gray-900 font-montserrat-semibold">
-                      {participant.gender
-                        ? participant.gender.charAt(0).toUpperCase() +
-                          participant.gender.slice(1)
-                        : "Not provided"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "location" && (
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
-                <MapPoint className="w-5 h-5 text-primary" />
-                Address (Residential)
-              </h3>
-
-              {participant.address ? (
-                <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                  <div className="space-y-2 text-sm text-gray-900">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                        <Home className="w-5 h-5 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        {/* FIX: Handle both string and object address formats */}
-                        {typeof participant.address === "string" ? (
-                          <p className="font-montserrat-semibold text-gray-900">
-                            {participant.address}
-                          </p>
-                        ) : (
-                          <>
-                            <p className="font-montserrat-semibold text-gray-900">
-                              {participant.address.street}
-                            </p>
-                            <p className="text-gray-700">
-                              {participant.address.city},{" "}
-                              {participant.address.state}{" "}
-                              {participant.address.postalCode}
-                            </p>
-                            <p className="text-gray-700">
-                              {participant.address.country}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <MapPoint className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <p className="text-gray-600 mb-3 font-montserrat-semibold">
-                    No address specified
-                  </p>
-                  <Button
-                    onClick={handleEditProfile}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Add Address
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "emergency" && (
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
-                <DangerCircle className="w-5 h-5 text-primary" />
-                Emergency Contact
-              </h3>
-
-              {participant.emergencyContact ? (
-                <div className="bg-primary-50 rounded-lg p-6 border-2 border-primary-100">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-3 rounded-lg bg-white border border-primary-100">
-                      <p className="text-xs text-primary-600 font-montserrat-semibold mb-1">
-                        Name
-                      </p>
-                      <p className="text-sm text-gray-900 font-montserrat-semibold">
-                        {participant.emergencyContact.name}
-                      </p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-white border border-primary-100">
-                      <p className="text-xs text-primary-600 font-montserrat-semibold mb-1">
-                        Relationship
-                      </p>
-                      <p className="text-sm text-gray-900 font-montserrat-semibold">
-                        {participant.emergencyContact.relationship}
-                      </p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-white border border-primary-100">
-                      <p className="text-xs text-primary-600 font-montserrat-semibold mb-1">
-                        Phone
-                      </p>
-                      <p className="text-sm text-gray-900 font-montserrat-semibold">
-                        {participant.emergencyContact.phone}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <DangerCircle className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <p className="text-gray-600 mb-3 font-montserrat-semibold">
-                    No emergency contact specified
-                  </p>
-                  <Button
-                    onClick={handleEditProfile}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Add Emergency Contact
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "care-team" && (
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6 space-y-6">
-              <div>
-                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" />
-                  Care Team
-                </h3>
-
-                {/* Plan Manager Section */}
-                {participant.planManager && (
-                  <div className="mb-6 p-4 rounded-lg bg-primary-50 border border-primary-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <Buildings2 className="w-4 h-4 text-primary-600" />
-                      Plan Manager
-                    </h4>
-                    <div className="space-y-2">
-                      <p className="text-sm">
-                        <span className="font-montserrat-semibold">Name:</span>{" "}
-                        {participant.planManager.name}
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-montserrat-semibold">Email:</span>{" "}
-                        {participant.planManager.email}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Support Coordinator Section */}
-                {participant.coordinator && (
-                  <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <User className="w-4 h-4 text-green-600" />
-                      Support Coordinator
-                    </h4>
-                    <div className="space-y-2">
-                      <p className="text-sm">
-                        <span className="font-montserrat-semibold">Name:</span>{" "}
-                        {participant.coordinator.name}
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-montserrat-semibold">Email:</span>{" "}
-                        {participant.coordinator.email}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Legacy care team if exists */}
-                {!participant.planManager && !participant.coordinator && (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                      <Shield className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <p className="text-gray-600 mb-3 font-montserrat-semibold">
-                      No care team members specified
-                    </p>
-                    <Button
-                      onClick={handleEditProfile}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Add Care Team Members
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "preferences" && (
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6 space-y-6">
-              <div>
-                <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-primary" />
-                  Preferences
-                </h3>
-
-                <div className="space-y-4">
-                  {/* Preferred Languages */}
-                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">
-                      Preferred Languages
-                    </h4>
-                    {participant.preferredLanguages &&
-                    participant.preferredLanguages.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {participant.preferredLanguages.map((lang, index) => (
-                          <Badge
-                            key={index}
-                            className="bg-primary-100 text-primary border-0"
-                          >
-                            {lang}
-                          </Badge>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-600">
-                        No preferred languages specified
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Preferred Genders */}
-                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">
-                      Preferred Worker Gender
-                    </h4>
-                    {participant.preferredGenders &&
-                    participant.preferredGenders.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {participant.preferredGenders.map((gender, index) => (
-                          <Badge
-                            key={index}
-                            className="bg-primary-100 text-primary border-0"
-                          >
-                            {gender}
-                          </Badge>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-600">
-                        No gender preference specified
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Notification Preferences */}
-                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                    <h4 className="font-montserrat-semibold text-gray-900 mb-2">
-                      Notification Preferences
-                    </h4>
-                    <p className="text-sm text-gray-900">
-                      {participant.notificationPreferences || "Email"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {activeTab === "support" && <SupportTab participant={participant} onEdit={() => navigate("/participant/profile/edit")} />}
+        {activeTab === "personal" && <PersonalTab participant={participant} />}
+        {activeTab === "location" && <LocationTab participant={participant} onEdit={() => navigate("/participant/profile/edit")} />}
+        {activeTab === "emergency" && <EmergencyTab participant={participant} onEdit={() => navigate("/participant/profile/edit")} />}
+        {activeTab === "care-team" && <CareTeamTab participant={participant} onEdit={() => navigate("/participant/profile/edit")} />}
+        {activeTab === "preferences" && <PreferencesTab participant={participant} />}
       </div>
     </div>
   );
