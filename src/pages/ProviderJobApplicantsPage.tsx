@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   AltArrowLeft,
@@ -9,6 +9,8 @@ import {
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/Spinner";
+import ErrorDisplay from "@/components/ErrorDisplay";
 import {
   Table,
   TableBody,
@@ -31,211 +33,49 @@ import {
   EntityData,
 } from "@/components/provider/ApprovalActionModal";
 import { toast } from "sonner";
+import { useGetJobApplications, useUpdateApplicationStatus, useGetJobById } from "@/hooks/useJobHooks";
+import Loader from "@/components/Loader";
 
-// Mock job data
-const mockJob = {
-  id: 1,
-  title: "Support Worker Position",
-  workerName: "Sarah Johnson",
-  location: "Sydney, NSW 2000",
-  hourlyRate: 35,
-  availability: "Full-time",
-};
-
-// Mock applicants data (participants who want to hire)
-const mockApplicants = {
-  new: [
-    {
-      id: 1,
-      name: "Michael Chen",
-      email: "michael.chen@email.com",
-      phone: "+61 412 345 678",
-      location: "Parramatta, NSW",
-      experience: "3 years",
-      skills: "Personal Care, Transport, Meal Prep",
-      availability: "Full-time",
-      avatar: null,
-      bio: "Looking for reliable support with daily activities and community access.",
-      appliedAt: "2025-11-20T10:30:00Z",
-      complianceStatus: [
-        { label: "NDIS Plan Active", valid: true },
-        { label: "Identity Verified", valid: true },
-        { label: "Service Agreement", valid: true },
-        { label: "Emergency Contact", valid: true },
-      ],
-      attachments: [
-        { name: "NDIS_Plan_Summary.pdf", size: "156 KB", url: "#" },
-        { name: "Support_Requirements.pdf", size: "89 KB", url: "#" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Emma Williams",
-      email: "emma.w@email.com",
-      phone: "+61 423 456 789",
-      location: "Bondi, NSW",
-      experience: "5 years",
-      skills: "Mobility Assistance, Community Access",
-      availability: "Part-time",
-      avatar: null,
-      bio: "Seeking support for weekly outings and mobility assistance.",
-      appliedAt: "2025-11-19T14:20:00Z",
-      complianceStatus: [
-        { label: "NDIS Plan Active", valid: true },
-        { label: "Identity Verified", valid: true },
-        { label: "Service Agreement", valid: false },
-        { label: "Emergency Contact", valid: true },
-      ],
-      attachments: [
-        { name: "Care_Plan.pdf", size: "234 KB", url: "#" },
-      ],
-    },
-    {
-      id: 3,
-      name: "David Brown",
-      email: "d.brown@email.com",
-      phone: "+61 434 567 890",
-      location: "Chatswood, NSW",
-      experience: "2 years",
-      skills: "Personal Care, Medication Support",
-      availability: "Casual",
-      avatar: null,
-      bio: "Need occasional support for personal care and medication management.",
-      appliedAt: "2025-11-18T09:15:00Z",
-      complianceStatus: [
-        { label: "NDIS Plan Active", valid: true },
-        { label: "Identity Verified", valid: true },
-        { label: "Service Agreement", valid: true },
-        { label: "Emergency Contact", valid: true },
-      ],
-      attachments: [
-        { name: "Medical_Summary.pdf", size: "178 KB", url: "#" },
-        { name: "Medication_Schedule.pdf", size: "45 KB", url: "#" },
-      ],
-    },
-  ],
-  accepted: [
-    {
-      id: 100,
-      name: "Lisa Anderson",
-      email: "lisa.a@email.com",
-      phone: "+61 445 678 901",
-      location: "Sydney CBD, NSW",
-      experience: "7 years",
-      skills: "Behavior Support, Therapy Support",
-      availability: "Full-time",
-      avatar: null,
-      bio: "Currently receiving support and looking to expand my care team.",
-      appliedAt: "2025-11-15T11:00:00Z",
-      complianceStatus: [
-        { label: "NDIS Plan Active", valid: true },
-        { label: "Identity Verified", valid: true },
-        { label: "Service Agreement", valid: true },
-        { label: "Emergency Contact", valid: true },
-      ],
-      attachments: [
-        { name: "Support_Plan.pdf", size: "312 KB", url: "#" },
-      ],
-    },
-    {
-      id: 101,
-      name: "James Wilson",
-      email: "j.wilson@email.com",
-      phone: "+61 456 789 012",
-      location: "Inner West, NSW",
-      experience: "4 years",
-      skills: "Personal Care, Transport, Household Tasks",
-      availability: "Part-time",
-      avatar: null,
-      bio: "Seeking reliable part-time support for various daily activities.",
-      appliedAt: "2025-11-14T16:30:00Z",
-      complianceStatus: [
-        { label: "NDIS Plan Active", valid: true },
-        { label: "Identity Verified", valid: true },
-        { label: "Service Agreement", valid: true },
-        { label: "Emergency Contact", valid: true },
-      ],
-      attachments: [
-        { name: "NDIS_Plan.pdf", size: "267 KB", url: "#" },
-      ],
-    },
-  ],
-  rejected: [
-    {
-      id: 200,
-      name: "Sarah Miller",
-      email: "s.miller@email.com",
-      phone: "+61 467 890 123",
-      location: "North Shore, NSW",
-      experience: "1 year",
-      skills: "Social Support",
-      availability: "Casual",
-      avatar: null,
-      bio: "Looking for social support and companionship.",
-      appliedAt: "2025-11-12T08:45:00Z",
-      complianceStatus: [
-        { label: "NDIS Plan Active", valid: false },
-        { label: "Identity Verified", valid: true },
-        { label: "Service Agreement", valid: false },
-        { label: "Emergency Contact", valid: false },
-      ],
-      attachments: [],
-    },
-  ],
-};
-
-type TabType = "new" | "accepted" | "rejected";
-
-// Define applicant type
-interface Applicant {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  experience: string;
-  skills: string;
-  availability: string;
-  avatar: string | null;
-  bio: string;
-  appliedAt: string;
-  complianceStatus: Array<{ label: string; valid: boolean }>;
-  attachments: Array<{ name: string; size: string; url: string }>;
-}
+type TabType = "pending" | "accepted" | "rejected";
 
 export default function ProviderJobApplicantsPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { jobId } = useParams();
-  const [currentTab, setCurrentTab] = useState<TabType>("new");
+  const [currentTab, setCurrentTab] = useState<TabType>("pending");
   const [entriesPerPage, setEntriesPerPage] = useState("5");
   const [currentPage, setCurrentPage] = useState(1);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(
-    null
-  );
+  const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
   const [actionType, setActionType] = useState<ActionType>("accept");
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Get current applicants based on tab
-  const currentApplicants = mockApplicants[currentTab];
+  // Fetch job applications
+  const { data: applicationsData, isLoading: isLoadingApplications, error: applicationsError } = useGetJobApplications(jobId || "");
+  const { data: jobData, isLoading: isLoadingJob, error: jobError } = useGetJobById(jobId || "");
+  const updateStatusMutation = useUpdateApplicationStatus();
+
+  // Filter applications by status
+  const filteredApplications = useMemo(() => {
+    if (!applicationsData?.applications) return [];
+    return applicationsData.applications.filter(app => app.status === currentTab);
+  }, [applicationsData, currentTab]);
 
   // Pagination
   const totalPages = Math.ceil(
-    currentApplicants.length / parseInt(entriesPerPage)
+    filteredApplications.length / parseInt(entriesPerPage)
   );
   const startIndex = (currentPage - 1) * parseInt(entriesPerPage);
   const endIndex = startIndex + parseInt(entriesPerPage);
-  const paginatedApplicants = currentApplicants.slice(startIndex, endIndex);
+  const paginatedApplicants = filteredApplications.slice(startIndex, endIndex);
 
   const handleTabChange = (tab: TabType) => {
     setCurrentTab(tab);
     setCurrentPage(1);
   };
 
-  const openActionModal = (applicant: Applicant, action: ActionType) => {
+  const openActionModal = (applicant: any, action: ActionType) => {
     setSelectedApplicant(applicant);
     setActionType(action);
     setIsModalOpen(true);
@@ -245,29 +85,22 @@ export default function ProviderJobApplicantsPage() {
     entityId: number | string;
     reason?: string;
   }) => {
-    setIsProcessing(true);
+    if (!selectedApplicant) return;
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const newStatus = actionType === "accept" ? "accepted" : "rejected";
+      
+      await updateStatusMutation.mutateAsync({
+        applicationId: selectedApplicant._id,
+        status: newStatus,
+      });
 
-      console.log(`${actionType} applicant:`, data);
-
-      if (actionType === "accept") {
-        toast.success(`${selectedApplicant?.name} has been accepted`);
-      } else {
-        toast.success(`${selectedApplicant?.name} has been rejected`);
-      }
-
+      toast.success(`Application ${newStatus} successfully`);
       setIsModalOpen(false);
       setSelectedApplicant(null);
-
-      // In real app, refetch data or update local state
     } catch (error) {
       console.error("Error processing action:", error);
       toast.error("Failed to process action. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -280,22 +113,46 @@ export default function ProviderJobApplicantsPage() {
   };
 
   // Convert applicant to EntityData format for the modal
-  const getEntityData = (applicant: Applicant | null): EntityData | null => {
+  const getEntityData = (applicant: any): EntityData | null => {
     if (!applicant) return null;
     return {
-      id: applicant.id,
-      name: applicant.name,
-      email: applicant.email,
-      phone: applicant.phone,
-      location: applicant.location,
-      experience: applicant.experience,
-      skills: applicant.skills,
-      availability: applicant.availability,
-      avatar: applicant.avatar,
-      complianceStatus: applicant.complianceStatus,
-      attachments: applicant.attachments,
+      id: applicant._id,
+      name: applicant.fullName || "Unknown",
+      email: applicant.email || "",
+      phone: applicant.phone || "",
+      location: applicant.location || "",
+      experience: "",
+      skills: "",
+      availability: "",
+      avatar: applicant.applicantId?.profileImage || null,
+      complianceStatus: [],
+      attachments: applicant.attachments?.map((att: any) => ({ 
+        name: att.fileName, 
+        size: `${(att.fileSize / 1024).toFixed(0)} KB`, 
+        url: att.fileUrl 
+      })) || [],
     };
   };
+
+  // Show loading state
+  if (isLoadingApplications || isLoadingJob) {
+    return (
+      <Loader />
+    );
+  }
+
+  // Show error state
+  if (applicationsError || jobError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <ErrorDisplay 
+          message={applicationsError?.message || jobError?.message || "Failed to load applications"}
+        />
+      </div>
+    );
+  }
+
+  const job = jobData;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
@@ -304,11 +161,11 @@ export default function ProviderJobApplicantsPage() {
         <GeneralHeader
           showBackButton
           stickyTop={false}
-          title={`Applicants - ${mockJob.title}`}
+          title={`Applicants - ${job?.jobRole || "Job Listing"}`}
           subtitle=""
           user={user}
           onLogout={logout}
-          onViewProfile={() => navigate("/participant/provider/profile")}
+          onViewProfile={() => navigate("/provider/profile")}
         />
 
         <div className="bg-white rounded-lg border border-gray-200">
@@ -316,14 +173,14 @@ export default function ProviderJobApplicantsPage() {
             <div className="flex gap-2 flex-wrap">
               <Button
                 size="sm"
-                onClick={() => handleTabChange("new")}
+                onClick={() => handleTabChange("pending")}
                 className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "new"
+                  currentTab === "pending"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                 }`}
               >
-                New {mockApplicants.new.length}
+                New {applicationsData?.applications?.filter(a => a.status === "pending").length || 0}
               </Button>
               <Button
                 size="sm"
@@ -334,7 +191,7 @@ export default function ProviderJobApplicantsPage() {
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                 }`}
               >
-                Accepted {mockApplicants.accepted.length}
+                Accepted {applicationsData?.applications?.filter(a => a.status === "accepted").length || 0}
               </Button>
               <Button
                 size="sm"
@@ -345,7 +202,7 @@ export default function ProviderJobApplicantsPage() {
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                 }`}
               >
-                Rejected {mockApplicants.rejected.length}
+                Rejected {applicationsData?.applications?.filter(a => a.status === "rejected").length || 0}
               </Button>
             </div>
           </div>
@@ -388,114 +245,76 @@ export default function ProviderJobApplicantsPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedApplicants.map((applicant) => (
+                  paginatedApplicants.map((applicant) => {
+                    const applicantName = applicant.fullName || "Unknown";
+                    const applicantInitials = applicantName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+                    const profileImage = applicant.applicantId?.profileImage || null;
+                    
+                    return (
                     <TableRow
-                      key={applicant.id}
+                      key={applicant._id}
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <TableCell className="px-4 md:px-6 py-4">
                         <div className="flex items-center gap-3">
+                          {profileImage ? (
+                            <img 
+                              src={profileImage} 
+                              alt={applicantName}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
                           <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-semibold">
-                            {applicant.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .toUpperCase()
-                              .slice(0, 2)}
+                            {applicantInitials}
                           </div>
+                          )}
                           <div>
                             <span className="text-sm font-semibold text-gray-900 block">
-                              {applicant.name}
+                              {applicantName}
                             </span>
                             <span className="text-xs text-gray-500 block">
-                              {applicant.location}
-                            </span>
-                            <span
-                              className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                applicant.availability === "Full-time"
-                                  ? "bg-primary-100 text-primary-800"
-                                  : applicant.availability === "Part-time"
-                                  ? "bg-purple-100 text-purple-800"
-                                  : "bg-orange-100 text-orange-800"
-                              }`}
-                            >
-                              {applicant.availability}
+                              {applicant.location || "Location not specified"}
                             </span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 hidden md:table-cell">
                         <div className="text-sm text-gray-600">
-                          <p>{applicant.email}</p>
-                          <p className="text-gray-400">{applicant.phone}</p>
+                          <p>{applicant.email || "N/A"}</p>
+                          <p className="text-gray-400">{applicant.phone || "N/A"}</p>
                         </div>
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
                         <p className="line-clamp-2 max-w-xs text-gray-600">
-                          {applicant.bio}
+                          Application submitted
                         </p>
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 hidden xl:table-cell">
-                        <div className="flex flex-wrap gap-1 max-w-xs">
-                          {applicant.skills
-                            .split(", ")
-                            .slice(0, 2)
-                            .map((skill, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          {applicant.skills.split(", ").length > 2 && (
-                            <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
-                              +{applicant.skills.split(", ").length - 2}
-                            </span>
+                        <div className="text-sm text-gray-600">
+                          {applicant.attachments && applicant.attachments.length > 0 ? (
+                            <a href={applicant.attachments[0].fileUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                              View Attachment
+                            </a>
+                          ) : (
+                            "No attachments"
                           )}
                         </div>
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
-                        {formatDate(applicant.appliedAt)}
+                        {formatDate(applicant.createdAt)}
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 hidden 2xl:table-cell">
-                        <div className="flex items-center gap-1">
-                          {applicant.complianceStatus
-                            .slice(0, 3)
-                            .map((status, i) => (
-                              <div
-                                key={i}
-                                title={status.label}
-                                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                  status.valid
-                                    ? "bg-green-100 text-green-600"
-                                    : "bg-red-100 text-red-600"
-                                }`}
-                              >
-                                {status.valid ? (
-                                  <CheckCircle className="h-4 w-4" />
-                                ) : (
-                                  <CloseCircle className="h-4 w-4" />
-                                )}
-                              </div>
-                            ))}
-                          {applicant.complianceStatus.length > 3 && (
-                            <span className="text-xs text-gray-500 ml-1">
-                              +{applicant.complianceStatus.length - 3}
-                            </span>
-                          )}
-                        </div>
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          applicant.status === "accepted" ? "bg-green-100 text-green-800" :
+                          applicant.status === "rejected" ? "bg-red-100 text-red-800" :
+                          "bg-yellow-100 text-yellow-800"
+                        }`}>
+                          {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
+                        </span>
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 text-right">
                         <div className="flex gap-2 justify-end">
-                          <button
-                            onClick={() => openActionModal(applicant, "accept")}
-                            title="View Details"
-                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                          >
-                            <Eye className="h-5 w-5 text-gray-600" />
-                          </button>
-                          {currentTab === "new" ? (
+                          {currentTab === "pending" && (
                             <>
                               <button
                                 onClick={() =>
@@ -516,31 +335,12 @@ export default function ProviderJobApplicantsPage() {
                                 <CloseCircle className="h-5 w-5 text-red-600" />
                               </button>
                             </>
-                          ) : currentTab === "accepted" ? (
-                            <button
-                              onClick={() =>
-                                openActionModal(applicant, "reject")
-                              }
-                              title="Remove"
-                              className="p-1 hover:bg-red-50 rounded-full transition-colors"
-                            >
-                              <CloseCircle className="h-5 w-5 text-red-600" />
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() =>
-                                openActionModal(applicant, "accept")
-                              }
-                              title="Accept"
-                              className="p-1 hover:bg-green-50 rounded-full transition-colors"
-                            >
-                              <CheckCircle className="h-5 w-5 text-green-600" />
-                            </button>
                           )}
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
@@ -624,8 +424,8 @@ export default function ProviderJobApplicantsPage() {
         entity={getEntityData(selectedApplicant)}
         entityType="job-application"
         actionType={actionType}
-        isLoading={isProcessing}
-        contextTitle={mockJob.title}
+        isLoading={updateStatusMutation.isPending}
+        contextTitle={job?.jobRole || "Job Listing"}
       />
     </div>
   );

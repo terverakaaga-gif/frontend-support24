@@ -155,7 +155,7 @@ export default function ProviderAccommodationsPage() {
             />
             <Button
               onClick={() =>
-                navigate("/participant/provider/accommodations/create")
+                navigate("/provider/accommodations/create")
               }
               className="bg-primary hover:bg-primary-700"
             >

@@ -73,7 +73,7 @@ export default function ProviderEventDetailsPage() {
               {mockEvent.title}
             </h2>
             <Button
-              onClick={() => navigate(`/participant/provider/events/${eventId}/edit`)}
+              onClick={() => navigate(`/provider/events/${eventId}/edit`)}
               className="bg-primary hover:bg-primary/90"
             >
               <Pen2 className="h-4 w-4 mr-2" />
@@ -157,7 +157,7 @@ export default function ProviderEventDetailsPage() {
           <div className="border-t border-gray-200 pt-6 mt-6">
             <Button
               onClick={() =>
-                navigate(`/participant/provider/events/${eventId}/participants`)
+                navigate(`/provider/events/${eventId}/participants`)
               }
               className="w-full bg-primary hover:bg-primary/90"
             >

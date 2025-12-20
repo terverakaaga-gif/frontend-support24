@@ -140,7 +140,7 @@ export default function ProviderEventsPage() {
               className="w-36 md:w-64"
             />
             <Button
-              onClick={() => navigate("/participant/provider/events/create")}
+              onClick={() => navigate("/provider/events/create")}
               className="bg-primary hover:bg-primary-700"
             >
               <AddCircle className="h-5 w-5 mr-2" />

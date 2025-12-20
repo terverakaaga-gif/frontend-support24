@@ -154,7 +154,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
   const handleViewDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowMenu(false);
-    navigate(`/participant${basePath}/${post.id}`);
+    navigate(`/${basePath}/${post.id}`);
   };
 
   const handleViewParticipants = (e: React.MouseEvent) => {
@@ -169,7 +169,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
     if (onEdit) {
       onEdit(post.id);
     } else {
-      navigate(`/participant${basePath}/${post.id}/edit`);
+      navigate(`/${basePath}/${post.id}/edit`);
     }
   };
 
@@ -239,7 +239,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
   return (
     <div
       className="bg-white border border-gray-200 rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col relative"
-      onClick={() => navigate(`/participant${basePath}/${post.id}`)}
+      onClick={() => navigate(`/${basePath}/${post.id}`)}
     >
       <div className="flex-1">
         {/* Image Placeholder with Status Badge and Menu */}

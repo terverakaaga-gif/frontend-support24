@@ -120,7 +120,7 @@ export default function ProviderAccommodationDetailsPage() {
             </div>
             <Button
               onClick={() =>
-                navigate(`/participant/provider/accommodations/${accommodationId}/edit`)
+                navigate(`/provider/accommodations/${accommodationId}/edit`)
               }
               className="bg-primary hover:bg-primary/90"
             >
@@ -236,7 +236,7 @@ export default function ProviderAccommodationDetailsPage() {
           <div className="border-t border-gray-200 pt-6 mt-6">
             <Button
               onClick={() =>
-                navigate(`/participant/provider/accommodations/${accommodationId}/interested`)
+                navigate(`/provider/accommodations/${accommodationId}/interested`)
               }
               className="w-full bg-primary hover:bg-primary/90"
             >

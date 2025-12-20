@@ -262,7 +262,7 @@ export default function ProviderAccommodationFormPage() {
       console.log("Creating new accommodation");
     }
 
-    navigate("/participant/provider/accommodations");
+    navigate("/provider/accommodations");
   };
 
   return (

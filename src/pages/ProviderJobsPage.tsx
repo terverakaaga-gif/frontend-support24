@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AltArrowLeft,
@@ -27,105 +27,57 @@ import {
   useServiceAreasByRegion,
 } from "@/hooks/useLocationHooks";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useGetMyPostedJobs, useDeleteJob } from "@/hooks/useJobHooks";
+import { Job } from "@/api/services/jobService";
+import { Spinner } from "@/components/Spinner";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import Loader from "@/components/Loader";
 
-// Mock jobs/support workers data
-const mockJobs: Post[] = [
-  {
+// Helper function to map Job API response to Post interface
+const mapJobToPost = (job: Job): Post => {
+  const getAvailabilityLabel = (jobType: string) => {
+    switch (jobType) {
+      case "fullTime":
+        return "Full-time";
+      case "partTime":
+        return "Part-time";
+      case "casual":
+        return "Casual";
+      case "contract":
+        return "Contract";
+      default:
+        return jobType;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Available";
+      case "closed":
+        return "Unavailable";
+      case "draft":
+        return "Draft";
+      default:
+        return status;
+    }
+  };
+
+  return {
     type: "job",
-    id: 1,
-    title: "Support Worker Position",
-    workerName: "Sarah Johnson",
-    skills: ["Personal Care", "Mobility Assistance", "Meal Prep", "Transport"],
-    hourlyRate: 35,
-    availability: "Full-time",
-    location: "Sydney, NSW",
-    applicants: 8,
-    status: "Available",
-    rating: 4.8,
-    experience: "5 years",
-    image: null,
-  },
-  {
-    type: "job",
-    id: 2,
-    title: "Care Assistant",
-    workerName: "Michael Chen",
-    skills: ["Transport", "Social Support", "Household Tasks"],
-    hourlyRate: 32,
-    availability: "Part-time",
-    location: "Melbourne, VIC",
-    applicants: 5,
-    status: "Available",
-    rating: 4.5,
-    experience: "3 years",
-    image: null,
-  },
-  {
-    type: "job",
-    id: 3,
-    title: "Disability Support",
-    workerName: "Emma Williams",
-    skills: ["Behavior Support", "Therapy Support", "Community Access"],
-    hourlyRate: 40,
-    availability: "Casual",
-    location: "Brisbane, QLD",
-    applicants: 12,
-    status: "Available",
-    rating: 4.9,
-    experience: "7 years",
-    image: null,
-  },
-  {
-    type: "job",
-    id: 4,
-    title: "Personal Care Worker",
-    workerName: "David Brown",
-    skills: ["Personal Care", "Medication Support", "Mobility Assistance"],
-    hourlyRate: 38,
-    availability: "Full-time",
-    location: "Perth, WA",
-    applicants: 3,
-    status: "Unavailable",
-    rating: 4.6,
-    experience: "4 years",
-    image: null,
-  },
-  {
-    type: "job",
-    id: 5,
-    title: "Community Support Worker",
-    workerName: "Lisa Anderson",
-    skills: ["Community Access", "Social Support", "Transport"],
-    hourlyRate: 33,
-    availability: "Part-time",
-    location: "Adelaide, SA",
-    applicants: 7,
-    status: "Available",
-    rating: 4.7,
-    experience: "2 years",
-    image: null,
-  },
-  {
-    type: "job",
-    id: 6,
-    title: "Senior Care Specialist",
-    workerName: "James Wilson",
-    skills: [
-      "Personal Care",
-      "Meal Prep",
-      "Medication Support",
-      "Mobility Assistance",
-    ],
-    hourlyRate: 45,
-    availability: "Full-time",
-    location: "Canberra, ACT",
-    applicants: 15,
-    status: "Available",
-    rating: 5.0,
-    experience: "10 years",
-    image: null,
-  },
-];
+    id: job._id,
+    title: job.jobRole,
+    workerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
+    skills: [], // Skills can be extracted from jobDescription if needed
+    hourlyRate: job.price,
+    availability: getAvailabilityLabel(job.jobType),
+    location: job.location,
+    applicants: job.applicationCount,
+    status: getStatusLabel(job.status),
+    image: job.postedBy.profileImage || null,
+  };
+};
 
 type FilterType = "all" | "available" | "unavailable";
 type AvailabilityType = "all" | "full-time" | "part-time" | "casual";
@@ -147,6 +99,18 @@ export default function ProviderJobsPage() {
   const [selectedServiceAreaIds, setSelectedServiceAreaIds] = useState<
     string[]
   >([]);
+
+  // Fetch my posted jobs
+  const {
+    data: jobsData,
+    isLoading: isLoadingJobs,
+    error: jobsError,
+  } = useGetMyPostedJobs({
+    includeDeleted: false,
+  });
+
+  // Delete job mutation
+  const deleteJobMutation = useDeleteJob();
 
   // Location hooks
   const { data: states = [], isLoading: isLoadingStates } = useStates();
@@ -190,30 +154,40 @@ export default function ProviderJobsPage() {
     setCurrentPage(1);
   };
 
-  // Filter jobs based on status, availability, and location
-  const filteredJobs = mockJobs.filter((job) => {
-    if (job.type !== "job") return false;
+  // Map API jobs to Post format and apply filters
+  const filteredJobs = useMemo(() => {
+    if (!jobsData?.jobs) return [];
 
-    const matchesSearch =
-      job.workerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.skills?.some((skill) =>
-        skill.toLowerCase().includes(searchQuery.toLowerCase())
+    const mappedJobs = jobsData.jobs.map(mapJobToPost);
+
+    return mappedJobs.filter((job) => {
+      // Search filter
+      const matchesSearch =
+        searchQuery === "" ||
+        job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.workerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.location?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Status filter
+      const matchesStatus =
+        currentFilter === "all" ||
+        (currentFilter === "available" && job.status === "Available") ||
+        (currentFilter === "unavailable" && job.status === "Unavailable");
+
+      // Availability filter
+      const matchesAvailability =
+        availabilityFilter === "all" ||
+        job.availability?.toLowerCase() === availabilityFilter;
+
+      // Location filters - would need to be implemented on backend
+      // For now, we'll just return true
+      const matchesLocation = true;
+
+      return (
+        matchesSearch && matchesStatus && matchesAvailability && matchesLocation
       );
-
-    const matchesStatus =
-      currentFilter === "all" ||
-      job.status?.toLowerCase() === currentFilter;
-
-    const matchesAvailability =
-      availabilityFilter === "all" ||
-      job.availability?.toLowerCase() === availabilityFilter;
-
-    // Location filters would match against worker's service areas in real implementation
-    // For now, we'll just return true as mock data doesn't have location IDs
-    const matchesLocation = true;
-
-    return matchesSearch && matchesStatus && matchesAvailability && matchesLocation;
-  });
+    });
+  }, [jobsData, searchQuery, currentFilter, availabilityFilter]);
 
   // Pagination
   const totalPages = Math.ceil(filteredJobs.length / parseInt(entriesPerPage));
@@ -221,50 +195,72 @@ export default function ProviderJobsPage() {
   const endIndex = startIndex + parseInt(entriesPerPage);
   const currentJobs = filteredJobs.slice(startIndex, endIndex);
 
-  const handleDelete = (id: number | string) => {
-    console.log("Delete job listing:", id);
+  const handleDelete = async (id: number | string) => {
+    if (window.confirm("Are you sure you want to delete this job listing?")) {
+      try {
+        await deleteJobMutation.mutateAsync(String(id));
+      } catch (error) {
+        console.error("Failed to delete job:", error);
+      }
+    }
   };
 
   const hasActiveLocationFilters =
     selectedStateId || selectedRegionId || selectedServiceAreaIds.length > 0;
 
+  if (isLoadingJobs) {
+    return <Loader />;
+  }
+
+  if (jobsError) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <ErrorDisplay message="Failed to load jobs" error={jobsError} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
       <GeneralHeader
         stickyTop={true}
-        title="Support Workers"
-        subtitle="Browse and manage support worker listings"
+        title="Job Listings"
+        subtitle="Browse and manage your job postings"
         user={user}
         onLogout={logout}
         onViewProfile={() => navigate("/provider/profile")}
         rightComponent={
-          <div className="w-fit flex gap-2">
+          <div className="w-full md:w-fit flex flex-col md:flex-row gap-2">
             <Input
               placeholder="Search by name or skill..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-36 md:w-64"
+              className="w-full md:w-36 lg:w-64"
             />
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className={showFilters ? "bg-primary text-white" : ""}
-            >
-              <Tuning2 className="h-5 w-5 mr-2" />
-              Filters
-              {hasActiveLocationFilters && (
-                <Badge className="ml-2 bg-white text-primary h-5 w-5 p-0 flex items-center justify-center rounded-full">
-                  !
-                </Badge>
-              )}
-            </Button>
-            <Button
-              onClick={() => navigate("/participant/provider/jobs/create")}
-              className="bg-primary hover:bg-primary-700"
-            >
-              <AddCircle className="h-5 w-5 mr-2" />
-              Create Jobs
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex-1 md:flex-none ${
+                  showFilters ? "bg-primary text-white" : ""
+                }`}
+              >
+                <Tuning2 className="h-5 w-5 md:mr-2" />
+                <span className="hidden md:inline">Filters</span>
+                {hasActiveLocationFilters && (
+                  <Badge className="ml-2 bg-white text-primary h-5 w-5 p-0 flex items-center justify-center rounded-full">
+                    !
+                  </Badge>
+                )}
+              </Button>
+              <Button
+                onClick={() => navigate("/provider/jobs/create")}
+                className="flex-1 md:flex-none bg-primary hover:bg-primary-700"
+              >
+                <AddCircle className="h-5 w-5 md:mr-2" />
+                <span className="hidden sm:inline">Create Jobs</span>
+              </Button>
+            </div>
           </div>
         }
       />
@@ -538,7 +534,11 @@ export default function ProviderJobsPage() {
             <PostCard
               key={job.id}
               post={job}
-              basePath="/provider/jobs"
+              basePath={
+                document.location.pathname.includes("/provider")
+                  ? "provider/jobs"
+                  : "participant/provider/jobs"
+              }
               onDelete={handleDelete}
             />
           ))}

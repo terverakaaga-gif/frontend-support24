@@ -25,6 +25,18 @@ import { useGetServiceTypes } from "@/hooks/useServiceTypeHooks";
 import { cn } from "@/lib/utils";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { commonLanguages } from "@/constants/common-languages";
+import { useGetJobById, useCreateJob, useUpdateJob } from "@/hooks/useJobHooks";
+import {
+  CreateJobRequest,
+  UpdateJobRequest,
+  JobCompetencies,
+} from "@/api/services/jobService";
+import { Spinner } from "@/components/Spinner";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { toast } from "sonner";
+import Loader from "@/components/Loader";
 
 // Mock job data for edit mode
 const mockJobData = {
@@ -48,41 +60,52 @@ const mockJobData = {
 };
 
 interface JobFormData {
-  title: string;
+  jobRole: string;
   location: string;
-  hourlyRate: string;
-  availability: string;
+  price: string;
+  jobType: string;
   status: string;
-  experience: string;
-  description: string;
-  skills: string[];
-  qualifications: string[];
-  languages: string[];
+  jobDescription: string;
+  keyResponsibilities: string;
+  requiredCompetencies: JobCompetencies;
+  additionalNote: string;
   stateId: string;
   regionId: string;
   serviceAreaIds: string[];
 }
 
-const qualificationOptions = [
-  { id: "certIII", label: "Certificate III in Individual Support" },
-  { id: "certIV", label: "Certificate IV in Disability" },
-  { id: "firstAid", label: "First Aid & CPR Certified" },
-  { id: "manualHandling", label: "Manual Handling Certified" },
-  { id: "ndisCheck", label: "NDIS Worker Screening Check" },
-  { id: "wwcc", label: "Working with Children Check" },
-  { id: "driversLicense", label: "Driver's License" },
-  { id: "ownVehicle", label: "Own Vehicle" },
+const jobRoleOptions = [
+  { value: "Support Worker", label: "Support Worker" },
+  { value: "Youth Worker", label: "Youth Worker" },
+  { value: "Nursing Assistant", label: "Nursing Assistant" },
 ];
 
-const availabilityOptions = [
-  { value: "full-time", label: "Full-time" },
-  { value: "part-time", label: "Part-time" },
+const competencyOptions = [
+  { id: "rightToWorkInAustralia", label: "Right to Work in Australia" },
+  { id: "ndisWorkerScreeningCheck", label: "NDIS Worker Screening Check" },
+  { id: "wwcc", label: "Working with Children Check" },
+  { id: "policeCheck", label: "Police Check" },
+  { id: "firstAid", label: "First Aid Certified" },
+  { id: "cpr", label: "CPR Certified" },
+  { id: "ahpraRegistration", label: "AHPRA Registration" },
+  {
+    id: "professionalIndemnityInsurance",
+    label: "Professional Indemnity Insurance",
+  },
+  { id: "covidVaccinationStatus", label: "COVID-19 Vaccination" },
+];
+
+const jobTypeOptions = [
+  { value: "fullTime", label: "Full-time" },
+  { value: "partTime", label: "Part-time" },
   { value: "casual", label: "Casual" },
+  { value: "contract", label: "Contract" },
 ];
 
 const statusOptions = [
-  { value: "available", label: "Available" },
-  { value: "unavailable", label: "Unavailable" },
+  { value: "active", label: "Active" },
+  { value: "closed", label: "Closed" },
+  { value: "draft", label: "Draft" },
 ];
 
 export default function ProviderJobFormPage() {
@@ -90,6 +113,15 @@ export default function ProviderJobFormPage() {
   const { user, logout } = useAuth();
   const { jobId } = useParams();
   const isEditMode = !!jobId;
+
+  // API hooks
+  const {
+    data: existingJob,
+    isLoading: isLoadingJob,
+    error: jobError,
+  } = useGetJobById(jobId);
+  const createJobMutation = useCreateJob();
+  const updateJobMutation = useUpdateJob();
 
   // Location hooks
   const { data: states = [], isLoading: isLoadingStates } = useStates();
@@ -120,58 +152,54 @@ export default function ProviderJobFormPage() {
   const [showAddressPredictions, setShowAddressPredictions] = useState(false);
   const [addressInputValue, setAddressInputValue] = useState("");
 
-  // Initialize form with mock data if in edit mode
-  const [formData, setFormData] = useState<JobFormData>(
-    isEditMode
-      ? {
-          title: mockJobData.title,
-          location: mockJobData.location,
-          hourlyRate: mockJobData.hourlyRate,
-          availability: mockJobData.availability,
-          status: mockJobData.status,
-          experience: mockJobData.experience,
-          description: mockJobData.description,
-          skills: mockJobData.skills,
-          qualifications: mockJobData.qualifications,
-          languages: mockJobData.languages,
-          stateId: mockJobData.stateId,
-          regionId: mockJobData.regionId,
-          serviceAreaIds: mockJobData.serviceAreaIds,
-        }
-      : {
-          title: "",
-          location: "",
-          hourlyRate: "",
-          availability: "",
-          status: "available",
-          experience: "",
-          description: "",
-          skills: [],
-          qualifications: [],
-          languages: [],
-          stateId: "",
-          regionId: "",
-          serviceAreaIds: [],
-        }
-  );
+  // Form state
+  const [formData, setFormData] = useState<JobFormData>({
+    jobRole: "",
+    location: "",
+    price: "",
+    jobType: "",
+    status: "active",
+    jobDescription: "",
+    keyResponsibilities: "",
+    requiredCompetencies: {},
+    additionalNote: "",
+    stateId: "",
+    regionId: "",
+    serviceAreaIds: [],
+  });
 
-  // File upload state
-  const [profileImage, setProfileImage] = useState<UploadedFile[]>([]);
-  const [newLanguage, setNewLanguage] = useState("");
   const [errors, setErrors] = useState<
-    Partial<Record<keyof JobFormData | "image", string>>
+    Partial<Record<keyof JobFormData, string>>
   >({});
 
-  // Sync selected state/region with form data
+  // Load existing job data in edit mode
   useEffect(() => {
-    if (isEditMode && mockJobData.stateId) {
-      setSelectedStateId(mockJobData.stateId);
-      setSelectedRegionId(mockJobData.regionId);
-      setAddressInputValue(mockJobData.location);
+    if (isEditMode && existingJob) {
+      setFormData({
+        jobRole: existingJob.jobRole,
+        location: existingJob.location,
+        price: String(existingJob.price),
+        jobType: existingJob.jobType,
+        status: existingJob.status,
+        jobDescription: existingJob.jobDescription,
+        keyResponsibilities: existingJob.keyResponsibilities || "",
+        requiredCompetencies: existingJob.requiredCompetencies,
+        additionalNote: existingJob.additionalNote || "",
+        stateId: (existingJob as any).stateId || "",
+        regionId: (existingJob as any).regionId || "",
+        serviceAreaIds: (existingJob as any).serviceAreaIds || [],
+      });
+      setAddressInputValue(existingJob.location);
+      if ((existingJob as any).stateId) {
+        setSelectedStateId((existingJob as any).stateId);
+      }
+      if ((existingJob as any).regionId) {
+        setSelectedRegionId((existingJob as any).regionId);
+      }
     }
-  }, [isEditMode]);
+  }, [isEditMode, existingJob]);
 
-  // Reset dependent fields when state changes
+  // Sync selected state/region with form data
   useEffect(() => {
     if (selectedStateId !== formData.stateId) {
       setSelectedRegionId("");
@@ -184,7 +212,7 @@ export default function ProviderJobFormPage() {
     }
   }, [selectedStateId]);
 
-  // Reset service areas when region changes
+  // Update regionId when region changes
   useEffect(() => {
     if (selectedRegionId !== formData.regionId) {
       setFormData((prev) => ({
@@ -194,39 +222,6 @@ export default function ProviderJobFormPage() {
       }));
     }
   }, [selectedRegionId]);
-
-  // Handle address input
-  const handleAddressInputChange = (value: string) => {
-    setAddressInputValue(value);
-    setFormData((prev) => ({ ...prev, location: value }));
-
-    if (value.trim().length > 2) {
-      getPlacePredictions({ input: value });
-      setShowAddressPredictions(true);
-    } else {
-      setShowAddressPredictions(false);
-    }
-  };
-
-  const handleAddressSelect = (prediction: any) => {
-    const selectedAddress = prediction.description;
-    setAddressInputValue(selectedAddress);
-    setFormData((prev) => ({ ...prev, location: selectedAddress }));
-    setShowAddressPredictions(false);
-  };
-
-  // Close address dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest("#address-autocomplete-container")) {
-        setShowAddressPredictions(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -251,22 +246,33 @@ export default function ProviderJobFormPage() {
     }));
   };
 
-  const handleSkillToggle = (skillId: string) => {
+  const handleCompetencyToggle = (competencyId: keyof JobCompetencies) => {
     setFormData((prev) => ({
       ...prev,
-      skills: prev.skills.includes(skillId)
-        ? prev.skills.filter((s) => s !== skillId)
-        : [...prev.skills, skillId],
+      requiredCompetencies: {
+        ...prev.requiredCompetencies,
+        [competencyId]: !prev.requiredCompetencies[competencyId],
+      },
     }));
   };
 
-  const handleQualificationToggle = (qualId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      qualifications: prev.qualifications.includes(qualId)
-        ? prev.qualifications.filter((q) => q !== qualId)
-        : [...prev.qualifications, qualId],
-    }));
+  const handleAddressInputChange = (value: string) => {
+    setAddressInputValue(value);
+    setFormData((prev) => ({ ...prev, location: value }));
+
+    if (value.trim().length > 2) {
+      getPlacePredictions({ input: value });
+      setShowAddressPredictions(true);
+    } else {
+      setShowAddressPredictions(false);
+    }
+  };
+
+  const handleAddressSelect = (prediction: any) => {
+    const selectedAddress = prediction.description;
+    setAddressInputValue(selectedAddress);
+    setFormData((prev) => ({ ...prev, location: selectedAddress }));
+    setShowAddressPredictions(false);
   };
 
   const handleServiceAreaToggle = (areaId: string) => {
@@ -278,97 +284,123 @@ export default function ProviderJobFormPage() {
     }));
   };
 
-  const handleAddLanguage = () => {
-    if (
-      newLanguage.trim() &&
-      !formData.languages.includes(newLanguage.trim())
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        languages: [...prev.languages, newLanguage.trim()],
-      }));
-      setNewLanguage("");
-    }
-  };
+  // Close address dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest("#address-autocomplete-container")) {
+        setShowAddressPredictions(false);
+      }
+    };
 
-  const handleRemoveLanguage = (lang: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      languages: prev.languages.filter((l) => l !== lang),
-    }));
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof JobFormData | "image", string>> = {};
+    const newErrors: Partial<Record<keyof JobFormData, string>> = {};
 
-    if (!formData.title.trim()) {
-      newErrors.title = "Job title is required";
+    if (!formData.jobRole.trim()) {
+      newErrors.jobRole = "Job role is required";
     }
 
     if (!formData.location.trim()) {
       newErrors.location = "Location is required";
     }
 
-    if (!formData.hourlyRate.trim()) {
-      newErrors.hourlyRate = "Hourly rate is required";
-    } else if (
-      isNaN(Number(formData.hourlyRate)) ||
-      Number(formData.hourlyRate) <= 0
-    ) {
-      newErrors.hourlyRate = "Please enter a valid hourly rate";
+    if (!formData.price.trim()) {
+      newErrors.price = "Price is required";
+    } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
+      newErrors.price = "Please enter a valid hourly rate";
     }
 
-    if (!formData.availability) {
-      newErrors.availability = "Availability is required";
+    if (!formData.jobType) {
+      newErrors.jobType = "Job type is required";
     }
 
-    if (!formData.experience.trim()) {
-      newErrors.experience = "Experience is required";
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = "Bio/description is required";
-    }
-
-    if (formData.skills.length === 0) {
-      newErrors.skills = "Select at least one skill";
+    if (!formData.jobDescription.trim()) {
+      newErrors.jobDescription = "Job description is required";
     }
 
     if (!formData.stateId) {
-      newErrors.stateId = "Please select a state";
+      newErrors.stateId = "State is required";
     }
 
     if (!formData.regionId) {
-      newErrors.regionId = "Please select a region";
-    }
-
-    if (formData.serviceAreaIds.length === 0) {
-      newErrors.serviceAreaIds = "Please select at least one service area";
+      newErrors.regionId = "Region is required";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    const imageFile = profileImage.length > 0 ? profileImage[0].file : null;
+    try {
+      if (isEditMode && jobId) {
+        const jobData: any = {
+          jobRole: formData.jobRole,
+          jobDescription: formData.jobDescription,
+          keyResponsibilities: formData.keyResponsibilities || undefined,
+          requiredCompetencies: formData.requiredCompetencies,
+          location: formData.location,
+          price: parseFloat(formData.price),
+          jobType: formData.jobType as any,
+          additionalNote: formData.additionalNote || undefined,
+          status: formData.status as any,
+          stateId: formData.stateId,
+          regionId: formData.regionId,
+          serviceAreaIds: formData.serviceAreaIds,
+        };
 
-    console.log("Form data:", { ...formData, image: imageFile });
+        await updateJobMutation.mutateAsync({
+          jobId,
+          data: jobData,
+        });
 
-    if (isEditMode) {
-      console.log("Updating job listing:", jobId);
-    } else {
-      console.log("Creating new job listing");
+        toast.success("Job listing updated successfully!");
+        navigate("/provider/jobs");
+      } else {
+        const jobData: any = {
+          jobRole: formData.jobRole,
+          jobDescription: formData.jobDescription,
+          keyResponsibilities: formData.keyResponsibilities || undefined,
+          requiredCompetencies: formData.requiredCompetencies,
+          location: formData.location,
+          price: parseFloat(formData.price),
+          jobType: formData.jobType as any,
+          additionalNote: formData.additionalNote || undefined,
+          stateId: formData.stateId,
+          regionId: formData.regionId,
+          serviceAreaIds: formData.serviceAreaIds,
+        };
+
+        await createJobMutation.mutateAsync(jobData);
+
+        toast.success("Job listing created successfully!");
+        navigate("/provider/jobs");
+      }
+    } catch (error) {
+      console.error("Failed to submit job:", error);
     }
-
-    navigate("/participant/provider/jobs");
   };
+
+  if (isLoadingJob && isEditMode) {
+    return <Loader />;
+  }
+
+  if (jobError && isEditMode) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+        <ErrorDisplay message="Failed to load job" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6">
@@ -376,11 +408,11 @@ export default function ProviderJobFormPage() {
       <GeneralHeader
         showBackButton
         stickyTop={false}
-        title={isEditMode ? "Edit Support Worker" : "Add Support Worker"}
+        title={isEditMode ? "Edit Job Listing" : "Create Job Listing"}
         subtitle=""
         user={user}
         onLogout={logout}
-        onViewProfile={() => navigate("/participant/provider/profile")}
+        onViewProfile={() => navigate("/provider/profile")}
       />
 
       {/* Form */}
@@ -388,74 +420,162 @@ export default function ProviderJobFormPage() {
         onSubmit={handleSubmit}
         className="bg-white rounded-lg border border-gray-200 p-6"
       >
-        {/* Image Upload */}
+        {/* Job Role */}
         <div className="mb-6">
           <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-            Profile Photo
+            Job Role
           </Label>
-          <FileDropZone
-            files={profileImage}
-            onFilesChange={setProfileImage}
-            maxFiles={1}
-            maxSizeMB={5}
-            acceptedTypes={["image/png", "image/jpeg"]}
-            showProgress={false}
-            simulateUpload={false}
-            title="Drop your photo here or"
-            subtitle="File type: PNG + JPG, File limit: 5MB"
-          />
-          {errors.image && (
-            <p className="text-xs text-red-600 mt-1">{errors.image}</p>
-          )}
-        </div>
-
-        {/* Job Title */}
-        <div className="mb-6">
-          <Label
-            htmlFor="title"
-            className="text-sm font-semibold text-gray-700 mb-2 block"
+          <Select
+            value={formData.jobRole}
+            onValueChange={(value) => handleSelectChange("jobRole", value)}
           >
-            Job Title
-          </Label>
-          <Input
-            id="title"
-            name="title"
-            placeholder="e.g., Personal Care Support Needed"
-            value={formData.title}
-            onChange={handleInputChange}
-            className={errors.title ? "border-red-500" : ""}
-          />
-          {errors.title && (
-            <p className="text-xs text-red-600 mt-1">{errors.title}</p>
+            <SelectTrigger className={errors.jobRole ? "border-red-500" : ""}>
+              <SelectValue placeholder="Select job role" />
+            </SelectTrigger>
+            <SelectContent>
+              {jobRoleOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.jobRole && (
+            <p className="text-xs text-red-600 mt-1">{errors.jobRole}</p>
           )}
         </div>
 
-        {/* Description */}
+        {/* Job Description */}
         <div className="mb-6">
           <Label
-            htmlFor="description"
+            htmlFor="jobDescription"
             className="text-sm font-semibold text-gray-700 mb-2 block"
           >
             Job Description
           </Label>
           <Textarea
-            id="description"
-            name="description"
-            placeholder="Describe what kind of support you need, your requirements, and any specific details..."
-            value={formData.description}
+            id="jobDescription"
+            name="jobDescription"
+            placeholder="Describe the job role, requirements, and expectations..."
+            value={formData.jobDescription}
             onChange={handleInputChange}
             rows={6}
-            className={errors.description ? "border-red-500" : ""}
+            className={errors.jobDescription ? "border-red-500" : ""}
           />
-          {errors.description && (
-            <p className="text-xs text-red-600 mt-1">{errors.description}</p>
+          {errors.jobDescription && (
+            <p className="text-xs text-red-600 mt-1">{errors.jobDescription}</p>
           )}
+        </div>
+
+        {/* Key Responsibilities */}
+        <div className="mb-6">
+          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            Key Responsibilities
+          </Label>
+          <div className="quill-wrapper">
+            <ReactQuill
+              theme="snow"
+              value={formData.keyResponsibilities}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, keyResponsibilities: value }))
+              }
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, 3, false] }],
+                  ["bold", "italic", "underline"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  [{ align: [] }],
+                  ["link"],
+                  ["clean"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "list",
+                "bullet",
+                "align",
+                "link",
+              ]}
+              placeholder="Describe the key responsibilities and duties..."
+            />
+          </div>
+        </div>
+
+        {/* Service Location Section */}
+        <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+          <div className="flex items-center gap-2 mb-4">
+            <Magnifer className="h-5 w-5 text-primary" />
+            <Label className="text-sm font-semibold text-gray-900">
+              Service Location
+            </Label>
+          </div>
+
+          <p className="text-xs text-gray-500 mb-4">
+            Select the state and region where this job is located.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* State Selection */}
+            <div>
+              <Label className="text-sm mb-2 block">State *</Label>
+              <Select
+                value={selectedStateId}
+                onValueChange={(value) => setSelectedStateId(value)}
+                disabled={isLoadingStates}
+              >
+                <SelectTrigger
+                  className={errors.stateId ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder="Select state..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((state) => (
+                    <SelectItem key={state._id} value={state._id}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.stateId && (
+                <p className="text-xs text-red-600 mt-1">{errors.stateId}</p>
+              )}
+            </div>
+
+            {/* Region Selection */}
+            <div>
+              <Label className="text-sm mb-2 block">Region *</Label>
+              <Select
+                value={selectedRegionId}
+                onValueChange={(value) => setSelectedRegionId(value)}
+                disabled={!selectedStateId || isLoadingRegions}
+              >
+                <SelectTrigger
+                  className={errors.regionId ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder="Select region..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {regions.map((region) => (
+                    <SelectItem key={region._id} value={region._id}>
+                      {region.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.regionId && (
+                <p className="text-xs text-red-600 mt-1">{errors.regionId}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Location with Google Places Autocomplete */}
         <div className="mb-6">
           <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-            Address
+            Specific Location/Address
           </Label>
           <div id="address-autocomplete-container" className="relative">
             <div className="relative">
@@ -511,78 +631,21 @@ export default function ProviderJobFormPage() {
           )}
         </div>
 
-        {/* Service Location Section */}
-        <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <div className="flex items-center gap-2 mb-4">
-            <Magnifer className="h-5 w-5 text-primary" />
-            <Label className="text-sm font-semibold text-gray-900">
-              Service Location (Where this worker provides services)
+        {/* Service Areas */}
+        {selectedRegionId && (
+          <div className="mb-6">
+            <Label className="text-sm font-semibold text-gray-700 mb-3 block">
+              Service Areas
             </Label>
-          </div>
-
-          <p className="text-xs text-gray-500 mb-4">
-            Select the location where this support worker provides services.
-            Participants in these areas will see this listing.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/* State Selection */}
-            <div>
-              <Label className="text-sm mb-2 block">State</Label>
-              <Select
-                value={selectedStateId}
-                onValueChange={(value) => setSelectedStateId(value)}
-                disabled={isLoadingStates}
-              >
-                <SelectTrigger
-                  className={errors.stateId ? "border-red-500" : ""}
-                >
-                  <SelectValue placeholder="Select state..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {states.map((state) => (
-                    <SelectItem key={state._id} value={state._id}>
-                      {state.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.stateId && (
-                <p className="text-xs text-red-600 mt-1">{errors.stateId}</p>
-              )}
-            </div>
-
-            {/* Region Selection */}
-            <div>
-              <Label className="text-sm mb-2 block">Region</Label>
-              <Select
-                value={selectedRegionId}
-                onValueChange={(value) => setSelectedRegionId(value)}
-                disabled={!selectedStateId || isLoadingRegions}
-              >
-                <SelectTrigger
-                  className={errors.regionId ? "border-red-500" : ""}
-                >
-                  <SelectValue placeholder="Select region..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {regions.map((region) => (
-                    <SelectItem key={region._id} value={region._id}>
-                      {region.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.regionId && (
-                <p className="text-xs text-red-600 mt-1">{errors.regionId}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Service Areas */}
-          <div>
-            <Label className="text-sm mb-2 block">Service Areas</Label>
-            {selectedRegionId && !isLoadingServiceAreas ? (
+            <p className="text-xs text-gray-500 mb-3">
+              Select the specific areas where this position will provide
+              services
+            </p>
+            {isLoadingServiceAreas ? (
+              <div className="flex items-center justify-center py-8 text-gray-500 text-sm bg-gray-50 rounded-lg border border-gray-200">
+                Loading service areas...
+              </div>
+            ) : serviceAreas.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {serviceAreas.map((area) => {
                   const isSelected = formData.serviceAreaIds.includes(area._id);
@@ -594,7 +657,7 @@ export default function ProviderJobFormPage() {
                         "cursor-pointer p-3 rounded-lg border-2 transition-all text-center",
                         isSelected
                           ? "bg-primary border-primary text-white"
-                          : "border-gray-200 hover:border-primary/50 hover:bg-gray-100 bg-white"
+                          : "border-gray-200 hover:border-primary/50 hover:bg-gray-50 bg-white"
                       )}
                     >
                       <span className="text-sm font-medium">{area.name}</span>
@@ -603,68 +666,58 @@ export default function ProviderJobFormPage() {
                 })}
               </div>
             ) : (
-              <div className="flex items-center justify-center py-8 text-gray-500 text-sm bg-white rounded-lg border border-gray-200">
-                {!selectedRegionId
-                  ? "Please select a region first"
-                  : "Loading service areas..."}
+              <div className="flex items-center justify-center py-8 text-gray-500 text-sm bg-gray-50 rounded-lg border border-gray-200">
+                No service areas available for this region
               </div>
             )}
-            {errors.serviceAreaIds && (
-              <p className="text-xs text-red-600 mt-1">
-                {errors.serviceAreaIds}
-              </p>
-            )}
           </div>
-        </div>
+        )}
 
-        {/* Hourly Rate, Availability, Status, Experience */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {/* Price, Job Type, Status */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
             <Label
-              htmlFor="hourlyRate"
+              htmlFor="price"
               className="text-sm font-semibold text-gray-700 mb-2 block"
             >
-              Hourly Rate ($)
+              Price ($)
             </Label>
             <Input
-              id="hourlyRate"
-              name="hourlyRate"
+              id="price"
+              name="price"
               type="number"
-              placeholder="35"
-              value={formData.hourlyRate}
+              step="0.01"
+              placeholder="35.50"
+              value={formData.price}
               onChange={handleInputChange}
-              className={errors.hourlyRate ? "border-red-500" : ""}
+              className={errors.price ? "border-red-500" : ""}
             />
-            {errors.hourlyRate && (
-              <p className="text-xs text-red-600 mt-1">{errors.hourlyRate}</p>
+            {errors.price && (
+              <p className="text-xs text-red-600 mt-1">{errors.price}</p>
             )}
           </div>
 
           <div>
             <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-              Availability
+              Job Type
             </Label>
             <Select
-              value={formData.availability}
-              onValueChange={(value) =>
-                handleSelectChange("availability", value)
-              }
+              value={formData.jobType}
+              onValueChange={(value) => handleSelectChange("jobType", value)}
             >
-              <SelectTrigger
-                className={errors.availability ? "border-red-500" : ""}
-              >
-                <SelectValue placeholder="Select" />
+              <SelectTrigger className={errors.jobType ? "border-red-500" : ""}>
+                <SelectValue placeholder="Select job type" />
               </SelectTrigger>
               <SelectContent>
-                {availabilityOptions.map((option) => (
+                {jobTypeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {errors.availability && (
-              <p className="text-xs text-red-600 mt-1">{errors.availability}</p>
+            {errors.jobType && (
+              <p className="text-xs text-red-600 mt-1">{errors.jobType}</p>
             )}
           </div>
 
@@ -677,7 +730,7 @@ export default function ProviderJobFormPage() {
               onValueChange={(value) => handleSelectChange("status", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select" />
+                <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
                 {statusOptions.map((option) => (
@@ -688,199 +741,116 @@ export default function ProviderJobFormPage() {
               </SelectContent>
             </Select>
           </div>
-
-          <div>
-            <Label
-              htmlFor="experience"
-              className="text-sm font-semibold text-gray-700 mb-2 block"
-            >
-              Experience (years)
-            </Label>
-            <Input
-              id="experience"
-              name="experience"
-              type="number"
-              placeholder="5"
-              value={formData.experience}
-              onChange={handleInputChange}
-              className={errors.experience ? "border-red-500" : ""}
-            />
-            {errors.experience && (
-              <p className="text-xs text-red-600 mt-1">{errors.experience}</p>
-            )}
-          </div>
         </div>
 
-        {/* Skills/Services */}
+        {/* Required Competencies */}
         <div className="mb-6">
           <Label className="text-sm font-semibold text-gray-700 mb-3 block">
-            Skills & Services
+            Required Competencies
           </Label>
-          {errors.skills && (
-            <p className="text-xs text-red-600 mb-2">{errors.skills}</p>
-          )}
-          {isLoadingServiceTypes ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {serviceTypes.map((service) => {
-                const isSelected = formData.skills.includes(service._id);
-                return (
-                  <div
-                    key={service._id}
-                    onClick={() => handleSkillToggle(service._id)}
-                    className={cn(
-                      "cursor-pointer p-3 rounded-lg border-2 transition-all",
-                      isSelected
-                        ? "bg-primary border-primary text-white"
-                        : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={isSelected}
-                        className={isSelected ? "border-white" : ""}
-                      />
-                      <span className="text-sm font-medium">
-                        {service.name}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Qualifications & Certifications - Two column layout */}
-        <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">
-            Qualifications & Certifications
-          </Label>
-          <p className="text-xs text-gray-500 mb-3">
-            Select the qualifications this support worker holds
-          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {qualificationOptions.map((qual) => {
-              const isSelected = formData.qualifications.includes(qual.id);
-              return (
-                <div
-                  key={qual.id}
-                  onClick={() => handleQualificationToggle(qual.id)}
-                  className={cn(
-                    "cursor-pointer p-3 rounded-lg border-2 transition-all",
-                    isSelected
-                      ? "bg-green-50 border-green-500"
-                      : "border-gray-200 hover:border-green-300 hover:bg-gray-50"
-                  )}
+            {competencyOptions.map((competency) => (
+              <div key={competency.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={competency.id}
+                  checked={
+                    formData.requiredCompetencies[
+                      competency.id as keyof JobCompetencies
+                    ] === true
+                  }
+                  onCheckedChange={() =>
+                    handleCompetencyToggle(
+                      competency.id as keyof JobCompetencies
+                    )
+                  }
+                />
+                <label
+                  htmlFor={competency.id}
+                  className="text-sm text-gray-700 cursor-pointer"
                 >
-                  <div className="flex items-center gap-3">
-                    <Checkbox
-                      checked={isSelected}
-                      className={
-                        isSelected
-                          ? "border-green-500 data-[state=checked]:bg-green-500"
-                          : ""
-                      }
-                    />
-                    <span
-                      className={cn(
-                        "text-sm font-medium",
-                        isSelected ? "text-green-700" : "text-gray-700"
-                      )}
-                    >
-                      {qual.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+                  {competency.label}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Languages */}
+        {/* Additional Notes */}
         <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">
-            Languages
+          <Label
+            htmlFor="additionalNote"
+            className="text-sm font-semibold text-gray-700 mb-2 block"
+          >
+            Additional Notes
           </Label>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {formData.languages.map((lang) => (
-              <span
-                key={lang}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full"
-              >
-                {lang}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveLanguage(lang)}
-                  className="text-gray-500 hover:text-red-600"
-                >
-                  <CloseSquare className="h-4 w-4" />
-                </button>
-              </span>
-            ))}
-            {formData.languages.length === 0 && (
-              <span className="text-sm text-gray-400">
-                No languages added yet
-              </span>
-            )}
-          </div>
-          <div className="flex gap-2 mb-3">
-            <Input
-              placeholder="Add a language"
-              value={newLanguage}
-              onChange={(e) => setNewLanguage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleAddLanguage();
-                }
-              }}
-              className="flex-1"
-            />
-            <Button
-              type="button"
-              onClick={handleAddLanguage}
-              variant="outline"
-              className="shrink-0"
-            >
-              <AddCircle className="h-4 w-4 mr-1" />
-              Add
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {commonLanguages
-              .filter((lang) => !formData.languages.includes(lang))
-              .map((language) => (
-                <Button
-                  key={language}
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      languages: [...prev.languages, language],
-                    }));
-                  }}
-                  className="h-8 px-3 text-xs border hover:text-white hover:bg-primary hover:border-gray-600 text-black"
-                >
-                  + {language}
-                </Button>
-              ))}
-          </div>
+          <Textarea
+            id="additionalNote"
+            name="additionalNote"
+            placeholder="Any additional information, special requirements, or notes..."
+            value={formData.additionalNote}
+            onChange={handleInputChange}
+            rows={3}
+          />
         </div>
 
         {/* Submit Button */}
         <Button
           type="submit"
+          disabled={createJobMutation.isPending || updateJobMutation.isPending}
           className="w-full bg-primary hover:bg-primary/90 h-12"
         >
-          {isEditMode ? "Update Listing" : "Publish Listing"}
+          {createJobMutation.isPending || updateJobMutation.isPending
+            ? "Submitting..."
+            : isEditMode
+            ? "Update Job Listing"
+            : "Create Job Listing"}
         </Button>
       </form>
+
+      {/* Custom styles for ReactQuill */}
+      <style>
+        {`
+          .quill-wrapper .ql-toolbar {
+            border: 1px solid #d1d5db;
+            border-bottom: none;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+          }
+
+          .quill-wrapper .ql-container {
+            border: 1px solid #d1d5db;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+          }
+
+          .quill-wrapper .ql-editor {
+            min-height: 150px;
+          }
+
+          .quill-wrapper .ql-editor.ql-blank::before {
+            font-style: normal;
+            color: #9ca3af;
+          }
+
+          .quill-wrapper .ql-toolbar.ql-snow {
+            border-color: #d1d5db;
+          }
+
+          .quill-wrapper .ql-container.ql-snow {
+            border-color: #d1d5db;
+          }
+
+          .quill-wrapper .ql-editor:focus {
+            outline: none;
+          }
+
+          .quill-wrapper:focus-within .ql-toolbar,
+          .quill-wrapper:focus-within .ql-container {
+            border-color: #008cff;
+            box-shadow: 0 0 0 2px rgba(0, 140, 255, 0.1);
+          }
+        `}
+      </style>
     </div>
   );
 }

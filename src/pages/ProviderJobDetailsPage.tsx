@@ -12,80 +12,117 @@ import {
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Mock job/support worker data
-const mockJob = {
-  id: 1,
-  title: "Support Worker Position",
-  workerName: "Sarah Johnson",
-  location: "Sydney, NSW 2000",
-  hourlyRate: 35,
-  availability: "Full-time",
-  status: "Available",
-  rating: 4.8,
-  experience: "5 years",
-  applicants: 8,
-  image: null,
-  bio: `Sarah is an experienced and compassionate support worker with over 5 years of dedicated service in the disability support sector. She is passionate about empowering individuals to live their best lives and achieve their personal goals.
-
-With extensive experience in personal care, mobility assistance, and community participation, Sarah brings a professional yet warm approach to every client interaction. She is NDIS registered and holds all required certifications including First Aid, CPR, and Manual Handling.
-
-Sarah is available for full-time work and is flexible with hours including evenings and weekends when needed. She has her own reliable vehicle and is willing to travel within the greater Sydney area.`,
-  skills: [
-    "Personal Care",
-    "Mobility Assistance",
-    "Meal Preparation",
-    "Transport",
-    "Medication Support",
-    "Community Access",
-  ],
-  qualifications: [
-    "Certificate III in Individual Support",
-    "Certificate IV in Disability",
-    "First Aid & CPR Certified",
-    "Manual Handling Certified",
-    "NDIS Worker Screening Check",
-    "Working with Children Check",
-  ],
-  languages: ["English", "Mandarin"],
-  serviceAreas: [
-    "Sydney CBD",
-    "Inner West",
-    "Eastern Suburbs",
-    "North Shore",
-  ],
-};
+import { useGetJobById } from "@/hooks/useJobHooks";
+import { Spinner } from "@/components/Spinner";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import Loader from "@/components/Loader";
 
 export default function ProviderJobDetailsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { jobId } = useParams();
 
-  const getStatusColor = (status: string) => {
+  // Fetch job data
+  const { data: jobData, isLoading, error } = useGetJobById(jobId);
+  
+  const job = jobData?.job;
+
+  const getStatusColor = (status: string | null | undefined) => {
+    if (!status) {
+      return "bg-gray-100 text-gray-800";
+    }
+    
     switch (status.toLowerCase()) {
-      case "available":
+      case "active":
         return "bg-green-100 text-green-800";
-      case "unavailable":
+      case "closed":
         return "bg-red-100 text-red-800";
-      case "pending":
+      case "draft":
         return "bg-yellow-100 text-yellow-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getAvailabilityColor = (availability: string) => {
-    switch (availability.toLowerCase()) {
-      case "full-time":
+  const getAvailabilityColor = (jobType: string) => {
+    switch (jobType) {
+      case "fullTime":
         return "bg-primary-100 text-primary-800";
-      case "part-time":
+      case "partTime":
         return "bg-purple-100 text-purple-800";
       case "casual":
         return "bg-orange-100 text-orange-800";
+      case "contract":
+        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  const getAvailabilityLabel = (jobType: string) => {
+    switch (jobType) {
+      case "fullTime":
+        return "Full-time";
+      case "partTime":
+        return "Part-time";
+      case "casual":
+        return "Casual";
+      case "contract":
+        return "Contract";
+      default:
+        return jobType;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Active";
+      case "closed":
+        return "Closed";
+      case "draft":
+        return "Draft";
+      default:
+        return status;
+    }
+  };
+
+  // Get competencies as array
+  const getCompetencies = () => {
+    if (!job?.requiredCompetencies) return [];
+    
+    const competencyMap: Record<string, string> = {
+      rightToWorkInAustralia: "Right to Work in Australia",
+      ndisWorkerScreeningCheck: "NDIS Worker Screening Check",
+      wwcc: "Working with Children Check",
+      policeCheck: "Police Check",
+      firstAid: "First Aid Certified",
+      cpr: "CPR Certified",
+      ahpraRegistration: "AHPRA Registration",
+      professionalIndemnityInsurance: "Professional Indemnity Insurance",
+      covidVaccinationStatus: "COVID-19 Vaccination",
+    };
+
+    return Object.entries(job.requiredCompetencies)
+      .filter(([_, value]) => value === true)
+      .map(([key]) => competencyMap[key] || key);
+  };
+
+  if (isLoading) {
+    return (
+     <Loader />
+    );
+  }
+
+  if (error || !job) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+        <ErrorDisplay
+          message="Failed to load job details"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
@@ -95,7 +132,7 @@ export default function ProviderJobDetailsPage() {
           <GeneralHeader
             stickyTop={false}
             showBackButton
-            title={mockJob.workerName}
+            title={job.jobRole}
             subtitle=""
             user={user}
             onLogout={() => {}}
@@ -106,10 +143,18 @@ export default function ProviderJobDetailsPage() {
         {/* Profile Image */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
           <div className="w-full h-64 md:h-80 bg-gradient-to-r from-primary-100 to-purple-100 flex items-center justify-center">
-            <div className="text-center text-gray-400">
-              <User className="h-16 w-16 mx-auto mb-2" />
-              <p className="text-sm">Profile Image</p>
-            </div>
+            {job.postedBy?.profileImage ? (
+              <img
+                src={job.postedBy.profileImage}
+                alt={`${job.postedBy?.firstName || ''} ${job.postedBy?.lastName || ''}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="text-center text-gray-400">
+                <User className="h-16 w-16 mx-auto mb-2" />
+                <p className="text-sm">Profile Image</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -119,31 +164,44 @@ export default function ProviderJobDetailsPage() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h2 className="text-xl font-bold text-gray-900">
-                  {mockJob.workerName}
+                  {job.postedBy?.firstName || 'Unknown'} {job.postedBy?.lastName || ''}
                 </h2>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                    mockJob.status
+                    job.status
                   )}`}
                 >
-                  {mockJob.status}
+                  {getStatusLabel(job.status)}
                 </span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${getAvailabilityColor(
-                    mockJob.availability
+                    job.jobType
                   )}`}
                 >
-                  {mockJob.availability}
+                  {getAvailabilityLabel(job.jobType)}
                 </span>
               </div>
-              <p className="text-sm text-gray-600">{mockJob.title}</p>
+              <p className="text-sm text-gray-600">{job.jobRole}</p>
               <div className="flex items-center gap-2 text-gray-600 mt-1">
                 <MapPoint className="h-4 w-4" />
-                <span className="text-sm">{mockJob.location}</span>
+                <span className="text-sm">{job.location}</span>
               </div>
+              {((job as any).stateId || (job as any).regionId) && (
+                <div className="flex items-center gap-2 text-gray-500 mt-1 text-xs">
+                  {(job as any).stateId?.name && (
+                    <span>{(job as any).stateId.name}</span>
+                  )}
+                  {(job as any).stateId?.name && (job as any).regionId?.name && (
+                    <span>•</span>
+                  )}
+                  {(job as any).regionId?.name && (
+                    <span>{(job as any).regionId.name}</span>
+                  )}
+                </div>
+              )}
             </div>
             <Button
-              onClick={() => navigate(`/participant/provider/jobs/${jobId}/edit`)}
+              onClick={() => navigate(`/provider/jobs/${jobId}/edit`)}
               className="bg-primary hover:bg-primary/90"
             >
               <Pen2 className="h-4 w-4 mr-2" />
@@ -152,134 +210,127 @@ export default function ProviderJobDetailsPage() {
           </div>
 
           {/* Quick Info */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="text-center">
               <DollarMinimalistic className="h-6 w-6 mx-auto mb-1 text-primary" />
               <p className="text-2xl font-bold text-primary">
-                ${mockJob.hourlyRate}
+                ${job.price}
               </p>
               <p className="text-xs text-gray-500">per hour</p>
             </div>
             <div className="text-center">
-              <Star className="h-6 w-6 mx-auto mb-1 text-yellow-500" />
+              <SuitcaseTag className="h-6 w-6 mx-auto mb-1 text-gray-600" />
               <p className="text-lg font-semibold text-gray-900">
-                {mockJob.rating}
+                {job.applicationCount}
               </p>
-              <p className="text-xs text-gray-500">Rating</p>
+              <p className="text-xs text-gray-500">Applications</p>
             </div>
             <div className="text-center">
               <ClockCircle className="h-6 w-6 mx-auto mb-1 text-gray-600" />
               <p className="text-lg font-semibold text-gray-900">
-                {mockJob.experience}
+                {getAvailabilityLabel(job.jobType)}
               </p>
-              <p className="text-xs text-gray-500">Experience</p>
-            </div>
-            <div className="text-center">
-              <SuitcaseTag className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
-                {mockJob.applicants}
-              </p>
-              <p className="text-xs text-gray-500">Interested</p>
+              <p className="text-xs text-gray-500">Work Type</p>
             </div>
           </div>
 
           {/* Applicants Preview */}
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"
-                ></div>
-              ))}
+          {job.applicationCount > 0 && (
+            <div className="flex items-center gap-2 mb-6">
+              <div className="flex -space-x-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"
+                  ></div>
+                ))}
+              </div>
+              <span className="text-sm text-gray-600">
+                +{job.applicationCount} applications received
+              </span>
             </div>
-            <span className="text-sm text-gray-600">
-              +{mockJob.applicants} participants interested
-            </span>
-          </div>
+          )}
 
-          {/* Bio */}
+          {/* Job Description */}
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              About
+              Job Description
             </h3>
             <div className="text-sm text-gray-600 space-y-4 whitespace-pre-line">
-              {mockJob.bio}
+              {job.jobDescription}
             </div>
           </div>
 
-          {/* Skills */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Skills & Services
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {mockJob.skills.map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 bg-primary/10 text-primary text-sm rounded-full"
-                >
-                  {skill}
-                </span>
-              ))}
+          {/* Key Responsibilities */}
+          {job.keyResponsibilities && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Key Responsibilities
+              </h3>
+              <div 
+                className="prose prose-sm max-w-none text-gray-600"
+                dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
+              />
             </div>
-          </div>
+          )}
 
-          {/* Qualifications */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              Qualifications & Certifications
-            </h3>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {mockJob.qualifications.map((qual, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700">{qual}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Languages */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Languages
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {mockJob.languages.map((lang, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full"
-                >
-                  {lang}
-                </span>
-              ))}
+          {/* Required Competencies */}
+          {getCompetencies().length > 0 && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Required Competencies
+              </h3>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {getCompetencies().map((competency, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">{competency}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          )}
+
+          {/* Additional Notes */}
+          {job.additionalNote && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Additional Information
+              </h3>
+              <p className="text-sm text-gray-600">{job.additionalNote}</p>
+            </div>
+          )}
 
           {/* Service Areas */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Service Areas
-            </h3>
-            <ul className="space-y-3">
-              {mockJob.serviceAreas.map((area, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <MapPoint className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700">{area}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {(job as any).serviceAreaIds && (job as any).serviceAreaIds.length > 0 && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <MapPoint className="h-5 w-5 text-primary" />
+                Service Areas
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {(job as any).serviceAreaIds.map((area: any) => (
+                  <div
+                    key={area._id}
+                    className="p-3 rounded-lg border-2 border-primary bg-primary/5 text-center"
+                  >
+                    <span className="text-sm font-medium text-gray-900">
+                      {area.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Action Button */}
           <div className="border-t border-gray-200 pt-6 mt-6">
             <Button
-              onClick={() => navigate(`/participant/provider/jobs/${jobId}/applicants`)}
+              onClick={() => navigate(`/provider/jobs/${jobId}/applicants`)}
               className="w-full bg-primary hover:bg-primary/90"
             >
-              View Interested Participants ({mockJob.applicants})
+              View Applications ({job.applicationCount})
             </Button>
           </div>
         </div>
