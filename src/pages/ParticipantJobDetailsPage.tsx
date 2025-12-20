@@ -12,87 +12,99 @@ import {
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Mock job posting data
-const mockJob = {
-  id: 1,
-  title: "Personal Care Support Needed",
-  description: `We are looking for a compassionate and experienced support worker to assist with daily personal care activities. The ideal candidate will be patient, reliable, and have excellent communication skills.
-
-Key responsibilities include:
-- Assisting with personal hygiene and grooming
-- Meal preparation and feeding assistance
-- Mobility support and transfers
-- Accompanying to medical appointments
-- Light household tasks
-
-The position requires someone who is respectful of personal boundaries, maintains confidentiality, and can work independently while following care plans. Experience with similar care needs is preferred but not essential for the right candidate.
-
-We offer flexible hours and a supportive environment. The successful applicant will become part of our care team and have opportunities for ongoing work.`,
-  location: "Sydney, NSW 2000",
-  hourlyRate: 35,
-  availability: "Full-time",
-  status: "Open",
-  experienceRequired: "2+ years",
-  applicants: 12,
-  postedDate: "2025-11-15",
-  closingDate: "2025-12-15",
-  requiredSkills: [
-    "Personal Care",
-    "Mobility Assistance",
-    "Meal Preparation",
-    "Transport",
-    "Medication Support",
-  ],
-  requiredQualifications: [
-    "Certificate III in Individual Support",
-    "First Aid & CPR Certified",
-    "NDIS Worker Screening Check",
-    "Working with Children Check",
-  ],
-  preferredQualifications: [
-    "Certificate IV in Disability",
-    "Manual Handling Certified",
-    "Driver's License",
-    "Own Vehicle",
-  ],
-  languages: ["English"],
-  serviceAreas: [
-    "Sydney CBD",
-    "Inner West",
-    "Eastern Suburbs",
-  ],
-};
+import { useGetJobById } from "@/hooks/useJobHooks";
+import Loader from "@/components/Loader";
+import ErrorDisplay from "@/components/ErrorDisplay";
 
 export default function ParticipantJobDetailsPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { jobId } = useParams();
 
-  const getStatusColor = (status: string) => {
+  // Fetch job data
+  const { data: jobData, isLoading, error } = useGetJobById(jobId);
+  
+  const job = jobData?.job;
+
+  const getStatusColor = (status: string | null | undefined) => {
+    if (!status) {
+      return "bg-gray-100 text-gray-800";
+    }
+    
     switch (status.toLowerCase()) {
-      case "open":
+      case "active":
         return "bg-green-100 text-green-800";
       case "closed":
         return "bg-red-100 text-red-800";
-      case "paused":
+      case "draft":
         return "bg-yellow-100 text-yellow-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getAvailabilityColor = (availability: string) => {
-    switch (availability.toLowerCase()) {
-      case "full-time":
+  const getAvailabilityColor = (jobType: string) => {
+    switch (jobType) {
+      case "fullTime":
         return "bg-primary-100 text-primary-800";
-      case "part-time":
+      case "partTime":
         return "bg-purple-100 text-purple-800";
       case "casual":
         return "bg-orange-100 text-orange-800";
+      case "contract":
+        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const getAvailabilityLabel = (jobType: string) => {
+    switch (jobType) {
+      case "fullTime":
+        return "Full-time";
+      case "partTime":
+        return "Part-time";
+      case "casual":
+        return "Casual";
+      case "contract":
+        return "Contract";
+      default:
+        return jobType;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Open";
+      case "closed":
+        return "Closed";
+      case "draft":
+        return "Draft";
+      default:
+        return status;
+    }
+  };
+
+  // Get competencies as array
+  const getCompetencies = () => {
+    if (!job?.requiredCompetencies) return [];
+    
+    const competencyMap: Record<string, string> = {
+      rightToWorkInAustralia: "Right to Work in Australia",
+      ndisWorkerScreeningCheck: "NDIS Worker Screening Check",
+      wwcc: "Working with Children Check",
+      policeCheck: "Police Check",
+      firstAid: "First Aid Certified",
+      cpr: "CPR Certified",
+      ahpraRegistration: "AHPRA Registration",
+      professionalIndemnityInsurance: "Professional Indemnity Insurance",
+      covidVaccinationStatus: "COVID-19 Vaccination",
+    };
+
+    return Object.entries(job.requiredCompetencies)
+      .filter(([_, value]) => value === true)
+      .map(([key]) => competencyMap[key] || key);
   };
 
   const formatDate = (dateString: string) => {
@@ -102,6 +114,18 @@ export default function ParticipantJobDetailsPage() {
       year: "numeric",
     });
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error || !job) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+        <ErrorDisplay message="Failed to load job details" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
@@ -125,31 +149,29 @@ export default function ParticipantJobDetailsPage() {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <h2 className="text-xl font-bold text-gray-900">
-                  {mockJob.title}
+                  {job.jobRole}
                 </h2>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                    mockJob.status
+                    job.status
                   )}`}
                 >
-                  {mockJob.status}
+                  {getStatusLabel(job.status)}
                 </span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${getAvailabilityColor(
-                    mockJob.availability
+                    job.jobType
                   )}`}
                 >
-                  {mockJob.availability}
+                  {getAvailabilityLabel(job.jobType)}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-gray-600 mt-1">
                 <MapPoint className="h-4 w-4" />
-                <span className="text-sm">{mockJob.location}</span>
+                <span className="text-sm">{job.location}</span>
               </div>
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                <span>Posted: {formatDate(mockJob.postedDate)}</span>
-                <span>•</span>
-                <span>Closes: {formatDate(mockJob.closingDate)}</span>
+                <span>Posted: {formatDate(job.createdAt)}</span>
               </div>
             </div>
             <Button
@@ -166,47 +188,49 @@ export default function ParticipantJobDetailsPage() {
             <div className="text-center">
               <DollarMinimalistic className="h-6 w-6 mx-auto mb-1 text-primary" />
               <p className="text-2xl font-bold text-primary">
-                ${mockJob.hourlyRate}
+                ${job.price}
               </p>
               <p className="text-xs text-gray-500">per hour</p>
             </div>
             <div className="text-center">
               <ClockCircle className="h-6 w-6 mx-auto mb-1 text-gray-600" />
               <p className="text-lg font-semibold text-gray-900">
-                {mockJob.experienceRequired}
+                {Object.values(job.requiredCompetencies).map(v => v ? 1 : 0).reduce((a, b) => a + b, 0)}
               </p>
-              <p className="text-xs text-gray-500">Experience</p>
+              <p className="text-xs text-gray-500">Competencies Checks</p>
             </div>
             <div className="text-center">
               <UsersGroupRounded className="h-6 w-6 mx-auto mb-1 text-gray-600" />
               <p className="text-lg font-semibold text-gray-900">
-                {mockJob.applicants}
+                {job.applicationCount}
               </p>
               <p className="text-xs text-gray-500">Applicants</p>
             </div>
             <div className="text-center">
               <SuitcaseTag className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
-                {mockJob.availability}
+              <p className="text-lg font-semibold text-gray-900 truncate">
+                {job.jobRole}
               </p>
-              <p className="text-xs text-gray-500">Type</p>
+              <p className="text-xs text-gray-500">Position</p>
             </div>
           </div>
 
           {/* Applicants Preview */}
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"
-                ></div>
-              ))}
+          {job.applicationCount > 0 && (
+            <div className="flex items-center gap-2 mb-6">
+              <div className="flex -space-x-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"
+                  ></div>
+                ))}
+              </div>
+              <span className="text-sm text-gray-600">
+                +{job.applicationCount} support workers have applied
+              </span>
             </div>
-            <span className="text-sm text-gray-600">
-              +{mockJob.applicants} support workers have applied
-            </span>
-          </div>
+          )}
 
           {/* Description */}
           <div className="border-t border-gray-200 pt-6">
@@ -215,91 +239,61 @@ export default function ParticipantJobDetailsPage() {
               Job Description
             </h3>
             <div className="text-sm text-gray-600 space-y-4 whitespace-pre-line">
-              {mockJob.description}
+              {job.jobDescription}
             </div>
           </div>
 
-          {/* Required Skills */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Required Skills & Services
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {mockJob.requiredSkills.map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 bg-primary/10 text-primary text-sm rounded-full"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Required Qualifications */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              Required Qualifications
-            </h3>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {mockJob.requiredQualifications.map((qual, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700">{qual}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Preferred Qualifications */}
-          {mockJob.preferredQualifications.length > 0 && (
+          {/* Required Competencies */}
+          {getCompetencies().length > 0 && (
             <div className="border-t border-gray-200 pt-6 mt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-primary-500" />
-                Preferred Qualifications (Nice to Have)
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Required Competencies
               </h3>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {mockJob.preferredQualifications.map((qual, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-primary-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">{qual}</span>
-                  </li>
+              <div className="flex flex-wrap gap-2">
+                {getCompetencies().map((comp, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-full flex items-center gap-1"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    {comp}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
 
-          {/* Languages */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Required Languages
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {mockJob.languages.map((lang, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full"
-                >
-                  {lang}
-                </span>
-              ))}
+          {/* Key Responsibilities */}
+          {job.keyResponsibilities && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Key Responsibilities
+              </h3>
+              <div 
+                className="prose prose-sm max-w-none text-gray-600"
+                dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
+              />
             </div>
-          </div>
+          )}
 
-          {/* Service Areas */}
+          {/* Additional Notes */}
+          {job.additionalNote && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Additional Information
+              </h3>
+              <p className="text-sm text-gray-600">{job.additionalNote}</p>
+            </div>
+          )}
+
+          {/* Location */}
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Service Areas
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <MapPoint className="h-5 w-5 text-primary" />
+              Location
             </h3>
-            <ul className="space-y-3">
-              {mockJob.serviceAreas.map((area, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <MapPoint className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700">{area}</span>
-                </li>
-              ))}
-            </ul>
+            <p className="text-sm text-gray-600">{job.location}</p>
           </div>
 
           {/* Action Button */}
@@ -308,7 +302,7 @@ export default function ParticipantJobDetailsPage() {
               onClick={() => navigate(`/participant/jobs/${jobId}/applicants`)}
               className="w-full bg-primary hover:bg-primary/90"
             >
-              View Applicants ({mockJob.applicants})
+              View Applicants ({job.applicationCount})
             </Button>
           </div>
         </div>

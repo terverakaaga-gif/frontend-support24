@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AltArrowLeft,
@@ -27,82 +27,55 @@ import {
   useServiceAreasByRegion,
 } from "@/hooks/useLocationHooks";
 import { Badge } from "@/components/ui/badge";
+import { useGetMyPostedJobs, useDeleteJob } from "@/hooks/useJobHooks";
+import { Job } from "@/api/services/jobService";
+import Loader from "@/components/Loader";
+import ErrorDisplay from "@/components/ErrorDisplay";
 
-// Mock jobs data
-const mockJobs: Post[] = [
-  {
+// Helper function to map Job API response to Post interface
+const mapJobToPost = (job: Job): Post => {
+  const getAvailabilityLabel = (jobType: string) => {
+    switch (jobType) {
+      case "fullTime":
+        return "Full-time";
+      case "partTime":
+        return "Part-time";
+      case "casual":
+        return "Casual";
+      case "contract":
+        return "Contract";
+      default:
+        return jobType;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Open";
+      case "closed":
+        return "Closed";
+      case "draft":
+        return "Draft";
+      default:
+        return status;
+    }
+  };
+
+  return {
     type: "job",
-    id: 1,
-    title: "Personal Care Support Needed",
-    workerName: "Looking for Support Worker",
-    skills: ["Personal Care", "Mobility Assistance", "Meal Prep"],
-    hourlyRate: 35,
-    availability: "Full-time",
-    location: "Sydney, NSW",
-    applicants: 8,
-    status: "Open",
-    rating: 0,
-    experience: "2+ years preferred",
-    image: null,
-    stateId: "nsw",
-    regionId: "sydney",
-    serviceAreaIds: ["sydney-cbd", "inner-west"],
-  },
-  {
-    type: "job",
-    id: 2,
-    title: "Community Access Support",
-    workerName: "Seeking Friendly Carer",
-    skills: ["Transport", "Social Support", "Community Access"],
-    hourlyRate: 32,
-    availability: "Part-time",
-    location: "Melbourne, VIC",
-    applicants: 5,
-    status: "Open",
-    rating: 0,
-    experience: "1+ years",
-    image: null,
-    stateId: "vic",
-    regionId: "melbourne",
-    serviceAreaIds: ["melbourne-cbd"],
-  },
-  {
-    type: "job",
-    id: 3,
-    title: "Overnight Support Required",
-    workerName: "Night Shift Support",
-    skills: ["Overnight Support", "Personal Care", "Medication Support"],
-    hourlyRate: 45,
-    availability: "Casual",
-    location: "Brisbane, QLD",
-    applicants: 3,
-    status: "Open",
-    rating: 0,
-    experience: "3+ years",
-    image: null,
-    stateId: "qld",
-    regionId: "brisbane",
-    serviceAreaIds: ["brisbane-cbd", "south-brisbane"],
-  },
-  {
-    type: "job",
-    id: 4,
-    title: "Therapy Support Assistant",
-    workerName: "Therapy Support Needed",
-    skills: ["Therapy Support", "Behavior Support"],
-    hourlyRate: 40,
-    availability: "Part-time",
-    location: "Perth, WA",
-    applicants: 2,
-    status: "Closed",
-    rating: 0,
-    experience: "Experience required",
-    image: null,
-    stateId: "wa",
-    regionId: "perth",
-    serviceAreaIds: ["perth-cbd"],
-  },
-];
+    id: job._id,
+    title: job.jobRole,
+    workerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
+    skills: [],
+    hourlyRate: job.price,
+    availability: getAvailabilityLabel(job.jobType),
+    location: job.location,
+    applicants: job.applicationCount,
+    status: getStatusLabel(job.status),
+    image: job.postedBy.profileImage || null,
+  };
+};
 
 type FilterType = "all" | "open" | "closed";
 type AvailabilityType = "all" | "full-time" | "part-time" | "casual";
@@ -124,6 +97,18 @@ export default function ParticipantJobsPage() {
   const [selectedServiceAreaIds, setSelectedServiceAreaIds] = useState<
     string[]
   >([]);
+
+  // Fetch my posted jobs
+  const {
+    data: jobsData,
+    isLoading: isLoadingJobs,
+    error: jobsError,
+  } = useGetMyPostedJobs({
+    includeDeleted: false,
+  });
+
+  // Delete job mutation
+  const deleteJobMutation = useDeleteJob();
 
   // Location hooks
   const { data: states = [], isLoading: isLoadingStates } = useStates();
@@ -167,44 +152,40 @@ export default function ParticipantJobsPage() {
     setCurrentPage(1);
   };
 
-  // Filter jobs
-  const filteredJobs = mockJobs.filter((job) => {
-    if (job.type !== "job") return false;
+  // Map API jobs to Post format and apply filters
+  const filteredJobs = useMemo(() => {
+    if (!jobsData?.jobs) return [];
 
-    const matchesSearch =
-      job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.skills?.some((skill) =>
-        skill.toLowerCase().includes(searchQuery.toLowerCase())
+    const mappedJobs = jobsData.jobs.map(mapJobToPost);
+
+    return mappedJobs.filter((job) => {
+      // Search filter
+      const matchesSearch =
+        searchQuery === "" ||
+        job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ('workerName' in job && job.workerName?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        job.location?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Status filter
+      const matchesStatus =
+        currentFilter === "all" ||
+        (currentFilter === "open" && job.status === "Open") ||
+        (currentFilter === "closed" && job.status === "Closed");
+
+      // Availability filter
+      const matchesAvailability =
+        availabilityFilter === "all" ||
+        (job.type === "job" && job.availability?.toLowerCase() === availabilityFilter);
+
+      // Location filters - would need to be implemented on backend
+      // For now, we'll just return true
+      const matchesLocation = true;
+
+      return (
+        matchesSearch && matchesStatus && matchesAvailability && matchesLocation
       );
-
-    const matchesStatus =
-      currentFilter === "all" ||
-      job.status?.toLowerCase() === currentFilter;
-
-    const matchesAvailability =
-      availabilityFilter === "all" ||
-      job.availability?.toLowerCase() === availabilityFilter;
-
-    // Location filters (mock - in real app, match against job's location data)
-    const matchesState =
-      !selectedStateId || (job as any).stateId === selectedStateId;
-    const matchesRegion =
-      !selectedRegionId || (job as any).regionId === selectedRegionId;
-    const matchesServiceAreas =
-      selectedServiceAreaIds.length === 0 ||
-      selectedServiceAreaIds.some((id) =>
-        (job as any).serviceAreaIds?.includes(id)
-      );
-
-    return (
-      matchesSearch &&
-      matchesStatus &&
-      matchesAvailability &&
-      matchesState &&
-      matchesRegion &&
-      matchesServiceAreas
-    );
-  });
+    });
+  }, [jobsData, searchQuery, currentFilter, availabilityFilter]);
 
   // Pagination
   const totalPages = Math.ceil(filteredJobs.length / parseInt(entriesPerPage));
@@ -212,12 +193,30 @@ export default function ParticipantJobsPage() {
   const endIndex = startIndex + parseInt(entriesPerPage);
   const currentJobs = filteredJobs.slice(startIndex, endIndex);
 
-  const handleDelete = (id: number | string) => {
-    console.log("Delete job posting:", id);
+  const handleDelete = async (id: number | string) => {
+    if (window.confirm("Are you sure you want to delete this job posting?")) {
+      try {
+        await deleteJobMutation.mutateAsync(id as string);
+      } catch (error) {
+        console.error("Error deleting job:", error);
+      }
+    }
   };
 
   const hasActiveLocationFilters =
     selectedStateId || selectedRegionId || selectedServiceAreaIds.length > 0;
+
+  if (isLoadingJobs) {
+    return <Loader />;
+  }
+
+  if (jobsError) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <ErrorDisplay message="Failed to load jobs" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
@@ -529,7 +528,7 @@ export default function ParticipantJobsPage() {
             <PostCard
               key={job.id}
               post={job}
-              basePath="/jobs"
+              basePath="participant/jobs"
               onDelete={handleDelete}
             />
           ))}
