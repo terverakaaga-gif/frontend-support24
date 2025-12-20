@@ -113,15 +113,12 @@ export interface JobFilters {
 }
 
 interface JobsResponse {
-  success: boolean;
-  data: {
-    jobs: Job[];
-    total: number;
-    pagination: {
-      limit: number;
-      offset: number;
-      hasMore: boolean;
-    };
+  jobs: Job[];
+  total: number;
+  pagination: {
+    limit: number;
+    offset: number;
+    hasMore: boolean;
   };
 }
 
@@ -136,28 +133,17 @@ interface MyJobsResponse {
 }
 
 interface SingleJobResponse {
-  success: boolean;
-  data: {
-    job: JobWithSaveStatus;
-    isSaved: boolean;
-    hasApplied: boolean;
-  };
+  job: JobWithSaveStatus;
+  isSaved: boolean;
+  hasApplied: boolean;
 }
 
 interface CreateJobResponse {
-  success: boolean;
-  message: string;
-  data: {
-    job: Job;
-  };
+  job: Job;
 }
 
 interface UpdateJobResponse {
-  success: boolean;
-  message: string;
-  data: {
-    job: Job;
-  };
+  job: Job;
 }
 
 interface DeleteJobResponse {
@@ -166,57 +152,40 @@ interface DeleteJobResponse {
 }
 
 interface ApplicationsResponse {
-  success: boolean;
-  data: {
-    applications: JobApplication[];
-    total: number;
-    pagination: {
-      limit: number;
-      offset: number;
-      hasMore: boolean;
-    };
+  applications: JobApplication[];
+  total: number;
+  pagination: {
+    limit: number;
+    offset: number;
+    hasMore: boolean;
   };
 }
 
 interface SingleApplicationResponse {
-  success: boolean;
-  data: {
-    application: JobApplication;
-  };
+  application: JobApplication;
 }
 
 interface UpdateApplicationStatusResponse {
-  success: boolean;
-  message: string;
-  data: {
-    application: JobApplication;
-  };
+  application: JobApplication;
 }
 
 interface SavedJobsResponse {
-  success: boolean;
-  data: {
-    savedJobs: SavedJob[];
-    total: number;
-    pagination: {
-      limit: number;
-      offset: number;
-      hasMore: boolean;
-    };
+  savedJobs: SavedJob[];
+  total: number;
+  pagination: {
+    limit: number;
+    offset: number;
+    hasMore: boolean;
   };
 }
 
 interface ToggleSaveResponse {
-  success: boolean;
-  message: string;
-  data: {
-    saved: boolean;
-  };
+  saved: boolean;
 }
 
 const jobService = {
   // Get all jobs with filters
-  getAllJobs: async (filters?: JobFilters): Promise<JobsResponse["data"]> => {
+  getAllJobs: async (filters?: JobFilters): Promise<JobsResponse> => {
     const queryParams = new URLSearchParams();
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -230,7 +199,7 @@ const jobService = {
     const url = queryString ? `/jobs?${queryString}` : "/jobs";
 
     const response = await get<JobsResponse>(url);
-    return response.data;
+    return response;
   },
 
   // Get my posted jobs
@@ -263,13 +232,13 @@ const jobService = {
   // Create job
   createJob: async (data: CreateJobRequest): Promise<Job> => {
     const response = await post<CreateJobResponse>("/jobs", data);
-    return response.data.job;
+    return response.job;
   },
 
   // Update job
   updateJob: async (jobId: string, data: UpdateJobRequest): Promise<Job> => {
     const response = await put<UpdateJobResponse>(`/jobs/${jobId}`, data);
-    return response.data.job;
+    return response.job;
   },
 
   // Delete job (soft delete)
@@ -281,7 +250,7 @@ const jobService = {
   getJobApplications: async (
     jobId: string,
     params?: { limit?: number; offset?: number }
-  ): Promise<ApplicationsResponse["data"]> => {
+  ): Promise<ApplicationsResponse> => {
     const queryParams = new URLSearchParams();
     if (params?.limit) queryParams.append("limit", String(params.limit));
     if (params?.offset) queryParams.append("offset", String(params.offset));
@@ -292,14 +261,14 @@ const jobService = {
       : `/jobs/${jobId}/applications`;
 
     const response = await get<ApplicationsResponse>(url);
-    return response.data;
+    return response;
   },
 
   // Get my applications
   getMyApplications: async (params?: {
     limit?: number;
     offset?: number;
-  }): Promise<ApplicationsResponse["data"]> => {
+  }): Promise<ApplicationsResponse> => {
     const queryParams = new URLSearchParams();
     if (params?.limit) queryParams.append("limit", String(params.limit));
     if (params?.offset) queryParams.append("offset", String(params.offset));
@@ -310,7 +279,7 @@ const jobService = {
       : "/jobs/user/my-applications";
 
     const response = await get<ApplicationsResponse>(url);
-    return response.data;
+    return response;
   },
 
   // Get single application
@@ -320,7 +289,7 @@ const jobService = {
     const response = await get<SingleApplicationResponse>(
       `/jobs/applications/${applicationId}`
     );
-    return response.data.application;
+    return response.application;
   },
 
   // Update application status
@@ -332,7 +301,7 @@ const jobService = {
       `/jobs/applications/${applicationId}/status`,
       { status }
     );
-    return response.data.application;
+    return response.application;
   },
 
   // Delete application (soft delete)
@@ -347,9 +316,14 @@ const jobService = {
   ): Promise<JobApplication> => {
     const response = await post<SingleApplicationResponse>(
       `/jobs/${jobId}/apply`,
-      formData
+      formData,
+      {
+        headers: {
+          "Content-Type": undefined, // Let axios set it automatically with boundary
+        },
+      }
     );
-    return response.data.application;
+    return response.application;
   },
 
   // Save a job
@@ -368,14 +342,14 @@ const jobService = {
       `/jobs/${jobId}/toggle-save`,
       {}
     );
-    return response.data.saved;
+    return response.saved;
   },
 
   // Get my saved jobs
   getMySavedJobs: async (params?: {
     limit?: number;
     offset?: number;
-  }): Promise<SavedJobsResponse["data"]> => {
+  }): Promise<SavedJobsResponse> => {
     const queryParams = new URLSearchParams();
     if (params?.limit) queryParams.append("limit", String(params.limit));
     if (params?.offset) queryParams.append("offset", String(params.offset));
@@ -386,7 +360,7 @@ const jobService = {
       : "/jobs/user/saved";
 
     const response = await get<SavedJobsResponse>(url);
-    return response.data;
+    return response;
   },
 };
 

@@ -194,7 +194,7 @@ export const useApplyForJob = () => {
       toast.success("Application submitted successfully!");
     },
     onError: (error: any) => {
-      const errorMessage = error.response?.data?.message || "Failed to submit application";
+      const errorMessage = error.response?.data?.error || "Failed to submit application";
       toast.error(errorMessage);
       console.error("Apply for job error:", error);
     },

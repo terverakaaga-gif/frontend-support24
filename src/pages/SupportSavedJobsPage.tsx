@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AltArrowLeft,
   AltArrowRight,
   BookmarkCircle,
-  MapPoint,
   Magnifer,
   SuitcaseTag,
-  DollarMinimalistic,
-  ClockCircle,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
@@ -21,62 +18,15 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
-
-interface SavedJob {
-  id: number;
-  title: string;
-  providerName: string;
-  providerImage: string | null;
-  location: string;
-  hourlyRate: number;
-  description: string;
-  postedDate: string;
-  savedDate: string;
-  isEarlyApplicant: boolean;
-  isApplied: boolean;
-}
-
-const mockSavedJobs: SavedJob[] = [
-  {
-    id: 1,
-    title: "Support Worker",
-    providerName: "Care Plus Services",
-    providerImage: null,
-    location: "Albion Park, AU",
-    hourlyRate: 50,
-    description: "I am looking for a compassionate and reliable support worker...",
-    postedDate: "19th Nov, 2025",
-    savedDate: "20th Nov, 2025",
-    isEarlyApplicant: true,
-    isApplied: false,
-  },
-  {
-    id: 2,
-    title: "Disability Support Worker",
-    providerName: "Horizon Care",
-    providerImage: null,
-    location: "Sydney, NSW",
-    hourlyRate: 45,
-    description: "Seeking an experienced disability support worker for our client...",
-    postedDate: "18th Nov, 2025",
-    savedDate: "19th Nov, 2025",
-    isEarlyApplicant: false,
-    isApplied: false,
-  },
-  {
-    id: 3,
-    title: "Personal Care Assistant",
-    providerName: "Unity Support",
-    providerImage: null,
-    location: "Melbourne, VIC",
-    hourlyRate: 42,
-    description: "Looking for a dedicated personal care assistant to provide daily support...",
-    postedDate: "17th Nov, 2025",
-    savedDate: "18th Nov, 2025",
-    isEarlyApplicant: true,
-    isApplied: true,
-  },
-];
+import {
+  useGetMySavedJobs,
+  useToggleSaveJob,
+  useGetMyApplications,
+} from "@/hooks/useJobHooks";
+import Loader from "@/components/Loader";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { formatDistanceToNow } from "date-fns";
+import { JobPostingCard } from "@/components/supportworker/JobPostingCard";
 
 export default function SupportSavedJobsPage() {
   const navigate = useNavigate();
@@ -84,16 +34,62 @@ export default function SupportSavedJobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState("10");
   const [currentPage, setCurrentPage] = useState(1);
-  const [savedJobs, setSavedJobs] = useState<SavedJob[]>(mockSavedJobs);
+
+  // Fetch saved jobs and applications
+  const {
+    data: savedJobsData,
+    isLoading: isLoadingSavedJobs,
+    error: savedJobsError,
+  } = useGetMySavedJobs();
+  const { data: applicationsData } = useGetMyApplications();
+  const toggleSaveMutation = useToggleSaveJob();
+
+  // Get applied job IDs
+  const appliedJobIds = useMemo(() => {
+    if (!applicationsData?.applications) return new Set<string>();
+    return new Set(
+      applicationsData.applications.map((app) =>
+        typeof app.jobId === "string" ? app.jobId : app.jobId._id
+      )
+    );
+  }, [applicationsData]);
+
+  // Map saved jobs to display format
+  const savedJobs = useMemo(() => {
+    if (!savedJobsData?.savedJobs) return [];
+
+    return savedJobsData.savedJobs.map((savedJob) => {
+      const job = savedJob.jobId;
+      return {
+        id: job._id,
+        title: job.jobRole,
+        providerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
+        providerImage: job.postedBy.profileImage || null,
+        location: job.location,
+        hourlyRate: job.price,
+        description: job.jobDescription,
+        postedDate: formatDistanceToNow(new Date(job.createdAt), {
+          addSuffix: true,
+        }),
+        savedDate: formatDistanceToNow(new Date(savedJob.savedAt), {
+          addSuffix: true,
+        }),
+        isEarlyApplicant: false,
+        isApplied: appliedJobIds.has(job._id),
+      };
+    });
+  }, [savedJobsData, appliedJobIds]);
 
   // Filter saved jobs based on search
-  const filteredJobs = savedJobs.filter((job) => {
-    return (
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.providerName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  const filteredJobs = useMemo(() => {
+    return savedJobs.filter((job) => {
+      return (
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.providerName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+  }, [savedJobs, searchQuery]);
 
   // Pagination
   const totalPages = Math.ceil(filteredJobs.length / parseInt(entriesPerPage));
@@ -101,25 +97,44 @@ export default function SupportSavedJobsPage() {
   const endIndex = startIndex + parseInt(entriesPerPage);
   const currentJobs = filteredJobs.slice(startIndex, endIndex);
 
-  const handleUnsaveJob = (e: React.MouseEvent, jobId: number) => {
+  const handleUnsaveJob = async (e: React.MouseEvent, jobId: string) => {
     e.stopPropagation();
-    setSavedJobs((prev) => prev.filter((job) => job.id !== jobId));
+    try {
+      await toggleSaveMutation.mutateAsync(jobId);
+    } catch (error) {
+      console.error("Failed to unsave job:", error);
+    }
   };
 
-  const handleApply = (e: React.MouseEvent, jobId: number) => {
+  const handleApply = (e: React.MouseEvent, jobId: string) => {
     e.stopPropagation();
     navigate(`/support-worker/jobs/${jobId}`);
   };
 
-  const getStatusBadge = (job: SavedJob) => {
+  const getStatusBadge = (job: (typeof savedJobs)[0]) => {
     if (job.isApplied) {
       return { text: "Applied", class: "bg-green-100 text-green-800" };
     }
     if (job.isEarlyApplicant) {
-      return { text: "Early Applicant", class: "bg-primary-100 text-primary-800" };
+      return {
+        text: "Early Applicant",
+        class: "bg-primary-100 text-primary-800",
+      };
     }
     return { text: "Open", class: "bg-primary/10 text-primary" };
   };
+
+  if (isLoadingSavedJobs) {
+    return <Loader />;
+  }
+
+  if (savedJobsError) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+        <ErrorDisplay message="Failed to load saved jobs" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
@@ -161,86 +176,14 @@ export default function SupportSavedJobsPage() {
           {currentJobs.map((job) => {
             const status = getStatusBadge(job);
             return (
-              <div
+              <JobPostingCard
                 key={job.id}
-                onClick={() => navigate(`/support-worker/jobs/${job.id}`)}
-                className="bg-white border border-gray-200 rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col relative"
-              >
-                <div className="flex-1">
-                  {/* Image Placeholder with Status Badge and Unsave Button */}
-                  <div className="relative w-full h-36 md:h-28 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                    {job.providerImage ? (
-                      <img
-                        src={job.providerImage}
-                        alt={job.providerName}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <SuitcaseTag className="h-8 w-8 text-gray-400" />
-                    )}
-
-                    {/* Status Badge - Bottom Left */}
-                    <span
-                      className={`absolute bottom-1 left-1 px-2 py-0.5 rounded-full text-xs font-semibold ${status.class}`}
-                    >
-                      {status.text}
-                    </span>
-
-                    {/* Unsave Button - Top Right */}
-                    <button
-                      onClick={(e) => handleUnsaveJob(e, job.id)}
-                      className="absolute top-1 right-1 p-1.5 bg-white/90 hover:bg-white rounded-full shadow-sm transition-colors"
-                      title="Remove from saved"
-                    >
-                      <BookmarkCircle className="h-4 w-4 text-primary" />
-                    </button>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-1">
-                    {job.title}
-                  </h3>
-
-                  {/* Provider Name */}
-                  <p className="text-xs text-gray-500 mb-2">{job.providerName}</p>
-
-                  {/* Location */}
-                  <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
-                    <MapPoint className="h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{job.location}</span>
-                  </div>
-
-                  {/* Hourly Rate */}
-                  <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
-                    <DollarMinimalistic className="h-3 w-3 flex-shrink-0" />
-                    <span className="font-semibold text-primary text-xs p-1 w-fit bg-primary-100 rounded-full">
-                      ${job.hourlyRate}/hr
-                    </span>
-                  </div>
-
-                  {/* Saved Date */}
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <ClockCircle className="h-3 w-3 flex-shrink-0" />
-                    <span>Saved {job.savedDate}</span>
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
-                  <div className="flex items-center gap-1">
-                    <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-semibold text-gray-600">
-                      {job.providerName.charAt(0)}
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="font-montserrat-semibold"
-                    onClick={(e) => handleApply(e, job.id)}
-                  >
-                    {job.isApplied ? "View" : "Apply"}
-                  </Button>
-                </div>
-              </div>
+                job={{...job, isSaved: true}}
+                onSaveJob={(e) => handleUnsaveJob(e, job.id)}
+                onApply={(e) => handleApply(e, job.id)}
+                isActive={true}
+                variant="compact"
+              />
             );
           })}
         </div>

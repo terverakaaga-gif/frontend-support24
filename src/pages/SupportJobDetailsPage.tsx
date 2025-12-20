@@ -1,52 +1,16 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { MapPoint } from "@solar-icons/react";
+import { MapPoint, CheckCircle } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import SupportJobApplicationModal from "@/components/supportworker/SupportJobApplicationModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { JobPostingCard, JobPosting } from "@/components/supportworker/JobPostingCard";
-
-// Extended job details interface
-interface JobDetails extends JobPosting {
-  isEarlyApplicant: boolean;
-  aboutRole: string;
-  tasks: string[];
-  requirements: string[];
-  additionalNotes: string;
-}
-
-const mockJobDetails: JobDetails = {
-  id: 1,
-  title: "Support Worker",
-  providerName: "Care Plus Services",
-  providerImage: null,
-  location: "Albion Park, AU",
-  hourlyRate: 50,
-  isEarlyApplicant: true,
-  aboutRole:
-    "We are looking for a compassionate and reliable support worker to assist an elderly client with daily living activities and provide companionship. The ideal candidate should have a caring attitude, good communication skills, and experience working with seniors or individuals requiring personal support.",
-  tasks: [
-    "Assist with personal care such as bathing, dressing, and grooming.",
-    "Prepare and serve meals according to dietary needs.",
-    "Help with light household chores and laundry.",
-    "Accompany the client to appointments or short walks.",
-    "Monitor and report any changes in health or behavior.",
-    "Offer emotional support and companionship throughout the day.",
-  ],
-  requirements: [
-    "Minimum 1-2 years of caregiving or support work experience.",
-    "Basic first aid or caregiving certification preferred.",
-    "Must be patient, trustworthy, and empathetic.",
-    "Reside within or near location",
-  ],
-  additionalNotes: "Must be an early applicant",
-  postedDate: "19th Nov, 2025",
-  isSaved: false,
-  isApplied: false,
-};
+import { JobPostingCard } from "@/components/supportworker/JobPostingCard";
+import { useGetJobById, useToggleSaveJob } from "@/hooks/useJobHooks";
+import Loader from "@/components/Loader";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { formatDistanceToNow } from "date-fns";
 
 export default function SupportJobDetailsPage() {
   const navigate = useNavigate();
@@ -54,25 +18,84 @@ export default function SupportJobDetailsPage() {
   const { user, logout } = useAuth();
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
-  // In real app, fetch job details using jobId
-  const job = mockJobDetails;
+  // Fetch job details
+  const { data: jobData, isLoading, error } = useGetJobById(jobId);
+  const toggleSaveMutation = useToggleSaveJob();
 
   const handleApply = () => {
     setIsApplicationModalOpen(true);
   };
 
-  const handleApplicationSubmit = (applicationData: any) => {
-    console.log("Application submitted:", applicationData);
+  const handleApplicationSubmit = () => {
     setIsApplicationModalOpen(false);
-    // Show success message or redirect
     navigate("/support-worker/jobs");
   };
 
-  const handleSaveJob = (e: React.MouseEvent, jobId: number) => {
+  const handleSaveJob = async (e: React.MouseEvent, jobId: string) => {
     e.stopPropagation();
-    // Toggle save job status logic here
-    console.log("Toggled save for job ID:", jobId);
+    try {
+      await toggleSaveMutation.mutateAsync(jobId);
+    } catch (error) {
+      console.error("Failed to toggle save:", error);
+    }
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error || !jobData) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+        <ErrorDisplay message="Failed to load job details" />
+      </div>
+    );
+  }
+
+  const job = jobData.job;
+  const isSaved = jobData.isSaved;
+  const hasApplied = jobData.hasApplied;
+
+  // Map job to JobPostingCard format
+  const jobForCard = {
+    id: job._id,
+    title: job.jobRole,
+    providerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
+    providerImage: job.postedBy.profileImage || null,
+    location: job.location,
+    hourlyRate: job.price,
+    postedDate: formatDistanceToNow(new Date(job.createdAt), {
+      addSuffix: true,
+    }),
+    isSaved: isSaved,
+    isApplied: hasApplied,
+  };
+
+  // Get competencies as array
+  const getCompetencies = () => {
+    const competencies = [];
+    const competencyLabels: Record<string, string> = {
+      rightToWorkInAustralia: "Right to Work in Australia",
+      ndisWorkerScreeningCheck: "NDIS Worker Screening Check",
+      wwcc: "Working with Children Check",
+      policeCheck: "Police Check",
+      firstAid: "First Aid",
+      cpr: "CPR",
+      ahpraRegistration: "AHPRA Registration",
+      professionalIndemnityInsurance: "Professional Indemnity Insurance",
+      covidVaccinationStatus: "COVID-19 Vaccination",
+    };
+
+    Object.entries(job.requiredCompetencies).forEach(([key, value]) => {
+      if (value && competencyLabels[key]) {
+        competencies.push(competencyLabels[key]);
+      }
+    });
+
+    return competencies;
+  };
+
+  const competencies = getCompetencies();
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6">
@@ -92,8 +115,8 @@ export default function SupportJobDetailsPage() {
         <div className="hidden lg:block lg:w-80 xl:w-96 flex-shrink-0">
           <div className="sticky top-24">
             <JobPostingCard
-              job={job}
-              onSaveJob={handleSaveJob}
+              job={jobForCard}
+              onSaveJob={(e) => handleSaveJob(e, job._id)}
               onApply={() => setIsApplicationModalOpen(true)}
               isActive={true}
               variant="default"
@@ -109,32 +132,24 @@ export default function SupportJobDetailsPage() {
               {/* Avatar */}
               <Avatar className="w-24 h-24 mb-4 shadow-md border border-gray-300">
                 <AvatarImage
-                  src={job.providerImage || undefined}
-                  alt={job.providerName}
+                  src={job.postedBy.profileImage || undefined}
+                  alt={`${job.postedBy.firstName} ${job.postedBy.lastName}`}
                 />
                 <AvatarFallback>
-                  {job.providerName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()}
+                  {job.postedBy.firstName.charAt(0)}
+                  {job.postedBy.lastName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <h1 className="text-xl font-montserrat-semibold text-gray-900">
-                {job.title}
-              </h1>
-              <p className="text-sm text-gray-500">{job.providerName}</p>
-              <div className="flex items-center gap-3 mt-2">
-                {job.isEarlyApplicant && (
-                  <Badge className="bg-primary-100 text-primary hover:bg-primary-50 border border-primary">
-                    Be an early applicant
-                  </Badge>
-                )}
-                <span className="font-montserrat-semibold text-primary text-xs p-1 px-2 w-fit bg-primary-100 rounded-full">
-                  ${job.hourlyRate}
+                {job.jobRole}
+                <span className="font-montserrat-semibold text-primary text-xs p-1 ml-1 px-2 w-fit bg-primary-100 rounded-full">
+                  ${job.price}
                   <span className="text-gray-500 font-normal">/hr</span>
                 </span>
-              </div>
+              </h1>
+              <p className="text-sm text-gray-500">
+                {job.postedBy.firstName} {job.postedBy.lastName}
+              </p>
             </div>
 
             {/* About the Role */}
@@ -142,44 +157,43 @@ export default function SupportJobDetailsPage() {
               <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
                 About the Role
               </h2>
-              <p className="text-gray-600 leading-relaxed">{job.aboutRole}</p>
+              <p className="text-gray-600 leading-relaxed">
+                {job.jobDescription}
+              </p>
             </section>
 
-            {/* Tasks */}
-            <section className="mb-6">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
-                Tasks
-              </h2>
-              <ul className="space-y-2">
-                {job.tasks.map((task, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-gray-600"
-                  >
-                    <span className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0" />
-                    <span>{task}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {/* Key Responsibilities */}
+            {job.keyResponsibilities && (
+              <section className="mb-6">
+                <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                  Key Responsibilities
+                </h2>
+                <div
+                  className="prose prose-sm max-w-none text-gray-600"
+                  dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
+                />
+              </section>
+            )}
 
-            {/* Requirements */}
-            <section className="mb-6">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
-                Requirements
-              </h2>
-              <ul className="space-y-2">
-                {job.requirements.map((req, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-gray-600"
-                  >
-                    <span className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0" />
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {/* Required Competencies */}
+            {competencies.length > 0 && (
+              <section className="mb-6">
+                <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                  Required Competencies
+                </h2>
+                <ul className="space-y-2">
+                  {competencies.map((competency, index) => (
+                    <li
+                      key={index}
+                      className="flex items-start gap-2 text-gray-600"
+                    >
+                      <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span>{competency}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {/* Location */}
             <section className="mb-6">
@@ -193,22 +207,24 @@ export default function SupportJobDetailsPage() {
             </section>
 
             {/* Additional Notes */}
-            {job.additionalNotes && (
+            {job.additionalNote && (
               <section className="mb-8">
                 <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
                   Additional Notes
                 </h2>
-                <p className="text-gray-600">{job.additionalNotes}</p>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                  {job.additionalNote}
+                </p>
               </section>
             )}
 
             {/* Apply Button */}
             <Button
               onClick={handleApply}
-              disabled={job.isApplied}
+              disabled={hasApplied}
               className="w-full bg-primary hover:bg-primary-700 text-white py-6 text-lg font-montserrat-semibold"
             >
-              {job.isApplied ? "Already Applied" : "Apply Now"}
+              {hasApplied ? "Already Applied" : "Apply Now"}
             </Button>
           </div>
         </div>
@@ -219,7 +235,8 @@ export default function SupportJobDetailsPage() {
         isOpen={isApplicationModalOpen}
         onClose={() => setIsApplicationModalOpen(false)}
         onSubmit={handleApplicationSubmit}
-        jobTitle={job.title}
+        jobId={job._id}
+        jobTitle={job.jobRole}
       />
     </div>
   );
