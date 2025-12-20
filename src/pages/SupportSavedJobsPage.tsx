@@ -172,13 +172,13 @@ export default function SupportSavedJobsPage() {
 
       {/* Saved Jobs Grid */}
       <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {currentJobs.map((job) => {
             const status = getStatusBadge(job);
             return (
               <JobPostingCard
                 key={job.id}
-                job={{...job, isSaved: true}}
+                job={{ ...job, isSaved: true }}
                 onSaveJob={(e) => handleUnsaveJob(e, job.id)}
                 onApply={(e) => handleApply(e, job.id)}
                 isActive={true}
