@@ -27,10 +27,8 @@ import {
   useServiceAreasByRegion,
 } from "@/hooks/useLocationHooks";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useGetMyPostedJobs, useDeleteJob } from "@/hooks/useJobHooks";
 import { Job } from "@/api/services/jobService";
-import { Spinner } from "@/components/Spinner";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import Loader from "@/components/Loader";
 
@@ -165,7 +163,7 @@ export default function ProviderJobsPage() {
       const matchesSearch =
         searchQuery === "" ||
         job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.workerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (job.type === 'job' && job.workerName?.toLowerCase().includes(searchQuery.toLowerCase())) ||
         job.location?.toLowerCase().includes(searchQuery.toLowerCase());
 
       // Status filter
@@ -177,7 +175,7 @@ export default function ProviderJobsPage() {
       // Availability filter
       const matchesAvailability =
         availabilityFilter === "all" ||
-        job.availability?.toLowerCase() === availabilityFilter;
+        (job.type === 'job' && job.availability?.toLowerCase() === availabilityFilter);
 
       // Location filters - would need to be implemented on backend
       // For now, we'll just return true
@@ -215,7 +213,7 @@ export default function ProviderJobsPage() {
   if (jobsError) {
     return (
       <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
-        <ErrorDisplay message="Failed to load jobs" error={jobsError} />
+        <ErrorDisplay message="Failed to load jobs" />
       </div>
     );
   }
@@ -529,7 +527,7 @@ export default function ProviderJobsPage() {
         </div>
 
         {/* Jobs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {currentJobs.map((job) => (
             <PostCard
               key={job.id}
