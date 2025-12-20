@@ -497,7 +497,7 @@ export default function Register() {
               transition={{ duration: 0.5 }}
               className="max-w-md self-start"
             >
-              <h2 className="text-3xl font-montserrat-bold font-montserrat-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-montserrat-bold text-gray-900 mb-4">
                 {currentSlide === 0 && (
                   <>
                     Effortless NDIS{" "}

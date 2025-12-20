@@ -16,7 +16,7 @@ export interface UploadedFile {
 interface FileDropZoneProps {
   // Files state
   files: UploadedFile[];
-  onFilesChange: (files: UploadedFile[]) => void;
+  onFilesChange: (files: UploadedFile[] | ((prevFiles: UploadedFile[]) => UploadedFile[])) => void;
   
   // Configuration
   maxFiles?: number;
@@ -86,20 +86,21 @@ export function FileDropZone({
   };
 
   const simulateFileUpload = useCallback(
-    (fileId: string) => {
+    (fileId: string, currentFiles: UploadedFile[]) => {
       if (!simulateUpload) {
         // Mark as complete immediately
-        onFilesChange(
-          files.map((f) => (f.id === fileId ? { ...f, progress: 100 } : f))
+        const updated = currentFiles.map((f) => 
+          f.id === fileId ? { ...f, progress: 100 } : f
         );
+        onFilesChange(updated);
         return;
       }
 
       let progress = 0;
       const interval = setInterval(() => {
         progress += 10;
-        onFilesChange(
-          files.map((f) =>
+        onFilesChange((prevFiles) =>
+          prevFiles.map((f) =>
             f.id === fileId ? { ...f, progress: Math.min(progress, 100) } : f
           )
         );
@@ -108,7 +109,7 @@ export function FileDropZone({
         }
       }, 150);
     },
-    [files, onFilesChange, simulateUpload]
+    [onFilesChange, simulateUpload]
   );
 
   const handleFiles = useCallback(
@@ -147,21 +148,6 @@ export function FileDropZone({
           file,
         };
 
-        // Create preview for images
-        if (file.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            onFilesChange(
-              [...files, ...newFiles].map((f) =>
-                f.id === newFile.id
-                  ? { ...f, preview: reader.result as string }
-                  : f
-              )
-            );
-          };
-          reader.readAsDataURL(file);
-        }
-
         newFiles.push(newFile);
       });
 
@@ -169,19 +155,35 @@ export function FileDropZone({
         const updatedFiles = [...files, ...newFiles];
         onFilesChange(updatedFiles);
 
-        // Simulate upload progress for each new file
-        newFiles.forEach((file) => {
-          setTimeout(() => simulateFileUpload(file.id), 100);
+        // Handle image previews
+        newFiles.forEach((newFile) => {
+          if (newFile.file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              onFilesChange((prevFiles) =>
+                prevFiles.map((f) =>
+                  f.id === newFile.id
+                    ? { ...f, preview: reader.result as string }
+                    : f
+                )
+              );
+            };
+            reader.readAsDataURL(newFile.file);
+          }
+
+          // Simulate upload progress for each new file
+          setTimeout(() => simulateFileUpload(newFile.id, updatedFiles), 100);
         });
       }
     },
     [
       files,
-      onFilesChange,
       maxFiles,
       maxSizeMB,
       acceptedTypes,
+      onFilesChange,
       simulateFileUpload,
+      getFileTypeLabels,
     ]
   );
 
