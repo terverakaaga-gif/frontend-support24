@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Document, Refresh } from "@solar-icons/react";
+import { Document, TrashBinTrash } from "@solar-icons/react";
 import { Spinner } from "@/components/Spinner";
 import { TimesheetFormData } from "@/types/shift-details";
 
@@ -86,17 +86,74 @@ export const TimesheetForm = React.memo(({
         <Textarea value={formData.notes} onChange={(e) => onChange("notes", e.target.value)} placeholder="Add notes..." rows={3} />
       </div>
 
-      {/* Expenses */}
+      {/* Expenses Section */}
       <div className="space-y-3 border-t pt-3">
         <div className="flex justify-between items-center">
-            <Label className="font-semibold">Expenses</Label>
+            <Label className="font-semibold">Expenses (Optional)</Label>
             <Button type="button" variant="outline" size="sm" onClick={onAddExpense}>Add Expense</Button>
         </div>
-        {formData.expenses.map((expense, index) => (
+        {formData.expenses.length > 0 && formData.expenses.map((expense, index) => (
             <div key={index} className="border rounded-lg p-3 space-y-3 bg-gray-50">
-                {/* Expense fields (Title, Desc, Amount, Payer) */}
-                {/* ... (Implementation same as original but using props) ... */}
-                <Button type="button" variant="ghost" size="sm" onClick={() => onRemoveExpense(index)} className="text-red-600">Remove</Button>
+                <div className="space-y-2">
+                    <Label>Title *</Label>
+                    <Input 
+                        value={expense.title} 
+                        onChange={(e) => onNestedChange(index, "title", e.target.value)} 
+                        placeholder="e.g., Parking fee, Meal, Transport"
+                    />
+                </div>
+                
+                <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea 
+                        value={expense.description} 
+                        onChange={(e) => onNestedChange(index, "description", e.target.value)} 
+                        placeholder="Details about this expense..."
+                        rows={2}
+                    />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                        <Label>Amount ($) *</Label>
+                        <Input 
+                            type="number" 
+                            step="0.01" 
+                            min="0"
+                            value={expense.amount} 
+                            onChange={(e) => onNestedChange(index, "amount", parseFloat(e.target.value) || 0)} 
+                            placeholder="0.00"
+                        />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <Label>Paid By *</Label>
+                        <Select 
+                            value={expense.payer} 
+                            onValueChange={(value) => onNestedChange(index, "payer", value)}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select payer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="supportWorker">Support Worker</SelectItem>
+                                <SelectItem value="participant">Participant</SelectItem>
+                                <SelectItem value="organization">Organization</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                
+                <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => onRemoveExpense(index)} 
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                    <TrashBinTrash className="w-4 h-4 mr-2" />
+                    Remove Expense
+                </Button>
             </div>
         ))}
       </div>
@@ -104,10 +161,12 @@ export const TimesheetForm = React.memo(({
       {/* Footer */}
       <div className="flex gap-3 pt-4">
         <Button onClick={onSubmit} disabled={isPending} className="flex items-center gap-2">
-            {isPending ? <><Spinner /> Creating...</> : <><Document className="w-4 h-4" /> Submit</>}
+            {isPending ? <><Spinner /> Creating...</> : <><Document className="w-4 h-4" /> Submit Timesheet</>}
         </Button>
         <Button variant="outline" onClick={onCancel} disabled={isPending}>Cancel</Button>
       </div>
     </div>
   );
 });
+
+TimesheetForm.displayName = "TimesheetForm";

@@ -124,13 +124,11 @@ export const useUpdateShiftStatus = () => {
     mutationFn: ({
       shiftId,
       status,
-      declineReason
     }: {
       shiftId: string;
       status: "confirmed" | "inProgress" | "completed" | "cancelled";
-      declineReason?: string;
     }) => {
-      return patch(`/shifts/${shiftId}`, { status, declineReason });
+      return patch(`/shifts/${shiftId}`, { status });
     },
     onSuccess: (data, variables) => {
       // Invalidate and refetch shifts
@@ -153,6 +151,34 @@ export const useUpdateShiftStatus = () => {
         `Failed to update shift to ${variables.status}`;
       toast.error(errorMessage);
       console.error("Update shift status error:", error);
+    },
+  });
+
+};
+
+/**
+ * Hook to reject a shift 
+ *  Worker: before starting (decline)
+ */
+
+export const useCancelShift = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ shiftId, reason }: { shiftId: string; reason: string }) => {
+      return post(`/shifts/${shiftId}/respond`, { accept: false , declineReason: reason});
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate and refetch shifts
+      queryClient.invalidateQueries({ queryKey: shiftKeys.all });
+      toast.success("Shift rejected successfully!");
+    },
+    onError: (error: any, variables) => {
+      const errorMessage =
+        error.response?.data?.message ||
+        `Failed to reject shift`;
+      toast.error(errorMessage);
+      console.error("Reject shift error:", error);
     },
   });
 };
