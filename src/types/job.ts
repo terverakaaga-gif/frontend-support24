@@ -19,6 +19,8 @@ export const JOB_ROLE_OPTIONS = [
   { value: "Support Worker", label: "Support Worker" },
   { value: "Youth Worker", label: "Youth Worker" },
   { value: "Nursing Assistant", label: "Nursing Assistant" },
+  { value: "Cleaner", label: "Cleaner" },
+  { value: "Handy Person", label: "Handy Person" },
 ];
 
 export const JOB_TYPE_OPTIONS = [
@@ -26,6 +28,8 @@ export const JOB_TYPE_OPTIONS = [
   { value: "partTime", label: "Part-time" },
   { value: "casual", label: "Casual" },
   { value: "contract", label: "Contract" },
+  { value: "remote", label: "Remote" },
+  { value: "hybrid", label: "Hybrid" },
 ];
 
 export const STATUS_OPTIONS = [
@@ -41,7 +45,10 @@ export const COMPETENCY_OPTIONS = [
   { id: "policeCheck", label: "Police Check" },
   { id: "firstAid", label: "First Aid Certified" },
   { id: "cpr", label: "CPR Certified" },
-  { id: "professionalIndemnityInsurance", label: "Professional Indemnity Insurance" },
+  {
+    id: "professionalIndemnityInsurance",
+    label: "Professional Indemnity Insurance",
+  },
   { id: "covidVaccinationStatus", label: "COVID-19 Vaccination" },
 ];
 
