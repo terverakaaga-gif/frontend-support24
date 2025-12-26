@@ -191,6 +191,20 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      spacing: {
+        // Additional standardized spacing values
+        '18': '4.5rem',  // 72px
+        '88': '22rem',   // 352px
+        '128': '32rem',  // 512px
+      },
+      maxWidth: {
+        // Standardized container widths
+        'container-sm': '640px',
+        'container-md': '768px',
+        'container-lg': '1024px',
+        'container-xl': '1280px',
+        'container-2xl': '1536px',
+      },
       keyframes: {
         "pulse-scale": {
           "0%": {

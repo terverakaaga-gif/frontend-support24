@@ -28,6 +28,69 @@ The Support24 Webapp is a sophisticated, full-stack application designed to prov
 - **React Hook Form:** Performant, flexible, and extensible forms with easy-to-use validation.
 - **Yup:** JavaScript schema builder for value parsing and validation.
 
+## 📚 Documentation
+
+This project includes comprehensive documentation for developers. All documentation files are located in the root directory.
+
+### Design System Documentation
+
+This project uses a professional design system for consistent UI/UX across all components. **All developers must familiarize themselves with the design system before creating or modifying components.**
+
+#### 🎯 Getting Started (Required Reading)
+
+1. **[Documentation Index](./INDEX.md)** - Master navigation hub for all documentation
+2. **[Design System Summary](./DESIGN_SYSTEM_SUMMARY.md)** - Quick overview and getting started (5 min read)
+3. **[Quick Reference Guide](./DESIGN_QUICK_REF.md)** - Daily cheat sheet (keep this open while coding)
+
+#### 📖 Comprehensive Guides
+
+- **[Complete Design System](./DESIGN_SYSTEM.md)** - Full guidelines and documentation
+- **[Migration Examples](./MIGRATION_EXAMPLES.md)** - Practical before/after refactoring examples
+- **[Coding Standards](./CODING_STANDARDS.md)** - Code style guide and best practices
+- **[Design System Impact](./DESIGN_SYSTEM_IMPACT.md)** - Benefits, ROI analysis, and success metrics
+- **[Complete Package Overview](./DESIGN_SYSTEM_COMPLETE.md)** - Summary of entire implementation
+
+#### 🔧 API Integration & Technical Documentation
+
+- **[Job API Integration Summary](./JOB_API_INTEGRATION_SUMMARY.md)** - Job API integration status and implementation details
+
+#### 💻 Source Files
+
+- **`/src/constants/design-system.ts`** - All design tokens (spacing, colors, typography, etc.)
+- **`/src/lib/design-utils.ts`** - Pre-built component utilities and helpers
+
+### 🎨 Design System Principles
+
+1. **Consistency First** - Always use design system constants, never arbitrary values
+2. **Mobile-First** - Responsive design with standardized breakpoints
+3. **Accessibility** - WCAG-compliant colors and focus states
+4. **Maintainability** - Single source of truth for all design tokens
+
+### 🚀 Quick Usage Example
+
+```typescript
+// Import design tokens and utilities
+import { SPACING, GAP, HEADING_STYLES } from '@/constants/design-system';
+import { CARD, getButtonClass } from '@/lib/design-utils';
+
+// Use in components
+function MyComponent() {
+  return (
+    <div className={CARD}>
+      <div className={`p-${SPACING.lg} flex flex-col ${GAP.md}`}>
+        <h3 className={HEADING_STYLES.h3}>Title</h3>
+        <p className={TEXT_STYLES.body}>Description text</p>
+        <button className={getButtonClass('primary', 'md')}>
+          Click Me
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+**👉 Start here:** [INDEX.md](./INDEX.md) for complete navigation and learning path.
+
 ### Backend
 
 - **Node.js:** A JavaScript runtime built on Chrome's V8 JavaScript engine.
