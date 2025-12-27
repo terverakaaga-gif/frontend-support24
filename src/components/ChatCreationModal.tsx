@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
-import { Loader2Icon } from "lucide-react";
+import { Refresh } from "@solar-icons/react";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -111,7 +111,7 @@ export function ChatCreationModal({
             className="bg-primary hover:bg-primary-700"
           >
             {isLoading ? (
-              <Loader2Icon className="h-4 w-4 animate-spin" />
+              <Refresh className="h-4 w-4 animate-spin" />
             ) : selectedUsers.length > 1 ? (
               "Create Group"
             ) : (

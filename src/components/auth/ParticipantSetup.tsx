@@ -565,14 +565,8 @@ export function ParticipantSetup({
           {/* Mobile/Desktop Header */}
           <div className="lg:px-8 flex-shrink-0">
             {/* Mobile Progress Steps */}
-            <div className="lg:hidden my-4">
-              <div className="relative flex items-center justify-between">
-                {/* Horizontal connecting line */}
-                <div
-                  className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200"
-                  style={{ zIndex: 0 }}
-                />
-
+            <div className="lg:hidden my-4 relative px-4">
+              <div className="flex items-center justify-between relative">
                 {steps.map((s) => {
                   const isCompleted = completedSteps.includes(s.number);
                   const isActive = s.number === step;
@@ -580,45 +574,32 @@ export function ParticipantSetup({
                   return (
                     <div
                       key={s.number}
-                      className="relative flex flex-col items-center flex-1"
-                      style={{ zIndex: 1 }}
+                      className="flex flex-col items-center z-10 bg-gray-100"
                     >
                       <div
-                        className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center transition-all border-2 bg-white",
-                          isCompleted && "bg-primary border-primary",
-                          isActive &&
-                            !isCompleted &&
-                            "border-primary bg-white ring-4 ring-primary/10",
-                          !isActive &&
-                            !isCompleted &&
-                            "border-gray-300 bg-white"
-                        )}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                          step >= s.number
+                            ? "bg-primary-600 text-white"
+                            : "bg-gray-200 text-gray-500"
+                        }`}
                       >
-                        {isCompleted ? (
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        ) : (
-                          <span
-                            className={cn(
-                              "text-xs font-montserrat-semibold",
-                              isActive ? "text-primary" : "text-gray-400"
-                            )}
-                          >
-                            {s.number}
-                          </span>
-                        )}
+                        {step > s.number ? "✓" : s.number}
                       </div>
-                      <span
-                        className={cn(
-                          "text-[10px] font-montserrat-semibold mt-1.5 text-center",
-                          isActive ? "text-primary" : "text-gray-1000"
-                        )}
-                      >
+                      <span className="text-xs mt-2 font-medium text-gray-500 whitespace-nowrap">
                         {s.label}
                       </span>
                     </div>
                   );
                 })}
+                {/* Progress line background */}
+                <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -z-0" />
+                {/* Active progress line */}
+                <div
+                  className="absolute top-4 left-4 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
+                  style={{ 
+                    width: `calc((100% - 2rem) * ${(step - 1) / (steps.length - 1)})` 
+                  }}
+                />
               </div>
             </div>
           </div>

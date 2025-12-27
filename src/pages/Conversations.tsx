@@ -17,9 +17,9 @@ import { ChatCreationModal } from "@/components/ChatCreationModal";
 import { Bell, Magnifer, Filter } from "@solar-icons/react";
 import { ConversationItem } from "@/components/ConversationItem";
 import { ChatFilterButton } from "@/components/ChatFilterButton";
-import { Plus } from "lucide-react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
+import { AddIcon } from "@/components/icons";
 
 export default function Conversations() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -324,7 +324,7 @@ export default function Conversations() {
                 onClick={() => setIsCreatingChat(true)}
                 className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold  shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <Plus size={24} />
+                <AddIcon size={24} />
                 Create New Chat
               </Button>
             )}
@@ -400,7 +400,7 @@ export default function Conversations() {
                     onClick={() => setIsCreatingChat(true)}
                     className="w-full h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold  shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    <Plus size={24} />
+                    <AddIcon size={24} />
                     Start New Chat
                   </Button>
                 </div>

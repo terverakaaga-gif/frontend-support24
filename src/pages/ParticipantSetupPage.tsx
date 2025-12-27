@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { Participant } from "@/types/user.types";
 import Loader from "@/components/Loader";
 import ParticipantSetup from "@/components/participant/onboarding";
-// import { ParticipantSetup } from "@/components/auth/ParticipantSetup";
 
 export default function ParticipantSetupPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const participant = user as Participant | null;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,13 +24,6 @@ export default function ParticipantSetupPage() {
       redirectToDashboard(user.role);
       return;
     }
-
-    // If support worker has already completed onboarding, show a message
-    // if (supportWorker?.verificationStatus.profileSetupComplete) {
-    //   toast.success("Your profile is already set up!");
-    //   navigate('/participant');
-    //   return;
-    // }
 
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps

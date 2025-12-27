@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { SupportWorkerSetup } from "@/components/auth/SupportWorkerSetup";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { SupportWorker } from "@/types/user.types";
 import SupportWorkerSetup from "@/components/supportworker/onboarding";
 

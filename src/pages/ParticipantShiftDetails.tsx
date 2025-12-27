@@ -1,20 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  MapPin,
-  User,
-  Users,
-  CheckCircle,
-  AlertCircle,
-  XCircle,
-  Phone,
-  Mail,
-  Repeat,
-  AlertTriangle,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,8 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import shiftService from "@/api/services/shiftService";
-import { Shift, ShiftStatus, ServiceType, ServiceTypeId } from "@/entities/Shift";
+import { ShiftStatus, ServiceTypeId } from "@/entities/Shift";
 import { format, parseISO } from "date-fns";
+import { AltArrowLeft, Calendar, CheckCircle, ClockCircle, CloseCircle, DangerTriangle, InfoCircle, Letter, MapPoint, Phone, Repeat, User, UsersGroupRounded } from "@solar-icons/react";
 
 const ParticipantShiftDetails = () => {
   const { shiftId } = useParams<{ shiftId: string }>();
@@ -54,14 +40,14 @@ const ParticipantShiftDetails = () => {
       case ShiftStatus.PENDING:
         return {
           variant: "secondary" as const,
-          icon: <AlertCircle className="w-4 h-4" />,
+          icon: <DangerTriangle className="w-4 h-4" />,
           color: "text-yellow-600",
           bg: "bg-yellow-50",
         };
       case ShiftStatus.IN_PROGRESS:
         return {
           variant: "default" as const,
-          icon: <Clock className="w-4 h-4" />,
+          icon: <ClockCircle className="w-4 h-4" />,
           color: "text-primary",
           bg: "bg-primary-100",
         };
@@ -75,14 +61,14 @@ const ParticipantShiftDetails = () => {
       case ShiftStatus.CANCELLED:
         return {
           variant: "destructive" as const,
-          icon: <XCircle className="w-4 h-4" />,
+          icon: <CloseCircle className="w-4 h-4" />,
           color: "text-red-600",
           bg: "bg-red-50",
         };
       default:
         return {
           variant: "secondary" as const,
-          icon: <AlertCircle className="w-4 h-4" />,
+          icon: <DangerTriangle className="w-4 h-4" />,
           color: "text-gray-600",
           bg: "bg-gray-100",
         };
@@ -125,7 +111,7 @@ const ParticipantShiftDetails = () => {
     return (
       <div className="p-6">
         <div className="text-center py-12">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <CloseCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
             Failed to load shift details
           </h3>
@@ -167,7 +153,7 @@ const ParticipantShiftDetails = () => {
     return (
       <div className="p-6">
         <div className="text-center py-12">
-          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <DangerTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
             Shift not found
           </h3>
@@ -194,7 +180,7 @@ const ParticipantShiftDetails = () => {
           onClick={() => navigate("/participant/shifts")}
           className="flex items-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <AltArrowLeft className="w-4 h-4" />
           Back to Shifts
         </Button>
       </div>
@@ -261,14 +247,14 @@ const ParticipantShiftDetails = () => {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-green-600" />
+                <MapPoint className="w-5 h-5 text-green-600" />
                 Location
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-green-600" />
+                  <MapPoint className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
                   <p className="font-montserrat-semibold text-gray-900 mb-1">
@@ -289,7 +275,7 @@ const ParticipantShiftDetails = () => {
             <Card className="border-0 shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  <InfoCircle className="w-5 h-5 text-orange-600" />
                   Special Instructions
                 </CardTitle>
               </CardHeader>
@@ -351,7 +337,7 @@ const ParticipantShiftDetails = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {shift.isMultiWorkerShift ? (
-                  <Users className="w-5 h-5 text-purple-600" />
+                  <UsersGroupRounded className="w-5 h-5 text-purple-600" />
                 ) : (
                   <User className="w-5 h-5 text-purple-600" />
                 )}
@@ -380,7 +366,7 @@ const ParticipantShiftDetails = () => {
                         </h4>
                         <div className="space-y-1 mt-2">
                           <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Mail className="w-4 h-4" />
+                            <Letter className="w-4 h-4" />
                             {assignment.workerId.email}
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -424,7 +410,7 @@ const ParticipantShiftDetails = () => {
                       </h4>
                       <div className="space-y-1 mt-2">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Mail className="w-4 h-4" />
+                          <Letter className="w-4 h-4" />
                           {shift.workerId.email}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-600">

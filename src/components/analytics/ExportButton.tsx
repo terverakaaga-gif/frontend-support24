@@ -1,6 +1,4 @@
-// src/components/analytics/ExportButton.tsx
 import { useState } from 'react';
-import { Download, FileText, FileSpreadsheet, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { DateRange } from '@/entities/Analytics';
 import { useExportAnalyticsData } from '@/hooks/useAnalyticsHooks';
+import { AltArrowDown, CloudDownload, Export, FileText } from '@solar-icons/react';
 
 interface ExportButtonProps {
   dateRange: DateRange;
@@ -46,9 +45,9 @@ export function ExportButton({ dateRange, isLoading = false, className }: Export
           className="h-9 bg-gradient-to-r from-guardian to-guardian-dark hover:from-guardian-dark hover:to-guardian"
           disabled={isLoading || isExporting}
         >
-          <Download className="h-4 w-4 mr-2" />
+          <CloudDownload className="h-4 w-4 mr-2" />
           {isExporting ? 'Exporting...' : 'Export Report'}
-          <ChevronDown className="h-4 w-4 ml-2" />
+          <AltArrowDown className="h-4 w-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -57,7 +56,7 @@ export function ExportButton({ dateRange, isLoading = false, className }: Export
           <span>Export as PDF</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport('csv')}>
-          <FileSpreadsheet className="h-4 w-4 mr-2" />
+          <Export className="h-4 w-4 mr-2" />
           <span>Export as CSV</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

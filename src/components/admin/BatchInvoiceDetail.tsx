@@ -1,31 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { 
-  ArrowLeft, 
-  Clock, 
-  Calendar, 
-  MapPin, 
-  DollarSign, 
-  Receipt, 
-  CheckCircle,
-  AlertCircle,
-  UserCircle,
-  Building,
-  FileText,
-  Download,
-  Mail,
-  Send,
-  User,
-  Users,
-  CalendarDays,
-  Hash,
-  Banknote,
-  History,
-  Eye,
-  MailOpen,
-  MailX
-} from "lucide-react";
+
 import { 
   Card,
   CardContent,
@@ -76,6 +52,8 @@ import {
   BATCH_INVOICE_STATUS_CONFIG,
   BatchInvoiceEmailRequest
 } from "@/entities/BatchInvoice";
+import { AltArrowLeft, Banknote2, Calendar, ClockCircle, CloudDownload, FileText, Hashtag, History2, Letter, Mailbox, SirenRounded, User, UserCircle, UsersGroupRounded } from "@solar-icons/react";
+import { ReceiptIcon } from "../icons";
 
 const BatchInvoiceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -182,7 +160,7 @@ const BatchInvoiceDetail: React.FC = () => {
       return (
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-            <MailOpen className="h-3 w-3 mr-1" />
+            <Mailbox className="h-3 w-3 mr-1" />
             Sent
           </Badge>
           <span className="text-sm text-gray-600">
@@ -193,7 +171,7 @@ const BatchInvoiceDetail: React.FC = () => {
     }
     return (
       <Badge variant="outline" className="bg-gray-100 text-gray-600 border-gray-200">
-        <MailX className="h-3 w-3 mr-1" />
+        <Letter className="h-3 w-3 mr-1" />
         Not Sent
       </Badge>
     );
@@ -205,7 +183,7 @@ const BatchInvoiceDetail: React.FC = () => {
       <div className="container mx-auto py-6 max-w-6xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Batch Invoices
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Loading Batch Invoice...</h1>
@@ -249,7 +227,7 @@ const BatchInvoiceDetail: React.FC = () => {
       <div className="container mx-auto py-6 max-w-6xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Batch Invoices
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Batch Invoice Not Found</h1>
@@ -258,7 +236,7 @@ const BatchInvoiceDetail: React.FC = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <SirenRounded className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-montserrat-semibold mb-2">Batch Invoice Not Found</h3>
               <p className="text-gray-600 mb-4">
                 The batch invoice you're looking for doesn't exist or has been removed.
@@ -279,7 +257,7 @@ const BatchInvoiceDetail: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Batch Invoices
           </Button>
           <div>
@@ -293,19 +271,19 @@ const BatchInvoiceDetail: React.FC = () => {
             onClick={handleDownload}
             disabled={downloadMutation.isPending}
           >
-            <Download className="h-4 w-4 mr-2" />
+            <CloudDownload className="h-4 w-4 mr-2" />
             {downloadMutation.isPending ? 'Downloading...' : 'Download Invoice'}
           </Button>
           <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Mail className="h-4 w-4 mr-2" />
-                Send Email
+                <Letter className="h-4 w-4 mr-2" />
+                Letter Email
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Send Batch Invoice Email</DialogTitle>
+                <DialogTitle>Letter Batch Invoice Email</DialogTitle>
                 <DialogDescription>
                   Choose who should receive this batch invoice via email.
                 </DialogDescription>
@@ -320,7 +298,7 @@ const BatchInvoiceDetail: React.FC = () => {
                     }
                   />
                   <label htmlFor="participant" className="text-sm font-montserrat-semibold">
-                    Send to Participant ({getFullName(batchInvoice.participantId)})
+                    Letter to Participant ({getFullName(batchInvoice.participantId)})
                   </label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -332,7 +310,7 @@ const BatchInvoiceDetail: React.FC = () => {
                     }
                   />
                   <label htmlFor="worker" className="text-sm font-montserrat-semibold">
-                    Send to Worker ({getFullName(batchInvoice.workerId)})
+                    Letter to Worker ({getFullName(batchInvoice.workerId)})
                   </label>
                 </div>
               </div>
@@ -348,8 +326,8 @@ const BatchInvoiceDetail: React.FC = () => {
                   onClick={handleSendEmail}
                   disabled={sendEmailMutation.isPending || (!emailOptions.sendToParticipant && !emailOptions.sendToWorker)}
                 >
-                  <Send className="h-4 w-4 mr-2" />
-                  {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
+                  <Letter className="h-4 w-4 mr-2" />
+                  {sendEmailMutation.isPending ? 'Sending...' : 'Letter Email'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -381,14 +359,14 @@ const BatchInvoiceDetail: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
-                        <Hash className="h-4 w-4 text-gray-1000" />
+                        <Hashtag className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Batch Number</p>
                           <p className="font-montserrat-semibold text-sm">{batchInvoice.batchNumber}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Receipt className="h-4 w-4 text-gray-1000" />
+                        <ReceiptIcon className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Invoice Number</p>
                           <p className="font-montserrat-semibold text-sm">{batchInvoice.invoiceNumber}</p>
@@ -406,7 +384,7 @@ const BatchInvoiceDetail: React.FC = () => {
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4 text-gray-1000" />
+                        <ClockCircle className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Status</p>
                           <div className="mt-1">
@@ -415,14 +393,14 @@ const BatchInvoiceDetail: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <History className="h-4 w-4 text-gray-1000" />
+                        <History2 className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Generated At</p>
                           <p className="font-montserrat-semibold text-sm">{formatDateTime(batchInvoice.generatedAt)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Banknote className="h-4 w-4 text-gray-1000" />
+                        <Banknote2 className="h-4 w-4 text-gray-1000" />
                         <div>
                           <p className="text-xs text-gray-600">Total Amount</p>
                           <p className="font-montserrat-bold text-base">{formatCurrency(batchInvoice.invoiceTotal)}</p>
@@ -437,7 +415,7 @@ const BatchInvoiceDetail: React.FC = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2 text-base">
-                    <Users className="h-4 w-4" />
+                    <UsersGroupRounded className="h-4 w-4" />
                     <span>People</span>
                   </CardTitle>
                 </CardHeader>
@@ -482,7 +460,7 @@ const BatchInvoiceDetail: React.FC = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2 text-base">
-                    <Mail className="h-4 w-4" />
+                    <Letter className="h-4 w-4" />
                     <span>Email Status</span>
                   </CardTitle>
                 </CardHeader>
@@ -617,7 +595,7 @@ const BatchInvoiceDetail: React.FC = () => {
                 onClick={handleDownload}
                 disabled={downloadMutation.isPending}
               >
-                <Download className="h-4 w-4 mr-2" />
+                <CloudDownload className="h-4 w-4 mr-2" />
                 {downloadMutation.isPending ? 'Downloading...' : 'Download PDF'}
               </Button>
               <Button 
@@ -625,8 +603,8 @@ const BatchInvoiceDetail: React.FC = () => {
                 onClick={() => setEmailDialogOpen(true)}
                 disabled={sendEmailMutation.isPending}
               >
-                <Mail className="h-4 w-4 mr-2" />
-                Send Email
+                <Letter className="h-4 w-4 mr-2" />
+                Letter Email
               </Button>
             </CardContent>
           </Card>

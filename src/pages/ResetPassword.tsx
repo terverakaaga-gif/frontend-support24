@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import authService from "@/api/services/authService";
 import { getPasswordRequirements } from "@/lib/utils";
+import { CheckCircle, Eye, EyeClosed } from "@solar-icons/react";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -252,7 +252,7 @@ export default function ResetPassword() {
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
+                        <EyeClosed className="h-5 w-5" />
                       ) : (
                         <Eye className="h-5 w-5" />
                       )}
@@ -287,7 +287,7 @@ export default function ResetPassword() {
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5" />
+                        <EyeClosed className="h-5 w-5" />
                       ) : (
                         <Eye className="h-5 w-5" />
                       )}

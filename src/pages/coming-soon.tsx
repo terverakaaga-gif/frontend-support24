@@ -1,15 +1,5 @@
 // import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-// import { Star, ChevronRight } from "lucide-react";
-// import {
-//   CheckCircle,
-//   ClockCircle,
-//   ShieldCheck,
-// } from "@solar-icons/react";
-// import { InlineVectorText } from "@/components/InlineVectorText";
-// import { Button } from "@/components/ui/button";
-// import { FeatureCard } from "@/components/FeatureCard";
-// import { RoundedFigure } from "@/components/RoundedFigure";
 import { LandingLayout } from "@/components/layouts/LandingLayout";
 
 

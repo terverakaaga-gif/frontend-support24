@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { UserRole, UserRegistrationInput } from "@/types/user.types";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Mail, Phone, User, Lock } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -21,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Eye, EyeClosed, Letter, Lock, Phone, User } from "@solar-icons/react";
 
 // Registration form schema
 const formSchema = z
@@ -44,6 +44,7 @@ const formSchema = z
       "guardian",
       "participant",
       "supportWorker",
+      "coordinator",
     ] as const),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -74,7 +75,7 @@ export function RegistrationForm({
       phone: "",
       password: "",
       confirmPassword: "",
-      role: "participant" as UserRole,
+      role: "participant",
     },
   });
 
@@ -148,7 +149,7 @@ export function RegistrationForm({
                   <FormLabel className="text-gray-700">Email</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
+                      <Letter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-[18px] w-[18px]" />
                       <Input
                         type="email"
                         placeholder="dylan.smith@gmail.com"
@@ -209,7 +210,7 @@ export function RegistrationForm({
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-1000" />
+                          <EyeClosed className="h-4 w-4 text-gray-1000" />
                         ) : (
                           <Eye className="h-4 w-4 text-gray-1000" />
                         )}
@@ -248,7 +249,7 @@ export function RegistrationForm({
                         onClick={toggleConfirmPasswordVisibility}
                       >
                         {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-1000" />
+                          <EyeClosed className="h-4 w-4 text-gray-1000" />
                         ) : (
                           <Eye className="h-4 w-4 text-gray-1000" />
                         )}

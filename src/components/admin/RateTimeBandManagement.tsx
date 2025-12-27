@@ -30,27 +30,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Search, 
-  Plus, 
-  Eye, 
-  Edit, 
-  XCircle, 
-  Clock, 
-  Calendar, 
-  Sun, 
-  Moon,
-  Bed,
-  Calendar as CalendarIcon,
-  DollarSign,
-  RefreshCw
-} from "lucide-react";
+
 import { toast } from "sonner";
 import { 
   useGetRateTimeBands, 
   useDeleteRateTimeBand 
 } from "@/hooks/useRateTimeBandHooks";
 import { RateTimeBand, RateTimeBandFilters } from "@/entities/RateTimeBand";
+import { AddIcon, CalendarIcon } from "../icons";
+import { Bed, ClockCircle, CloseCircle, Dollar, Eye, Magnifer, Moon, Pen, Refresh, Sun } from "@solar-icons/react";
 
 export function RateTimeBandsManagement() {
   const navigate = useNavigate();
@@ -125,7 +113,7 @@ export function RateTimeBandsManagement() {
       return <Moon className="h-4 w-4 text-indigo-500" />;
     }
     
-    return <Clock className="h-4 w-4 text-gray-1000" />;
+    return <ClockCircle className="h-4 w-4 text-gray-1000" />;
   };
 
   const getStatusBadge = (isActive: boolean) => {
@@ -204,7 +192,7 @@ export function RateTimeBandsManagement() {
               </CardDescription>
             </div>
             <Button onClick={handleAddTimeBand}>
-              <Plus className="h-4 w-4 mr-2" />
+              <AddIcon className="h-4 w-4 mr-2" />
               Add New Time Band
             </Button>
           </div>
@@ -212,7 +200,7 @@ export function RateTimeBandsManagement() {
         <CardContent>
           <div className="flex items-center justify-center h-64">
             <div className="text-center text-red-600">
-              <RefreshCw className="h-8 w-8 mx-auto mb-4" />
+              <Refresh className="h-8 w-8 mx-auto mb-4" />
               <p className="font-montserrat-semibold">Error loading rate time bands</p>
               <p className="text-sm text-gray-600 mt-1">Please try again later</p>
               <Button 
@@ -241,7 +229,7 @@ export function RateTimeBandsManagement() {
             </CardDescription>
           </div>
           <Button onClick={handleAddTimeBand}>
-            <Plus className="h-4 w-4 mr-2" />
+            <AddIcon className="h-4 w-4 mr-2" />
             Add New Time Band
           </Button>
         </div>
@@ -249,7 +237,7 @@ export function RateTimeBandsManagement() {
       <CardContent>
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Magnifer className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search time bands..."
@@ -314,7 +302,7 @@ export function RateTimeBandsManagement() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <DollarSign className="h-3 w-3 text-green-600 mr-1" />
+                        <Dollar className="h-3 w-3 text-green-600 mr-1" />
                         <span className="font-montserrat-semibold">{formatMultiplier(band.baseRateMultiplier)}</span>
                       </div>
                     </TableCell>
@@ -338,7 +326,7 @@ export function RateTimeBandsManagement() {
                           className="h-8"
                           onClick={() => handleEditTimeBand(band._id)}
                         >
-                          <Edit className="h-4 w-4 mr-2" />
+                          <Pen className="h-4 w-4 mr-2" />
                           Edit
                         </Button>
                         
@@ -351,7 +339,7 @@ export function RateTimeBandsManagement() {
                                 className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                                 disabled={deleteRateTimeBandMutation.isPending}
                               >
-                                <XCircle className="h-4 w-4 mr-2" />
+                                <CloseCircle className="h-4 w-4 mr-2" />
                                 {deleteRateTimeBandMutation.isPending ? "Deleting..." : "Delete"}
                               </Button>
                             </AlertDialogTrigger>

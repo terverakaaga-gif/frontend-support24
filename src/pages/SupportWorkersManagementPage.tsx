@@ -1,25 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import {
-  Search,
-  Filter,
-  ChevronDown,
-  Eye,
-  Calendar,
-  Users,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertCircle,
-  Star,
-  Shield,
-  UserCheck,
-  Image,
-  Award,
-  Briefcase,
-  X,
-} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,10 +58,11 @@ import {
   WorkerTableFilters,
   VerificationSummary,
 } from "@/entities/SupportWorker";
-import { AltArrowLeft, AltArrowRight, Magnifer } from "@solar-icons/react";
+import { AltArrowDown, AltArrowLeft, AltArrowRight, Calendar, CheckCircle, ClockCircle, CloseCircle, CupStar, DangerCircle, Eye, Filter, Magnifer, Shield, Star, Suitcase, UserCheck, UsersGroupRounded } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import SupportWorkerDetailsDialog from "@/components/admin/SupportWorkerDetailsDialog";
+import { CloseIcon } from "@/components/icons";
 
 const SupportWorkersManagementPage: React.FC = () => {
   const navigate = useNavigate();
@@ -126,7 +108,7 @@ const SupportWorkersManagementPage: React.FC = () => {
     ) {
       delete newFilters[key];
     } else {
-      newFilters[key] = value;
+      newFilters[key] = value as any;
     }
 
     setTempFilters(newFilters);
@@ -187,13 +169,13 @@ const SupportWorkersManagementPage: React.FC = () => {
       case "active":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case "pending":
-        return <Clock className="h-4 w-4 text-yellow-500" />;
+        return <ClockCircle className="h-4 w-4 text-yellow-500" />;
       case "suspended":
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
+        return <DangerCircle className="h-4 w-4 text-red-500" />;
       case "inactive":
-        return <XCircle className="h-4 w-4 text-gray-1000" />;
+        return <CloseCircle className="h-4 w-4 text-gray-1000" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-1000" />;
+        return <ClockCircle className="h-4 w-4 text-gray-1000" />;
     }
   };
 
@@ -352,7 +334,7 @@ const SupportWorkersManagementPage: React.FC = () => {
               {/* Search Bar */}
               <div className="flex-1 max-w-md">
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Magnifer className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search by name or email..."
                     value={filters.search || ""}
@@ -728,7 +710,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                   {activeFiltersCount !== 1 ? "s" : ""} applied
                 </Badge>
                 <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-                  <X className="h-4 w-4 mr-1" />
+                  <CloseIcon className="h-4 w-4 mr-1" />
                   Clear all
                 </Button>
               </div>
@@ -769,7 +751,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                           <div className="flex items-center space-x-1">
                             <span>Email</span>
                             {sort.field === "email" && (
-                              <ChevronDown
+                              <AltArrowDown
                                 className={`h-4 w-4 ${
                                   sort.direction === "asc" ? "rotate-180" : ""
                                 }`}
@@ -789,7 +771,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                           <div className="flex items-center space-x-1">
                             <span>Created</span>
                             {sort.field === "createdAt" && (
-                              <ChevronDown
+                              <AltArrowDown
                                 className={`h-4 w-4 ${
                                   sort.direction === "asc" ? "rotate-180" : ""
                                 }`}
@@ -827,7 +809,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                                       {worker.firstName} {worker.lastName}
                                     </span>
                                     {worker.profileImage && (
-                                      <Image className="h-3 w-3 text-muted-foreground" />
+                                      <img src={worker.profileImage} alt={`${worker.firstName} ${worker.lastName}`} className="h-3 w-3 text-muted-foreground" />
                                     )}
                                   </div>
                                   <div className="text-sm text-muted-foreground">
@@ -843,7 +825,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                                 {worker.isEmailVerified ? (
                                   <CheckCircle className="h-4 w-4 text-green-500" />
                                 ) : (
-                                  <XCircle className="h-4 w-4 text-red-500" />
+                                  <CloseCircle className="h-4 w-4 text-red-500" />
                                 )}
                               </div>
                             </TableCell>
@@ -933,7 +915,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                                           </span>
                                         </div>
                                         <div className="flex items-center space-x-1">
-                                          <Award className="h-3 w-3" />
+                                          <CupStar className="h-3 w-3" />
                                           <span>
                                             NDIS:{" "}
                                             {worker.verificationStatus
@@ -953,7 +935,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                                           </span>
                                         </div>
                                         <div className="flex items-center space-x-1">
-                                          <Briefcase className="h-3 w-3" />
+                                          <Suitcase className="h-3 w-3" />
                                           <span>
                                             Fee:{" "}
                                             {worker.verificationStatus
@@ -975,7 +957,7 @@ const SupportWorkersManagementPage: React.FC = () => {
 
                             <TableCell>
                               <div className="flex items-center space-x-1">
-                                <Users className="h-4 w-4 text-muted-foreground" />
+                                <UsersGroupRounded className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm">
                                   {worker.organizationCount} org
                                   {worker.organizationCount !== 1 ? "s" : ""}
@@ -1015,7 +997,7 @@ const SupportWorkersManagementPage: React.FC = () => {
                   {/* Empty state */}
                   {workersData?.users?.length === 0 && (
                     <div className="text-center py-12">
-                      <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <UsersGroupRounded className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                       <h3 className="text-lg font-montserrat-semibold">
                         No support workers found
                       </h3>

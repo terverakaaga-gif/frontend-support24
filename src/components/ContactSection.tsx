@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
+import { Letter } from "@solar-icons/react";
 import { InlineVectorText } from "@/components/InlineVectorText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +61,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Mail className="w-4 h-4" />
+              <Letter className="w-4 h-4" />
               Contact Now
             </motion.div>
 

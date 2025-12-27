@@ -1,18 +1,4 @@
 import { useState } from "react";
-import {
-  Target,
-  Clock,
-  Heart,
-  Calendar,
-  MessageSquare,
-  Bell,
-  Download,
-  ChevronRight,
-  ChevronLeft,
-  Star,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { ChartSection } from "@/components/ChartSection";
@@ -30,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
+import { AltArrowRight, Calendar, ChatRound, CheckCircle, ClockCircle, CloseCircle, CloudDownload, Heart, Target } from "@solar-icons/react";
 
 // Mock data for charts
 const activityData = [
@@ -138,12 +125,12 @@ const ShiftManagement = () => {
                   {shift.status === "confirmed" ? (
                     <CheckCircle className="w-4 h-4 mr-1" />
                   ) : (
-                    <Clock className="w-4 h-4 mr-1" />
+                    <ClockCircle className="w-4 h-4 mr-1" />
                   )}
                   {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
                 </Badge>
                 <Button variant="ghost" size="icon">
-                  <ChevronRight className="h-4 w-4" />
+                  <AltArrowRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -185,7 +172,7 @@ const GoalsManagement = ({ goals, onUpdateGoal }) => {
                   {goal.status === "on-track" ? (
                     <CheckCircle className="w-4 h-4 mr-1" />
                   ) : (
-                    <XCircle className="w-4 h-4 mr-1" />
+                    <CloseCircle className="w-4 h-4 mr-1" />
                   )}
                   {goal.status === "on-track" ? "On Track" : "Needs Attention"}
                 </Badge>
@@ -223,7 +210,7 @@ export default function GuardianDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
+            <ChatRound className="h-4 w-4" />
             Message Team
           </Button>
           <Button variant="outline" className="flex items-center gap-2">
@@ -231,7 +218,7 @@ export default function GuardianDashboard() {
             Schedule
           </Button>
           <Button className="flex items-center gap-2 bg-guardian hover:bg-guardian-dark">
-            <Download className="h-4 w-4" />
+            <CloudDownload className="h-4 w-4" />
             Download Report
           </Button>
         </div>
@@ -248,7 +235,7 @@ export default function GuardianDashboard() {
         <StatCard
           title="Support Hours"
           value="28h"
-          icon={<Clock size={24} />}
+          icon={<ClockCircle size={24} />}
           additionalText="This week"
         />
         <StatCard

@@ -1,6 +1,5 @@
 // src/components/analytics/RealTimeMetrics.tsx
 import { useEffect, useState } from 'react';
-import { RefreshCw, Users, Clock, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
@@ -9,6 +8,7 @@ import { useGetRealTimeMetrics } from '@/hooks/useAnalyticsHooks';
 import { formatDateTime } from '@/lib/formatters';
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { Calendar, ClockCircle, Refresh, UsersGroupRounded } from '@solar-icons/react';
 
 interface RealTimeMetricsProps {
   className?: string;
@@ -48,7 +48,7 @@ export function RealTimeMetrics({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-primary" />
+            <ClockCircle className="h-5 w-5 text-primary" />
             <CardTitle className="text-lg font-montserrat-semibold">Real-Time Metrics</CardTitle>
           </div>
           <Button 
@@ -58,7 +58,7 @@ export function RealTimeMetrics({
             disabled={isLoading || isFetching}
             className="flex items-center gap-2"
           >
-            <RefreshCw className={cn("h-4 w-4", {
+            <Refresh className={cn("h-4 w-4", {
               "animate-spin": isLoading || isFetching
             })} />
             Refresh
@@ -80,7 +80,7 @@ export function RealTimeMetrics({
                     ? metrics.activeUsers.toString()
                     : "0"
                 }
-            icon={<Users className="h-4 w-4 text-guardian" />}
+            icon={<UsersGroupRounded className="h-4 w-4 text-guardian" />}
             additionalText="Currently online"
             trend="none"
           />
@@ -106,7 +106,7 @@ export function RealTimeMetrics({
                 ? metrics.platformUsage[0].value.toString()
                 : "0"
             }
-            icon={<Clock className="h-4 w-4 text-guardian" />}
+            icon={<ClockCircle className="h-4 w-4 text-guardian" />}
             additionalText="Active sessions"
             trend="none"
           />

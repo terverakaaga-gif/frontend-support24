@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Refresh } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useProfile, useUpdateProfileImage } from "@/hooks/useProfile";
 import { Button } from "./ui/button";
@@ -67,7 +67,7 @@ const EditableAvatar = () => {
 				<Avatar className="h-24 w-24 border-2 border-gray-300">
 					{isUploading ? (
 						<div className="h-full w-full flex items-center justify-center bg-gray-100">
-							<Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+							<Refresh className="h-8 w-8 animate-spin text-primary-500" />
 						</div>
 					) : (
 						<>

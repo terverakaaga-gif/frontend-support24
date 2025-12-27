@@ -1,23 +1,5 @@
 // src/pages/AdminAnalyticsDashboard.tsx
 import { useState, useEffect } from "react";
-import {
-	Users,
-	Clock,
-	DollarSign,
-	Calendar,
-	BarChart3,
-	TrendingUp,
-	Activity,
-	BellRing,
-	Layers,
-	UserCheck,
-	UserPlus,
-	CheckCircle,
-	AlertCircle,
-	Building2,
-	Smartphone,
-	Repeat,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +18,7 @@ import {
 	useGetPlatformSummary,
 } from "@/hooks/useAnalyticsHooks";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/formatters";
+import { Bell, BranchingPathsDown, Buildings2, Calendar, CheckCircle, ClockCircle, CourseUp, DiagramDown, Dollar, Layers, Repeat, UserCheck, UserPlus, UsersGroupRounded } from "@solar-icons/react";
 
 export default function AdminAnalyticsDashboard() {
 	// State for date range and comparison
@@ -85,7 +68,7 @@ export default function AdminAnalyticsDashboard() {
 				id: "total-users",
 				title: "Total Users",
 				value: formatNumber(overviewData?.userMetrics?.totalUsers),
-				icon: <Users className="h-4 w-4 text-guardian" />,
+				icon: <UsersGroupRounded className="h-4 w-4 text-guardian" />,
 				change: {
 					value: formatPercent(
 						overviewData?.userMetrics?.growthRate?.percentageChange ?? 0
@@ -105,7 +88,7 @@ export default function AdminAnalyticsDashboard() {
 				value: formatNumber(
 					overviewData?.platformActivity?.activeOrganizations ?? 0
 				),
-				icon: <Building2 className="h-4 w-4 text-guardian" />,
+				icon: <Buildings2 className="h-4 w-4 text-guardian" />,
 			},
 			{
 				id: "total-revenue",
@@ -113,7 +96,7 @@ export default function AdminAnalyticsDashboard() {
 				value: formatCurrency(
 					overviewData?.financialSummary?.totalRevenue.current ?? 0
 				),
-				icon: <DollarSign className="h-4 w-4 text-guardian" />,
+				icon: <Dollar className="h-4 w-4 text-guardian" />,
 				change: {
 					value: formatPercent(
 						overviewData?.financialSummary?.totalRevenue?.percentageChange
@@ -128,7 +111,7 @@ export default function AdminAnalyticsDashboard() {
 				value: formatNumber(
 					overviewData?.operationalMetrics?.pendingInvites ?? 0
 				),
-				icon: <BellRing className="h-4 w-4 text-guardian" />,
+				icon: <Bell className="h-4 w-4 text-guardian" />,
 			},
 		];
 	};
@@ -154,7 +137,7 @@ export default function AdminAnalyticsDashboard() {
 				id: "monthly-active",
 				title: "Monthly Active Users",
 				value: formatNumber(userData?.retentionMetrics?.monthlyActiveUsers),
-				icon: <Activity className="h-4 w-4 text-guardian" />,
+				icon: <DiagramDown className="h-4 w-4 text-guardian" />,
 			},
 			{
 				id: "churn-rate",
@@ -178,7 +161,7 @@ export default function AdminAnalyticsDashboard() {
 				id: "total-revenue",
 				title: "Total Revenue",
 				value: formatCurrency(financialData?.revenue?.total),
-				icon: <DollarSign className="h-4 w-4 text-guardian" />,
+				icon: <Dollar className="h-4 w-4 text-guardian" />,
 			},
 			{
 				id: "processed-payments",
@@ -190,13 +173,13 @@ export default function AdminAnalyticsDashboard() {
 				id: "pending-payments",
 				title: "Pending Payments",
 				value: formatNumber(financialData?.payments?.pending),
-				icon: <Clock className="h-4 w-4 text-guardian" />,
+				icon: <ClockCircle className="h-4 w-4 text-guardian" />,
 			},
 			{
 				id: "monthly-projection",
 				title: "Monthly Projection",
 				value: formatCurrency(financialData?.projections?.monthlyProjected),
-				icon: <TrendingUp className="h-4 w-4 text-guardian" />,
+				icon: <CourseUp className="h-4 w-4 text-guardian" />,
 				change: {
 					value: formatPercent(financialData?.projections?.growthRate),
 					positive: financialData?.projections?.growthRate > 0,
@@ -214,7 +197,7 @@ export default function AdminAnalyticsDashboard() {
 				id: "total-users",
 				title: "Total Users",
 				value: formatNumber(platformData?.userGrowth?.total),
-				icon: <Users className="h-4 w-4 text-guardian" />,
+				icon: <UsersGroupRounded className="h-4 w-4 text-guardian" />,
 				change: {
 					value: formatPercent(
 						platformData?.userGrowth?.growthRate?.percentageChange
@@ -241,7 +224,7 @@ export default function AdminAnalyticsDashboard() {
 				value: formatCurrency(
 					platformData?.financialMetrics?.averageShiftValue
 				),
-				icon: <DollarSign className="h-4 w-4 text-guardian" />,
+				icon: <Dollar className="h-4 w-4 text-guardian" />,
 			},
 		];
 	};
@@ -409,7 +392,7 @@ export default function AdminAnalyticsDashboard() {
 							xAxisKey={getPlatformUsageChart().xAxisKey}
 							colors={["#2195F2"]}
 							loading={isLoadingOverview}
-							icon={<Activity className="h-5 w-5 text-guardian" />}
+							icon={<DiagramDown className="h-5 w-5 text-guardian" />}
 							description="Daily active users on the platform"
 						/>
 
@@ -502,7 +485,7 @@ export default function AdminAnalyticsDashboard() {
 
 						<DashboardSection
 							title="Financial Summary"
-							icon={<DollarSign className="h-5 w-5 text-guardian" />}
+							icon={<Dollar className="h-5 w-5 text-guardian" />}
 						>
 							<div className="space-y-4">
 								<div className="grid grid-cols-2 gap-4">
@@ -592,7 +575,7 @@ export default function AdminAnalyticsDashboard() {
 							dataKeys={getUserDistributionChart().dataKeys}
 							xAxisKey={getUserDistributionChart().xAxisKey}
 							loading={isLoadingUsers}
-							icon={<Smartphone className="h-5 w-5 text-guardian" />}
+							icon={<BranchingPathsDown className="h-5 w-5 text-guardian" />}
 							description="Geographical distribution of users"
 						/>
 					</div>
@@ -687,7 +670,7 @@ export default function AdminAnalyticsDashboard() {
 							xAxisKey={getRevenueTrendsChart().xAxisKey}
 							colors={["#2195F2"]}
 							loading={isLoadingFinancial}
-							icon={<TrendingUp className="h-5 w-5 text-guardian" />}
+							icon={<CourseUp className="h-5 w-5 text-guardian" />}
 							description="Revenue trends over time"
 						/>
 
@@ -699,7 +682,7 @@ export default function AdminAnalyticsDashboard() {
 							xAxisKey={getTopOrganizationsChart().xAxisKey}
 							colors={["#2195F2"]}
 							loading={isLoadingFinancial}
-							icon={<Building2 className="h-5 w-5 text-guardian" />}
+							icon={<Buildings2 className="h-5 w-5 text-guardian" />}
 							description="Highest revenue generating organizations"
 						/>
 					</div>
@@ -718,7 +701,7 @@ export default function AdminAnalyticsDashboard() {
 
 					<DashboardSection
 						title="Financial Projections"
-						icon={<TrendingUp className="h-5 w-5 text-guardian" />}
+						icon={<CourseUp className="h-5 w-5 text-guardian" />}
 					>
 						<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 							<Card>
@@ -847,7 +830,7 @@ export default function AdminAnalyticsDashboard() {
 
 						<DashboardSection
 							title="Organization Metrics"
-							icon={<Building2 className="h-5 w-5 text-guardian" />}
+							icon={<Buildings2 className="h-5 w-5 text-guardian" />}
 						>
 							<div className="space-y-4">
 								<div className="grid grid-cols-2 gap-4">

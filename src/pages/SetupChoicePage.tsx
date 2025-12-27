@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { AlertCircle, CheckCircle, UserCog, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { SupportWorker } from "@/types/user.types";
+import { AltArrowRight, CheckCircle, DangerTriangle, ShieldKeyholeMinimalistic } from "@solar-icons/react";
 
 export default function SetupChoicePage() {
 	const navigate = useNavigate();
@@ -100,7 +100,7 @@ export default function SetupChoicePage() {
 							<div className="border border-guardian rounded-lg p-5 hover:bg-guardian/5 transition-colors">
 								<div className="flex justify-center mb-4">
 									<div className="bg-guardian/10 p-3 rounded-full">
-										<UserCog className="h-8 w-8 text-guardian" />
+										<ShieldKeyholeMinimalistic className="h-8 w-8 text-guardian" />
 									</div>
 								</div>
 								<h3 className="text-lg font-montserrat-semibold text-center mb-2">
@@ -112,7 +112,7 @@ export default function SetupChoicePage() {
 								</p>
 								<div className="bg-primary-100 border border-primary-100 rounded-md p-3 mb-4">
 									<div className="flex items-start">
-										<AlertCircle className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
+										<DangerTriangle className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
 										<p className="text-xs text-primary-700">
 											A complete profile increases your visibility and chances
 											of being matched with participants.
@@ -121,7 +121,7 @@ export default function SetupChoicePage() {
 								</div>
 								<Button className="w-full" onClick={handleContinueToSetup}>
 									Complete setup
-									<ArrowRight className="ml-2 h-4 w-4" />
+									<AltArrowRight className="ml-2 h-4 w-4" />
 								</Button>
 							</div>
 
@@ -129,7 +129,7 @@ export default function SetupChoicePage() {
 							<div className="border border-gray-200 rounded-lg p-5 hover:bg-gray-100 transition-colors">
 								<div className="flex justify-center mb-4">
 									<div className="bg-gray-100 p-3 rounded-full">
-										<ArrowRight className="h-8 w-8 text-gray-1000" />
+										<AltArrowRight className="h-8 w-8 text-gray-1000" />
 									</div>
 								</div>
 								<h3 className="text-lg font-montserrat-semibold text-center mb-2">
@@ -141,7 +141,7 @@ export default function SetupChoicePage() {
 								</p>
 								<div className="bg-amber-50 border border-amber-100 rounded-md p-3 mb-4">
 									<div className="flex items-start">
-										<AlertCircle className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
+										<DangerTriangle className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
 										<p className="text-xs text-amber-700">
 											Your profile will be incomplete and less visible to
 											participants until you complete setup.

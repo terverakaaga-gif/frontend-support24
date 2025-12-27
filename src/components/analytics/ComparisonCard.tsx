@@ -1,10 +1,10 @@
-// src/components/analytics/ComparisonCard.tsx
 import { ReactNode } from 'react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { ComparisonData } from '@/entities/Analytics';
 import { formatNumber } from '@/lib/formatters';
+import { CourseDown, CourseUp } from '@solar-icons/react';
+import { MinusIcon } from '../icons';
 
 interface ComparisonCardProps {
   title: string;
@@ -48,11 +48,11 @@ export function ComparisonCard({
                 )}
               >
                 {trend === 'up' ? (
-                  <TrendingUp className="h-3 w-3" />
+                  <CourseUp className="h-3 w-3" />
                 ) : trend === 'down' ? (
-                  <TrendingDown className="h-3 w-3" />
+                  <CourseDown className="h-3 w-3" />
                 ) : (
-                  <Minus className="h-3 w-3" />
+                  <MinusIcon className="h-3 w-3" />
                 )}
                 <span>{formattedChange}</span>
               </div>

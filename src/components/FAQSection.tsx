@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Minus, Send } from "lucide-react";
+import { AddCircle, MinusCircle, Plain } from "@solar-icons/react";
 import { QuestionCircle } from "@solar-icons/react";
 import { InlineVectorText } from "@/components/InlineVectorText";
 import { RoundedFigure } from "@/components/RoundedFigure";
@@ -101,7 +101,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                     
                   }}
                 >
-                  <Send className="w-2 h-2 md:w-4 md:h-4" />
+                  <Plain className="w-2 h-2 md:w-4 md:h-4" />
                 </Button>
               </div>
             </div>
@@ -136,9 +136,9 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                   className="flex-shrink-0"
                 >
                   {openFaq === i ? (
-                    <Minus className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                    <MinusCircle className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                   ) : (
-                    <Plus className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                    <AddCircle className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
                   )}
                 </motion.div>
               </button>

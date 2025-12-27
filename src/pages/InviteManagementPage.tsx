@@ -1,4 +1,3 @@
-import { Users } from "lucide-react";
 import { InviteManagement } from "@/components/admin/InviteManagement";
 
 export default function InviteManagementPage() {

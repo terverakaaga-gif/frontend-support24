@@ -3,21 +3,6 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { 
-  ArrowLeft, 
-  Clock, 
-  Calendar, 
-  MapPin, 
-  DollarSign, 
-  Receipt, 
-  CheckCircle,
-  AlertCircle,
-  UserCircle,
-  Building,
-  FileText,
-  ExternalLink,
-  ClipboardCheck
-} from "lucide-react";
-import { 
   Card,
   CardContent,
   CardDescription,
@@ -49,10 +34,9 @@ import { toast } from "sonner";
 // Import our types and hooks
 import { useGetTimesheet } from "@/hooks/useTimesheetHooks";
 import { 
-  Timesheet,
-  SERVICE_TYPE_LABELS,
   TIMESHEET_STATUS_CONFIG
 } from "@/entities/Timesheet";
+import { AltArrowLeft, Buildings2, Calendar, CheckCircle, ClockCircle, FileText, LinkRoundAngle, MapPoint, UserCircle } from "@solar-icons/react";
 
 const TimesheetDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -149,7 +133,7 @@ const TimesheetDetail: React.FC = () => {
     if (!config) {
       return (
         <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200 text-sm py-1 px-3 flex items-center">
-          <Clock className="h-4 w-4 mr-2" />
+          <ClockCircle className="h-4 w-4 mr-2" />
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
       );
@@ -157,7 +141,7 @@ const TimesheetDetail: React.FC = () => {
     
     return (
       <Badge variant={config.variant} className="text-sm py-1 px-3 flex items-center">
-        <Clock className="h-4 w-4 mr-2" />
+        <ClockCircle className="h-4 w-4 mr-2" />
         {config.label}
       </Badge>
     );
@@ -169,7 +153,7 @@ const TimesheetDetail: React.FC = () => {
       <div className="container mx-auto py-6 max-w-6xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Timesheets
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Loading Timesheet...</h1>
@@ -215,7 +199,7 @@ const TimesheetDetail: React.FC = () => {
           <CardHeader>
             <div className="flex items-center">
               <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <AltArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
               <CardTitle>Error Loading Timesheet</CardTitle>
@@ -240,7 +224,7 @@ const TimesheetDetail: React.FC = () => {
           <CardHeader>
             <div className="flex items-center">
               <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <AltArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
               <CardTitle>Timesheet Not Found</CardTitle>
@@ -261,7 +245,7 @@ const TimesheetDetail: React.FC = () => {
     <div className="container mx-auto py-6 max-w-6xl">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <AltArrowLeft className="h-4 w-4 mr-2" />
           Back to Timesheets
         </Button>
         <h1 className="text-2xl font-montserrat-bold">Timesheet Details</h1>
@@ -282,7 +266,7 @@ const TimesheetDetail: React.FC = () => {
                   </CardTitle>
                 </div>
                 <CardDescription className="flex items-center">
-                  <Building className="h-4 w-4 mr-2" />
+                  <Buildings2 className="h-4 w-4 mr-2" />
                   {timesheet.organizationId.name}
                 </CardDescription>
               </div>
@@ -329,7 +313,7 @@ const TimesheetDetail: React.FC = () => {
                           <div>
                             <p className="text-sm font-montserrat-semibold mb-1">Scheduled Time</p>
                             <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <ClockCircle className="h-4 w-4 text-muted-foreground" />
                               <p className="text-sm">
                                 {formatTime(timesheet.scheduledStartTime)} - {formatTime(timesheet.scheduledEndTime)}
                                 <span className="text-xs text-muted-foreground ml-2">
@@ -342,7 +326,7 @@ const TimesheetDetail: React.FC = () => {
                           <div>
                             <p className="text-sm font-montserrat-semibold mb-1">Actual Time</p>
                             <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <ClockCircle className="h-4 w-4 text-muted-foreground" />
                               <p className="text-sm">
                                 {formatTime(timesheet.actualStartTime)} - {formatTime(timesheet.actualEndTime)}
                                 <span className="text-xs text-muted-foreground ml-2">
@@ -356,7 +340,7 @@ const TimesheetDetail: React.FC = () => {
                             <div>
                               <p className="text-sm font-montserrat-semibold mb-1">Extra Time</p>
                               <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-primary-500" />
+                                <ClockCircle className="h-4 w-4 text-primary-500" />
                                 <p className="text-sm text-primary-700">
                                   {timesheet.extraTime} minutes
                                 </p>
@@ -368,7 +352,7 @@ const TimesheetDetail: React.FC = () => {
                             <div>
                               <p className="text-sm font-montserrat-semibold mb-1">Travel Distance</p>
                               <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <MapPoint className="h-4 w-4 text-muted-foreground" />
                                 <p className="text-sm">
                                   {timesheet.distanceTravelKm} km @ {formatCurrency(timesheet.distanceTravelRate)}/km
                                   <span className="text-xs text-muted-foreground ml-2">
@@ -445,7 +429,7 @@ const TimesheetDetail: React.FC = () => {
                                       asChild
                                     >
                                       <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                        <LinkRoundAngle className="h-4 w-4 mr-2" />
                                         View Receipt
                                       </a>
                                     </Button>
@@ -644,7 +628,7 @@ const TimesheetDetail: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <ClockCircle className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">{timesheet.participantId.phone}</span>
                 </div>
               </div>
@@ -697,7 +681,7 @@ const TimesheetDetail: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <ClockCircle className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">{typeof timesheet.workerId === 'object' ? timesheet.workerId.phone : 'N/A'}</span>
                 </div>
               </div>

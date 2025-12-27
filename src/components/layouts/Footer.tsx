@@ -1,8 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Letter, Phone } from "@solar-icons/react";
-import { MapPin } from "lucide-react";
+import { Letter, MapPoint, Phone } from "@solar-icons/react";
 
 
 interface FooterProps {
@@ -128,7 +127,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                 </a>
               </li>
               <li className="flex items-center gap-2 text-gray-300">
-                <MapPin className="w-4 h-4"  /> 
+                <MapPoint className="w-4 h-4"  /> 
                 <a 
                   href="https://www.google.com/maps/place/Support24/@-37.8141076,144.9632817,15z/data=!4m6!3m5!1s0x6ad642af53d532bd:0x5045675c31c63dfe!8m2!3d-37.8141076!4d144.9632817!16s%2Fg%2F11c4022hz7?entry=ttu&g_ep=EgoyMDI1MTEwMjE2NjA6CGgLEgZ2aXN0aWNzMjQyBDIJc291cmNlMjQuY29tLmF1OgIIBA%3D%3D"
                   className="hover:text-white transition-colors"

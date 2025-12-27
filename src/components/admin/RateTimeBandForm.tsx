@@ -1,19 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft,
-  Save,
-  Clock,
-  Calendar,
-  Bed,
-  Info,
-  RefreshCw
-} from "lucide-react";
+
 import { 
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle 
 } from "@/components/ui/card";
@@ -35,24 +26,22 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { toast } from "sonner";
 import { 
   useGetRateTimeBandById, 
   useCreateRateTimeBand, 
   useUpdateRateTimeBand 
 } from "@/hooks/useRateTimeBandHooks";
 import { CreateRateTimeBandRequest, UpdateRateTimeBandRequest } from "@/entities/RateTimeBand";
+import { AltArrowLeft, ArchiveMinimalistic, Bed, Calendar, InfoCircle, Refresh } from "@solar-icons/react";
 
 // Define the schema for time band validation
 const timeBandSchema = z.object({
@@ -182,7 +171,7 @@ export function RateTimeBandForm() {
       <div className="container mx-auto py-6 max-w-3xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
           <Skeleton className="h-8 w-48" />
@@ -223,7 +212,7 @@ export function RateTimeBandForm() {
       <div className="container mx-auto py-6 max-w-3xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Error Loading Rate Time Band</h1>
@@ -233,7 +222,7 @@ export function RateTimeBandForm() {
           <CardContent className="p-6">
             <div className="flex items-center justify-center h-64">
               <div className="text-center text-red-600">
-                <RefreshCw className="h-8 w-8 mx-auto mb-4" />
+                <Refresh className="h-8 w-8 mx-auto mb-4" />
                 <p className="font-montserrat-semibold">Error loading rate time band details</p>
                 <p className="text-sm text-gray-600 mt-1">Please try again later</p>
                 <Button 
@@ -258,7 +247,7 @@ export function RateTimeBandForm() {
       <div className="container mx-auto py-6 max-w-3xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Rate Time Band Not Found</h1>
@@ -285,7 +274,7 @@ export function RateTimeBandForm() {
     <div className="container mx-auto py-6 max-w-3xl">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" onClick={handleCancel} className="mr-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <AltArrowLeft className="h-4 w-4 mr-2" />
           Back to Time Bands
         </Button>
         <h1 className="text-2xl font-montserrat-bold">
@@ -551,7 +540,7 @@ export function RateTimeBandForm() {
               </div>
               
               <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 flex items-start gap-3">
-                <Info className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <InfoCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="font-montserrat-semibold text-yellow-800">Important Note</h4>
                   <p className="text-sm text-yellow-700 mt-1">
@@ -574,7 +563,7 @@ export function RateTimeBandForm() {
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <ArchiveMinimalistic className="h-4 w-4 mr-2" />
                   {isEditMode ? "Update Time Band" : "Create Time Band"}
                 </>
               )}

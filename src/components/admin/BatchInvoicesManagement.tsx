@@ -33,25 +33,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Search, 
-  Filter, 
-  Calendar as CalendarIcon, 
-  Eye, 
-  Clock, 
-  DollarSign, 
-  Receipt, 
-  RefreshCw,
-  Building,
-  ChevronDown,
-  Users,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
-  Mail,
-  Download,
-  Plus
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Import our types and hooks
@@ -62,7 +43,8 @@ import {
   BATCH_INVOICE_STATUS_CONFIG,
   BatchInvoiceStatus
 } from "@/entities/BatchInvoice";
-import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
+import { AltArrowLeft, AltArrowRight, ClockCircle, Dollar, Eye, FileText, Filter, Letter, Magnifer, Refresh } from "@solar-icons/react";
+import { AddIcon, CalendarIcon, ReceiptIcon } from "../icons";
 
 const BatchInvoicesManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -174,14 +156,14 @@ const BatchInvoicesManagement: React.FC = () => {
     if (sent) {
       return (
         <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 text-xs">
-          <Mail className="h-3 w-3 mr-1" />
+          <Letter className="h-3 w-3 mr-1" />
           Sent
         </Badge>
       );
     }
     return (
       <Badge variant="outline" className="bg-gray-100 text-gray-600 border-gray-200 text-xs">
-        <Mail className="h-3 w-3 mr-1" />
+        <Letter className="h-3 w-3 mr-1" />
         Not Sent
       </Badge>
     );
@@ -318,7 +300,7 @@ const BatchInvoicesManagement: React.FC = () => {
                 There was an error loading the batch invoices. Please try again.
               </p>
               <Button onClick={() => window.location.reload()}>
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <Refresh className="h-4 w-4 mr-2" />
                 Retry
               </Button>
             </div>
@@ -346,7 +328,7 @@ const BatchInvoicesManagement: React.FC = () => {
             {showFilters ? 'Hide' : 'Show'} Filters
           </Button>
           <Button onClick={() => navigate('/admin/batch-invoices/generate')}>
-            <Plus className="h-4 w-4 mr-2" />
+            <AddIcon className="h-4 w-4 mr-2" />
             Generate Batch
           </Button>
         </div>
@@ -364,19 +346,19 @@ const BatchInvoicesManagement: React.FC = () => {
           <StatCard
             title="Pending"
             value={stats.pendingCount}
-            icon={Clock}
+            icon={ClockCircle}
             color="text-yellow-600"
           />
           <StatCard
             title="Completed"
             value={stats.completedCount}
-            icon={Receipt}
+            icon={ReceiptIcon}
             color="text-green-600"
           />
           <StatCard
             title="Total Amount"
             value={formatCurrency(stats.totalAmount)}
-            icon={DollarSign}
+            icon={Dollar}
             color="text-purple-600"
           />
         </div>
@@ -394,7 +376,7 @@ const BatchInvoicesManagement: React.FC = () => {
               <div className="space-y-2">
                 <label className="text-xs font-montserrat-semibold">Search</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Magnifer className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     placeholder="Search batch number, invoice number, names..."
                     className="pl-9"

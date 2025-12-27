@@ -17,19 +17,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-	MessageCircle,
-	Calendar,
-	UserCheck,
-	Loader2,
-	Mail,
-} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
 	organizationService,
 	type Invite,
 	type SupportWorker,
 } from "@/api/services/organizationService";
+import { Spinner } from "../Spinner";
+import { Calendar, ChatRound, Letter, UserCheck } from "@solar-icons/react";
 
 export function ParticipantInvitations() {
 	const [invites, setInvites] = useState<Invite[]>([]);
@@ -157,7 +152,7 @@ export function ParticipantInvitations() {
 				</CardHeader>
 				<CardContent>
 					<div className="flex items-center justify-center py-8">
-						<Loader2 className="h-6 w-6 animate-spin mr-2" />
+						<Spinner />
 						<span>Loading invitations...</span>
 					</div>
 				</CardContent>
@@ -179,7 +174,7 @@ export function ParticipantInvitations() {
 					<h3 className="text-lg font-montserrat-semibold mb-4">Pending Invitations</h3>
 					{pendingInvites.length === 0 ? (
 						<div className="text-center py-8 bg-muted rounded-md">
-							<Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+							<Letter className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
 							<p className="text-muted-foreground font-montserrat-semibold">
 								No pending invitations
 							</p>
@@ -244,7 +239,7 @@ export function ParticipantInvitations() {
 													onClick={() => handleAcceptInvitation(invite.id)}
 												>
 													{processingInviteId === invite.id ? (
-														<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+														<Spinner />
 													) : (
 														<UserCheck className="h-4 w-4 mr-2" />
 													)}
@@ -313,7 +308,7 @@ export function ParticipantInvitations() {
 												)}
 												<div className="flex gap-2 mt-3">
 													<Button variant="secondary" size="sm">
-														<MessageCircle className="h-4 w-4 mr-2" />
+														<ChatRound className="h-4 w-4 mr-2" />
 														Message
 													</Button>
 													<Button variant="secondary" size="sm">

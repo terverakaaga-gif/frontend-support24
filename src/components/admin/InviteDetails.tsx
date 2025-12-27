@@ -1,19 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-	ArrowLeft,
-	Calendar,
-	Clock,
-	FileText,
-	User,
-	Building,
-	DollarSign,
-	Send,
-	MessageCircle,
-	CheckCircle,
-	XCircle,
-} from "lucide-react";
 import {
 	Card,
 	CardContent,
@@ -32,6 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import { useGetInviteById } from "@/hooks/useInviteHooks";
 import { InviteAcceptanceForm } from "./InviteAcceptanceForm";
 import { InviteDeclineForm } from "./InviteDeclineForm";
+import { AltArrowLeft, Buildings2, Calendar, ChatRound, CheckCircle, ClockCircle, CloseCircle, Dollar, FileText, Plain2, User } from "@solar-icons/react";
 
 // Helper function to generate an avatar placeholder
 const getAvatarPlaceholder = (name: string): string => {
@@ -129,7 +116,7 @@ export function InviteDetails() {
 				<CardHeader>
 					<div className="flex items-center gap-4">
 						<Button variant="ghost" size="sm" onClick={handleGoBack}>
-							<ArrowLeft className="h-4 w-4 mr-2" />
+							<AltArrowLeft className="h-4 w-4 mr-2" />
 							Back
 						</Button>
 						<CardTitle>Invitation Not Found</CardTitle>
@@ -159,7 +146,7 @@ export function InviteDetails() {
 					onClick={handleGoBack}
 					className="mr-4"
 				>
-					<ArrowLeft className="h-4 w-4 mr-2" />
+					<AltArrowLeft className="h-4 w-4 mr-2" />
 					Back to Invitations
 				</Button>
 				<h1 className="text-2xl font-montserrat-bold">Invitation Details</h1>
@@ -213,7 +200,7 @@ export function InviteDetails() {
 														Organization
 													</p>
 													<div className="flex items-center gap-3">
-														<Building className="h-5 w-5 text-muted-foreground" />
+														<Buildings2 className="h-5 w-5 text-muted-foreground" />
 														<div>
 															<p className="font-montserrat-semibold">
 																{inviteDetails.organizationName}
@@ -230,7 +217,7 @@ export function InviteDetails() {
 														Base Hourly Rate
 													</p>
 													<div className="flex items-center gap-3">
-														<DollarSign className="h-5 w-5 text-green-600" />
+														<Dollar className="h-5 w-5 text-green-600" />
 														<p className="text-lg font-montserrat-semibold text-green-600">
 															{formatCurrency(
 																inviteDetails.proposedRates.baseHourlyRate
@@ -369,7 +356,7 @@ export function InviteDetails() {
 									className="text-primary hover:text-primary-700 hover:bg-primary-100 border-primary-200"
 									onClick={handleMakeAvailable}
 								>
-									<Send className="h-4 w-4 mr-2" />
+									<Plain2 className="h-4 w-4 mr-2" />
 									Make Available
 								</Button>
 
@@ -387,7 +374,7 @@ export function InviteDetails() {
 									className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
 									onClick={handleDecline}
 								>
-									<XCircle className="h-4 w-4 mr-2" />
+									<CloseCircle className="h-4 w-4 mr-2" />
 									Decline Invitation
 								</Button>
 
@@ -397,7 +384,7 @@ export function InviteDetails() {
 										navigate(`/admin/chat/${inviteDetails.workerId}`)
 									}
 								>
-									<MessageCircle className="h-4 w-4 mr-2" />
+									<ChatRound className="h-4 w-4 mr-2" />
 									Open Chat
 								</Button>
 							</div>
@@ -496,7 +483,7 @@ export function InviteDetails() {
 									size="sm"
 									className="w-full justify-start"
 								>
-									<Clock className="h-4 w-4 mr-2" />
+									<ClockCircle className="h-4 w-4 mr-2" />
 									View Availability
 								</Button>
 								<Button
@@ -507,7 +494,7 @@ export function InviteDetails() {
 										navigate(`/admin/chat/${inviteDetails.workerId}`)
 									}
 								>
-									<MessageCircle className="h-4 w-4 mr-2" />
+									<ChatRound className="h-4 w-4 mr-2" />
 									Open Chat
 								</Button>
 							</div>

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,6 +24,7 @@ import { motion } from "framer-motion";
 import { useRegister } from "@/hooks/useAuthHooks";
 import { useAuth } from "@/contexts/AuthContext";
 import { getPasswordRequirements } from "@/lib/utils";
+import { Eye, EyeClosed } from "@solar-icons/react";
 
 const formSchema = z
   .object({
@@ -285,31 +285,31 @@ export default function Register() {
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         >
                           {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
+                            <EyeClosed className="h-5 w-5" />
                           ) : (
                             <Eye className="h-5 w-5" />
                           )}
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage className="text-red-500 text-sm">
-                      <div className="space-y-2">
+                    <FormMessage>
+                      <div className="space-y-1 mt-2">
                         {getPasswordRequirements(
-                          field.value.length,
-                          field.value
+                          field.value?.length || 0,
+                          field.value || ""
                         ).map((req, index) => (
                           <div
                             key={index}
-                            className="flex items-center gap-2 text-sm"
+                            className="flex items-center gap-2 text-xs"
                           >
                             <div
-                              className={`w-2 h-2 rounded-full ${
+                              className={`w-1.5 h-1.5 rounded-full ${
                                 req.met ? "bg-green-500" : "bg-gray-300"
                               }`}
                             />
                             <span
                               className={
-                                req.met ? "text-green-600" : "text-gray-1000"
+                                req.met ? "text-green-600" : "text-gray-500"
                               }
                             >
                               {req.text}
@@ -345,7 +345,7 @@ export default function Register() {
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="h-5 w-5" />
+                            <EyeClosed className="h-5 w-5" />
                           ) : (
                             <Eye className="h-5 w-5" />
                           )}

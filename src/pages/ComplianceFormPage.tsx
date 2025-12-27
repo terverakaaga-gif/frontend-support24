@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, ArrowLeft } from "lucide-react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -8,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { FileDropZone, UploadedFile, useFileUpload } from "@/components/ui/FileDropZone";
-import { FileText } from "@solar-icons/react";
+import { AltArrowLeft, CheckCircle, FileText } from "@solar-icons/react";
 
 interface RequiredDocument {
   id: string;
@@ -184,7 +183,7 @@ export default function ComplianceFormPage() {
                       className="flex items-center justify-between"
                     >
                       <div className="flex items-center gap-3">
-                        <Check
+                        <CheckCircle
                           className={`h-5 w-5 ${
                             doc.isCompleted ? "text-primary" : "text-gray-400"
                           }`}
@@ -195,7 +194,7 @@ export default function ComplianceFormPage() {
                       </div>
                       {doc.isCompleted && (
                         <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                          <Check className="h-3 w-3 text-white" />
+                          <CheckCircle className="h-3 w-3 text-white" />
                         </div>
                       )}
                     </div>
@@ -245,7 +244,7 @@ export default function ComplianceFormPage() {
                 onClick={handleBackToForm}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <AltArrowLeft className="h-4 w-4" />
                 <span className="font-medium">Back to Edit</span>
               </button>
 
@@ -273,7 +272,7 @@ export default function ComplianceFormPage() {
                           <p className="text-sm text-gray-500">{file.size}</p>
                         </div>
                         <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Check className="h-3 w-3 text-white" />
+                          <CheckCircle className="h-3 w-3 text-white" />
                         </div>
                       </div>
                     ))}

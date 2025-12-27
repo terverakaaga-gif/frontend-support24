@@ -1,4 +1,3 @@
-// pages/admin/TimesheetsManagement.tsx
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -34,20 +33,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Search,
-  Filter,
-  Calendar as CalendarIcon,
-  Eye,
-  Clock,
-  DollarSign,
-  Receipt,
-  RefreshCw,
-  Building,
-  ChevronDown,
-  Users,
-  FileText,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Import our types and hooks
@@ -58,7 +43,8 @@ import {
   SERVICE_TYPE_LABELS,
   TIMESHEET_STATUS_CONFIG,
 } from "@/entities/Timesheet";
-import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
+import { AltArrowDown, AltArrowLeft, AltArrowRight, Buildings2, ClockCircle, Dollar, Eye, FileText, Filter, Magnifer, Refresh, UsersGroupRounded } from "@solar-icons/react";
+import { CalendarIcon, ReceiptIcon } from "../icons";
 
 const TimesheetsManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -309,7 +295,7 @@ const TimesheetsManagement: React.FC = () => {
           >
             <Filter className="h-4 w-4 mr-2" />
             Filters
-            <ChevronDown
+            <AltArrowDown
               className={`h-4 w-4 ml-2 transition-transform ${
                 showFilters ? "rotate-180" : ""
               }`}
@@ -317,7 +303,7 @@ const TimesheetsManagement: React.FC = () => {
           </Button>
           {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={handleResetFilters}>
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <Refresh className="h-4 w-4 mr-2" />
               Reset
             </Button>
           )}
@@ -345,7 +331,7 @@ const TimesheetsManagement: React.FC = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4 text-green-500" />
+                <ClockCircle className="h-4 w-4 text-green-500" />
                 <div>
                   <p className="text-2xl font-montserrat-bold">
                     {Math.round(timesheetData.summary.totalHours)}
@@ -358,7 +344,7 @@ const TimesheetsManagement: React.FC = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-yellow-500" />
+                <Dollar className="h-4 w-4 text-yellow-500" />
                 <div>
                   <p className="text-2xl font-montserrat-bold">
                     {formatCurrency(timesheetData.summary.totalAmount)}
@@ -371,7 +357,7 @@ const TimesheetsManagement: React.FC = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4 text-purple-500" />
+                <UsersGroupRounded className="h-4 w-4 text-purple-500" />
                 <div>
                   <p className="text-2xl font-montserrat-bold">
                     {timesheetData.summary.pendingCount}
@@ -390,7 +376,7 @@ const TimesheetsManagement: React.FC = () => {
       <div className="flex items-center space-x-4">
         <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Magnifer className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by participant, worker, or shift ID..."
               value={filters.search || ""}
@@ -559,7 +545,7 @@ const TimesheetsManagement: React.FC = () => {
                       <div className="flex items-center space-x-1">
                         <span>Date & Hours</span>
                         {filters.sortField === "scheduledStartTime" && (
-                          <ChevronDown
+                          <AltArrowDown
                             className={`h-4 w-4 ${
                               filters.sortDirection === "asc"
                                 ? "rotate-180"
@@ -579,7 +565,7 @@ const TimesheetsManagement: React.FC = () => {
                       <div className="flex items-center space-x-1">
                         <span>Total</span>
                         {filters.sortField === "totalAmount" && (
-                          <ChevronDown
+                          <AltArrowDown
                             className={`h-4 w-4 ${
                               filters.sortDirection === "asc"
                                 ? "rotate-180"
@@ -622,7 +608,7 @@ const TimesheetsManagement: React.FC = () => {
                               {timesheet.shiftId.serviceTypeId?.name || 'N/A'}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              <Building className="h-3 w-3 inline mr-1" />
+                              <Buildings2 className="h-3 w-3 inline mr-1" />
                               {timesheet.organizationId.name}
                             </span>
                           </div>
@@ -633,7 +619,7 @@ const TimesheetsManagement: React.FC = () => {
                               {formatDateShort(timesheet.scheduledStartTime)}
                             </span>
                             <div className="flex items-center gap-1 mt-1 text-muted-foreground text-xs">
-                              <Clock className="h-3 w-3" />
+                              <ClockCircle className="h-3 w-3" />
                               <span>
                                 {formatTime(timesheet.actualStartTime)} -{" "}
                                 {formatTime(timesheet.actualEndTime)}
@@ -704,7 +690,7 @@ const TimesheetsManagement: React.FC = () => {
                         <TableCell>
                           <div className="flex flex-col">
                             <div className="font-montserrat-semibold flex items-center">
-                              <Receipt className="h-3 w-3 mr-1 text-primary-500" />
+                              <ReceiptIcon className="h-3 w-3 mr-1 text-primary-500" />
                               {formatCurrency(timesheet.totalExpenses)}
                             </div>
                             <span className="text-xs text-muted-foreground">

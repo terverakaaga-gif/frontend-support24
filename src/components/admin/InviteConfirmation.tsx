@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { 
-  CheckCircle, 
-  XCircle, 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  MessageCircle,
-  FileText,
-  Send 
-} from "lucide-react";
-import { 
   Card,
   CardContent,
   CardDescription,
@@ -33,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import { AltArrowLeft, ChatRound, CheckCircle, CloseCircle, Plain2 } from "@solar-icons/react";
 
 // Types for the action
 type ActionType = "make-available" | "accept" | "decline" | null;
@@ -77,7 +68,7 @@ export function InviteConfirmation() {
           title: "Make Invitation Available",
           description: "You're about to make this invitation available to the support worker.",
           confirmText: "This will notify the support worker that they have a new connection request. They will be able to view and respond to the invitation.",
-          icon: <Send className="h-12 w-12 text-primary-500 mb-2" />,
+          icon: <Plain2 className="h-12 w-12 text-primary-500 mb-2" />,
           color: "primary",
           buttonText: "Make Available",
           successMessage: "Invitation has been made available to the support worker."
@@ -97,7 +88,7 @@ export function InviteConfirmation() {
           title: "Decline Invitation",
           description: "You're about to decline this invitation on behalf of the support worker.",
           confirmText: "This will reject the connection request. The participant will be notified that their request was declined.",
-          icon: <XCircle className="h-12 w-12 text-red-500 mb-2" />,
+          icon: <CloseCircle className="h-12 w-12 text-red-500 mb-2" />,
           color: "red",
           buttonText: "Decline Invitation",
           successMessage: "Invitation has been declined."
@@ -107,7 +98,7 @@ export function InviteConfirmation() {
           title: "Invalid Action",
           description: "The requested action is not valid.",
           confirmText: "Please return to the invitation details page and try again.",
-          icon: <XCircle className="h-12 w-12 text-gray-1000 mb-2" />,
+          icon: <CloseCircle className="h-12 w-12 text-gray-1000 mb-2" />,
           color: "gray",
           buttonText: "Go Back",
           successMessage: ""
@@ -158,7 +149,7 @@ export function InviteConfirmation() {
   return (
     <div className="container mx-auto py-8 max-w-3xl">
       <Button variant="ghost" size="sm" onClick={handleGoBack} className="mb-6">
-        <ArrowLeft className="h-4 w-4 mr-2" />
+        <AltArrowLeft className="h-4 w-4 mr-2" />
         Back to Invitation Details
       </Button>
       
@@ -275,7 +266,7 @@ export function InviteConfirmation() {
                 
                 {actionType === "accept" && (
                   <Button variant="outline" className="w-full" onClick={() => navigate(`/admin/chat/${inviteId}`)}>
-                    <MessageCircle className="h-4 w-4 mr-2" />
+                    <ChatRound className="h-4 w-4 mr-2" />
                     Open Chat with Support Worker
                   </Button>
                 )}

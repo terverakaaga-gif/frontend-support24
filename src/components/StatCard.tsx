@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { CourseUp, CourseDown } from "@solar-icons/react";
 
 interface StatCardProps {
   title: string;
@@ -74,9 +74,9 @@ export function StatCard({
                   )}
                 >
                   {change.positive ? (
-                    <TrendingUp className="w-4 h-4 mr-1" />
+                    <CourseUp className="w-4 h-4 mr-1" />
                   ) : (
-                    <TrendingDown className="w-4 h-4 mr-1" />
+                    <CourseDown className="w-4 h-4 mr-1" />
                   )}
                   {change.value}
                 </div>

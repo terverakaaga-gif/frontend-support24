@@ -4,7 +4,6 @@ import { CTASection } from '@/components/CTASection'
 
 // import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-// import { Star, ChevronRight } from "lucide-react";
 
 import { InlineVectorText } from "@/components/InlineVectorText";
 import { Button } from "@/components/ui/button";

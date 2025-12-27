@@ -4,29 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-	ArrowLeft,
-	Calendar,
-	Clock,
-	MapPin,
-	User,
-	FileText,
-	CheckCircle,
-	AlertCircle,
-	XCircle,
-	Mail,
-	Phone,
-	Users,
-	Repeat,
-	AlertTriangle,
-} from "lucide-react";
 import shiftService from "@/api/services/shiftService";
-import { Shift, ShiftStatus, ServiceType } from "@/entities/Shift";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Participant } from "@/types/user.types";
+import { AltArrowLeft, Calendar, CheckCircle, ClockCircle, CloseCircle, DangerTriangle, FileText, Letter, MapPoint, Phone, Repeat, User } from "@solar-icons/react";
 
 export default function ShiftDetails() {
 	const { shiftId } = useParams<{ shiftId: string }>();
@@ -55,13 +38,13 @@ export default function ShiftDetails() {
 			case "pending":
 				return {
 					variant: "secondary" as const,
-					icon: <AlertCircle className="w-4 h-4" />,
+					icon: <DangerTriangle className="w-4 h-4" />,
 					className: "bg-yellow-100 text-yellow-700 border-yellow-200",
 				};
 			case "inProgress":
 				return {
 					variant: "default" as const,
-					icon: <Clock className="w-4 h-4" />,
+					icon: <ClockCircle className="w-4 h-4" />,
 					className: "bg-primary text-white",
 				};
 			case "completed":
@@ -73,13 +56,13 @@ export default function ShiftDetails() {
 			case "cancelled":
 				return {
 					variant: "destructive" as const,
-					icon: <XCircle className="w-4 h-4" />,
+					icon: <CloseCircle className="w-4 h-4" />,
 					className: "bg-red-500 text-white",
 				};
 			default:
 				return {
 					variant: "secondary" as const,
-					icon: <AlertCircle className="w-4 h-4" />,
+					icon: <DangerTriangle className="w-4 h-4" />,
 					className: "bg-gray-1000 text-white",
 				};
 		}
@@ -132,13 +115,13 @@ export default function ShiftDetails() {
 		return (
 			<div className="container py-8">
 				<Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>
-					<ArrowLeft className="mr-2 h-4 w-4" />
+					<AltArrowLeft className="mr-2 h-4 w-4" />
 					Go Back
 				</Button>
 				<Card>
 					<CardContent className="py-12">
 						<div className="text-center">
-							<XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+							<CloseCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
 							<h2 className="text-2xl font-montserrat-bold">
 								Failed to load shift details
 							</h2>
@@ -181,13 +164,13 @@ export default function ShiftDetails() {
 		return (
 			<div className="container py-8">
 				<Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>
-					<ArrowLeft className="mr-2 h-4 w-4" />
+					<AltArrowLeft className="mr-2 h-4 w-4" />
 					Go Back
 				</Button>
 				<Card>
 					<CardContent className="py-12">
 						<div className="text-center">
-							<AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+							<DangerTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
 							<h2 className="text-2xl font-montserrat-bold">Shift Not Found</h2>
 							<p className="text-muted-foreground mt-2">
 								The shift you're looking for doesn't exist or has been removed.
@@ -216,7 +199,7 @@ export default function ShiftDetails() {
 	return (
 		<div className="container py-8">
 			<Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>
-				<ArrowLeft className="mr-2 h-4 w-4" />
+				<AltArrowLeft className="mr-2 h-4 w-4" />
 				Go Back
 			</Button>
 
@@ -264,7 +247,7 @@ export default function ShiftDetails() {
 										{format(parseISO(shift.startTime), "EEEE, MMMM dd, yyyy")}
 									</div>
 									<div className="flex items-center gap-2 text-gray-600">
-										<Clock className="h-4 w-4" />
+										<ClockCircle className="h-4 w-4" />
 										<span>
 											{format(parseISO(shift.startTime), "h:mm a")} -{" "}
 											{format(parseISO(shift.endTime), "h:mm a")}
@@ -280,7 +263,7 @@ export default function ShiftDetails() {
 						{/* Location */}
 						<div className="flex items-start gap-4 pb-4 border-b">
 							<div className="p-2 rounded-full bg-guardian/10">
-								<MapPin className="h-5 w-5 text-guardian" />
+								<MapPoint className="h-5 w-5 text-guardian" />
 							</div>
 							<div className="flex-1">
 								<h3 className="font-montserrat-semibold text-gray-900 mb-1">Location</h3>
@@ -299,7 +282,7 @@ export default function ShiftDetails() {
 						{shift.specialInstructions && (
 							<div className="flex items-start gap-4 pb-4 border-b">
 								<div className="p-2 rounded-full bg-orange-50">
-									<AlertTriangle className="h-5 w-5 text-orange-600" />
+									<DangerTriangle className="h-5 w-5 text-orange-600" />
 								</div>
 								<div className="flex-1">
 									<h3 className="font-montserrat-semibold text-gray-900 mb-1">
@@ -395,7 +378,7 @@ export default function ShiftDetails() {
 											<div className="space-y-2">
 												{participantInfo.email && (
 													<div className="flex items-center gap-2 text-sm text-gray-600">
-														<Mail className="w-4 h-4" />
+														<Letter className="w-4 h-4" />
 														{participantInfo.email}
 													</div>
 												)}

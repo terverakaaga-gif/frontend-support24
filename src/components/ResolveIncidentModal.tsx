@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { Close } from "@solar-icons/react";
 import { useState } from "react";
 
 const ResolveIncidentModal = ({
@@ -28,7 +28,7 @@ const ResolveIncidentModal = ({
 							onClick={onClose}
 							className="text-gray-400 hover:text-gray-600"
 						>
-							<X className="h-6 w-6" />
+							<Close className="h-6 w-6" />
 						</button>
 					</Dialog.Close>
 				</div>

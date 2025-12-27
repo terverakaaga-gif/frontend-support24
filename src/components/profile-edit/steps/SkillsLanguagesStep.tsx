@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Star, CloseCircle } from "@solar-icons/react";
-import { Plus } from "lucide-react";
+import { AddIcon } from "@/components/icons";
 
 interface ServiceType {
   _id: string;
@@ -169,7 +169,7 @@ export const SkillsLanguagesStep = React.memo(
               }}
               disabled={!newLanguage.trim()}
             >
-              <Plus className="w-4 h-4 mr-2" /> Add
+              <AddIcon className="w-4 h-4 mr-2" /> Add
             </Button>
           </div>
         </div>

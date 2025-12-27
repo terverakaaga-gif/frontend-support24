@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LandingLayout } from "@/components/layouts/LandingLayout";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageSquare } from "lucide-react";
+import { ChatRound } from "@solar-icons/react";
 
 export default function ComplaintsResolutionPolicy() {
   useEffect(() => {
@@ -28,7 +27,7 @@ export default function ComplaintsResolutionPolicy() {
           {/* Header */}
           <div className="mb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <MessageSquare className="w-10 h-10 text-primary" />
+              <ChatRound className="w-10 h-10 text-primary" />
               <h1 className="text-4xl md:text-5xl font-montserrat-bold text-white">
                 Complaints & Dispute Resolution Policy
               </h1>

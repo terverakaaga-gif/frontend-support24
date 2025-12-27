@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { WorkerSearchFilters } from "@/api/services/participantService";
-import { Search, X, Filter, RefreshCw } from "lucide-react";
+import { Magnifer, Close, Filter, Refresh } from "@solar-icons/react";
 import { LocationFilter } from "./LocationFilter"; // Import the new module
 
 interface SearchFiltersProps {
@@ -91,7 +91,7 @@ export function SearchFilters({
         </div>
         {activeFilterCount > 0 && (
           <Button variant="ghost" size="sm" onClick={onReset} className="h-8 text-xs">
-            <RefreshCw className="h-3 w-3 mr-1" /> Reset
+            <Refresh className="h-3 w-3 mr-1" /> Reset
           </Button>
         )}
       </div>
@@ -103,7 +103,7 @@ export function SearchFilters({
         <div className="space-y-2">
           <Label className="text-sm font-montserrat-semibold">Keywords</Label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Name, bio, etc..."
               value={localFilters.keyword || ""}

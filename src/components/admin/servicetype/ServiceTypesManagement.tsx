@@ -48,19 +48,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Search,
-  Filter,
-  Eye,
-  Edit,
-  Trash2,
-  RefreshCw,
-  Plus,
-  ChevronDown,
-  MoreVertical,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -83,7 +70,8 @@ import {
   UpdateServiceTypeRequest,
   SERVICE_TYPE_STATUS_CONFIG,
 } from "@/entities/ServiceType";
-import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
+import { AltArrowLeft, AltArrowRight, Filter, Magnifer, Pen, Refresh, TrashBinTrash } from "@solar-icons/react";
+import { AddIcon, VerticalEllipsisIcon } from "@/components/icons";
 
 const ServiceTypesManagement: React.FC = () => {
   // Pagination state
@@ -288,7 +276,7 @@ const ServiceTypesManagement: React.FC = () => {
                 There was an error loading the service types. Please try again.
               </p>
               <Button onClick={() => window.location.reload()}>
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <Refresh className="h-4 w-4 mr-2" />
                 Retry
               </Button>
             </div>
@@ -318,7 +306,7 @@ const ServiceTypesManagement: React.FC = () => {
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
+                <AddIcon className="h-4 w-4 mr-2" />
                 Add Service Type
               </Button>
             </DialogTrigger>
@@ -390,7 +378,7 @@ const ServiceTypesManagement: React.FC = () => {
       <div className="flex items-center space-x-4">
         <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Magnifer className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name or code..."
               value={searchTerm}
@@ -502,18 +490,18 @@ const ServiceTypesManagement: React.FC = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreVertical className="h-4 w-4" />
+                              <VerticalEllipsisIcon className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleEdit(serviceType)}>
-                              <Edit className="h-4 w-4 mr-2" />
+                              <Pen className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  <TrashBinTrash className="h-4 w-4 mr-2" />
                                   Deactivate
                                 </DropdownMenuItem>
                               </AlertDialogTrigger>

@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LandingLayout } from "@/components/layouts/LandingLayout";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { SirenRounded } from "@solar-icons/react";
 
 export default function IncidentManagementPolicy() {
   useEffect(() => {
@@ -28,7 +27,7 @@ export default function IncidentManagementPolicy() {
           {/* Header */}
           <div className="mb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <AlertCircle className="w-10 h-10 text-primary" />
+              <SirenRounded className="w-10 h-10 text-primary" />
               <h1 className="text-4xl md:text-5xl font-montserrat-bold text-white">
                 Incident Management Policy
               </h1>
@@ -370,7 +369,7 @@ export default function IncidentManagementPolicy() {
                 </h3>
                 <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-4">
                   <h4 className="text-lg font-montserrat-semibold text-white mb-2 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-red-400" />
+                    <SirenRounded className="w-5 h-5 text-red-400" />
                     For Immediate Emergencies
                   </h4>
                   <p className="text-gray-300 mb-2">

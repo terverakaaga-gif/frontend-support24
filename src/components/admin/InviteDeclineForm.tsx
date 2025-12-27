@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { XCircle, Loader2 } from "lucide-react";
 import { FlattenedInvite, ProcessInviteRequest } from "@/entities/Invitation";
 import { useProcessInvite } from "@/hooks/useInviteHooks";
 import { toast } from "@/hooks/use-toast";
+import { CloseCircle } from "@solar-icons/react";
+import { Spinner } from "../Spinner";
 
 interface InviteDeclineFormProps {
   invite: FlattenedInvite;
@@ -84,7 +85,7 @@ export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: Invite
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <XCircle className="h-5 w-5 text-red-600" />
+            <CloseCircle className="h-5 w-5 text-red-600" />
             Decline Invitation
           </DialogTitle>
           <DialogDescription>
@@ -98,7 +99,7 @@ export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: Invite
             <Label htmlFor="status">Status</Label>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                <XCircle className="h-3 w-3 mr-1" />
+                <CloseCircle className="h-3 w-3 mr-1" />
                 Declined
               </Badge>
             </div>
@@ -146,7 +147,7 @@ export function InviteDeclineForm({ invite, isOpen, onClose, onSuccess }: Invite
               variant="destructive"
             >
               {processInviteMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Spinner  />
               )}
               Decline Invitation
             </Button>

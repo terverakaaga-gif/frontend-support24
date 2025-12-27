@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, CloseCircle } from "@solar-icons/react";
-import { Plus } from "lucide-react";
 import { commonLanguages } from "@/constants/common-languages";
+import { AddIcon } from "@/components/icons";
 
 export const PreferencesStep = React.memo(
   ({
@@ -76,7 +76,7 @@ export const PreferencesStep = React.memo(
                 setNewLanguage("");
               }}
             >
-              <Plus className="w-4 h-4 mr-2" /> Add
+              <AddIcon className="w-4 h-4 mr-2" /> Add
             </Button>
           </div>
         </div>

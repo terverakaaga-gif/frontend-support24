@@ -1,31 +1,14 @@
 import { useState } from "react";
-import {
-  Users,
-  Clock,
-  DollarSign,
-  Calendar,
-  Search,
-  Filter,
-  Download,
-  ArrowRight,
-  ArrowLeft,
-  BellRing,
-  ChevronRight,
-  BarChart3,
-  TrendingUp,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatCard } from "@/components/StatCard";
 import { ChartSection } from "@/components/ChartSection";
 import { NotificationsList } from "@/components/NotificationsList";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
-import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { AltArrowRight, Bell, Chart, ClockCircle, CloudDownload, CourseUp, Dollar, Filter, Magnifer, UsersGroupRounded } from "@solar-icons/react";
 
 // Mock data for charts
 const bookingTrendsData = [
@@ -177,7 +160,7 @@ export default function AdminDashboard() {
             size="sm"
             className="h-9 bg-gradient-to-r from-guardian to-guardian-dark hover:from-guardian-dark hover:to-guardian"
           >
-            <Download className="h-4 w-4 mr-2" />
+            <CloudDownload className="h-4 w-4 mr-2" />
             Export Report
           </Button>
         </div>
@@ -188,28 +171,28 @@ export default function AdminDashboard() {
         <StatCard
           title="Total Users"
           value="1,234"
-          icon={<Users className="h-4 w-4 text-guardian" />}
+          icon={<UsersGroupRounded className="h-4 w-4 text-guardian" />}
           change={{ value: "+12%", positive: true }}
           trend="up"
         />
         <StatCard
           title="Total Hours"
           value="8,560"
-          icon={<Clock className="h-4 w-4 text-guardian" />}
+          icon={<ClockCircle className="h-4 w-4 text-guardian" />}
           change={{ value: "+8%", positive: true }}
           trend="up"
         />
         <StatCard
           title="Revenue"
           value="$375,000"
-          icon={<DollarSign className="h-4 w-4 text-guardian" />}
+          icon={<Dollar className="h-4 w-4 text-guardian" />}
           change={{ value: "+15%", positive: true }}
           trend="up"
         />
         <StatCard
           title="Pending Invitations"
           value="5"
-          icon={<BellRing className="h-4 w-4 text-guardian" />}
+          icon={<Bell className="h-4 w-4 text-guardian" />}
           additionalText="3 new today"
           trend="none"
         />
@@ -222,7 +205,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-montserrat-semibold">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-guardian" />
+                  <Chart className="h-5 w-5 text-guardian" />
                   <span>Booking Trends</span>
                 </div>
               </CardTitle>
@@ -247,7 +230,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-montserrat-semibold">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-guardian" />
+                  <CourseUp className="h-5 w-5 text-guardian" />
                   <span>Revenue Overview</span>
                 </div>
               </CardTitle>
@@ -299,7 +282,7 @@ export default function AdminDashboard() {
                   size="icon"
                   className="border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
                 >
-                  <Search className="h-4 w-4 text-[#1e3b93]" />
+                  <Magnifer className="h-4 w-4 text-[#1e3b93]" />
                 </Button>
               </div>
 
@@ -350,7 +333,7 @@ export default function AdminDashboard() {
                         size="icon"
                         className="hover:bg-[#1e3b93]/10"
                       >
-                        <ChevronRight className="h-4 w-4 text-[#1e3b93]" />
+                        <AltArrowRight className="h-4 w-4 text-[#1e3b93]" />
                       </Button>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, MessageSquare, Bell, Info } from "lucide-react";
+import { Calendar, ChatRound, Bell, InfoCircle } from "@solar-icons/react";
 
 interface Notification {
 	id: string;
@@ -23,9 +23,9 @@ export function NotificationsList({
 			case "booking":
 				return <Calendar className="h-5 w-5 text-green-500" />;
 			case "message":
-				return <MessageSquare className="h-5 w-5 text-primary-500" />;
-			case "update":
-				return <Info className="h-5 w-5 text-yellow-500" />;
+			return <ChatRound className="h-5 w-5 text-primary-500" />;
+		case "update":
+			return <InfoCircle className="h-5 w-5 text-yellow-500" />;
 			case "reminder":
 				return <Bell className="h-5 w-5 text-guardian" />;
 			default:

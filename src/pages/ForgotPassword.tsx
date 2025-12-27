@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +9,7 @@ import { toast } from "sonner";
 import authService from "@/api/services/authService";
 import { Spinner } from "@/components/Spinner";
 import { useForgotPassword } from "@/hooks/useAuthHooks";
-import { AltArrowRight } from "@solar-icons/react";
+import { AltArrowRight, CheckCircle } from "@solar-icons/react";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -188,7 +187,7 @@ export default function ForgotPassword() {
                     ) : (
                       <div className="flex items-center gap-2">
                         Continue
-                        <ArrowRight className="w-4 h-4" />
+                        <AltArrowRight className="w-4 h-4" />
                       </div>
                     )}
                   </Button>

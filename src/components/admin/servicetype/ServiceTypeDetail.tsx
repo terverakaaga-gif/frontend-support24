@@ -2,15 +2,6 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { 
-  ArrowLeft,
-  Edit,
-  Trash2,
-  Calendar,
-  Hash,
-  Activity,
-  RefreshCw
-} from "lucide-react";
-import { 
   Card,
   CardContent,
   CardDescription,
@@ -43,6 +34,7 @@ import {
   ServiceTypeStatus, 
   SERVICE_TYPE_STATUS_CONFIG 
 } from "@/entities/ServiceType";
+import { AltArrowLeft, Calendar, DiagramDown, Pen, TrashBinTrash } from "@solar-icons/react";
 
 const ServiceTypeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,7 +81,7 @@ const ServiceTypeDetail: React.FC = () => {
       <div className="container mx-auto py-6 max-w-4xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Service Types
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Loading Service Type...</h1>
@@ -132,7 +124,7 @@ const ServiceTypeDetail: React.FC = () => {
           <CardHeader>
             <div className="flex items-center">
               <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <AltArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
               <CardTitle>Service Type Not Found</CardTitle>
@@ -152,7 +144,7 @@ const ServiceTypeDetail: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Service Types
           </Button>
           <div>
@@ -218,7 +210,7 @@ const ServiceTypeDetail: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
-                      <Activity className="h-4 w-4 text-gray-1000" />
+                      <DiagramDown className="h-4 w-4 text-gray-1000" />
                       <div>
                         <h3 className="text-sm font-montserrat-semibold text-gray-600">Last Updated</h3>
                         <p className="text-sm">{formatDateTime(serviceType.updatedAt)}</p>
@@ -238,14 +230,14 @@ const ServiceTypeDetail: React.FC = () => {
             <CardContent>
               <div className="flex flex-wrap gap-3">
                 <Button variant="outline" onClick={handleEdit}>
-                  <Edit className="h-4 w-4 mr-2" />
+                  <Pen className="h-4 w-4 mr-2" />
                   Edit Service Type
                 </Button>
                 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50">
-                      <Trash2 className="h-4 w-4 mr-2" />
+                      <TrashBinTrash className="h-4 w-4 mr-2" />
                       Deactivate Service Type
                     </Button>
                   </AlertDialogTrigger>

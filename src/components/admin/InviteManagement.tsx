@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -25,26 +24,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  MessageCircle,
-  ChevronDown,
-  Filter,
-  Search,
-  RefreshCw,
-  Info,
-  Send,
-  Calendar,
-  DollarSign,
-  Users,
-  Clock,
-  Building,
-} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useGetFlattenedInvites } from "@/hooks/useInviteHooks";
 import { FlattenedInvite } from "@/entities/Invitation";
+import { AltArrowDown, Buildings2, Calendar, ClockCircle, Dollar, Eye, Filter, Magnifer, Refresh, UsersGroupRounded } from "@solar-icons/react";
 
 // Helper function to generate an avatar placeholder
 const getAvatarPlaceholder = (name: string): string => {
@@ -103,7 +89,7 @@ export function InviteManagement() {
             variant="outline"
             className="bg-amber-50 text-amber-700 border-amber-200 font-montserrat-semibold"
           >
-            <Clock className="w-3 h-3 mr-1" />
+            <ClockCircle className="w-3 h-3 mr-1" />
             Pending
           </Badge>
         );
@@ -113,7 +99,7 @@ export function InviteManagement() {
             variant="outline"
             className="bg-emerald-50 text-emerald-700 border-emerald-200 font-montserrat-semibold"
           >
-            <Users className="w-3 h-3 mr-1" />
+            <UsersGroupRounded className="w-3 h-3 mr-1" />
             Accepted
           </Badge>
         );
@@ -160,7 +146,7 @@ export function InviteManagement() {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Magnifer className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search by participant, worker, or organization..."
@@ -177,7 +163,7 @@ export function InviteManagement() {
                   >
                     <Filter className="h-4 w-4 mr-2" />
                     {statusFilter ? `Status: ${statusFilter}` : "All statuses"}
-                    <ChevronDown className="h-4 w-4 ml-2" />
+                    <AltArrowDown className="h-4 w-4 ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -201,7 +187,7 @@ export function InviteManagement() {
               onClick={() => refetch()}
               className="border-guardian/20 hover:bg-guardian/5"
             >
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <Refresh className="h-4 w-4 mr-2" />
               Refresh Data
             </Button>
           </div>
@@ -240,7 +226,7 @@ export function InviteManagement() {
                   onClick={() => refetch()}
                   className="mt-4"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <Refresh className="h-4 w-4 mr-2" />
                   Retry
                 </Button>
               </div>
@@ -251,19 +237,19 @@ export function InviteManagement() {
                 <TableRow className="border-guardian/10">
                   <TableHead className="font-montserrat-semibold text-guardian">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4" />
+                      <UsersGroupRounded className="w-4 h-4" />
                       Participant
                     </div>
                   </TableHead>
                   <TableHead className="font-montserrat-semibold text-guardian">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4" />
+                      <UsersGroupRounded className="w-4 h-4" />
                       Support Worker
                     </div>
                   </TableHead>
                   <TableHead className="font-montserrat-semibold text-guardian">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
+                      <ClockCircle className="w-4 h-4" />
                       Status
                     </div>
                   </TableHead>
@@ -286,7 +272,7 @@ export function InviteManagement() {
                       className="text-center py-12 text-muted-foreground"
                     >
                       <div className="flex flex-col items-center gap-2">
-                        <Users className="w-8 h-8 text-muted-foreground/50" />
+                        <UsersGroupRounded className="w-8 h-8 text-muted-foreground/50" />
                         <span>No invitations found</span>
                         <span className="text-sm">
                           Try adjusting your search or filters
@@ -314,7 +300,7 @@ export function InviteManagement() {
                               {invitation.participantName}
                             </div>
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Building className="w-3 h-3" />
+                              <Buildings2 className="w-3 h-3" />
                               {invitation.organizationName}
                             </div>
                           </div>
@@ -332,7 +318,7 @@ export function InviteManagement() {
                               {invitation.workerName}
                             </div>
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <DollarSign className="w-3 h-3" />
+                              <Dollar className="w-3 h-3" />
                               Base Rate:{" "}
                               {formatCurrency(
                                 invitation.proposedRates.baseHourlyRate
@@ -378,7 +364,7 @@ export function InviteManagement() {
                               size="sm"
                               className="h-8 border-guardian/20 hover:bg-guardian/5 hover:border-guardian/40"
                             >
-                              <Info className="h-3 w-3 mr-1" />
+                              <Eye className="h-3 w-3 mr-1" />
                               Details
                             </Button>
                           </Link>

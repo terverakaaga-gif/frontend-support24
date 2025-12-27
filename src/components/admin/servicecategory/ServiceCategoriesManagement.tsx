@@ -48,19 +48,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Search,
-  Filter,
-  Eye,
-  Edit,
-  Trash2,
-  RefreshCw,
-  Plus,
-  ChevronDown,
-  MoreVertical,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -83,6 +70,8 @@ import {
   ServiceCategoryFilters,
   serviceCategoryStatusConfig,
 } from "@/entities/ServiceCategory";
+import { AltArrowLeft, AltArrowRight, Filter, Magnifer, Pen, Refresh, TrashBinTrash } from "@solar-icons/react";
+import { AddIcon, VerticalEllipsisIcon } from "@/components/icons";
 
 const ServiceCategoriesManagement: React.FC = () => {
   // Pagination state
@@ -278,7 +267,7 @@ const ServiceCategoriesManagement: React.FC = () => {
                 There was an error loading the service categories. Please try again.
               </p>
               <Button onClick={() => window.location.reload()}>
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <Refresh className="h-4 w-4 mr-2" />
                 Retry
               </Button>
             </div>
@@ -308,7 +297,7 @@ const ServiceCategoriesManagement: React.FC = () => {
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
+                <AddIcon className="h-4 w-4 mr-2" />
                 Add Category
               </Button>
             </DialogTrigger>
@@ -400,7 +389,7 @@ const ServiceCategoriesManagement: React.FC = () => {
       <div className="flex items-center space-x-4">
         <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Magnifer className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name..."
               value={searchTerm}
@@ -505,18 +494,18 @@ const ServiceCategoriesManagement: React.FC = () => {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreVertical className="h-4 w-4" />
+                                <VerticalEllipsisIcon className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleEdit(category)}>
-                                <Edit className="h-4 w-4 mr-2" />
+                                <Pen className="h-4 w-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    <TrashBinTrash className="h-4 w-4 mr-2" />
                                     Delete
                                   </DropdownMenuItem>
                                 </AlertDialogTrigger>
@@ -580,7 +569,7 @@ const ServiceCategoriesManagement: React.FC = () => {
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                       >
-                        <ChevronLeft className="h-4 w-4" />
+                        <AltArrowLeft className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
@@ -588,7 +577,7 @@ const ServiceCategoriesManagement: React.FC = () => {
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
                       >
-                        <ChevronRight className="h-4 w-4" />
+                        <AltArrowRight className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

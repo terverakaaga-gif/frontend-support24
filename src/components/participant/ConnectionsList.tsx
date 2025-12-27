@@ -11,10 +11,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, MessageCircle, Calendar } from "lucide-react";
 import { SupportWorker } from "@/entities/SupportWorker";
 import { getUserFullName } from "@/entities/User";
 import { useMyOrganizations } from "@/hooks/useParticipant";
+import { Calendar, ChatRound, Magnifer } from "@solar-icons/react";
 
 export function ConnectionsList() {
 	const { data: organizations, isSuccess } = useMyOrganizations();
@@ -64,9 +64,9 @@ export function ConnectionsList() {
 						</CardDescription>
 					</div>
 					<div className="relative">
-						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+						<Magnifer className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
 						<Input
-							placeholder="Search network..."
+							placeholder="Magnifer network..."
 							className="pl-9 w-[250px]"
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
@@ -128,7 +128,7 @@ export function ConnectionsList() {
 										</Link>
 										<div className="flex gap-2">
 											<Button variant="secondary" size="sm">
-												<MessageCircle className="h-4 w-4 mr-2" />
+												<ChatRound className="h-4 w-4 mr-2" />
 												Message
 											</Button>
 											<Button variant="secondary" size="sm">

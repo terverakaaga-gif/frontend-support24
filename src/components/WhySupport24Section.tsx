@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Users, Calendar, Star, ShieldCheck } from "lucide-react";
+import { ShieldCheck, UsersGroupRounded, Calendar, Star, ShieldCheck as ShieldCheckAlt } from "@solar-icons/react";
 import { InlineVectorText } from "@/components/InlineVectorText";
 import { Button } from "@/components/ui/button";
 

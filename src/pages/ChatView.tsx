@@ -15,7 +15,6 @@ import {
   Microphone2,
   SmileCircle,
 } from "@solar-icons/react";
-import { Loader2, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import useChat from "@/hooks/useChat";
 import { useChatStore } from "@/store/chatStore";
@@ -32,6 +31,8 @@ import { ChatFilterButton } from "@/components/ChatFilterButton";
 import { ConversationItem } from "@/components/ConversationItem";
 import { ChatCreationModal } from "@/components/ChatCreationModal";
 import { MessageBubble } from "@/components/MessageBubble";
+import { AddIcon } from "@/components/icons";
+import { WaveLoader } from "@/components/Loader";
 
 export default function ChatView() {
   const { user, logout } = useAuth();
@@ -496,7 +497,7 @@ export default function ChatView() {
                 }}
                 className="w-full sm:w-auto h-10 sm:h-11 bg-primary hover:bg-primary-700 text-white font-montserrat-semibold shadow-sm text-sm sm:text-base"
               >
-                <Plus size={20} className="sm:w-6 sm:h-6" />
+                <AddIcon size={20} className="sm:w-6 sm:h-6" />
                 <span className="hidden sm:inline ml-2">Create New Chat</span>
               </Button>
             )}
@@ -572,10 +573,7 @@ export default function ChatView() {
           <ScrollArea className="flex-1 bg-white">
             {isLoadingConversations ? (
               <div className="p-8 text-center">
-                <Loader2 className="h-8 w-8 text-primary mx-auto mb-3 animate-spin" />
-                <p className="text-sm text-gray-1000">
-                  Loading conversations...
-                </p>
+                <WaveLoader />
               </div>
             ) : filteredConversations.length === 0 ? (
               <div className="p-8 text-center">
@@ -891,7 +889,7 @@ export default function ChatView() {
                     className="shrink-0 h-10 w-10 bg-primary hover:bg-primary-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 p-0"
                   >
                     {isSending ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <WaveLoader />
                     ) : (
                       <Plain3 className="h-5 w-5" />
                     )}

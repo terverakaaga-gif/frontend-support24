@@ -1,6 +1,5 @@
 
-import {  Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2,  ShieldCheck, } from "@solar-icons/react";
-import { BadgeCheck, Headset, Settings2 } from "lucide-react";
+import {  Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2,  MedalStarCircle,  Settings,  ShieldCheck, ShieldUser, } from "@solar-icons/react";
 
 export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works" },
@@ -53,7 +52,7 @@ export const ALL_IN_ONE_CARDS = [
     title: "Choice & Control",
     content:
       "Decide who supports you, when, and how with full flexibility at your fingertips",
-    icon: Settings2,
+    icon: Settings,
   },
   {
     title: "Camps & Activities",
@@ -65,12 +64,12 @@ export const ALL_IN_ONE_CARDS = [
     title: "Specialist Support",
     content:
       "Need something specific, our team is here to guide you to the right support",
-    icon: Headset,
+    icon: ShieldUser,
   },
   {
     title: "Peace of Mind",
     content:
       "Every support worker is verified, every step is secure, transparency is built in",
-    icon: BadgeCheck,
+    icon: MedalStarCircle,
   }
 ];

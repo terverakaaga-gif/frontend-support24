@@ -1,36 +1,33 @@
-// pages/admin/AdminsList.tsx
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { 
-  Search, 
-  Filter, 
-  ChevronDown, 
-  Eye, 
-  Calendar,
-  Users,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertCircle,
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import {
+  Crown,
   Shield,
+  CheckCircle,
+  ClockCircle,
+  DangerTriangle,
+  CloseCircle,
+  Magnifer,
+  Filter,
+  AltArrowDown,
+  UsersGroupRounded,
   UserCheck,
   Settings,
-  Crown,
-  Building,
-  X
-} from 'lucide-react';
+  Eye,
+  Calendar,
+} from "@solar-icons/react";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -38,77 +35,96 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from "@/components/ui/collapsible";
 
-import { useGetAdmins, useGetFilterOptions } from '@/hooks/useAdminUserHooks';
-import { AdminFilters, SortOptions, PaginationOptions } from '@/api/services/adminUserService';
-import { Admin, AdminTableFilters, PermissionSummary } from '@/entities/Admin';
-import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
+import { useGetAdmins, useGetFilterOptions } from "@/hooks/useAdminUserHooks";
+import {
+  AdminFilters,
+  SortOptions,
+  PaginationOptions,
+} from "@/api/services/adminUserService";
+import { Admin, AdminTableFilters, PermissionSummary } from "@/entities/Admin";
+import { AltArrowLeft, AltArrowRight } from "@solar-icons/react";
+import { CloseIcon } from "../icons";
 
 const AdminsList: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // State for filters, sorting, and pagination
   const [filters, setFilters] = useState<AdminTableFilters>({});
-  const [sort, setSort] = useState<SortOptions>({ field: 'createdAt', direction: 'desc' });
-  const [pagination, setPagination] = useState<PaginationOptions>({ page: 1, limit: 20 });
+  const [sort, setSort] = useState<SortOptions>({
+    field: "createdAt",
+    direction: "desc",
+  });
+  const [pagination, setPagination] = useState<PaginationOptions>({
+    page: 1,
+    limit: 20,
+  });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   // API calls
-  const { data: adminsData, isLoading, error } = useGetAdmins(filters, sort, pagination);
+  const {
+    data: adminsData,
+    isLoading,
+    error,
+  } = useGetAdmins(filters, sort, pagination);
   const { data: filterOptions } = useGetFilterOptions();
 
   // Handlers
-  const handleFilterChange = (key: keyof AdminTableFilters, value: string | boolean | undefined) => {
+  const handleFilterChange = (
+    key: keyof AdminTableFilters,
+    value: string | boolean | undefined
+  ) => {
     const newFilters = { ...filters };
-    
-    if (value === 'all' || value === '' || value === undefined) {
+
+    if (value === "all" || value === "" || value === undefined) {
       delete newFilters[key];
     } else {
       newFilters[key] = value;
     }
-    
+
     setFilters(newFilters);
     setPagination({ ...pagination, page: 1 }); // Reset to first page when filters change
   };
 
   const handleSearchChange = (value: string) => {
     const newFilters = { ...filters };
-    
-    if (value === '' || value === undefined) {
+
+    if (value === "" || value === undefined) {
       delete newFilters.search;
     } else {
       newFilters.search = value;
     }
-    
+
     setFilters(newFilters);
     setPagination({ ...pagination, page: 1 });
   };
 
   const handleSortChange = (field: string) => {
-    const newDirection = sort.field === field && sort.direction === 'asc' ? 'desc' : 'asc';
+    const newDirection =
+      sort.field === field && sort.direction === "asc" ? "desc" : "asc";
     setSort({ field, direction: newDirection });
   };
 
@@ -128,71 +144,81 @@ const AdminsList: React.FC = () => {
   // Helper functions
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'suspended':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      case 'inactive':
-        return <XCircle className="h-4 w-4 text-gray-1000" />;
+      case "pending":
+        return <ClockCircle className="h-4 w-4 text-yellow-500" />;
+      case "suspended":
+        return <DangerTriangle className="h-4 w-4 text-red-500" />;
+      case "inactive":
+        return <CloseCircle className="h-4 w-4 text-gray-1000" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-1000" />;
+        return <ClockCircle className="h-4 w-4 text-gray-1000" />;
     }
   };
 
-  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusVariant = (
+    status: string
+  ): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-      case 'active':
-        return 'default';
-      case 'pending':
-        return 'secondary';
-      case 'suspended':
-        return 'destructive';
-      case 'inactive':
-        return 'outline';
+      case "active":
+        return "default";
+      case "pending":
+        return "secondary";
+      case "suspended":
+        return "destructive";
+      case "inactive":
+        return "outline";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
   const getAdminTypeIcon = (adminType: string) => {
     switch (adminType.toLowerCase()) {
-      case 'superadmin':
+      case "superadmin":
         return <Crown className="h-4 w-4 text-yellow-500" />;
       default:
         return <Shield className="h-4 w-4 text-primary-500" />;
     }
   };
 
-  const getAdminTypeVariant = (adminType: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getAdminTypeVariant = (
+    adminType: string
+  ): "default" | "secondary" | "destructive" | "outline" => {
     switch (adminType.toLowerCase()) {
-      case 'superadmin':
-        return 'default';
+      case "superadmin":
+        return "default";
       default:
-        return 'secondary';
+        return "secondary";
     }
   };
 
-  const calculatePermissionProgress = (permissions: Admin['permissions']): PermissionSummary => {
+  const calculatePermissionProgress = (
+    permissions: Admin["permissions"]
+  ): PermissionSummary => {
     if (!permissions) {
       return { total: 0, granted: 0, percentage: 0 };
     }
-    
+
     const permissionValues = Object.values(permissions);
-    const granted = permissionValues.filter(permission => permission === true).length;
+    const granted = permissionValues.filter(
+      (permission) => permission === true
+    ).length;
     const total = permissionValues.length;
     const percentage = total > 0 ? Math.round((granted / total) * 100) : 0;
-    
-    return { 
-      total, 
-      granted, 
-      percentage 
+
+    return {
+      total,
+      granted,
+      percentage,
     };
   };
 
   // Get active filters count (excluding search)
-  const activeFiltersCount = Object.keys(filters).filter(key => key !== 'search').length;
+  const activeFiltersCount = Object.keys(filters).filter(
+    (key) => key !== "search"
+  ).length;
 
   // Pagination component
   const PaginationControls = () => {
@@ -206,42 +232,48 @@ const AdminsList: React.FC = () => {
     return (
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-muted-foreground">
-          Showing {((page - 1) * pagination.limit) + 1} to{' '}
-          {Math.min(page * pagination.limit, adminsData.pagination.totalResults)} of{' '}
-          {adminsData.pagination.totalResults} administrators
+          Showing {(page - 1) * pagination.limit + 1} to{" "}
+          {Math.min(
+            page * pagination.limit,
+            adminsData.pagination.totalResults
+          )}{" "}
+          of {adminsData.pagination.totalResults} administrators
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1}
-            className='h-9 w-9'
+            className="h-9 w-9"
           >
-           <AltArrowLeft className='h-4 w-4' />
+            <AltArrowLeft className="h-4 w-4" />
           </Button>
-          
-          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((pageNum) => (
+
+          {Array.from(
+            { length: endPage - startPage + 1 },
+            (_, i) => startPage + i
+          ).map((pageNum) => (
             <Button
               key={pageNum}
               variant={pageNum === page ? "default" : "outline"}
               size="sm"
               onClick={() => handlePageChange(pageNum)}
-              className='h-9 w-9'
+              className="h-9 w-9"
             >
               {pageNum}
             </Button>
           ))}
-          
+
           <Button
             variant="outline"
             size="sm"
             onClick={() => handlePageChange(page + 1)}
             disabled={!hasMore}
-            className='h-9 w-9'
+            className="h-9 w-9"
           >
-            <AltArrowRight className='h-4 w-4' />
+            <AltArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -273,27 +305,29 @@ const AdminsList: React.FC = () => {
               Manage and view all administrators in the system
             </p>
           </div> */}
-          
         </div>
 
-        {/* Search Bar */}
-        <div className='flex items-center justify-between'>
-            <div className="flex items-center space-x-4">
+        {/* Magnifer Bar */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
             <div className="flex-1 max-w-md">
-                <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <div className="relative">
+                <Magnifer className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search by name or email..."
-                    value={filters.search || ''}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    className="pl-10"
+                  placeholder="Magnifer by name or email..."
+                  value={filters.search || ""}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-10"
                 />
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
 
-            <div className="flex items-center space-x-2">
-            <Button variant="outline" onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+            >
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFiltersCount > 0 && (
@@ -301,11 +335,14 @@ const AdminsList: React.FC = () => {
                   {activeFiltersCount}
                 </Badge>
               )}
-              <ChevronDown className={`h-4 w-4 ml-2 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
+              <AltArrowDown
+                className={`h-4 w-4 ml-2 transition-transform ${
+                  isFiltersOpen ? "rotate-180" : ""
+                }`}
+              />
             </Button>
           </div>
         </div>
-        
 
         {/* Filters */}
         <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
@@ -313,7 +350,9 @@ const AdminsList: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Filters</CardTitle>
-                <CardDescription>Filter administrators by various criteria</CardDescription>
+                <CardDescription>
+                  Filter administrators by various criteria
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -321,8 +360,10 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Status</Label>
                     <Select
-                      value={filters.status || 'all'}
-                      onValueChange={(value) => handleFilterChange('status', value)}
+                      value={filters.status || "all"}
+                      onValueChange={(value) =>
+                        handleFilterChange("status", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -342,8 +383,10 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Admin Type</Label>
                     <Select
-                      value={filters.adminType || 'all'}
-                      onValueChange={(value) => handleFilterChange('adminType', value)}
+                      value={filters.adminType || "all"}
+                      onValueChange={(value) =>
+                        handleFilterChange("adminType", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select admin type" />
@@ -363,12 +406,19 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Email Verification</Label>
                     <Select
-                      value={filters.isEmailVerified === undefined ? 'all' : filters.isEmailVerified.toString()}
+                      value={
+                        filters.isEmailVerified === undefined
+                          ? "all"
+                          : filters.isEmailVerified.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('isEmailVerified', undefined);
+                        if (value === "all") {
+                          handleFilterChange("isEmailVerified", undefined);
                         } else {
-                          handleFilterChange('isEmailVerified', value === 'true');
+                          handleFilterChange(
+                            "isEmailVerified",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -387,12 +437,22 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Assigned Organizations</Label>
                     <Select
-                      value={filters.hasAssignedOrganizations === undefined ? 'all' : filters.hasAssignedOrganizations.toString()}
+                      value={
+                        filters.hasAssignedOrganizations === undefined
+                          ? "all"
+                          : filters.hasAssignedOrganizations.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('hasAssignedOrganizations', undefined);
+                        if (value === "all") {
+                          handleFilterChange(
+                            "hasAssignedOrganizations",
+                            undefined
+                          );
                         } else {
-                          handleFilterChange('hasAssignedOrganizations', value === 'true');
+                          handleFilterChange(
+                            "hasAssignedOrganizations",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -411,12 +471,19 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Manage Users Permission</Label>
                     <Select
-                      value={filters.canManageUsers === undefined ? 'all' : filters.canManageUsers.toString()}
+                      value={
+                        filters.canManageUsers === undefined
+                          ? "all"
+                          : filters.canManageUsers.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('canManageUsers', undefined);
+                        if (value === "all") {
+                          handleFilterChange("canManageUsers", undefined);
                         } else {
-                          handleFilterChange('canManageUsers', value === 'true');
+                          handleFilterChange(
+                            "canManageUsers",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -435,12 +502,19 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Manage Workers Permission</Label>
                     <Select
-                      value={filters.canManageWorkers === undefined ? 'all' : filters.canManageWorkers.toString()}
+                      value={
+                        filters.canManageWorkers === undefined
+                          ? "all"
+                          : filters.canManageWorkers.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('canManageWorkers', undefined);
+                        if (value === "all") {
+                          handleFilterChange("canManageWorkers", undefined);
                         } else {
-                          handleFilterChange('canManageWorkers', value === 'true');
+                          handleFilterChange(
+                            "canManageWorkers",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -459,12 +533,22 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Manage Participants Permission</Label>
                     <Select
-                      value={filters.canManageParticipants === undefined ? 'all' : filters.canManageParticipants.toString()}
+                      value={
+                        filters.canManageParticipants === undefined
+                          ? "all"
+                          : filters.canManageParticipants.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('canManageParticipants', undefined);
+                        if (value === "all") {
+                          handleFilterChange(
+                            "canManageParticipants",
+                            undefined
+                          );
                         } else {
-                          handleFilterChange('canManageParticipants', value === 'true');
+                          handleFilterChange(
+                            "canManageParticipants",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -483,12 +567,19 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Financial Access Permission</Label>
                     <Select
-                      value={filters.canAccessFinancials === undefined ? 'all' : filters.canAccessFinancials.toString()}
+                      value={
+                        filters.canAccessFinancials === undefined
+                          ? "all"
+                          : filters.canAccessFinancials.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('canAccessFinancials', undefined);
+                        if (value === "all") {
+                          handleFilterChange("canAccessFinancials", undefined);
                         } else {
-                          handleFilterChange('canAccessFinancials', value === 'true');
+                          handleFilterChange(
+                            "canAccessFinancials",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -507,12 +598,19 @@ const AdminsList: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Manage Admins Permission</Label>
                     <Select
-                      value={filters.canManageAdmins === undefined ? 'all' : filters.canManageAdmins.toString()}
+                      value={
+                        filters.canManageAdmins === undefined
+                          ? "all"
+                          : filters.canManageAdmins.toString()
+                      }
                       onValueChange={(value) => {
-                        if (value === 'all') {
-                          handleFilterChange('canManageAdmins', undefined);
+                        if (value === "all") {
+                          handleFilterChange("canManageAdmins", undefined);
                         } else {
-                          handleFilterChange('canManageAdmins', value === 'true');
+                          handleFilterChange(
+                            "canManageAdmins",
+                            value === "true"
+                          );
                         }
                       }}
                     >
@@ -547,12 +645,15 @@ const AdminsList: React.FC = () => {
         {/* Active Filters Display */}
         {activeFiltersCount > 0 && (
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
+            <span className="text-sm text-muted-foreground">
+              Active filters:
+            </span>
             <Badge variant="secondary">
-              {activeFiltersCount} filter{activeFiltersCount !== 1 ? 's' : ''} applied
+              {activeFiltersCount} filter{activeFiltersCount !== 1 ? "s" : ""}{" "}
+              applied
             </Badge>
             <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-              <X className="h-4 w-4 mr-1" />
+              <CloseIcon className="h-4 w-4 mr-1" />
               Clear all
             </Button>
           </div>
@@ -580,25 +681,33 @@ const AdminsList: React.FC = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => handleSortChange('firstName')}
+                        onClick={() => handleSortChange("firstName")}
                       >
                         <div className="flex items-center space-x-1">
                           <span>Administrator</span>
-                          {sort.field === 'firstName' && (
-                            <ChevronDown className={`h-4 w-4 ${sort.direction === 'asc' ? 'rotate-180' : ''}`} />
+                          {sort.field === "firstName" && (
+                            <AltArrowDown
+                              className={`h-4 w-4 ${
+                                sort.direction === "asc" ? "rotate-180" : ""
+                              }`}
+                            />
                           )}
                         </div>
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => handleSortChange('email')}
+                        onClick={() => handleSortChange("email")}
                       >
                         <div className="flex items-center space-x-1">
                           <span>Email</span>
-                          {sort.field === 'email' && (
-                            <ChevronDown className={`h-4 w-4 ${sort.direction === 'asc' ? 'rotate-180' : ''}`} />
+                          {sort.field === "email" && (
+                            <AltArrowDown
+                              className={`h-4 w-4 ${
+                                sort.direction === "asc" ? "rotate-180" : ""
+                              }`}
+                            />
                           )}
                         </div>
                       </TableHead>
@@ -606,14 +715,18 @@ const AdminsList: React.FC = () => {
                       <TableHead>Admin Type</TableHead>
                       <TableHead>Permissions</TableHead>
                       {/* <TableHead>Organizations</TableHead> */}
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => handleSortChange('createdAt')}
+                        onClick={() => handleSortChange("createdAt")}
                       >
                         <div className="flex items-center space-x-1">
                           <span>Created</span>
-                          {sort.field === 'createdAt' && (
-                            <ChevronDown className={`h-4 w-4 ${sort.direction === 'asc' ? 'rotate-180' : ''}`} />
+                          {sort.field === "createdAt" && (
+                            <AltArrowDown
+                              className={`h-4 w-4 ${
+                                sort.direction === "asc" ? "rotate-180" : ""
+                              }`}
+                            />
                           )}
                         </div>
                       </TableHead>
@@ -622,20 +735,25 @@ const AdminsList: React.FC = () => {
                   </TableHeader>
                   <TableBody>
                     {adminsData?.users?.map((admin: Admin) => {
-                      const permissionProgress = calculatePermissionProgress(admin.permissions);
-                      
+                      const permissionProgress = calculatePermissionProgress(
+                        admin.permissions
+                      );
+
                       return (
                         <TableRow key={admin._id}>
                           <TableCell>
                             <div className="flex items-center space-x-3">
                               <Avatar>
                                 <AvatarFallback>
-                                  {admin.firstName.charAt(0)}{admin.lastName.charAt(0)}
+                                  {admin.firstName.charAt(0)}
+                                  {admin.lastName.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <div className="font-montserrat-semibold flex items-center space-x-2">
-                                  <span>{admin.firstName} {admin.lastName}</span>
+                                  <span>
+                                    {admin.firstName} {admin.lastName}
+                                  </span>
                                   {admin.isEmailVerified && (
                                     <CheckCircle className="h-3 w-3 text-green-500" />
                                   )}
@@ -646,11 +764,11 @@ const AdminsList: React.FC = () => {
                               </div>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <span>{admin.email}</span>
                           </TableCell>
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-2">
                               {getStatusIcon(admin.status)}
@@ -659,71 +777,119 @@ const AdminsList: React.FC = () => {
                               </Badge>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-2">
                               {getAdminTypeIcon(admin.adminType)}
-                              <Badge variant={getAdminTypeVariant(admin.adminType)}>
+                              <Badge
+                                variant={getAdminTypeVariant(admin.adminType)}
+                              >
                                 {admin.adminType}
                               </Badge>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <Tooltip>
                               <TooltipTrigger>
                                 <div className="flex items-center space-x-2">
-                                  <Progress 
-                                    value={permissionProgress.percentage} 
+                                  <Progress
+                                    value={permissionProgress.percentage}
                                     className="w-16 h-2"
                                   />
                                   <span className="text-sm font-montserrat-semibold">
-                                    {permissionProgress.granted}/{permissionProgress.total}
+                                    {permissionProgress.granted}/
+                                    {permissionProgress.total}
                                   </span>
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <div className="space-y-1">
-                                  <div className="font-montserrat-semibold">Permissions</div>
+                                  <div className="font-montserrat-semibold">
+                                    Permissions
+                                  </div>
                                   <div className="grid grid-cols-2 gap-2 text-sm">
                                     <div className="flex items-center space-x-1">
-                                      <Users className="h-3 w-3" />
-                                      <span>Users: {admin.permissions?.canManageUsers ? '✓' : '✗'}</span>
+                                      <UsersGroupRounded className="h-3 w-3" />
+                                      <span>
+                                        Users:{" "}
+                                        {admin.permissions?.canManageUsers
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <UserCheck className="h-3 w-3" />
-                                      <span>Workers: {admin.permissions?.canManageWorkers ? '✓' : '✗'}</span>
+                                      <span>
+                                        Workers:{" "}
+                                        {admin.permissions?.canManageWorkers
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
-                                      <Users className="h-3 w-3" />
-                                      <span>Participants: {admin.permissions?.canManageParticipants ? '✓' : '✗'}</span>
+                                      <UsersGroupRounded className="h-3 w-3" />
+                                      <span>
+                                        Participants:{" "}
+                                        {admin.permissions
+                                          ?.canManageParticipants
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <CheckCircle className="h-3 w-3" />
-                                      <span>Invites: {admin.permissions?.canApproveInvites ? '✓' : '✗'}</span>
+                                      <span>
+                                        Invites:{" "}
+                                        {admin.permissions?.canApproveInvites
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Settings className="h-3 w-3" />
-                                      <span>Agreements: {admin.permissions?.canManageServiceAgreements ? '✓' : '✗'}</span>
+                                      <span>
+                                        Agreements:{" "}
+                                        {admin.permissions
+                                          ?.canManageServiceAgreements
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Crown className="h-3 w-3" />
-                                      <span>Subscriptions: {admin.permissions?.canManageSubscriptions ? '✓' : '✗'}</span>
+                                      <span>
+                                        Subscriptions:{" "}
+                                        {admin.permissions
+                                          ?.canManageSubscriptions
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Settings className="h-3 w-3" />
-                                      <span>Financials: {admin.permissions?.canAccessFinancials ? '✓' : '✗'}</span>
+                                      <span>
+                                        Financials:{" "}
+                                        {admin.permissions?.canAccessFinancials
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Shield className="h-3 w-3" />
-                                      <span>Admins: {admin.permissions?.canManageAdmins ? '✓' : '✗'}</span>
+                                      <span>
+                                        Admins:{" "}
+                                        {admin.permissions?.canManageAdmins
+                                          ? "✓"
+                                          : "✗"}
+                                      </span>
                                     </div>
                                   </div>
                                 </div>
                               </TooltipContent>
                             </Tooltip>
                           </TableCell>
-                          
+
                           {/* <TableCell>
                             <div className="flex items-center space-x-1">
                               <Building className="h-4 w-4 text-muted-foreground" />
@@ -732,16 +898,19 @@ const AdminsList: React.FC = () => {
                               </span>
                             </div>
                           </TableCell> */}
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm">
-                                {format(new Date(admin.createdAt), 'MMM dd, yyyy')}
+                                {format(
+                                  new Date(admin.createdAt),
+                                  "MMM dd, yyyy"
+                                )}
                               </span>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <Button
                               variant="outline"
@@ -762,12 +931,13 @@ const AdminsList: React.FC = () => {
                 {adminsData?.users?.length === 0 && (
                   <div className="text-center py-12">
                     <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-montserrat-semibold">No administrators found</h3>
+                    <h3 className="text-lg font-montserrat-semibold">
+                      No administrators found
+                    </h3>
                     <p className="text-muted-foreground">
-                      {Object.keys(filters).length > 0 
+                      {Object.keys(filters).length > 0
                         ? "Try adjusting your filters to see more results."
-                        : "No administrators have been registered yet."
-                      }
+                        : "No administrators have been registered yet."}
                     </p>
                   </div>
                 )}

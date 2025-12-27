@@ -1,9 +1,6 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LandingLayout } from "@/components/layouts/LandingLayout";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 
 export default function TermsOfUse() {
   useEffect(() => {
@@ -25,16 +22,6 @@ export default function TermsOfUse() {
           animate="animate"
           variants={fadeInUp}
         >
-          {/* Back Button */}
-          {/* <Link to="/">
-            <Button
-              variant="ghost"
-              className="mb-8 text-gray-300 hover:text-white hover:bg-white/10"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link> */}
 
           {/* Header */}
           <div className="mb-12 text-center">

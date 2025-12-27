@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegions, useServiceAreas, useStates } from "@/hooks/useLocationHooks";
-import { MapPin } from "lucide-react";
+import { MapPoint } from "@solar-icons/react";
 
 interface LocationFilterProps {
   filters: any;
@@ -44,7 +44,7 @@ export function LocationFilter({ filters, onChange }: LocationFilterProps) {
   return (
     <div className="space-y-3">
       <Label className="text-sm font-montserrat-semibold flex items-center">
-        <MapPin className="h-4 w-4 mr-1" /> Location
+        <MapPoint className="h-4 w-4 mr-1" /> Location
       </Label>
       
       {/* Auto-location Toggle */}

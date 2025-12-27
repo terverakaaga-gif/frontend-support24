@@ -1,19 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  Edit, 
-  Sun, 
-  Moon, 
-  DollarSign,
-  Bed,
-  Calendar as CalendarIcon,
-  CheckCircle,
-  XCircle,
-  RefreshCw
-} from "lucide-react";
+
 import { 
   Card,
   CardContent,
@@ -29,6 +16,8 @@ import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { useGetRateTimeBandById } from "@/hooks/useRateTimeBandHooks";
 import { RateTimeBand } from "@/entities/RateTimeBand";
+import { CalendarIcon } from "../icons";
+import { AltArrowLeft, Bed, CheckCircle, ClockCircle, CloseCircle, Dollar, Moon, Pen, Refresh, Sun } from "@solar-icons/react";
 
 export function RateTimeBandDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -63,7 +52,7 @@ export function RateTimeBandDetailsPage() {
       return <Moon className="h-6 w-6 text-indigo-500" />;
     }
     
-    return <Clock className="h-6 w-6 text-gray-1000" />;
+    return <ClockCircle className="h-6 w-6 text-gray-1000" />;
   };
 
   // Loading state
@@ -72,7 +61,7 @@ export function RateTimeBandDetailsPage() {
       <div className="container mx-auto py-6 max-w-3xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
           <Skeleton className="h-8 w-48" />
@@ -121,7 +110,7 @@ export function RateTimeBandDetailsPage() {
       <div className="container mx-auto py-6 max-w-3xl">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <AltArrowLeft className="h-4 w-4 mr-2" />
             Back to Time Bands
           </Button>
           <h1 className="text-2xl font-montserrat-bold">Error Loading Rate Time Band</h1>
@@ -131,7 +120,7 @@ export function RateTimeBandDetailsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-center h-64">
               <div className="text-center text-red-600">
-                <RefreshCw className="h-8 w-8 mx-auto mb-4" />
+                <Refresh className="h-8 w-8 mx-auto mb-4" />
                 <p className="font-montserrat-semibold">Error loading rate time band details</p>
                 <p className="text-sm text-gray-600 mt-1">Please try again later</p>
                 <Button 
@@ -157,7 +146,7 @@ export function RateTimeBandDetailsPage() {
         <CardHeader>
           <div className="flex items-center">
             <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <AltArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
             <CardTitle>Rate Time Band Not Found</CardTitle>
@@ -177,7 +166,7 @@ export function RateTimeBandDetailsPage() {
     <div className="container mx-auto py-6 max-w-3xl">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <AltArrowLeft className="h-4 w-4 mr-2" />
           Back to Time Bands
         </Button>
         <h1 className="text-2xl font-montserrat-bold">Rate Time Band Details</h1>
@@ -218,7 +207,7 @@ export function RateTimeBandDetailsPage() {
                 <div className="bg-muted/40 p-4 rounded-lg space-y-3">
                   {timeBand.startTime && timeBand.endTime ? (
                     <div className="flex items-center gap-3">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <ClockCircle className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-montserrat-semibold">Time Range</p>
                         <p className="text-sm">{timeBand.startTime} - {timeBand.endTime}</p>
@@ -226,7 +215,7 @@ export function RateTimeBandDetailsPage() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <ClockCircle className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-montserrat-semibold">Time Range</p>
                         <p className="text-sm text-muted-foreground">Not specified</p>
@@ -235,7 +224,7 @@ export function RateTimeBandDetailsPage() {
                   )}
                   
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-4 w-4 text-green-600" />
+                    <Dollar className="h-4 w-4 text-green-600" />
                     <div>
                       <p className="text-sm font-montserrat-semibold">Base Rate Multiplier</p>
                       <p className="text-sm">{timeBand.baseRateMultiplier}x standard rate</p>
@@ -249,23 +238,23 @@ export function RateTimeBandDetailsPage() {
                 <div className="bg-muted/40 p-4 rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                       <p className="text-sm">Weekend Shift</p>
                     </div>
                     {timeBand.isWeekend ? 
                       <CheckCircle className="h-4 w-4 text-green-600" /> : 
-                      <XCircle className="h-4 w-4 text-muted-foreground" />
+                      <CloseCircle className="h-4 w-4 text-muted-foreground" />
                     }
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                       <p className="text-sm">Public Holiday</p>
                     </div>
                     {timeBand.isPublicHoliday ? 
                       <CheckCircle className="h-4 w-4 text-green-600" /> : 
-                      <XCircle className="h-4 w-4 text-muted-foreground" />
+                      <CloseCircle className="h-4 w-4 text-muted-foreground" />
                     }
                   </div>
                   
@@ -276,7 +265,7 @@ export function RateTimeBandDetailsPage() {
                     </div>
                     {timeBand.isSleepover ? 
                       <CheckCircle className="h-4 w-4 text-green-600" /> : 
-                      <XCircle className="h-4 w-4 text-muted-foreground" />
+                      <CloseCircle className="h-4 w-4 text-muted-foreground" />
                     }
                   </div>
                 </div>
@@ -317,7 +306,7 @@ export function RateTimeBandDetailsPage() {
         
         <CardFooter className="border-t pt-6 flex flex-wrap gap-3">
           <Button onClick={handleEdit}>
-            <Edit className="h-4 w-4 mr-2" />
+            <Pen className="h-4 w-4 mr-2" />
             Edit Time Band
           </Button>
           <Button variant="outline" onClick={handleGoBack}>

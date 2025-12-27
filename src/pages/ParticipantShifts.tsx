@@ -23,10 +23,11 @@ import {
   Calendar,
   CalendarMark,
   CheckCircle,
+  ClipboardCheck,
   ClockCircle,
   CloseCircle,
   CourseUp,
-  DangerCircle,
+  DangerTriangle,
   DollarMinimalistic,
   Eye,
   List,
@@ -38,7 +39,6 @@ import {
   UsersGroupRounded,
   Widget,
 } from "@solar-icons/react";
-import { ClipboardCheck } from "lucide-react";
 import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -268,7 +268,7 @@ const ParticipantShifts = () => {
         lightBg: "bg-green-50",
       },
       pending: {
-        icon: <DangerCircle className="w-3 h-3" />,
+        icon: <DangerTriangle className="w-3 h-3" />,
         color: "text-orange-600",
         bg: "bg-orange-600",
         lightBg: "bg-orange-50",

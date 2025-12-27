@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LandingLayout } from "@/components/layouts/LandingLayout";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileText } from "lucide-react";
+import { FileText } from "@solar-icons/react";
 
 export default function TermsOfUse() {
   useEffect(() => {

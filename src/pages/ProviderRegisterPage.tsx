@@ -135,31 +135,37 @@ export default function ProviderRegisterPage() {
           </div>
 
           {/* Stepper */}
-          <div className="flex items-center justify-between mb-8 relative">
-            {STEPS.map((step, index) => (
-              <div
-                key={step.number}
-                className="flex flex-col items-center z-10"
-              >
+          <div className="mb-8 relative px-4">
+            <div className="flex items-center justify-between relative">
+              {STEPS.map((step, index) => (
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                    currentStep >= step.number
-                      ? "bg-primary-600 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
+                  key={step.number}
+                  className="flex flex-col items-center z-10 bg-gray-50"
                 >
-                  {currentStep > step.number ? "✓" : step.number}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                      currentStep >= step.number
+                        ? "bg-primary-600 text-white"
+                        : "bg-gray-200 text-gray-500"
+                    }`}
+                  >
+                    {currentStep > step.number ? "✓" : step.number}
+                  </div>
+                  <span className="text-xs mt-2 font-medium text-gray-500 whitespace-nowrap">
+                    {step.title}
+                  </span>
                 </div>
-                <span className="text-xs mt-2 font-medium text-gray-500">
-                  {step.title}
-                </span>
-              </div>
-            ))}
-            <div className="absolute top-4 left-0 w-full h-0.5 bg-gray-200 -z-0" />
-            <div
-              className="absolute top-4 left-0 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
-              style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
-            />
+              ))}
+              {/* Progress line background */}
+              <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -z-0" />
+              {/* Active progress line */}
+              <div
+                className="absolute top-4 left-4 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
+                style={{ 
+                  width: `calc((100% - 2rem) * ${(currentStep - 1) / (STEPS.length - 1)})` 
+                }}
+              />
+            </div>
           </div>
 
           <Form {...form}>

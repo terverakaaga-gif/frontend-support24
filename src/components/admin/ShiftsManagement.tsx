@@ -38,22 +38,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
-import { 
-  Search, 
-  Filter, 
-  Calendar as CalendarIcon, 
-  Eye, 
-  Clock, 
-  MapPin, 
-  RepeatIcon, 
-  MoreVertical, 
-  RefreshCw,
-  Users
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Recurrence, ShiftStatus } from "@/entities/Shift";
 import { useGetShifts } from "@/hooks/useShiftHooks";
 import { UserSummary } from "@/entities/types";
+import { WaveLoader } from "../Loader";
+import { ClockCircle, Eye, Filter, MapPoint, Refresh, Repeat, UsersGroupRounded } from "@solar-icons/react";
+import { CalendarIcon, VerticalEllipsisIcon } from "../icons";
 
 export function ShiftsManagement() {
   const navigate = useNavigate();
@@ -144,7 +135,7 @@ export function ShiftsManagement() {
     
     return (
       <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 flex items-center text-xs">
-        <RepeatIcon className="h-3 w-3 mr-1" />
+        <Repeat className="h-3 w-3 mr-1" />
         {recurrence.pattern.charAt(0).toUpperCase() + recurrence.pattern.slice(1)}
         {recurrence.occurrences ? ` (${recurrence.occurrences}x)` : ""}
       </Badge>
@@ -157,10 +148,7 @@ export function ShiftsManagement() {
       <Card className="w-full">
         <CardContent>
           <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
-              <p>Loading shifts...</p>
-            </div>
+           <WaveLoader />
           </div>
         </CardContent>
       </Card>
@@ -208,7 +196,7 @@ export function ShiftsManagement() {
                 size="sm"
                 onClick={handleResetFilters}
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <Refresh className="h-4 w-4 mr-2" />
                 Reset
               </Button>
             )}
@@ -358,7 +346,7 @@ export function ShiftsManagement() {
                         <div className="flex flex-col">
                           <span className="font-montserrat-semibold">{formatDate(shift.startTime)}</span>
                           <div className="flex items-center gap-1 mt-1 text-muted-foreground text-xs">
-                            <Clock className="h-3 w-3" />
+                            <ClockCircle className="h-3 w-3" />
                             <span>{formatTime(shift.startTime)} - {formatTime(shift.endTime)}</span>
                           </div>
                           <span className="text-xs">{formatDuration(shift.startTime, shift.endTime)}</span>
@@ -374,7 +362,7 @@ export function ShiftsManagement() {
                         {shift.isMultiWorkerShift ? (
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                              <Users className="h-4 w-4 text-primary" />
+                              <UsersGroupRounded className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex flex-col">
                               <span className="font-montserrat-semibold text-sm">Multi-worker shift</span>
@@ -402,7 +390,7 @@ export function ShiftsManagement() {
                             <div className="flex flex-col">
                               <span className="font-montserrat-semibold">{typeof shift.workerId === 'object' ? getFullName(shift.workerId) : shift.workerId}</span>
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <MapPin className="h-3 w-3" />
+                                <MapPoint className="h-3 w-3" />
                                 <span className="truncate max-w-[150px]">{shift.locationType}</span>
                               </div>
                             </div>
@@ -419,7 +407,7 @@ export function ShiftsManagement() {
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <span className="sr-only">Open menu</span>
-                              <MoreVertical className="h-4 w-4" />
+                              <VerticalEllipsisIcon className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -429,7 +417,7 @@ export function ShiftsManagement() {
                             </DropdownMenuItem>
                             {shift.recurrence.pattern !== "none" && (
                               <DropdownMenuItem>
-                                <RepeatIcon className="h-4 w-4 mr-2" />
+                                <Repeat className="h-4 w-4 mr-2" />
                                 View series
                               </DropdownMenuItem>
                             )}

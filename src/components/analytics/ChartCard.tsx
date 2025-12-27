@@ -20,7 +20,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { ChevronRight } from 'lucide-react';
+import { AltArrowRight } from '@solar-icons/react';
 
 interface ChartCardProps {
   title: string;
@@ -278,7 +278,7 @@ export function ChartCard({
               onClick={onViewDetails}
             >
               View Details
-              <ChevronRight className="ml-1 h-4 w-4" />
+              <AltArrowRight className="ml-1 h-4 w-4" />
             </Button>
           )}
         </div>

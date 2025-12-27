@@ -20,13 +20,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  CalendarIcon,
-  DollarSign,
-  Clock,
-  CheckCircle,
-  Loader2,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   FlattenedInvite,
@@ -35,6 +28,9 @@ import {
 } from "@/entities/Invitation";
 import { useProcessInvite } from "@/hooks/useInviteHooks";
 import { toast } from "@/hooks/use-toast";
+import { CheckCircle, ClockCircle, Dollar } from "@solar-icons/react";
+import { CalendarIcon } from "../icons";
+import { WaveLoader } from "../Loader";
 
 interface InviteAcceptanceFormProps {
   invite: FlattenedInvite;
@@ -159,7 +155,7 @@ export function InviteAcceptanceForm({
             <div className="p-4 bg-muted/50 rounded-lg space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-green-600" />
+                  <Dollar className="h-4 w-4 text-green-600" />
                   <span className="font-montserrat-semibold">
                     Base Hourly Rate
                   </span>
@@ -218,7 +214,7 @@ export function InviteAcceptanceForm({
               {/* Distance Travel Rate */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
+                  <ClockCircle className="h-4 w-4 text-primary" />
                   <span className="font-montserrat-semibold">
                     Distance Travel Rate
                   </span>
@@ -300,7 +296,7 @@ export function InviteAcceptanceForm({
               className="bg-green-600 hover:bg-green-700"
             >
               {processInviteMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <WaveLoader />
               )}
               Accept Invitation
             </Button>

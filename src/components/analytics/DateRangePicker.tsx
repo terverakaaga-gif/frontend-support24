@@ -1,6 +1,5 @@
 // src/components/analytics/DateRangePicker.tsx
 import { useState, useEffect } from 'react';
-import { CalendarIcon, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -20,6 +19,8 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DateRange, DateRangeType } from '@/entities/Analytics';
 import { createDateRange } from '@/api/services/analyticsService';
+import { CalendarIcon } from '../icons';
+import { AltArrowDown } from '@solar-icons/react';
 
 interface DateRangePickerProps {
   value: DateRange;
@@ -115,7 +116,7 @@ export function DateRangePicker({
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {formatDateRange()}
-            <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
+            <AltArrowDown className="ml-auto h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">

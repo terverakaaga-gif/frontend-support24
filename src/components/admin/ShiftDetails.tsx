@@ -1,22 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-	ArrowLeft,
-	Calendar,
-	Clock,
-	MapPin,
-	UserCircle,
-	Users,
-	Building,
-	Mail,
-	Phone,
-	CalendarClock,
-	RepeatIcon,
-	AlertCircle,
-	Briefcase,
-	RefreshCw,
-} from "lucide-react";
-import {
 	Card,
 	CardContent,
 	CardDescription,
@@ -32,6 +16,7 @@ import { format, isToday, isPast } from "date-fns";
 import { useGetShiftById } from "@/hooks/useShiftHooks";
 import { UserSummary } from "@/entities/types";
 import { Recurrence, ShiftStatus } from "@/entities/Shift";
+import { AltArrowLeft, Buildings2, Calendar, ClockCircle, History3, Letter, MapPoint, Phone, Refresh, Repeat, SirenRounded, Suitcase, UserCircle, UsersGroupRounded } from "@solar-icons/react";
 
 // Format time for display
 const formatTime = (dateString: string) => {
@@ -140,7 +125,7 @@ const getLargeStatusBadge = (status: string) => {
 		[ShiftStatus.PENDING]: {
 			className: "bg-yellow-100 text-yellow-800 border-yellow-200",
 			label: "Pending",
-			icon: <Clock className="h-4 w-4 mr-2" />,
+			icon: <ClockCircle className="h-4 w-4 mr-2" />,
 		},
 		[ShiftStatus.CONFIRMED]: {
 			className: "bg-green-100 text-green-800 border-green-200",
@@ -150,7 +135,7 @@ const getLargeStatusBadge = (status: string) => {
 		[ShiftStatus.IN_PROGRESS]: {
 			className: "bg-primary-100 text-primary-800 border-primary-200",
 			label: "In Progress",
-			icon: <Clock className="h-4 w-4 mr-2" />,
+			icon: <ClockCircle className="h-4 w-4 mr-2" />,
 		},
 		[ShiftStatus.COMPLETED]: {
 			className: "bg-purple-100 text-purple-800 border-purple-200",
@@ -160,17 +145,17 @@ const getLargeStatusBadge = (status: string) => {
 		[ShiftStatus.CANCELLED]: {
 			className: "bg-gray-100 text-gray-800 border-gray-200",
 			label: "Cancelled",
-			icon: <AlertCircle className="h-4 w-4 mr-2" />,
+			icon: <SirenRounded className="h-4 w-4 mr-2" />,
 		},
 		[ShiftStatus.NO_SHOW]: {
 			className: "bg-red-100 text-red-800 border-red-200",
 			label: "No Show",
-			icon: <AlertCircle className="h-4 w-4 mr-2" />,
+			icon: <SirenRounded className="h-4 w-4 mr-2" />,
 		},
 		[ShiftStatus.DECLINED]: {
 			className: "bg-red-100 text-red-800 border-red-200",
 			label: "Declined",
-			icon: <AlertCircle className="h-4 w-4 mr-2" />,
+			icon: <SirenRounded className="h-4 w-4 mr-2" />,
 		},
 	};
 
@@ -207,11 +192,11 @@ const getServiceTypeBadge = (serviceType: string) => {
 			className: "bg-primary-100 text-primary-700 border-primary-200",
 		},
 		mealPreparation: {
-			icon: <Briefcase className="h-4 w-4 mr-2" />,
+			icon: <Suitcase className="h-4 w-4 mr-2" />,
 			className: "bg-green-50 text-green-700 border-green-200",
 		},
 		socialSupport: {
-			icon: <Users className="h-4 w-4 mr-2" />,
+			icon: <UsersGroupRounded className="h-4 w-4 mr-2" />,
 			className: "bg-purple-50 text-purple-700 border-purple-200",
 		},
 		therapySupport: {
@@ -219,13 +204,13 @@ const getServiceTypeBadge = (serviceType: string) => {
 			className: "bg-indigo-50 text-indigo-700 border-indigo-200",
 		},
 		mobilityAssistance: {
-			icon: <Users className="h-4 w-4 mr-2" />,
+			icon: <UsersGroupRounded className="h-4 w-4 mr-2" />,
 			className: "bg-orange-50 text-orange-700 border-orange-200",
 		},
 	};
 
 	const typeInfo = serviceTypeMap[serviceType] || {
-		icon: <Briefcase className="h-4 w-4 mr-2" />,
+		icon: <Suitcase className="h-4 w-4 mr-2" />,
 		className: "bg-gray-100 text-gray-700 border-gray-200",
 	};
 
@@ -249,7 +234,7 @@ const getRecurrenceBadge = (recurrence?: Recurrence | null) => {
 			variant="outline"
 			className="bg-indigo-50 text-indigo-700 border-indigo-200 flex items-center text-xs"
 		>
-			<RepeatIcon className="h-4 w-4 mr-2" />
+			<Repeat className="h-4 w-4 mr-2" />
 			{recurrence.pattern.charAt(0).toUpperCase() + recurrence.pattern.slice(1)}
 			{recurrence.occurrences ? ` (${recurrence.occurrences}x)` : ""}
 		</Badge>
@@ -306,7 +291,7 @@ export function ShiftDetailView() {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<div className="text-center">
-					<RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
+					<Refresh className="h-8 w-8 animate-spin mx-auto mb-4" />
 					<p>Loading shift details...</p>
 				</div>
 			</div>
@@ -325,7 +310,7 @@ export function ShiftDetailView() {
 							onClick={handleGoBack}
 							className="mr-4"
 						>
-							<ArrowLeft className="h-4 w-4 mr-2" />
+							<AltArrowLeft className="h-4 w-4 mr-2" />
 							Back
 						</Button>
 						<CardTitle>Error Loading Shift</CardTitle>
@@ -355,7 +340,7 @@ export function ShiftDetailView() {
 							onClick={handleGoBack}
 							className="mr-4"
 						>
-							<ArrowLeft className="h-4 w-4 mr-2" />
+							<AltArrowLeft className="h-4 w-4 mr-2" />
 							Back
 						</Button>
 						<CardTitle>Shift Not Found</CardTitle>
@@ -380,7 +365,7 @@ export function ShiftDetailView() {
 					onClick={handleGoBack}
 					className="mr-4"
 				>
-					<ArrowLeft className="h-4 w-4 mr-2" />
+					<AltArrowLeft className="h-4 w-4 mr-2" />
 					Back to Shifts
 				</Button>
 				<h1 className="text-2xl font-montserrat-bold">Shift Details</h1>
@@ -403,7 +388,7 @@ export function ShiftDetailView() {
 									)}
 								</div>
 								<CardDescription className="flex items-center">
-									<Building className="h-4 w-4 mr-2" />
+									<Buildings2 className="h-4 w-4 mr-2" />
 									{typeof shift.organizationId === "object"
 										? shift.organizationId.name
 										: shift.organizationId}
@@ -490,7 +475,7 @@ export function ShiftDetailView() {
 													<div>
 														<p className="text-sm font-montserrat-semibold mb-1">Address</p>
 														<div className="flex items-start gap-2">
-															<MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+															<MapPoint className="h-4 w-4 text-muted-foreground mt-0.5" />
 															<p className="text-sm">{shift.address}</p>
 														</div>
 													</div>
@@ -572,7 +557,7 @@ export function ShiftDetailView() {
 													<div>
 														<p className="text-sm font-montserrat-semibold mb-1">Time</p>
 														<div className="flex items-center gap-2">
-															<Clock className="h-4 w-4 text-muted-foreground" />
+															<ClockCircle className="h-4 w-4 text-muted-foreground" />
 															<p className="text-sm">
 																{formatTime(shift.startTime)} -{" "}
 																{formatTime(shift.endTime)}
@@ -583,7 +568,7 @@ export function ShiftDetailView() {
 													<div>
 														<p className="text-sm font-montserrat-semibold mb-1">Duration</p>
 														<div className="flex items-center gap-2">
-															<CalendarClock className="h-4 w-4 text-muted-foreground" />
+															<History3 className="h-4 w-4 text-muted-foreground" />
 															<p className="text-sm">
 																{formatDuration(shift.startTime, shift.endTime)}
 															</p>
@@ -596,7 +581,7 @@ export function ShiftDetailView() {
 																Recurrence
 															</p>
 															<div className="flex items-center gap-2">
-																<RepeatIcon className="h-4 w-4 text-muted-foreground" />
+																<Repeat className="h-4 w-4 text-muted-foreground" />
 																<p className="text-sm capitalize">
 																	{shift.recurrence.pattern}
 																	{shift.recurrence.occurrences
@@ -671,7 +656,7 @@ export function ShiftDetailView() {
 												{shift.status !== "open" && (
 													<div className="flex items-start gap-3">
 														<div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-															<Clock className="h-4 w-4 text-yellow-700" />
+															<ClockCircle className="h-4 w-4 text-yellow-700" />
 														</div>
 														<div>
 															<p className="text-sm font-montserrat-semibold">
@@ -700,7 +685,7 @@ export function ShiftDetailView() {
 															{shift.status === "completed" ? (
 																<Calendar className="h-4 w-4 text-green-700" />
 															) : (
-																<AlertCircle className="h-4 w-4 text-red-700" />
+																<SirenRounded className="h-4 w-4 text-red-700" />
 															)}
 														</div>
 														<div>
@@ -771,19 +756,19 @@ export function ShiftDetailView() {
 							<div className="flex items-center gap-4 mb-4">
 								<Avatar className="h-12 w-12">
 									<AvatarFallback>
-										{typeof shift.participantId === "object"
-											? shift.participantId.firstName.charAt(0)
+										{typeof (shift as any).participantId === "object"
+											? (shift as any).participantId.firstName.charAt(0)
 											: "P"}
-										{typeof shift.participantId === "object"
-											? shift.participantId.lastName.charAt(0)
+										{typeof (shift as any).participantId === "object"
+											? (shift as any).participantId.lastName.charAt(0)
 											: "U"}
 									</AvatarFallback>
 								</Avatar>
 								<div>
 									<h3 className="font-montserrat-semibold">
-										{typeof shift.participantId === "object"
-											? getFullName(shift.participantId)
-											: shift.participantId}
+										{typeof (shift as any).participantId === "object"
+											? getFullName((shift as any).participantId)
+											: (shift as any).participantId}
 									</h3>
 									<p className="text-sm text-muted-foreground">
 										{typeof shift.organizationId === "object"
@@ -795,10 +780,10 @@ export function ShiftDetailView() {
 
 							<ul className="space-y-3">
 								<li className="flex items-center gap-3">
-									<Mail className="h-4 w-4 text-muted-foreground" />
+									<Letter className="h-4 w-4 text-muted-foreground" />
 									<span className="text-sm">
-										{typeof shift.participantId === "object"
-											? shift.participantId.email
+										{typeof (shift as any).participantId === "object"
+											? (shift as any).participantId.email
 											: "N/A"}
 									</span>
 								</li>
@@ -806,8 +791,8 @@ export function ShiftDetailView() {
 								<li className="flex items-center gap-3">
 									<Phone className="h-4 w-4 text-muted-foreground" />
 									<span className="text-sm">
-										{typeof shift.participantId === "object"
-											? shift.participantId.phone
+										{typeof (shift as any).participantId === "object"
+											? (shift as any).participantId.phone
 											: "N/A"}
 									</span>
 								</li>
@@ -861,7 +846,7 @@ export function ShiftDetailView() {
 
 								<ul className="space-y-3">
 									<li className="flex items-center gap-3">
-										<Mail className="h-4 w-4 text-muted-foreground" />
+										<Letter className="h-4 w-4 text-muted-foreground" />
 										<span className="text-sm">
 											{typeof shift.workerId === "object"
 												? shift.workerId.email
@@ -903,7 +888,7 @@ export function ShiftDetailView() {
 							<CardContent>
 								<div className="flex items-center gap-4 mb-4">
 									<div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
-										<Users className="h-6 w-6 text-primary" />
+										<UsersGroupRounded className="h-6 w-6 text-primary" />
 									</div>
 									<div>
 										<h3 className="font-montserrat-semibold">Multi-worker shift</h3>
@@ -954,7 +939,7 @@ export function ShiftDetailView() {
 
 								<div className="mt-4">
 									<Button variant="outline" className="w-full">
-										<Users className="h-4 w-4 mr-2" />
+										<UsersGroupRounded className="h-4 w-4 mr-2" />
 										View All Workers
 									</Button>
 								</div>
@@ -970,7 +955,7 @@ export function ShiftDetailView() {
 							</CardHeader>
 							<CardContent>
 								<div className="text-center py-6">
-									<AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+									<SirenRounded className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
 									<p className="text-sm text-muted-foreground mb-4">
 										No support worker assigned to this shift yet.
 									</p>

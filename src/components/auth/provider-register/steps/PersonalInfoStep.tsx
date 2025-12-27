@@ -1,6 +1,5 @@
 import { memo, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Eye, EyeOff } from "lucide-react";
 import {
   FormControl,
   FormField,
@@ -12,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { ProviderRegisterFormValues } from "@/types/auth/provider-register/schema";
 import { getPasswordRequirements } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Eye, EyeClosed } from "@solar-icons/react";
 
 interface Props {
   form: UseFormReturn<ProviderRegisterFormValues>;
@@ -98,7 +98,7 @@ export const PersonalInfoStep = memo(({ form }: Props) => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? <EyeClosed className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </FormControl>
@@ -136,7 +136,7 @@ export const PersonalInfoStep = memo(({ form }: Props) => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showConfirmPassword ? <EyeClosed className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </FormControl>
