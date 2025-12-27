@@ -54,6 +54,17 @@ This project uses a professional design system for consistent UI/UX across all c
 
 - **[Job API Integration Summary](./JOB_API_INTEGRATION_SUMMARY.md)** - Job API integration status and implementation details
 
+#### 🎨 Icon Migration Documentation
+
+This project is migrating from Lucide React icons to Solar Icons to match the UI/UX design system.
+
+- **[Icon Migration Guide](./ICON_MIGRATION_GUIDE.md)** - Complete guide for migrating icons
+- **[Icon Migration Progress](./ICON_MIGRATION_PROGRESS.md)** - Current migration status and remaining work
+- **Icon Mapping Constants**: `/src/constants/icon-mapping.ts` - Lucide to Solar mapping reference
+- **Custom Icons**: `/src/components/icons/index.tsx` - Custom SVG icons for non-Solar equivalents
+
+**Migration Status**: UI components (100% ✅), Feature components (100% ✅), Page components (in progress)
+
 #### 💻 Source Files
 
 - **`/src/constants/design-system.ts`** - All design tokens (spacing, colors, typography, etc.)
