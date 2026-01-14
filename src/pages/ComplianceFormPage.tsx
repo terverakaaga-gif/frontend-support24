@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
@@ -6,47 +6,56 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { FileDropZone, UploadedFile, useFileUpload } from "@/components/ui/FileDropZone";
+import { FileDropZone, useFileUpload } from "@/components/ui/FileDropZone";
 import { AltArrowLeft, CheckCircle, FileText } from "@solar-icons/react";
+import { useSubmitCompliance } from "@/hooks/useComplianceHooks";
+import { 
+  ComplianceDocumentType, 
+  DOCUMENT_TYPE_LABELS,
+  COMPLIANCE_QUESTION_LABELS,
+  IComplianceAnswers 
+} from "@/types/compliance.types";
 
 interface RequiredDocument {
   id: string;
+  type: ComplianceDocumentType;
   name: string;
   isMandatory: boolean;
   isCompleted: boolean;
 }
 
 interface ComplianceQuestion {
-  id: string;
+  id: keyof IComplianceAnswers;
   question: string;
   answer: boolean;
-  expiryDate?: string;
 }
 
+// Map document types to their config
 const requiredDocuments: RequiredDocument[] = [
-  { id: "1", name: "First Aid Certificate", isMandatory: true, isCompleted: false },
-  { id: "2", name: "CPR Certificate", isMandatory: true, isCompleted: false },
-  { id: "3", name: "Police Check", isMandatory: true, isCompleted: false },
-  { id: "4", name: "Working with Children Check", isMandatory: true, isCompleted: false },
-  { id: "5", name: "Relevant Document", isMandatory: false, isCompleted: false },
-  { id: "6", name: "Relevant Insurance", isMandatory: false, isCompleted: false },
+  { id: "1", type: ComplianceDocumentType.FIRST_AID_CERTIFICATE, name: DOCUMENT_TYPE_LABELS[ComplianceDocumentType.FIRST_AID_CERTIFICATE], isMandatory: true, isCompleted: false },
+  { id: "2", type: ComplianceDocumentType.CPR_CERTIFICATE, name: DOCUMENT_TYPE_LABELS[ComplianceDocumentType.CPR_CERTIFICATE], isMandatory: true, isCompleted: false },
+  { id: "3", type: ComplianceDocumentType.POLICE_CHECK, name: DOCUMENT_TYPE_LABELS[ComplianceDocumentType.POLICE_CHECK], isMandatory: true, isCompleted: false },
+  { id: "4", type: ComplianceDocumentType.WWCC, name: DOCUMENT_TYPE_LABELS[ComplianceDocumentType.WWCC], isMandatory: true, isCompleted: false },
+  { id: "5", type: ComplianceDocumentType.RELEVANT_DOCUMENT, name: DOCUMENT_TYPE_LABELS[ComplianceDocumentType.RELEVANT_DOCUMENT], isMandatory: false, isCompleted: false },
+  { id: "6", type: ComplianceDocumentType.RELEVANT_INSURANCE, name: DOCUMENT_TYPE_LABELS[ComplianceDocumentType.RELEVANT_INSURANCE], isMandatory: false, isCompleted: false },
 ];
 
+// Map question IDs to backend answer keys
 const initialQuestions: ComplianceQuestion[] = [
-  { id: "ndis_screening", question: "Do you have NDIS Worker Screening Check?", answer: false },
-  { id: "ndis_orientation", question: "Do you have NDIS Worker Orientation Module (Quality, Safety, and You)?", answer: false },
-  { id: "national_police", question: "Do you have National Police Check?", answer: false },
-  { id: "children_check", question: "Do you have Experience Working with Children Check?", answer: false },
-  { id: "first_aid", question: "Do you have First Aid Certifications (HLTAID011)?", answer: false },
-  { id: "cpr", question: "Do you have CPR Certifications (HLTAID009)?", answer: false },
-  { id: "covid_vaccine", question: "Do you have COVID-19 Vaccination Evidence?", answer: false },
-  { id: "flu_vaccine", question: "Do you have Influenza Vaccination Evidence?", answer: false },
-  { id: "relevant_quals", question: "Do you have Relevant Qualifications (Certificate in individual, community or disability support service)?", answer: false },
-  { id: "ndis_code", question: "Do you have NDIS Code of Conduct Agreement?", answer: false },
-  { id: "manual_handling", question: "Do you have Manual Handling Training?", answer: false },
-  { id: "medication", question: "Do you have Medication Administration Training?", answer: false },
-  { id: "infection_control", question: "Do you have Infection Control Training?", answer: false },
-  { id: "insurance", question: "Do you have Public Liability & Professional Indemnity Insurance?", answer: false },
+  { id: "ndisWorkerScreeningCheck", question: COMPLIANCE_QUESTION_LABELS.ndisWorkerScreeningCheck, answer: false },
+  { id: "ndisWorkerOrientationModule", question: COMPLIANCE_QUESTION_LABELS.ndisWorkerOrientationModule, answer: false },
+  { id: "nationalPoliceCheck", question: COMPLIANCE_QUESTION_LABELS.nationalPoliceCheck, answer: false },
+  { id: "workingWithChildrenCheck", question: COMPLIANCE_QUESTION_LABELS.workingWithChildrenCheck, answer: false },
+  { id: "firstAidCertification", question: COMPLIANCE_QUESTION_LABELS.firstAidCertification, answer: false },
+  { id: "cprCertification", question: COMPLIANCE_QUESTION_LABELS.cprCertification, answer: false },
+  { id: "covidVaccinationEvidence", question: COMPLIANCE_QUESTION_LABELS.covidVaccinationEvidence, answer: false },
+  { id: "influenzaVaccinationEvidence", question: COMPLIANCE_QUESTION_LABELS.influenzaVaccinationEvidence, answer: false },
+  { id: "relevantQualifications", question: COMPLIANCE_QUESTION_LABELS.relevantQualifications, answer: false },
+  { id: "ndisCodeOfConductAgreement", question: COMPLIANCE_QUESTION_LABELS.ndisCodeOfConductAgreement, answer: false },
+  { id: "manualHandlingTraining", question: COMPLIANCE_QUESTION_LABELS.manualHandlingTraining, answer: false },
+  { id: "medicationAdministrationTraining", question: COMPLIANCE_QUESTION_LABELS.medicationAdministrationTraining, answer: false },
+  { id: "infectionControlTraining", question: COMPLIANCE_QUESTION_LABELS.infectionControlTraining, answer: false },
+  { id: "publicLiabilityInsurance", question: COMPLIANCE_QUESTION_LABELS.publicLiabilityInsurance, answer: false },
 ];
 
 type FormMode = "form" | "review";
@@ -54,17 +63,18 @@ type FormMode = "form" | "review";
 export default function ComplianceFormPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form mode state
   const [mode, setMode] = useState<FormMode>("form");
 
-  // Form data states
+  // Form data states - using original FileDropZone approach
   const { files: uploadedFiles, setFiles: setUploadedFiles } = useFileUpload();
   const [documents, setDocuments] = useState<RequiredDocument[]>(requiredDocuments);
   const [questions, setQuestions] = useState<ComplianceQuestion[]>(initialQuestions);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // React Query mutation
+  const submitCompliance = useSubmitCompliance();
 
   const handleReview = () => {
     // Validate that at least some mandatory documents are uploaded
@@ -93,50 +103,59 @@ export default function ComplianceFormPage() {
       return;
     }
 
-    setIsSubmitting(true);
+    // Build FormData for multipart submission
+    const formData = new FormData();
 
-    try {
-      // TODO: Submit compliance data to API
-      // await complianceService.submitCompliance({
-      //   files: uploadedFiles,
-      //   questions,
-      // });
+    // Build answers object from questions
+    const answers: IComplianceAnswers = questions.reduce((acc, q) => {
+      acc[q.id] = q.answer;
+      return acc;
+    }, {} as IComplianceAnswers);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    formData.append("complianceAnswers", JSON.stringify(answers));
 
-      toast.success("Compliance documents submitted successfully!");
-      navigate("/support-worker/compliance");
-    } catch (error) {
-      console.error("Failed to submit compliance:", error);
-      toast.error("Failed to submit compliance. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Map uploaded files to document types
+    // The FileDropZone gives us files - we need to assign them to document types
+    // For simplicity, we'll assign files in order to required document types
+    const documentTypes = [
+      ComplianceDocumentType.FIRST_AID_CERTIFICATE,
+      ComplianceDocumentType.CPR_CERTIFICATE,
+      ComplianceDocumentType.POLICE_CHECK,
+      ComplianceDocumentType.WWCC,
+      ComplianceDocumentType.RELEVANT_DOCUMENT,
+      ComplianceDocumentType.RELEVANT_INSURANCE,
+    ];
+
+    uploadedFiles.forEach((uploadedFile, index) => {
+      if (index < documentTypes.length && uploadedFile.file) {
+        formData.append(documentTypes[index], uploadedFile.file);
+      }
+    });
+
+    submitCompliance.mutate(formData, {
+      onSuccess: () => {
+        navigate("/support-worker/compliance");
+      },
+    });
   };
 
   const getDisplayValue = (question: ComplianceQuestion): string => {
-    if (question.answer) {
-      if (question.expiryDate) {
-        return question.expiryDate;
-      }
-      return "Yes";
-    }
-    return "No";
+    return question.answer ? "Yes" : "No";
   };
 
   // Count answered questions
   const answeredCount = questions.filter((q) => q.answer).length;
 
-  const handleQuestionToggle = useCallback((id: string) => {
+  const handleQuestionToggle = useCallback((id: keyof IComplianceAnswers) => {
     setQuestions((prev) =>
       prev.map((q) =>
         q.id === id ? { ...q, answer: !q.answer } : q
       )
     );
   }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-100 p-6 space-y-8">
       <GeneralHeader
         showBackButton={true}
         stickyTop={true}
@@ -161,7 +180,7 @@ export default function ComplianceFormPage() {
                 Compliance Check
               </h2>
 
-              {/* File Upload Area */}
+              {/* File Upload Area - Original FileDropZone */}
               <FileDropZone
                 files={uploadedFiles}
                 onFilesChange={setUploadedFiles}
@@ -319,7 +338,7 @@ export default function ComplianceFormPage() {
                   id="terms"
                   checked={agreedToTerms}
                   onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                  className="mt-0.5"
+                  className="mt-0.5 w-9 h-9"
                 />
                 <label
                   htmlFor="terms"
@@ -356,10 +375,10 @@ export default function ComplianceFormPage() {
                 </Button>
                 <Button
                   onClick={handleSubmit}
-                  disabled={!agreedToTerms || isSubmitting}
+                  disabled={!agreedToTerms || submitCompliance.isPending}
                   className="flex-1 bg-primary hover:bg-primary-700 text-white py-6 text-lg font-montserrat-semibold disabled:opacity-50"
                 >
-                  {isSubmitting ? (
+                  {submitCompliance.isPending ? (
                     <div className="flex items-center gap-2">
                       <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       Submitting...

@@ -1,56 +1,87 @@
 import GeneralHeader from "@/components/GeneralHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { AltArrowRight, CheckCircle } from "@solar-icons/react";
-import { useState } from "react";
+import { AltArrowRight, CheckCircle, ClockCircle, CloseCircle } from "@solar-icons/react";
 import { useNavigate } from "react-router-dom";
-
-// Mock data
-const mockUnverifiedWorker = {
-  name: "John Doe Singh",
-  image: null,
-  idNumber: null,
-  email: "johndoe@gmail.com",
-  phoneNumber: "+61 000 000 00",
-  status: "Inactive",
-  isVerified: false,
-  verificationDate: null,
-  issuedDate: null,
-  expiryDate: null,
-  qualifications: [],
-  signature: null,
-};
-
-const mockVerifiedWorker = {
-  name: "John Doe Singh",
-  image: null,
-  idNumber: "12345679",
-  email: "johndoe@gmail.com",
-  phoneNumber: "+61 000 000 00",
-  status: "Active",
-  isVerified: true,
-  verificationDate: "5 Mar, 2025",
-  issuedDate: "12 Oct, 2025",
-  expiryDate: "12 Oct, 2026",
-  qualifications: [
-    "First Aid Certificate",
-    "CPR Certificate",
-    "Police Check",
-    "Working with Children Check",
-    "Relevant Insurance",
-  ],
-  signature: null,
-};
+import { useGetMyCompliance } from "@/hooks/useComplianceHooks";
+import { ComplianceStatus, DOCUMENT_TYPE_LABELS } from "@/types/compliance.types";
+import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
+import Loader from "@/components/Loader";
 
 export default function ComplianceCheckPage() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  // Toggle this to see different states
-  const [workerInfo] = useState(mockUnverifiedWorker);
-  // const [workerInfo] = useState(mockVerifiedWorker);
+  
+  // React Query hook
+  const { data: compliance, isLoading, error } = useGetMyCompliance();
+
+  const getStatusConfig = (status: ComplianceStatus | undefined) => {
+    switch (status) {
+      case ComplianceStatus.APPROVED:
+        return {
+          label: "Active",
+          color: "text-green-600",
+          bgColor: "bg-green-500",
+          icon: <CheckCircle className="h-3 w-3 text-white fill-current" />,
+        };
+      case ComplianceStatus.PENDING:
+        return {
+          label: "Pending Review",
+          color: "text-yellow-600",
+          bgColor: "bg-yellow-500",
+          icon: <ClockCircle className="h-3 w-3 text-white" />,
+        };
+      case ComplianceStatus.REJECTED:
+        return {
+          label: "Rejected",
+          color: "text-red-600",
+          bgColor: "bg-red-500",
+          icon: <CloseCircle className="h-3 w-3 text-white" />,
+        };
+      default:
+        return {
+          label: "Inactive",
+          color: "text-gray-500",
+          bgColor: "bg-gray-400",
+          icon: null,
+        };
+    }
+  };
+
+  const statusConfig = getStatusConfig(compliance?.status);
+  const isVerified = compliance?.status === ComplianceStatus.APPROVED;
+  const canStartVerification = !compliance || compliance.status === ComplianceStatus.DRAFT || compliance.status === ComplianceStatus.REJECTED;
+
+  // Get uploaded document names
+  const qualifications = compliance?.documents?.map(doc => 
+    DOCUMENT_TYPE_LABELS[doc.type] || doc.type
+  ) || [];
+
+  if (isLoading) {
+    return (
+      <Loader />
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6 space-y-8">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load compliance status</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="text-primary hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 p-6 space-y-8">
       {/* Header */}
       <GeneralHeader
         title="Compliance Check"
@@ -63,14 +94,14 @@ export default function ComplianceCheckPage() {
       {/* Main Content */}
       <div className="max-w-md font-montserrat-bold mx-auto">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative pb-12">
-          {/* Watermark - positioned absolutely */}
-          {!workerInfo.isVerified && (
+          {/* Watermark */}
+          {!isVerified && (
             <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
               <img src="/logo.svg" alt="Verified" className="w-full" />
             </div>
           )}
 
-          {workerInfo.isVerified && (
+          {isVerified && (
             <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none select-none">
               <div className="text-primary-600 font-bold text-8xl md:text-9xl tracking-wider transform rotate-[-15deg]">
                 VERIFIED
@@ -79,20 +110,45 @@ export default function ComplianceCheckPage() {
           )}
 
           <div className="relative z-10 p-6 md:p-8">
-            {/* Avatar Section with styled graphic arround the avatar */}
+            {/* Avatar Section */}
             <div className="flex items-center justify-center mb-6 relative">
-             {/* <img className="absolute  w-full h-fit rounded-b-2xl" src="/new-res/compliance-avatar-grahpics"  /> */}
-             <Avatar className="w-32 h-32">
-              <AvatarImage src="" alt="Avatar Image" />
-              <AvatarFallback>
-                {workerInfo.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
-              </AvatarFallback>
-             </Avatar>
+              <Avatar className="w-32 h-32">
+                <AvatarImage src={user?.profileImage || ""} alt="Avatar Image" />
+                <AvatarFallback>
+                  {user?.firstName && user?.lastName
+                    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+                    : "SW"}
+                </AvatarFallback>
+              </Avatar>
             </div>
+
+            {/* Rejection Notice */}
+            {compliance?.status === ComplianceStatus.REJECTED && compliance.rejectionReasons && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <h4 className="text-sm font-semibold text-red-800 mb-2">
+                  Your compliance was rejected
+                </h4>
+                <ul className="text-sm text-red-700 space-y-1">
+                  {compliance.rejectionReasons.map((reason, idx) => (
+                    <li key={idx}>• {reason}</li>
+                  ))}
+                </ul>
+                {compliance.adminNotes && (
+                  <p className="text-sm text-red-600 mt-2 italic">
+                    Note: {compliance.adminNotes}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Pending Notice */}
+            {compliance?.status === ComplianceStatus.PENDING && (
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  Your compliance documents are under review. We'll notify you once the review is complete.
+                </p>
+              </div>
+            )}
 
             {/* Worker Information */}
             <section className="mb-8">
@@ -102,59 +158,40 @@ export default function ComplianceCheckPage() {
               <div className="space-y-3">
                 <InfoRow
                   label="ID Number:"
-                  value={workerInfo.idNumber || "Not Available"}
-                  valueClassName={
-                    workerInfo.idNumber ? "text-gray-900" : "text-gray-400"
-                  }
+                  value={compliance?._id?.slice(-8).toUpperCase() || "Not Available"}
+                  valueClassName={compliance?._id ? "text-gray-900" : "text-gray-400"}
                 />
-                <InfoRow label="Email:" value={workerInfo.email} />
-                <InfoRow label="Phone Number:" value={workerInfo.phoneNumber} />
+                <InfoRow label="Email:" value={user?.email || "N/A"} />
+                <InfoRow label="Phone Number:" value={user?.phone || "N/A"} />
 
                 {/* Status Row */}
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-600 text-sm">Status:</span>
                   <div className="flex items-center gap-2">
-                    {workerInfo.isVerified && (
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-3 w-3 text-white fill-current" />
+                    {statusConfig.icon && (
+                      <div className={`w-5 h-5 ${statusConfig.bgColor} rounded-full flex items-center justify-center`}>
+                        {statusConfig.icon}
                       </div>
                     )}
-                    <span
-                      className={`font-semibold text-sm ${
-                        workerInfo.status === "Active"
-                          ? "text-green-600"
-                          : workerInfo.status === "Pending"
-                          ? "text-yellow-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {workerInfo.status}
+                    <span className={`font-semibold text-sm ${statusConfig.color}`}>
+                      {statusConfig.label}
                     </span>
                   </div>
                 </div>
 
                 <InfoRow
-                  label="Verification Date:"
-                  value={workerInfo.verificationDate || "Not Verified"}
-                  valueClassName={
-                    workerInfo.verificationDate
-                      ? "text-gray-900"
-                      : "text-gray-400"
-                  }
+                  label="Submitted Date:"
+                  value={compliance?.submittedAt 
+                    ? format(new Date(compliance.submittedAt), "d MMM, yyyy")
+                    : "Not Submitted"}
+                  valueClassName={compliance?.submittedAt ? "text-gray-900" : "text-gray-400"}
                 />
                 <InfoRow
-                  label="Issued Date:"
-                  value={workerInfo.issuedDate || "Not Issued"}
-                  valueClassName={
-                    workerInfo.issuedDate ? "text-gray-900" : "text-gray-400"
-                  }
-                />
-                <InfoRow
-                  label="Expiry Date:"
-                  value={workerInfo.expiryDate || "Not Issued"}
-                  valueClassName={
-                    workerInfo.expiryDate ? "text-gray-900" : "text-gray-400"
-                  }
+                  label="Review Date:"
+                  value={compliance?.reviewedAt 
+                    ? format(new Date(compliance.reviewedAt), "d MMM, yyyy")
+                    : "Not Reviewed"}
+                  valueClassName={compliance?.reviewedAt ? "text-gray-900" : "text-gray-400"}
                 />
               </div>
             </section>
@@ -164,13 +201,13 @@ export default function ComplianceCheckPage() {
               <h3 className="text-lg font-bold text-gray-900 mb-4">
                 Qualification and Certifications
               </h3>
-              {workerInfo.qualifications.length === 0 ? (
+              {qualifications.length === 0 ? (
                 <p className="text-gray-400 text-sm">
                   No qualifications and certifications added yet
                 </p>
               ) : (
                 <ul className="space-y-3">
-                  {workerInfo.qualifications.map((qual, index) => (
+                  {qualifications.map((qual, index) => (
                     <li
                       key={index}
                       className="flex items-center gap-3 text-gray-700 text-sm"
@@ -183,8 +220,8 @@ export default function ComplianceCheckPage() {
               )}
             </section>
 
-            {/* Signature Section */}
-            {workerInfo.isVerified && (
+            {/* Signature Section - only for verified */}
+            {isVerified && (
               <section className="mb-6 pb-6 border-b border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Signature
@@ -209,19 +246,20 @@ export default function ComplianceCheckPage() {
             )}
 
             {/* Start Verification Link */}
-            {!workerInfo.isVerified && (
+            {canStartVerification && (
               <div className="flex justify-center pt-2">
                 <button
                   onClick={() => navigate("/support-worker/compliance/verify")}
                   className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold transition-colors text-sm"
                 >
-                  Start Verification
+                  {compliance?.status === ComplianceStatus.REJECTED ? "Resubmit Verification" : "Start Verification"}
                   <AltArrowRight className="h-4 w-4" />
                 </button>
               </div>
             )}
           </div>
-          {/* footer graphics */}
+          
+          {/* Footer graphics */}
           <div className="absolute bottom-0 left-0 w-full h-12rounded-b-2xl">
             <img className="h-12" src="/new-res/compliance-footer-vector.svg" alt="Footer Graphic" />
           </div>

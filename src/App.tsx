@@ -102,6 +102,7 @@ import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
 
 import ComplianceCheckPage from "./pages/ComplianceCheckPage";
 import ComplianceFormPage from "./pages/ComplianceFormPage";
+import ComplianceManagementPage from "./pages/ComplianceManagementPage";
 
 import ParticipantJobsPage from "./pages/ParticipantJobsPage";
 import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
@@ -264,6 +265,7 @@ const AppRoutes = () => {
                   path="service-types/:id"
                   element={<ServiceTypeDetailPage />}
                 />
+                <Route path="compliance" element={<ComplianceManagementPage />} />
                 <Route path="incidents" element={<IncidentsPage />} />
 
                 <Route path="chats" element={<Converations />} />

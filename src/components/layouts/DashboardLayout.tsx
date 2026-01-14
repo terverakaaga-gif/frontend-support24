@@ -158,6 +158,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </h2>
               <div className="space-y-1">
                 <NavItem
+                  to="/admin/compliance"
+                  icon={<ShieldCheck className="w-6 h-6" />}
+                  label="Compliance"
+                  active={isActive("/admin/compliance")}
+                />
+                <NavItem
                   to="/admin/incidents"
                   icon={<ShieldUser className="w-6 h-6" />}
                   label="Incidents"
