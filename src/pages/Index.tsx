@@ -29,6 +29,12 @@ const Index = () => {
 			case "supportWorker":
 				navigate("/support-worker");
 				break;
+			case "coordinator":
+				navigate("/support-coordinator");
+				break;
+			case "provider":
+				navigate("/provider");
+				break;
 			default:
 				navigate("/login");
 		}

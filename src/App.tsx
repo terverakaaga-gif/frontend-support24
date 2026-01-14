@@ -107,6 +107,17 @@ import ParticipantJobsPage from "./pages/ParticipantJobsPage";
 import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
 import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
 import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
+import SupportCoordinatorDashboard from "./pages/SupportCoordinatorDashboard";
+import TenderPage from "./pages/TenderPage";
+import ParticipantsPage from "./pages/ParticipantsPage";
+import ProvidersPage from "./pages/ProvidersPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import NotificationDetailPage from "./pages/NotificationDetailPage";
+import CoordinatorSupportWorkersPage from "./pages/CoordinatorSupportWorkersPage";
+import AccountSettingsPage from "./pages/AccountSettingsPage";
+import MyPanelPage from "./pages/MyPanelPage";
+import ComparisonPage from "./pages/ComparisonPage";
+import DraftPage from "./pages/DraftPage";
 // import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 // import CoordinatorParticipants from "./pages/CoordinatorParticipants";
 
@@ -129,7 +140,7 @@ const AppRoutes = () => {
       case "supportWorker":
         return "/support-worker";
       case "coordinator":
-        return "/coordinator";
+        return "/support-coordinator";
       case "provider":
         return "/provider";
       default:
@@ -441,6 +452,33 @@ const AppRoutes = () => {
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:conversationId" element={<ChatView />} />
                 {/* Add other coordinator-specific routes */}
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Support Coordinator Routes - Accessible by all roles (temporary) */}
+      <Route
+        path="/support-coordinator/*"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "participant", "supportWorker", "guardian", "coordinator", "provider"]}>
+            <DashboardLayout>
+              <Routes>
+                <Route path="/" element={<SupportCoordinatorDashboard />} />
+                <Route path="/tender" element={<TenderPage />} />
+                <Route path="/draft" element={<DraftPage />} />
+                <Route path="/participants" element={<ParticipantsPage />} />
+                <Route path="/providers" element={<ProvidersPage />} />
+                <Route path="/support-workers" element={<CoordinatorSupportWorkersPage />} />
+                <Route path="/my-panel" element={<MyPanelPage />} />
+                <Route path="/comparison" element={<ComparisonPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/notifications/:id" element={<NotificationDetailPage />} />
+                <Route path="/account-settings" element={<AccountSettingsPage />} />
+                <Route path="/incidents" element={<IncidentsPage />} />
+                <Route path="/chats" element={<Converations />} />
+                <Route path="/chat/:conversationId" element={<ChatView />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
