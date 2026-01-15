@@ -108,6 +108,9 @@ import ParticipantJobsPage from "./pages/ParticipantJobsPage";
 import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
 import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
 import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
+
+import ParticipantEventPage from "./pages/ParticipantEventPage";
+import ParticipantEventDetailsPage from "./pages/ParticipantEventDetailsPage";
 // import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 // import CoordinatorParticipants from "./pages/CoordinatorParticipants";
 
@@ -340,6 +343,9 @@ const AppRoutes = () => {
                   element={<ParticipantJobFormPage />}
                 />
 
+                <Route path="/events" element={<ParticipantEventPage />} />
+                <Route path="/events/:eventId" element={<ParticipantEventDetailsPage />} />
+
                 {/* <Route
                   path="/organizations/:id"
                   element={<ParticipantOrganizationDetailsPage />}
@@ -457,22 +463,10 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="/" element={<ProviderDashboard />} />
                 <Route path="/events" element={<ProviderEventsPage />} />
-                <Route
-                  path="/events/:eventId/participants"
-                  element={<ProviderRegisteredEventParticipantsPage />}
-                />
-                <Route
-                  path="/events/:eventId"
-                  element={<ProviderEventDetailsPage />}
-                />
-                <Route
-                  path="/events/:eventId/edit"
-                  element={<ProviderEventFormPage />}
-                />
-                <Route
-                  path="/events/create"
-                  element={<ProviderEventFormPage />}
-                />
+                <Route path="/events/create" element={<ProviderEventFormPage />} />
+                <Route path="/events/:eventId" element={<ProviderEventDetailsPage />} />
+                <Route path="/events/:eventId/edit" element={<ProviderEventFormPage />} />
+                <Route path="/events/:eventId/participants" element={<ProviderRegisteredEventParticipantsPage />} />
                 <Route
                   path="/accommodations"
                   element={<ProviderAccommodationsPage />}
