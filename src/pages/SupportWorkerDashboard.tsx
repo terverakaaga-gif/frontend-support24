@@ -59,6 +59,12 @@ import { DateRangePicker } from "@/components/analytics/DateRangePicker";
 import { DateRange, DateRangeType } from "@/entities/Analytics";
 import { createDateRange } from "@/api/services/analyticsService";
 import { Progress } from "@/components/ui/progress";
+import {
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  DASHBOARD_STATS_GRID,
+  DASHBOARD_STAT_CARD,
+} from "@/lib/design-utils";
 
 // Stat card component
 
@@ -711,8 +717,8 @@ export default function SupportWorkerDashboard() {
   const analytics = overviewData?.analytics;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
+      <div className={DASHBOARD_CONTENT}>
         <GeneralHeader
           stickyTop={true}
           title={getGreeting()}

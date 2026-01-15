@@ -4,7 +4,6 @@ import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,7 +13,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  DASHBOARD_STAT_CARD,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+  FLEX_COL,
+  FLEX_CENTER,
+} from "@/lib/design-utils";
+import {
+  SPACING,
+  GAP,
+  RADIUS,
+  BORDER_STYLES,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  FONT_FAMILY,
+  TEXT_COLORS,
+  BG_COLORS,
+  CARD_VARIANTS,
+  GRID_LAYOUTS,
+  CONTAINER_PADDING,
+  SHADOW,
+} from "@/constants/design-system";
 import {
   AddCircle,
   AltArrowLeft,
@@ -40,14 +63,14 @@ import {
   Widget,
 } from "@solar-icons/react";
 import ShiftDetailsDialog from "@/components/ShiftDetailsDialog";
+import ShiftCreationDialog from "@/components/ShiftCreationDialog";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { pageTitles } from "@/constants/pageTitles";
-import ShiftCreationDialog from "@/components/ShiftCreationDialog";
 
 // Date formatting utilities
-const formatDate = (dateString) => {
+const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -97,7 +120,7 @@ const formatDate = (dateString) => {
   return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 };
 
-const formatTime = (dateString) => {
+const formatTime = (dateString: string) => {
   const date = new Date(dateString);
   let hours = date.getHours();
   const minutes = date.getMinutes();
@@ -107,7 +130,7 @@ const formatTime = (dateString) => {
   return `${hours}:${minutesStr} ${ampm}`;
 };
 
-const isThisWeek = (dateString) => {
+const isThisWeek = (dateString: string) => {
   const date = new Date(dateString);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -118,7 +141,7 @@ const isThisWeek = (dateString) => {
   return date >= weekStart && date <= weekEnd;
 };
 
-const getShiftDuration = (startTime, endTime) => {
+const getShiftDuration = (startTime: string, endTime: string) => {
   const start = new Date(startTime);
   const end = new Date(endTime);
   const diffInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
@@ -142,35 +165,28 @@ function StatsCard({
   subtitle: string;
 }) {
   return (
-    <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-      <CardContent className="p-4 sm:p-6 relative">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-xs md:text-sm font-montserrat-bold">{title}</p>
-            <p className="md:text-2xl text-3xl font-montserrat-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-              {stats.total}
-            </p>
-            <p className="text-xs text-gray-1000 font-montserrat-semibold">
-              {subtitle}
-            </p>
-          </div>
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 transi  tion-transform duration-300">
-            {" "}
-            {/* Smaller icon container */}
-            <Icon className="w-6 h-6 md:w-7 md:h-7 text-primary" />{" "}
-            {/* Responsive icon size */}
-          </div>
+    <div className={cn(DASHBOARD_STAT_CARD, "hover:shadow-xl transition-all duration-300 group relative overflow-hidden")}>
+      <div className={cn(FLEX_ROW_BETWEEN)}>
+        <div className={cn(`space-y-${SPACING.xs}`)}>
+          <p className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratBold)}>{title}</p>
+          <p className={cn("text-3xl md:text-2xl", FONT_FAMILY.montserratBold, "text-gray-900", "group-hover:text-primary-600 transition-colors")}>
+            {stats.total}
+          </p>
+          <p className={cn("text-xs", TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>
+            {subtitle}
+          </p>
         </div>
-        <div className="mt-3 sm:mt-4 flex items-center gap-1 text-xs md:text-sm">
-          {" "}
-          {/* Smaller text and margin */}
-          <CourseUp className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
-          <span className="text-green-600 font-montserrat-semibold">
-            {stats.thisWeek} this week
-          </span>
+        <div className={cn(`p-${SPACING.sm}`, RADIUS.full, "bg-primary-300/20")}>
+          <Icon className="w-5 h-5 md:w-7 md:h-7 text-primary" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className={cn(`mt-${SPACING.md}`, FLEX_ROW_CENTER, GAP.xs, TEXT_STYLES.caption)}>
+        <CourseUp className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
+        <span className={cn("text-xs", TEXT_COLORS.success, FONT_FAMILY.montserratSemibold)}>
+          {stats.thisWeek} this week
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -198,20 +214,20 @@ const ParticipantShifts = () => {
     const now = new Date();
     return {
       total: shifts.length,
-      confirmed: shifts.filter((s) => s.status === "confirmed").length,
-      pending: shifts.filter((s) => s.status === "pending").length,
-      completed: shifts.filter((s) => s.status === "completed").length,
-      inProgress: shifts.filter((s) => s.status.toLowerCase() === "inprogress")
+      confirmed: shifts.filter((s: any) => s.status === "confirmed").length,
+      pending: shifts.filter((s: any) => s.status === "pending").length,
+      completed: shifts.filter((s: any) => s.status === "completed").length,
+      inProgress: shifts.filter((s: any) => s.status.toLowerCase() === "inprogress")
         .length,
-      cancelled: shifts.filter((s) => s.status === "cancelled").length,
-      thisWeek: shifts.filter((s) => isThisWeek(s.startTime)).length,
-      upcoming: shifts.filter((s) => new Date(s.startTime) > now).length,
+      cancelled: shifts.filter((s: any) => s.status === "cancelled").length,
+      thisWeek: shifts.filter((s: any) => isThisWeek(s.startTime)).length,
+      upcoming: shifts.filter((s: any) => new Date(s.startTime) > now).length,
     };
   }, [shifts]);
 
   // Filter shifts
   const filteredShifts = useMemo(() => {
-    const filtered = shifts.filter((shift) => {
+    const filtered = shifts.filter((shift: any) => {
       const matchesStatus =
         statusFilter === "all" || shift.status.toLowerCase() === statusFilter;
 
@@ -227,7 +243,7 @@ const ParticipantShifts = () => {
     });
 
     // Sort shifts: recent first for pending, confirmed, and in-progress
-    return filtered.sort((a, b) => {
+    return filtered.sort((a: any, b: any) => {
       const aStatus = a.status.toLowerCase();
       const bStatus = b.status.toLowerCase();
       const recentStatuses = ["pending", "confirmed", "inprogress"];
@@ -259,21 +275,21 @@ const ParticipantShifts = () => {
   );
 
   // Helper functions
-  const getStatusInfo = (status) => {
-    const statusMap = {
+  const getStatusInfo = (status: string) => {
+    const statusMap: Record<string, any> = {
       confirmed: {
         icon: <CheckCircle className="w-3 h-3" />,
-        color: "text-green-600",
-        bg: "bg-green-600",
-        lightBg: "bg-green-50",
+        color: TEXT_COLORS.success,
+        bg: BG_COLORS.success,
+        lightBg: BG_COLORS.successLight,
       },
       pending: {
         icon: <DangerTriangle className="w-3 h-3" />,
-        color: "text-orange-600",
-        bg: "bg-orange-600",
-        lightBg: "bg-orange-50",
+        color: TEXT_COLORS.warning,
+        bg: BG_COLORS.warning,
+        lightBg: BG_COLORS.warningLight,
       },
-      inProgress: {
+      inprogress: {
         icon: <ClockCircle className="w-3 h-3" />,
         color: "text-yellow-600",
         bg: "bg-yellow-600",
@@ -281,26 +297,26 @@ const ParticipantShifts = () => {
       },
       completed: {
         icon: <CheckCircle className="w-3 h-3" />,
-        color: "text-green-600",
-        bg: "bg-green-600",
-        lightBg: "bg-green-50",
+        color: TEXT_COLORS.success,
+        bg: BG_COLORS.success,
+        lightBg: BG_COLORS.successLight,
       },
       cancelled: {
         icon: <CloseCircle className="w-3 h-3" />,
-        color: "text-red-600",
-        bg: "bg-red-600",
-        lightBg: "bg-red-50",
+        color: TEXT_COLORS.error,
+        bg: BG_COLORS.error,
+        lightBg: BG_COLORS.errorLight,
       },
     };
     return statusMap[status.toLowerCase()] || statusMap.pending;
   };
 
-  const renderWorkerInfo = (shift) => {
+  const renderWorkerInfo = (shift: any) => {
     if (shift.isMultiWorkerShift && shift.workerAssignments) {
       return (
-        <div className="flex items-center gap-2">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
           <div className="flex -space-x-2">
-            {shift.workerAssignments.slice(0, 2).map((assignment, index) => (
+            {shift.workerAssignments.slice(0, 2).map((assignment: any, index: number) => (
               <Avatar
                 key={assignment._id || index}
                 className="w-8 h-8 border-2 border-white"
@@ -313,14 +329,14 @@ const ParticipantShifts = () => {
               </Avatar>
             ))}
             {shift.workerAssignments.length > 2 && (
-              <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
-                <span className="text-xs font-montserrat-semibold text-gray-600">
+              <div className={cn("w-8 h-8", RADIUS.full, "bg-gray-100 border-2 border-white", FLEX_CENTER)}>
+                <span className={cn(TEXT_STYLES.caption, FONT_FAMILY.montserratSemibold, "text-gray-600")}>
                   +{shift.workerAssignments.length - 2}
                 </span>
               </div>
             )}
           </div>
-          <span className="text-sm text-gray-600 font-montserrat-semibold">
+          <span className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>
             {shift.workerAssignments.length} workers
           </span>
         </div>
@@ -328,35 +344,35 @@ const ParticipantShifts = () => {
     } else if (shift.workerId) {
       if (typeof shift.workerId === "object") {
         return (
-          <div className="flex items-center gap-2">
+          <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
             <Avatar className="w-8 h-8">
               <AvatarImage src={shift.workerId.profileImage} />
-              <AvatarFallback className="text-xs bg-primary-100 text-primary-600">
+              <AvatarFallback className={cn(TEXT_STYLES.caption, BG_COLORS.primaryLight, TEXT_COLORS.primary)}>
                 {shift.workerId.firstName?.[0]}
                 {shift.workerId.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-montserrat-semibold text-gray-900">
+            <span className={cn(TEXT_STYLES.label, "text-gray-900")}>
               {shift.workerId.firstName} {shift.workerId.lastName}
             </span>
           </div>
         );
       }
       return (
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
+          <div className={cn("w-8 h-8", RADIUS.full, BG_COLORS.primaryLight, FLEX_CENTER)}>
             <User className="w-4 h-4 text-primary-600" />
           </div>
-          <span className="text-sm text-gray-600">Assigned Worker</span>
+          <span className={cn(TEXT_STYLES.small)}>Assigned Worker</span>
         </div>
       );
     } else {
       return (
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
+          <div className={cn("w-8 h-8", RADIUS.full, "bg-gray-100", FLEX_CENTER)}>
             <User className="w-4 h-4 text-gray-400" />
           </div>
-          <span className="text-sm text-gray-1000">Unassigned</span>
+          <span className={cn(TEXT_STYLES.small, "text-gray-1000")}>Unassigned</span>
         </div>
       );
     }
@@ -378,8 +394,8 @@ const ParticipantShifts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="p-6 md:p-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
           stickyTop={true}
@@ -393,13 +409,13 @@ const ParticipantShifts = () => {
                 (key) =>
                   pageTitles.participant[key] ===
                   pageTitles.participant["/participant/profile"]
-              )
+              ) || "/participant/profile"
             );
           }}
           rightComponent={
             <Button
               onClick={() => setShowCreateShiftDialog(true)}
-              className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+              className={cn(GAP.sm, SHADOW.lg, "hover:shadow-xl transition-all duration-300")}
             >
               <AddCircle className="w-5 h-5" />
               Create Shift
@@ -408,7 +424,7 @@ const ParticipantShifts = () => {
         />
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className={cn(GRID_LAYOUTS.cols4, GAP.lg, `mb-${SPACING.lg}`)}>
           <StatsCard
             stats={{ total: stats.total, thisWeek: stats.thisWeek }}
             title="Total Shifts"
@@ -439,7 +455,7 @@ const ParticipantShifts = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 mb-6 overflow-x-auto">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, `mb-${SPACING.lg}`, "overflow-x-auto")}>
           {[
             { key: "all", label: "All", bg: "bg-primary" },
             { key: "pending", label: "Pending", bg: "bg-orange-600" },
@@ -454,19 +470,27 @@ const ParticipantShifts = () => {
                 setStatusFilter(key);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
+              className={cn(
+                "px-3 py-1",
+                RADIUS.full,
+                "text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors",
+                FLEX_ROW_CENTER,
+                GAP.sm,
                 statusFilter === key
                   ? `${bg} text-white`
                   : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
-              }`}
+              )}
             >
               {label}
               <span
-                className={`px-1.5 py-0.5 rounded-full text-xs ${
+                className={cn(
+                  "px-1.5 py-0.5",
+                  RADIUS.full,
+                  "text-xs",
                   statusFilter === key
                     ? `${bg}/10 text-white`
                     : `${bg} text-white`
-                }`}
+                )}
               >
                 {getStatusCount(key)}
               </span>
@@ -475,7 +499,7 @@ const ParticipantShifts = () => {
         </div>
 
         {/* Search and View Toggle */}
-        <div className="flex gap-4 mb-6">
+        <div className={cn(FLEX_ROW_CENTER, GAP.base, `mb-${SPACING.lg}`)}>
           <div className="flex-1 relative">
             <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
@@ -489,25 +513,33 @@ const ParticipantShifts = () => {
               className="pl-10 h-11"
             />
           </div>
-          <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+          <div className={cn("flex bg-white overflow-hidden shadow-sm", BORDER_STYLES.subtle, RADIUS.lg)}>
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
+              className={cn(
+                "px-4 py-2",
+                FLEX_ROW_CENTER,
+                GAP.sm,
+                "text-sm font-montserrat-semibold transition-all duration-200",
                 viewMode === "grid"
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+              )}
             >
               <Widget size={24} />
               Grid
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
+              className={cn(
+                "px-4 py-2",
+                FLEX_ROW_CENTER,
+                GAP.sm,
+                "text-sm font-montserrat-semibold transition-all duration-200",
                 viewMode === "list"
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+              )}
             >
               <List size={24} />
               List
@@ -518,53 +550,51 @@ const ParticipantShifts = () => {
         {/* Shifts Grid/List */}
         <div
           className={cn(
-            "gap-4 sm:gap-6 mb-4 sm:mb-6", // Smaller gaps and margins
+            GAP.responsive,
+            `mb-${SPACING.lg}`,
             viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" // Adjusted grid for small screens
-              : "flex flex-col"
+              ? GRID_LAYOUTS.cols3
+              : FLEX_COL
           )}
         >
-          {paginatedShifts.map((shift) => {
+          {paginatedShifts.map((shift: any) => {
             const statusInfo = getStatusInfo(shift.status);
             return (
-              <Card
+              <div
                 onClick={() => setSelectedShift(shift)}
                 key={shift._id}
                 className={cn(
-                  "overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 shadow-lg",
-                  viewMode === "list" && "flex-row"
+                  CARD_VARIANTS.interactive,
+                  "border-0 shadow-lg overflow-hidden group",
+                  viewMode === "list" && "flex flex-row"
                 )}
               >
-                <CardContent
-                  className={cn("p-0", viewMode === "list" && "flex w-full")}
+                <div
+                  className={cn("w-full", viewMode === "list" && "flex w-full")}
                 >
                   <div
                     className={cn(
-                      "p-4 sm:p-5", // Reduced padding
+                      CONTAINER_PADDING.cardSm,
                       viewMode === "list" &&
-                        "flex-1 flex items-center gap-4 sm:gap-6" // Smaller gap
+                        "flex-1 flex items-center gap-4 sm:gap-6"
                     )}
                   >
                     <div
                       className={cn(
-                        "space-y-2 sm:space-y-3", // Smaller spacing
+                        "space-y-2 sm:space-y-3",
                         viewMode === "list" &&
                           "flex-1 space-y-0 flex items-center gap-4 sm:gap-6"
                       )}
                     >
                       <div className={cn(viewMode === "list" && "flex-1")}>
-                        <div className="flex items-center justify-between mb-1 sm:mb-2">
-                          {" "}
-                          {/* Smaller margin */}
-                          <h3 className="font-montserrat-semibold text-gray-900 text-base sm:text-lg group-hover:text-primary transition-colors">
-                            {" "}
-                            {/* Responsive text size */}
+                        <div className={cn(FLEX_ROW_BETWEEN, "mb-1 sm:mb-2")}>
+                          <h3 className={cn(HEADING_STYLES.h6, "group-hover:text-primary transition-colors")}>
                             {shift.serviceTypeId?.name || "Unknown Service"}
                           </h3>
                           {viewMode === "grid" && (
                             <Badge
                               className={cn(
-                                "gap-1 text-xs", // Smaller text
+                                "gap-1 text-xs",
                                 statusInfo.lightBg,
                                 statusInfo.color
                               )}
@@ -574,29 +604,25 @@ const ParticipantShifts = () => {
                             </Badge>
                           )}
                         </div>
-                        <code className="text-xs text-gray-1000 bg-gray-100 px-2 py-1 font-montserrat-semibold rounded">
+                        <code className={cn("text-xs text-gray-1000 bg-gray-100 px-2 py-1 font-montserrat-semibold rounded")}>
                           {shift.shiftId}
                         </code>
                       </div>
 
                       <div
                         className={cn(
-                          "space-y-1 sm:space-y-2", // Smaller spacing
+                          "space-y-1 sm:space-y-2",
                           viewMode === "list" &&
-                            "min-w-[180px] sm:min-w-[200px]" // Adjusted min-width
+                            "min-w-[180px] sm:min-w-[200px]"
                         )}
                       >
-                        <div className="flex items-center gap-2 text-xs sm:text-sm">
-                          {" "}
-                          {/* Smaller text */}
+                        <div className={cn("text-xs sm:text-sm", FLEX_ROW_CENTER, GAP.sm)}>
                           <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
-                          <span className="font-montserrat-semibold text-gray-900">
+                          <span className={cn(FONT_FAMILY.montserratSemibold, "text-gray-900")}>
                             {formatDate(shift.startTime)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                          {" "}
-                          {/* Smaller text */}
+                        <div className={cn("text-xs sm:text-sm text-gray-600", FLEX_ROW_CENTER, GAP.sm)}>
                           <ClockCircle className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                           <span>
                             {formatTime(shift.startTime)} -{" "}
@@ -612,21 +638,19 @@ const ParticipantShifts = () => {
                         className={cn(
                           viewMode === "list" &&
                             "min-w-[200px] sm:min-w-[250px]"
-                        )} // Adjusted min-width
+                        )}
                       >
                         {renderWorkerInfo(shift)}
                       </div>
 
                       {shift.address && (
-                        <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600">
-                          {" "}
-                          {/* Smaller text */}
+                        <div className={cn("text-xs sm:text-sm text-gray-600", "flex items-start gap-2")}>
                           <MapPoint className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                           <span className="line-clamp-2">{shift.address}</span>
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className={cn(FLEX_ROW_CENTER, GAP.sm, "flex-wrap")}>
                         {shift.recurrence?.pattern !== "none" && (
                           <Badge variant="outline" className="text-xs">
                             <Repeat className="w-3 h-3 mr-1" />
@@ -642,10 +666,10 @@ const ParticipantShifts = () => {
                       </div>
 
                       {viewMode === "list" && (
-                        <div className="flex items-center gap-2">
+                        <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
                           <Badge
                             className={cn(
-                              "gap-1 text-xs", // Smaller text
+                              "gap-1 text-xs",
                               statusInfo.lightBg,
                               statusInfo.color
                             )}
@@ -659,7 +683,7 @@ const ParticipantShifts = () => {
 
                     <div
                       className={cn(
-                        "flex items-center justify-end pt-2 sm:pt-3 border-t border-gray-100", // Smaller padding
+                        "flex items-center justify-end pt-2 sm:pt-3 border-t border-gray-100",
                         viewMode === "list" && "pt-0 border-t-0"
                       )}
                     >
@@ -667,12 +691,11 @@ const ParticipantShifts = () => {
                         onClick={() => setSelectedShift(shift)}
                         variant="default"
                         size="sm"
-                        className="gap-2 rounded-full font-montserrat-semibold h-9 sm:h-10" // Smaller height on small screens
+                        className={cn("gap-2 rounded-full h-9 sm:h-10", FONT_FAMILY.montserratSemibold)}
                       >
                         {viewMode === "grid" ? (
                           <>
-                            <Eye size={20} className="sm:w-6 sm:h-6" />{" "}
-                            {/* Smaller icon */}
+                            <Eye size={20} className="sm:w-6 sm:h-6" />
                             View Details
                           </>
                         ) : (
@@ -681,45 +704,45 @@ const ParticipantShifts = () => {
                       </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
 
         {paginatedShifts.length === 0 && (
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-12 text-center">
+          <div className={cn(CARD_VARIANTS.default, "border-0 shadow-lg")}>
+            <div className="p-12 text-center">
               <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
+              <h3 className={cn(HEADING_STYLES.h5, "mb-2")}>
                 No shifts found
               </h3>
-              <p className="text-gray-600 max-w-md mx-auto">
+              <p className={cn(TEXT_STYLES.body, "max-w-md mx-auto")}>
                 {searchQuery || statusFilter !== "all"
                   ? "Try adjusting your filters to see more results."
                   : "You don't have any shifts scheduled yet."}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {filteredShifts.length > 0 && (
-          <Card className="border-0 shadow-lg mt-6">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <p className="text-sm text-gray-600">
+          <div className={cn(CARD_VARIANTS.default, "border-0 shadow-lg mt-6")}>
+            <div className="p-4">
+              <div className={cn(FLEX_ROW_BETWEEN)}>
+                <div className={cn(FLEX_ROW_CENTER, GAP.base)}>
+                  <p className={cn(TEXT_STYLES.small)}>
                     Showing{" "}
-                    <span className="font-montserrat-semibold">
+                    <span className={cn(FONT_FAMILY.montserratSemibold)}>
                       {Math.min(itemsPerPage, paginatedShifts.length)}
                     </span>{" "}
                     of{" "}
-                    <span className="font-montserrat-semibold">{filteredShifts.length}</span>{" "}
+                    <span className={cn(FONT_FAMILY.montserratSemibold)}>{filteredShifts.length}</span>{" "}
                     shifts
                   </p>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Show:</span>
+                  <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
+                    <span className={cn(TEXT_STYLES.small)}>Show:</span>
                     <Select
                       value={itemsPerPage.toString()}
                       onValueChange={(value) => {
@@ -741,7 +764,7 @@ const ParticipantShifts = () => {
                 </div>
 
                 {totalPages > 1 && (
-                  <div className="flex items-center gap-2">
+                  <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
                     <Button
                       variant="outline"
                       size="sm"
@@ -793,8 +816,8 @@ const ParticipantShifts = () => {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         <ShiftCreationDialog
@@ -805,7 +828,7 @@ const ParticipantShifts = () => {
         {/* Shift Details Dialog */}
         <ShiftDetailsDialog
           viewMode="participant"
-          currentUserId={user._id}
+          currentUserId={user?._id}
           shift={selectedShift}
           open={!!selectedShift}
           onOpenChange={(open) => !open && setSelectedShift(null)}

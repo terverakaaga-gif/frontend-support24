@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -39,7 +41,7 @@ export default function ProviderJobFormPage() {
   if (error && isEditMode) return <div className="p-6"><ErrorDisplay message="Failed to load job details" /></div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       {/* Header */}
       <GeneralHeader
         showBackButton

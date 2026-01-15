@@ -31,6 +31,18 @@ import { useGetMyPostedJobs, useDeleteJob } from "@/hooks/useJobHooks";
 import { Job } from "@/api/services/jobService";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import Loader from "@/components/Loader";
+import { cn } from "@/lib/design-utils";
+import {
+  SPACING,
+  GAP,
+  CONTAINER_PADDING,
+  BG_COLORS,
+  FLEX_LAYOUTS,
+  GRID_LAYOUTS,
+  RADIUS,
+  BORDER_STYLES,
+  TEXT_STYLES,
+} from "@/constants/design-system";
 
 // Helper function to map Job API response to Post interface
 const mapJobToPost = (job: Job): Post => {
@@ -212,14 +224,14 @@ export default function ProviderJobsPage() {
 
   if (jobsError) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <ErrorDisplay message="Failed to load jobs" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <GeneralHeader
         stickyTop={true}
         title="Job Listings"

@@ -2,6 +2,29 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { 
+    cn, 
+    DASHBOARD_PAGE_WRAPPER,
+    DASHBOARD_CONTENT,
+    DASHBOARD_STAT_CARD,
+    FLEX_ROW_BETWEEN,
+    FLEX_ROW_CENTER,
+  } from "@/lib/design-utils";
+  import { 
+    BG_COLORS, 
+    BUTTON_VARIANTS,
+    CONTAINER_PADDING,
+    GRID_LAYOUTS,
+    GAP,
+    SPACING,
+    HEADING_STYLES,
+    TEXT_STYLES,
+    FONT_FAMILY,
+    TEXT_COLORS,
+    SHADOW,
+    RADIUS,
+    BORDER_STYLES
+} from "@/constants/design-system";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -80,19 +103,19 @@ export default function ParticipantOrganizationsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
-              <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+              <h3 className={cn(HEADING_STYLES.h3, "mb-2")}>
                 Failed to load organizations
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className={cn(TEXT_STYLES.body, "mb-6")}>
                 There was an error loading your organizations. Please try again.
               </p>
               <Button
                 onClick={() => refetch()}
-                className="bg-primary-600 hover:bg-primary-700"
+                className={BUTTON_VARIANTS.primary}
               >
                 Try Again
               </Button>
@@ -108,8 +131,8 @@ export default function ParticipantOrganizationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="p-6 md:p-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
           title={pageTitles.participant["/participant/organizations"].title}
@@ -131,7 +154,7 @@ export default function ParticipantOrganizationsPage() {
             <>
               <Button
                 variant="outline"
-                className="mr-4 rounded-full hover:bg-transparent hover:text-gray-600 text-xs truncate max-w-[120px] md:max-w-[200px]"
+                className={cn()}
                 onClick={() => setSearchOpen(true)}
               >
                 Invite Support Workers
@@ -146,85 +169,85 @@ export default function ParticipantOrganizationsPage() {
         />
 
         {/* Stats Cards */}
-        <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+        <div className={cn(GRID_LAYOUTS.cols4, GAP.md, `mb-${SPACING.xl}`)}>
+          <Card className={DASHBOARD_STAT_CARD}>
+            <CardContent className={CONTAINER_PADDING.cardSm}>
+              <div className={cn(FLEX_ROW_BETWEEN, "truncate")}>
+                <p className={cn(TEXT_STYLES.label, "text-gray-600")}>
                   Total Organizations
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className={cn(`p-${SPACING.sm}`, RADIUS.full, "bg-primary-300/20")}>
                   <Buildings3 className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
                 </div>
               </div>
               <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+                <p className={cn("text-lg md:text-2xl", FONT_FAMILY.montserratBold, "text-gray-900")}>
                   {stats.totalOrganizations}
                 </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
+                <p className={cn("text-[8px] md:text-xs", FONT_FAMILY.montserratBold)}>
                   Created and Managed
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+          <Card className={DASHBOARD_STAT_CARD}>
+            <CardContent className={CONTAINER_PADDING.cardSm}>
+              <div className={cn(FLEX_ROW_BETWEEN, "truncate")}>
+                <p className={cn(TEXT_STYLES.label, "text-gray-600")}>
                   Support Workers
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className={cn(`p-${SPACING.sm}`, RADIUS.full, "bg-primary-300/20")}>
                   <UsersGroupRounded className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
                 </div>
               </div>
               <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+                <p className={cn("text-lg md:text-2xl", FONT_FAMILY.montserratBold, "text-gray-900")}>
                   {stats.totalWorkers}
                 </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
+                <p className={cn("text-[8px] md:text-xs", FONT_FAMILY.montserratBold)}>
                   Active Teams
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+          <Card className={DASHBOARD_STAT_CARD}>
+            <CardContent className={CONTAINER_PADDING.cardSm}>
+              <div className={cn(FLEX_ROW_BETWEEN, "truncate")}>
+                <p className={cn(TEXT_STYLES.label, "text-gray-600")}>
                   Average Per Rate
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className={cn(`p-${SPACING.sm}`, RADIUS.full, "bg-primary-300/20")}>
                   <Dollar className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
                 </div>
               </div>
               <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+                <p className={cn("text-lg md:text-2xl", FONT_FAMILY.montserratBold, "text-gray-900")}>
                   ${stats.averagePerRate.toFixed(2)}
                 </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
+                <p className={cn("text-[8px] md:text-xs", FONT_FAMILY.montserratBold)}>
                   Per Hour
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+          <Card className={DASHBOARD_STAT_CARD}>
+            <CardContent className={CONTAINER_PADDING.cardSm}>
+              <div className={cn(FLEX_ROW_BETWEEN, "truncate")}>
+                <p className={cn(TEXT_STYLES.label, "text-gray-600")}>
                   Pending Invitations
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className={cn(`p-${SPACING.sm}`, RADIUS.full, "bg-primary-300/20")}>
                   <ClockCircle className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
                 </div>
               </div>
               <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+                <p className={cn("text-lg md:text-2xl", FONT_FAMILY.montserratBold, "text-gray-900")}>
                   {stats.pendingInvitations}
                 </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
+                <p className={cn("text-[8px] md:text-xs", FONT_FAMILY.montserratBold)}>
                   Awaiting Responses
                 </p>
               </div>
@@ -233,7 +256,7 @@ export default function ParticipantOrganizationsPage() {
         </div>
 
         {/* Search Bar */}
-        <div className="mb-6">
+        <div className={`mb-${SPACING.lg}`}>
           <div className="relative">
             <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
@@ -248,15 +271,15 @@ export default function ParticipantOrganizationsPage() {
 
         {/* Organizations List */}
         <div>
-          <h2 className="text-lg md:text-xl font-montserrat-bold text-gray-900 mb-4">
+          <h2 className={cn(HEADING_STYLES.h4, `mb-${SPACING.base}`)}>
             All Organizations ({filteredOrganizations.length})
           </h2>
 
           {filteredOrganizations.length === 0 ? (
-            <Card className="border-0 bg-white shadow-sm">
+            <Card className={cn(BORDER_STYLES.none, SHADOW.sm)}>
               <CardContent className="p-12 text-center">
                 <Buildings3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                <h3 className={cn(HEADING_STYLES.h3, "mb-2")}>
                   No organizations found
                 </h3>
                 <p className="text-gray-600">
@@ -267,62 +290,62 @@ export default function ParticipantOrganizationsPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+            <div className={cn(GRID_LAYOUTS.cols2, GAP.md)}>
               {filteredOrganizations.map((org) => (
                 <Card
                   key={org._id}
-                  className="border-0 bg-white shadow-sm hover:shadow-md transition-shadow"
+                  className={cn(BORDER_STYLES.none, SHADOW.sm, "hover:shadow-md transition-shadow")}
                 >
-                  <CardContent className="p-5 md:p-6">
-                    <div className="flex items-start gap-3 md:gap-4 mb-5 md:mb-6">
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary-600 flex items-center justify-center flex-shrink-0">
+                  <CardContent className={CONTAINER_PADDING.card}>
+                    <div className={cn(FLEX_ROW_CENTER, GAP.base, "items-start mb-5 md:mb-6")}>
+                      <div className={cn("w-12 h-12 md:w-14 md:h-14", RADIUS.full, "bg-primary-600", FLEX_ROW_CENTER, "justify-center flex-shrink-0")}>
                         <UsersGroupTwoRounded className="w-6 h-6 md:w-7 md:h-7 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-1">
+                        <h3 className={cn("text-base md:text-lg", FONT_FAMILY.montserratBold, "text-gray-900 mb-1")}>
                           {org.name}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className={cn(TEXT_STYLES.small, "text-gray-600")}>
                           {org.description}
                         </p>
                       </div>
                     </div>
 
-                    <div className="space-y-3 md:space-y-3.5 mb-5 md:mb-6 text-xs md:text-sm">
-                      <div className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
+                    <div className={cn("space-y-3 md:space-y-3.5 mb-5 md:mb-6 text-xs md:text-sm")}>
+                      <div className={cn(FLEX_ROW_CENTER, GAP.base, TEXT_STYLES.small)}>
+                        <div className={cn("w-8 h-8", RADIUS.full, BG_COLORS.primaryLight, FLEX_ROW_CENTER, "justify-center flex-shrink-0")}>
                           <Calendar className="w-4 h-4 text-primary-600" />
                         </div>
-                        <span className="text-gray-600 font-montserrat-semibold">
+                        <span className={cn(FONT_FAMILY.montserratSemibold, "text-gray-600")}>
                           Created on
                         </span>
-                        <span className="ml-auto text-gray-900 font-montserrat-semibold">
+                        <span className={cn(FONT_FAMILY.montserratSemibold, "ml-auto text-gray-900")}>
                           {new Date(org.createdAt).toLocaleDateString()}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
+                      <div className={cn(FLEX_ROW_CENTER, GAP.base, TEXT_STYLES.small)}>
+                        <div className={cn("w-8 h-8", RADIUS.full, BG_COLORS.primaryLight, FLEX_ROW_CENTER, "justify-center flex-shrink-0")}>
                           <ClockCircle className="w-4 h-4 text-primary-600" />
                         </div>
-                        <span className="text-gray-600 font-montserrat-semibold">
+                        <span className={cn(FONT_FAMILY.montserratSemibold, "text-gray-600")}>
                           Last Updated
                         </span>
-                        <span className="ml-auto text-gray-900 font-montserrat-semibold">
+                        <span className={cn(FONT_FAMILY.montserratSemibold, "ml-auto text-gray-900")}>
                           {new Date(org.updatedAt).toLocaleDateString()}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                          <span className="text-primary-600 font-montserrat-bold text-xs">
+                      <div className={cn(FLEX_ROW_CENTER, GAP.base, TEXT_STYLES.small)}>
+                        <div className={cn("w-8 h-8", RADIUS.full, BG_COLORS.primaryLight, FLEX_ROW_CENTER, "justify-center flex-shrink-0")}>
+                          <span className={cn(FONT_FAMILY.montserratBold, "text-primary-600 text-xs")}>
                             #
                           </span>
                         </div>
-                        <span className="text-gray-600 font-montserrat-semibold">
+                        <span className={cn(FONT_FAMILY.montserratSemibold, "text-gray-600")}>
                           Organization ID
                         </span>
-                        <span className="ml-auto text-gray-900 font-montserrat-semibold text-xs truncate max-w-[140px] md:max-w-[200px]">
+                        <span className={cn(FONT_FAMILY.montserratSemibold, "ml-auto text-gray-900 text-xs truncate max-w-[140px] md:max-w-[200px]")}>
                           {org._id}
                         </span>
                       </div>
@@ -330,7 +353,11 @@ export default function ParticipantOrganizationsPage() {
 
                     <Button
                       variant="outline"
-                      className="w-fit flex place-self-end border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700 font-montserrat-semibold gap-2"
+                      className={cn(
+                          "w-fit flex place-self-end border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700",
+                          FONT_FAMILY.montserratSemibold,
+                          GAP.sm
+                      )}
                       onClick={() =>
                         navigate(`/participant/organizations/${org._id}`)
                       }

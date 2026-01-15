@@ -8,6 +8,8 @@ import {
   Eye,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -185,7 +187,7 @@ export default function ParticipantJobApplicantsPage() {
 
   if (jobError || applicationsError) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <ErrorDisplay message="Failed to load job applications" />
       </div>
     );
@@ -194,14 +196,14 @@ export default function ParticipantJobApplicantsPage() {
   const job = jobData?.job;
   if (!job) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <ErrorDisplay message="Job not found" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="">
         {/* Header */}
         <GeneralHeader

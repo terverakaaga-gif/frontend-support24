@@ -12,7 +12,7 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import EditableAvatar from "@/components/EditableAvatar";
 import { SupportWorker } from "@/types/support-worker";
 import { StatsCard, EmptyState, StarRating, formatDate } from "@/components/supportworker/profile/ProfileUtils";
-import { cn } from "@/lib/utils";
+import { cn, DASHBOARD_PAGE_WRAPPER, DASHBOARD_CONTENT } from "@/lib/design-utils";
 
 // Tabs
 import { AboutTab } from "@/components/supportworker/profile/tabs/AboutTab";
@@ -50,8 +50,8 @@ export default function SupportWorkerProfile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="p-6 md:p-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
           <div>

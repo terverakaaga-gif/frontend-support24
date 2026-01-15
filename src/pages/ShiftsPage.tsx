@@ -24,6 +24,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DASHBOARD_PAGE_WRAPPER, DASHBOARD_CONTENT } from "@/lib/design-utils";
 
 const ShiftsPage = () => {
   const { user, logout } = useAuth();
@@ -111,8 +112,8 @@ const ShiftsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="px-8 py-6">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
           stickyTop={true}

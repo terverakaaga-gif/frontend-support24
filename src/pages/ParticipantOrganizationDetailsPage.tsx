@@ -8,7 +8,7 @@ import { DangerCircle, Buildings3, CloseCircle } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
 import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getWorkerDisplayName } from "@/lib/utils";
 import { useGetOrganizationDetails, useRemoveWorkerFromOrganization } from "@/hooks/useOrganizationHooks";
 import { Worker } from "@/types/organization.types";
@@ -16,6 +16,27 @@ import { Worker } from "@/types/organization.types";
 // Imported Refactored Components
 import { WorkerDetails } from "@/components/organization/WorkerDetails";
 import { ActiveWorkersList, PendingInvitesList } from "@/components/organization/Lists";
+
+import {
+  cn,
+  FLEX_ROW_BETWEEN,
+  FLEX_ROW_CENTER,
+} from "@/lib/design-utils";
+import {
+  GAP,
+  BUTTON_VARIANTS,
+  BG_COLORS,
+  CONTAINER_PADDING,
+  GRID_LAYOUTS,
+  SPACING,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  FONT_FAMILY,
+  TEXT_COLORS,
+  SHADOW,
+  RADIUS,
+  BORDER_STYLES,
+} from "@/constants/design-system";
 
 export default function ParticipantOrganizationDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,7 +59,7 @@ export default function ParticipantOrganizationDetailsPage() {
   const removeWorkerMutation = useRemoveWorkerFromOrganization();
 
   // Memoize derived data to avoid recalculation on every render
-  const activeWorkers = useMemo(() => organization?.workers || [], [organization]);
+  const activeWorkers = useMemo(() => organization?.workers.filter((worker) => worker && worker._id && worker.workerId) || [], [organization]);
   
   const pendingInvites = useMemo(() => 
     organization?.pendingInvites
@@ -97,13 +118,13 @@ export default function ParticipantOrganizationDetailsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-md mx-auto mt-20">
-          <Card className="border-0 shadow-lg">
+          <Card className={cn(BORDER_STYLES.none, SHADOW.lg)}>
             <CardContent className="p-8 text-center">
               <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">Failed to load organization</h3>
-              <Button onClick={() => refetch()} className="bg-primary-600 hover:bg-primary-600">Try Again</Button>
+              <h3 className={cn(HEADING_STYLES.h3, "mb-2")}>Failed to load organization</h3>
+              <Button onClick={() => refetch()} className={BUTTON_VARIANTS.primary}>Try Again</Button>
             </CardContent>
           </Card>
         </div>
@@ -113,10 +134,10 @@ export default function ParticipantOrganizationDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+        <div className={cn("max-w-7xl mx-auto", `space-y-${SPACING.lg}`)}>
           <Skeleton className="h-12 w-64" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={cn(GRID_LAYOUTS.threeCol, GAP.md)}>
             {[...Array(3)].map((_, i) => (<Skeleton key={i} className="h-32" />))}
           </div>
           <Skeleton className="h-96" />
@@ -127,12 +148,12 @@ export default function ParticipantOrganizationDetailsPage() {
 
   if (!organization) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-md mx-auto mt-20">
-          <Card className="border-0 shadow-lg">
+          <Card className={cn(BORDER_STYLES.none, SHADOW.lg)}>
             <CardContent className="p-8 text-center">
               <Buildings3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">Organization not found</h3>
+              <h3 className={cn(HEADING_STYLES.h3, "mb-2")}>Organization not found</h3>
               <Button onClick={() => navigate(-1)}>Go Back</Button>
             </CardContent>
           </Card>
@@ -142,7 +163,7 @@ export default function ParticipantOrganizationDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="w-full p-4 md:p-8">
         <GeneralHeader
           showBackButton
@@ -150,36 +171,35 @@ export default function ParticipantOrganizationDetailsPage() {
           subtitle={pageTitles.participant["/participant/organizations"].subtitle}
           user={user}
           onViewProfile={() => {
-            // ... (keep navigation logic)
             navigate("/participant/profile");
           }}
           onLogout={logout}
         />
 
         {/* Organization Info Card */}
-        <Card className="border-0 shadow-lg mb-6">
+        <Card className={cn(BORDER_STYLES.none, SHADOW.lg, `mb-${SPACING.xl}`)}>
           <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+            <div className={cn("flex items-start", GAP.lg)}>
+              <div className={cn("w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0")}>
                 <Buildings3 className="w-8 h-8 text-primary" />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-montserrat-bold text-gray-900 mb-2">{organization.name}</h2>
+                <h2 className={cn(HEADING_STYLES.h2, "mb-2")}>{organization.name}</h2>
                 {organization.description && (
-                  <p className="text-gray-600 mb-4">{organization.description}</p>
+                  <p className={cn(TEXT_STYLES.body, TEXT_COLORS.gray600, "mb-4")}>{organization.description}</p>
                 )}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-1">Active Workers</p>
-                    <p className="text-2xl font-montserrat-bold text-primary">{activeWorkers.length}</p>
+                <div className={cn(GRID_LAYOUTS.responsive, GAP.md, "mt-4")}>
+                  <div className={cn(BG_COLORS.gray50, "p-3", RADIUS.lg)}>
+                    <p className={cn(TEXT_STYLES.small, TEXT_COLORS.gray600, "mb-1")}>Active Workers</p>
+                    <p className={cn(HEADING_STYLES.h2, TEXT_COLORS.primary)}>{activeWorkers.length}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-1">Pending Invites</p>
-                    <p className="text-2xl font-montserrat-bold text-orange-600">{pendingInvites.length}</p>
+                  <div className={cn(BG_COLORS.gray50, "p-3", RADIUS.lg)}>
+                    <p className={cn(TEXT_STYLES.small, TEXT_COLORS.gray600, "mb-1")}>Pending Invites</p>
+                    <p className={cn(HEADING_STYLES.h2, "text-orange-600")}>{pendingInvites.length}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-1">Created</p>
-                    <p className="text-sm font-montserrat-semibold text-gray-900">
+                  <div className={cn(BG_COLORS.gray50, "p-3", RADIUS.lg)}>
+                    <p className={cn(TEXT_STYLES.small, TEXT_COLORS.gray600, "mb-1")}>Created</p>
+                    <p className={cn(TEXT_STYLES.body, FONT_FAMILY.montserratSemibold, TEXT_COLORS.gray900)}>
                       {format(parseISO(organization.createdAt), "MMM dd, yyyy")}
                     </p>
                   </div>
@@ -190,16 +210,19 @@ export default function ParticipantOrganizationDetailsPage() {
         </Card>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 md:mb-6">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, `mb-${SPACING.lg}`)}>
           {(["workers", "invites"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`rounded-full font-montserrat-semibold px-3 py-1 text-xs transition-all ${
+              className={cn(
+                RADIUS.full,
+                FONT_FAMILY.montserratSemibold,
+                "px-3 py-1 text-xs transition-all",
                 activeTab === tab
                   ? "bg-primary text-white hover:bg-primary"
                   : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-              }`}
+              )}
             >
               {tab === "workers" ? "Active Workers" : "Pending Invites"}
             </button>
@@ -207,9 +230,9 @@ export default function ParticipantOrganizationDetailsPage() {
         </div>
 
         {/* Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className={cn(GRID_LAYOUTS.threeCol, "gap-4 md:gap-6")}>
           <div className="lg:col-span-2">
-            <h2 className="text-sm md:text-lg font-montserrat-bold text-gray-900 mb-3 md:mb-4">
+            <h2 className={cn("text-sm md:text-lg", FONT_FAMILY.montserratBold, TEXT_COLORS.gray900, `mb-${SPACING.md}`)}>
               {activeTab === "workers"
                 ? `Active Workers (${activeWorkers.length})`
                 : `Pending Invites (${pendingInvites.length})`}
@@ -225,10 +248,10 @@ export default function ParticipantOrganizationDetailsPage() {
           {/* Worker Details Sidebar - Desktop */}
           {selectedWorker && (
             <div className="hidden lg:block">
-              <Card className="border-0 shadow-sm sticky top-6">
+              <Card className={cn(BORDER_STYLES.none, SHADOW.sm, "sticky top-6")}>
                 <CardContent className="p-0">
-                  <div className="p-3 md:p-4 border-b flex items-center justify-between">
-                    <h3 className="font-montserrat-bold text-gray-900 text-sm md:text-base">
+                  <div className={cn("p-3 md:p-4 border-b", FLEX_ROW_BETWEEN)}>
+                    <h3 className={cn(FONT_FAMILY.montserratBold, TEXT_COLORS.gray900, "text-sm md:text-base")}>
                       {getWorkerDisplayName(selectedWorker.workerId)}
                     </h3>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedWorker(null)}>
@@ -251,9 +274,9 @@ export default function ParticipantOrganizationDetailsPage() {
       {/* Worker Details Modal - Mobile */}
       {showWorkerDetails && selectedWorker && (
         <Dialog open={showWorkerDetails} onOpenChange={setShowWorkerDetails}>
-          <DialogContent className="lg:hidden max-w-full w-[90vw] mx-auto h-[90vh] p-0 rounded-t-2xl">
+          <DialogContent className={cn("lg:hidden max-w-full w-[90vw] mx-auto h-[90vh] p-0", `rounded-t-${RADIUS["2xl"]}`)}>
             <DialogHeader className="p-3 md:p-4 border-b">
-              <DialogTitle className="font-montserrat-bold text-gray-900 text-sm md:text-base">
+              <DialogTitle className={cn(FONT_FAMILY.montserratBold, TEXT_COLORS.gray900, "text-sm md:text-base")}>
                 {getWorkerDisplayName(selectedWorker.workerId)}
               </DialogTitle>
             </DialogHeader>
@@ -274,26 +297,26 @@ export default function ParticipantOrganizationDetailsPage() {
         <Dialog open={showRemoveConfirmation} onOpenChange={setShowRemoveConfirmation}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="font-montserrat-bold text-gray-900">Confirm Worker Removal</DialogTitle>
+              <DialogTitle className={cn(FONT_FAMILY.montserratBold, TEXT_COLORS.gray900)}>Confirm Worker Removal</DialogTitle>
             </DialogHeader>
             <div className="py-4">
-              <p className="text-sm md:text-base text-gray-600">
+              <p className={cn(TEXT_STYLES.body, TEXT_COLORS.gray600)}>
                 Are you sure you want to remove this worker from your organization? This action cannot be undone.
               </p>
             </div>
-            <div className="flex gap-3 justify-end">
+            <div className={cn("flex justify-end", GAP.sm)}>
               <Button
                 variant="outline"
                 onClick={cancelRemoveWorker}
                 disabled={removeWorkerMutation.isPending}
-                className="font-montserrat-semibold"
+                className={cn(FONT_FAMILY.montserratSemibold)}
               >
                 Cancel
               </Button>
               <Button
                 onClick={confirmRemoveWorker}
                 disabled={removeWorkerMutation.isPending}
-                className="bg-red-600 hover:bg-red-700 text-white font-montserrat-semibold"
+                className={cn("bg-red-600 hover:bg-red-700 text-white", FONT_FAMILY.montserratSemibold)}
               >
                 {removeWorkerMutation.isPending ? "Removing..." : "Yes, Remove"}
               </Button>

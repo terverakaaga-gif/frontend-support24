@@ -4,6 +4,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegions, useServiceAreas, useStates } from "@/hooks/useLocationHooks";
 import { MapPoint } from "@solar-icons/react";
+import {
+  cn,
+  FLEX_ROW_CENTER,
+} from "@/lib/design-utils";
+import {
+  GAP,
+  SPACING,
+  FONT_FAMILY,
+  TEXT_STYLES
+} from "@/constants/design-system";
 
 interface LocationFilterProps {
   filters: any;
@@ -42,13 +52,13 @@ export function LocationFilter({ filters, onChange }: LocationFilterProps) {
   const isAutoLocation = filters.matchParticipantLocation === true;
 
   return (
-    <div className="space-y-3">
-      <Label className="text-sm font-montserrat-semibold flex items-center">
+    <div className={cn(`space-y-${SPACING.sm}`)}>
+      <Label className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold, FLEX_ROW_CENTER)}>
         <MapPoint className="h-4 w-4 mr-1" /> Location
       </Label>
       
       {/* Auto-location Toggle */}
-      <div className="flex items-center space-x-2 mb-2">
+      <div className={cn(FLEX_ROW_CENTER, GAP.sm, "mb-2")}>
         <Checkbox
           id="auto-location"
           checked={isAutoLocation}
@@ -63,7 +73,7 @@ export function LocationFilter({ filters, onChange }: LocationFilterProps) {
 
       {/* Manual Selection (Only if Auto is OFF) */}
       {!isAutoLocation && (
-        <div className="space-y-3 pl-2 border-l-2 border-gray-100 ml-1">
+        <div className={cn(`space-y-${SPACING.sm}`, "pl-2 border-l-2 border-gray-100 ml-1")}>
           {/* State */}
           <div>
             <Label className="text-xs text-gray-500 mb-1 block">State</Label>

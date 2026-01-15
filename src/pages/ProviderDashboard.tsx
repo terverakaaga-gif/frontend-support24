@@ -22,6 +22,13 @@ import GeneralHeader from "@/components/GeneralHeader";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { PostCard, Post } from "@/components/provider/PostCard";
+import {
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  DASHBOARD_STATS_GRID,
+  DASHBOARD_STAT_CARD,
+  cn,
+} from "@/lib/design-utils";
 
 const mockStats = {
   totalActivePosts: 15,
@@ -193,7 +200,7 @@ function StatCard({
   trendDirection,
 }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+    <div className={DASHBOARD_STAT_CARD}>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm font-semibold text-gray-600">{title}</div>
         <div className="p-2 rounded-full bg-primary-300/20">
@@ -545,7 +552,7 @@ export default function ProviderDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
       <GeneralHeader
         stickyTop={true}
         title={getGreeting()}

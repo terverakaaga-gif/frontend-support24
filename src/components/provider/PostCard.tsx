@@ -160,6 +160,14 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
   const handleViewParticipants = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowMenu(false);
+    if (post.type === "job") {
+      navigate(`/${basePath}/${post.id}/applicants`);
+      return;
+    }
+    if (post.type === "event") {
+      navigate(`/${basePath}/${post.id}/participants`);
+      return;
+    }
     navigate(`/${basePath}/${post.id}/applicants`);
   };
 
@@ -249,7 +257,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
   if (post.type === "job") {
     return (
       <div
-        className="bg-white w-fit border border-gray-200 rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col relative min-h-[200px]"
+        className="bg-white w-full border border-gray-200 rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col relative min-h-[200px]"
         onClick={() => navigate(`/${basePath}/${post.id}`)}
       >
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -372,7 +380,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
   // Default layout for events and accommodation
   return (
     <div
-      className="bg-white border w-fit border-gray-200 rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col relative"
+      className="bg-white border w-full border-gray-200 rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col relative"
       onClick={() => navigate(`/${basePath}/${post.id}`)}
     >
       <div className="flex-1">

@@ -16,6 +16,8 @@ import {
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import Loader from "@/components/Loader";
+import { cn, PAGE_WRAPPER } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { Input } from "@/components/ui/input";
 import { CreateIncidentDTO, TIncidentStatus } from "@/types/incidents.types";
@@ -395,7 +397,7 @@ const IncidentsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={PAGE_WRAPPER}>
       {/* Header */}
       <GeneralHeader
         title={

@@ -10,6 +10,8 @@ import {
   Document,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetJobById } from "@/hooks/useJobHooks";
@@ -121,14 +123,14 @@ export default function ParticipantJobDetailsPage() {
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <ErrorDisplay message="Failed to load job details" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="">
         {/* Header */}
         <div className="mb-6">

@@ -7,8 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { WorkerSearchFilters } from "@/api/services/participantService";
-import { Magnifer, Close, Filter, Refresh } from "@solar-icons/react";
+import { Magnifer, Filter, Refresh } from "@solar-icons/react";
 import { LocationFilter } from "./LocationFilter"; // Import the new module
+
+import {
+  cn,
+  FLEX_ROW_BETWEEN,
+  FLEX_ROW_CENTER,
+} from "@/lib/design-utils";
+import {
+  GAP,
+  SPACING,
+  FONT_FAMILY,
+  TEXT_STYLES
+} from "@/constants/design-system";
 
 interface SearchFiltersProps {
   filters: WorkerSearchFilters;
@@ -79,10 +91,10 @@ export function SearchFilters({
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* Header - Fixed at top */}
-      <div className="flex-none flex items-center justify-between mb-4 pb-4 border-b">
-        <div className="flex items-center gap-2">
+      <div className={cn(FLEX_ROW_BETWEEN, "flex-none mb-4 pb-4 border-b")}>
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm)}>
           <Filter className="h-5 w-5 text-primary" />
-          <h3 className="font-montserrat-semibold">Filters</h3>
+          <h3 className={cn(FONT_FAMILY.montserratSemibold)}>Filters</h3>
           {activeFilterCount > 0 && (
             <Badge variant="secondary" className="bg-primary/10 text-primary ml-2">
               {activeFilterCount}
@@ -97,11 +109,11 @@ export function SearchFilters({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-6">
+      <div className={cn("flex-1 overflow-y-auto p-2", `space-y-${SPACING.lg}`)}>
         
         {/* Keyword Search */}
-        <div className="space-y-2">
-          <Label className="text-sm font-montserrat-semibold">Keywords</Label>
+        <div className={cn(`space-y-${SPACING.sm}`)}>
+          <Label className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>Keywords</Label>
           <div className="relative">
             <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -120,14 +132,14 @@ export function SearchFilters({
         />
 
         {/* Skills Filter */}
-        <div className="space-y-3">
-          <Label className="text-sm font-montserrat-semibold">Skills</Label>
+        <div className={cn(`space-y-${SPACING.sm}`)}>
+          <Label className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>Skills</Label>
           {isLoadingSkills ? (
             <div className="text-xs text-gray-500">Loading skills...</div>
           ) : (
-            <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto border rounded-md p-2">
+            <div className={cn("grid grid-cols-1 gap-2 max-h-40 overflow-y-auto border rounded-md p-2")}>
               {skills.filter((s:any) => s.status === 'active')?.map((skill) => (
-                <div key={skill._id} className="flex items-center space-x-2">
+                <div key={skill._id} className={cn(FLEX_ROW_CENTER, GAP.sm)}>
                   <Checkbox
                     id={skill._id}
                     checked={selectedSkills.includes(skill._id)}
@@ -143,8 +155,8 @@ export function SearchFilters({
         </div>
 
         {/* Rating Filter */}
-        <div className="space-y-3">
-          <Label className="text-sm font-montserrat-semibold">Min Rating</Label>
+        <div className={cn(`space-y-${SPACING.sm}`)}>
+          <Label className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>Min Rating</Label>
           <Select
             value={localFilters.minRating?.toString() || ""}
             onValueChange={(value) => updateLocalFilter('minRating', value ? parseFloat(value) : undefined)}
@@ -161,9 +173,9 @@ export function SearchFilters({
         </div>
 
         {/* Hourly Rate Filter */}
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <Label className="text-sm font-montserrat-semibold">Hourly Rate</Label>
+        <div className={cn(`space-y-${SPACING.sm}`)}>
+          <div className={cn(FLEX_ROW_BETWEEN)}>
+            <Label className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>Hourly Rate</Label>
             <span className="text-xs text-primary font-bold">
                 Max: ${maxRate[0] >= 100 ? '100+' : maxRate[0]}
             </span>
@@ -177,7 +189,7 @@ export function SearchFilters({
         </div>
 
         {/* Verification */}
-        <div className="flex items-center space-x-2 pt-2">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, "pt-2")}>
           <Checkbox
             id="verified"
             checked={localFilters.onlyVerified || false}

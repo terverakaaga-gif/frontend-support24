@@ -10,7 +10,18 @@ import { filterValidWorkers } from "@/lib/utils";
 import { toast } from "sonner";
 import { SHIFT_TYPES } from "@/constants/shift-types";
 import { AltArrowLeft, AltArrowRight, Refresh, CheckCircle } from "@solar-icons/react";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+} from "@/lib/design-utils";
+import {
+  SPACING,
+  RADIUS,
+  BG_COLORS,
+  HEADING_STYLES,
+  GAP,
+} from "@/constants/design-system";
 
 // Modules
 import { ShiftTypeStep } from "@/components/shifts/steps/ShiftTypeStep";
@@ -130,15 +141,15 @@ export default function ShiftCreationDialog({ open, onOpenChange }: ShiftCreatio
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] bg-gray-100 overflow-y-auto">
+      <DialogContent className={cn("max-w-3xl max-h-[90vh] overflow-y-auto", BG_COLORS.white)}>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Create New Shift</DialogTitle>
+          <DialogTitle className={cn(HEADING_STYLES.h3)}>Create New Shift</DialogTitle>
           <DialogDescription>Step {step} of 4</DialogDescription>
         </DialogHeader>
 
         {/* Progress Bar */}
-        <div className="flex gap-2 mb-6">
-          {[1, 2, 3, 4].map(s => <div key={s} className={cn("h-2 flex-1 rounded-full transition-all", s <= step ? "bg-primary" : "bg-gray-200")} />)}
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, `mb-${SPACING.lg}`)}>
+          {[1, 2, 3, 4].map(s => <div key={s} className={cn("h-2 flex-1 transition-all", RADIUS.full, s <= step ? BG_COLORS.primary : "bg-gray-200")} />)}
         </div>
 
         {/* Step Content */}
@@ -163,7 +174,7 @@ export default function ShiftCreationDialog({ open, onOpenChange }: ShiftCreatio
         {step === 4 && <ReviewStep formData={formData} shiftTypeLabel={SHIFT_TYPES.find(t => t.id === shiftTypeSelection)?.title} />}
 
         {/* Footer */}
-        <div className="flex justify-between pt-6 border-t">
+        <div className={cn(FLEX_ROW_BETWEEN, "pt-6 border-t")}>
             <Button variant="outline" onClick={() => step === 1 ? onOpenChange(false) : setStep(prev => prev - 1)}>
                 <AltArrowLeft className="w-5 h-5 mr-2" /> {step === 1 ? "Cancel" : "Back"}
             </Button>

@@ -17,6 +17,22 @@ import { ShiftPeopleInfo } from "@/components/shifts/details/ShiftPeopleInfo";
 import { ShiftActions } from "@/components/shifts/details/ShiftActions";
 import { TimesheetForm } from "@/components/shifts/details/TimesheetForm";
 
+// Design System
+import {
+  cn,
+  CARD_CONTENT,
+} from "@/lib/design-utils";
+import {
+  SPACING,
+  RADIUS,
+  BG_COLORS,
+  TEXT_COLORS,
+  CARD_VARIANTS,
+  HEADING_STYLES,
+  FONT_FAMILY,
+  TEXT_STYLES,
+} from "@/constants/design-system";
+
 interface ShiftDetailsDialogProps {
   shift: Shift | null;
   open: boolean;
@@ -272,9 +288,14 @@ export default function ShiftDetailsDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
-        <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-gray-100 rounded-lg max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto p-4 sm:p-10 z-50">
+        <Dialog.Content className={cn(
+          "fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]",
+          "rounded-lg max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto z-50",
+          "bg-gray-100", // Keeping lighter gray background as base
+          "p-4 sm:p-10" // Padding
+        )}>
           <Dialog.Close className="absolute right-4 top-4 p-1 hover:bg-gray-200 rounded-full">
-            <CloseCircle className="w-6 h-6 text-gray-1000" />
+            <CloseCircle className="w-6 h-6 text-gray-500" />
           </Dialog.Close>
 
           {/* Header Section */}
@@ -286,18 +307,18 @@ export default function ShiftDetailsDialog({
             formatTime={formatTime}
           />
 
-          <div className="space-y-4 mt-6">
+          <div className={cn(`space-y-${SPACING.base}`, `mt-${SPACING.xl}`)}>
             {/* Info Cards */}
-            <div className="bg-white shadow-sm border rounded-lg p-3">
-              <h3 className="text-sm font-semibold mb-2">Shift Information</h3>
-              <div className="space-y-2 text-sm">
+            <div className={cn(CARD_VARIANTS.default, "p-3")}>
+              <h3 className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold, `mb-${SPACING.sm}`)}>Shift Information</h3>
+              <div className={cn(TEXT_STYLES.small, `space-y-${SPACING.sm}`)}>
                 <div className="flex justify-between">
                   <span>ID:</span>{" "}
-                  <span className="font-semibold">{shift.shiftId}</span>
+                  <span className={cn(FONT_FAMILY.montserratSemibold)}>{shift.shiftId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Supervision:</span>{" "}
-                  <span className="font-semibold">
+                  <span className={cn(FONT_FAMILY.montserratSemibold)}>
                     {shift.requiresSupervision ? "Yes" : "No"}
                   </span>
                 </div>
@@ -320,9 +341,9 @@ export default function ShiftDetailsDialog({
 
             {/* Special Instructions */}
             {shift.specialInstructions && (
-              <div className="bg-white shadow-sm border rounded-lg p-3">
-                <h3 className="text-sm font-semibold mb-2">Instructions</h3>
-                <p className="text-sm bg-primary/10 p-2 rounded text-primary">
+              <div className={cn(CARD_VARIANTS.default, "p-3")}>
+                <h3 className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold, `mb-${SPACING.sm}`)}>Instructions</h3>
+                <p className={cn(TEXT_STYLES.small, BG_COLORS.primaryLight, "p-2", RADIUS.sm, TEXT_COLORS.primary)}>
                   {shift.specialInstructions}
                 </p>
               </div>
@@ -332,8 +353,8 @@ export default function ShiftDetailsDialog({
             {((viewMode === "worker" && isAssignedWorker) ||
               (viewMode === "participant" && isParticipant)) &&
               !["cancelled", "completed"].includes(assignmentStatus) && (
-                <div className="bg-white shadow-sm border rounded-lg p-4">
-                  <h3 className="text-sm font-semibold mb-4">Actions</h3>
+                <div className={cn(CARD_VARIANTS.default, "p-4")}>
+                  <h3 className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold, `mb-${SPACING.base}`)}>Actions</h3>
                   <ShiftActions
                     status={assignmentStatus}
                     viewMode={viewMode}
@@ -360,7 +381,7 @@ export default function ShiftDetailsDialog({
             {assignmentStatus === "completed" &&
               viewMode === "worker" &&
               isAssignedWorker && (
-                <div className="bg-white shadow-sm border rounded-lg p-4">
+                <div className={cn(CARD_VARIANTS.default, "p-4")}>
                   {!showTimesheetForm ? (
                     <Button
                       onClick={() => setShowTimesheetForm(true)}

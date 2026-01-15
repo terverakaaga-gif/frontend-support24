@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/design-utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -210,6 +210,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Widget5 className="w-6 h-6" />}
               label="Dashboard"
               active={isActive("/participant")}
+            />
+            <NavItem
+              to="/participant/events"
+              icon={<CalendarDate className="w-6 h-6" />}
+              label="Events"
+              active={isActive("/participant/events")}
             />
             <NavItem
               to="/participant/shifts"

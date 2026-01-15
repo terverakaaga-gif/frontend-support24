@@ -1,19 +1,21 @@
 import React from "react";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, SPACING, RADIUS } from "@/constants/design-system";
 
 export const WaveLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-100">
-    <div className="flex space-x-2">
-      <div className="w-4 h-4 bg-primary rounded-full animate-wave"></div>
+  <div className={cn("flex items-center justify-center min-h-screen", BG_COLORS.muted)}>
+    <div className={`flex space-x-${SPACING.sm}`}>
+      <div className={cn(`w-${SPACING.base} h-${SPACING.base}`, "bg-primary", RADIUS.full, "animate-wave")}></div>
       <div
-        className="w-4 h-4 bg-primary rounded-full animate-wave"
+        className={cn(`w-${SPACING.base} h-${SPACING.base}`, "bg-primary", RADIUS.full, "animate-wave")}
         style={{ animationDelay: "0.1s" }}
       ></div>
       <div
-        className="w-4 h-4 bg-primary rounded-full animate-wave"
+        className={cn(`w-${SPACING.base} h-${SPACING.base}`, "bg-primary", RADIUS.full, "animate-wave")}
         style={{ animationDelay: "0.2s" }}
       ></div>
       <div
-        className="w-4 h-4 bg-primary rounded-full animate-wave"
+        className={cn(`w-${SPACING.base} h-${SPACING.base}`, "bg-primary", RADIUS.full, "animate-wave")}
         style={{ animationDelay: "0.3s" }}
       ></div>
     </div>
@@ -21,7 +23,7 @@ export const WaveLoader = () => (
 );
 
 export const PulseLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-100">
+  <div className={cn("flex items-center justify-center min-h-screen", BG_COLORS.muted)}>
     <div className="relative">
       <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -36,15 +38,15 @@ export const PulseLoader = () => (
 );
 
 export const BounceLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-100">
-    <div className="flex space-x-1">
-      <div className="w-3 h-3 bg-primary rounded-full animate-bounce"></div>
+  <div className={cn("flex items-center justify-center min-h-screen", BG_COLORS.muted)}>
+    <div className={`flex space-x-${SPACING.xs}`}>
+      <div className={cn(`w-${SPACING.md} h-${SPACING.md}`, "bg-primary", RADIUS.full, "animate-bounce")}></div>
       <div
-        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+        className={cn(`w-${SPACING.md} h-${SPACING.md}`, "bg-primary", RADIUS.full, "animate-bounce")}
         style={{ animationDelay: "0.1s" }}
       ></div>
       <div
-        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+        className={cn(`w-${SPACING.md} h-${SPACING.md}`, "bg-primary", RADIUS.full, "animate-bounce")}
         style={{ animationDelay: "0.2s" }}
       ></div>
     </div>

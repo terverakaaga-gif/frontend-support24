@@ -63,6 +63,8 @@ import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import SupportWorkerDetailsDialog from "@/components/admin/SupportWorkerDetailsDialog";
 import { CloseIcon } from "@/components/icons";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 
 const SupportWorkersManagementPage: React.FC = () => {
   const navigate = useNavigate();
@@ -319,7 +321,7 @@ const SupportWorkersManagementPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <GeneralHeader
         stickyTop={true}
         title="Support Workers Management"

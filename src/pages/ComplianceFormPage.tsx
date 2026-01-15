@@ -15,6 +15,7 @@ import {
   COMPLIANCE_QUESTION_LABELS,
   IComplianceAnswers 
 } from "@/types/compliance.types";
+import { DASHBOARD_PAGE_WRAPPER, CARD } from "@/lib/design-utils";
 
 interface RequiredDocument {
   id: string;
@@ -155,7 +156,7 @@ export default function ComplianceFormPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 space-y-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
       <GeneralHeader
         showBackButton={true}
         stickyTop={true}

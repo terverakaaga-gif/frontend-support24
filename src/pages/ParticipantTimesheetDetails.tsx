@@ -8,6 +8,8 @@ import {
   MapPoint,
 } from "@solar-icons/react";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -122,7 +124,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-12 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -138,7 +140,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
 
   if (error || !timesheet) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
@@ -163,7 +165,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className=" p-6 md:p-8">
         {/* Header */}
         <GeneralHeader
@@ -614,7 +616,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                       {timesheet.approvedAt && (
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-green-600 mt-2 flex-shrink-0"></div>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 truncate">
                             <p className="text-sm font-montserrat-semibold text-gray-900">
                               Approved
                             </p>

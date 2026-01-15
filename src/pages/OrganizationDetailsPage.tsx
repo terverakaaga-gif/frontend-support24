@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { DangerCircle, Buildings3 } from "@solar-icons/react";
@@ -61,7 +63,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8 text-center">
             <DangerCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -76,7 +78,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <Skeleton className="h-12 w-64" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (<Skeleton key={i} className="h-32" />))}
@@ -88,7 +90,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
 
   if (!organization) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8 text-center">
             <Buildings3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -101,7 +103,7 @@ export default function SupportWorkerOrganizationDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       {/* Header */}
       <GeneralHeader
         showBackButton

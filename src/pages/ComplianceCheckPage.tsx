@@ -8,6 +8,11 @@ import { ComplianceStatus, DOCUMENT_TYPE_LABELS } from "@/types/compliance.types
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/Loader";
+import {
+  cn,
+  DASHBOARD_PAGE_WRAPPER,
+  FLEX_CENTER,
+} from "@/lib/design-utils";
 
 export default function ComplianceCheckPage() {
   const { logout, user } = useAuth();
@@ -66,7 +71,7 @@ export default function ComplianceCheckPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6 space-y-8">
+      <div className={cn(DASHBOARD_PAGE_WRAPPER, FLEX_CENTER)}>
         <div className="text-center">
           <p className="text-red-600 mb-4">Failed to load compliance status</p>
           <button 
@@ -81,7 +86,7 @@ export default function ComplianceCheckPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 space-y-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
       {/* Header */}
       <GeneralHeader
         title="Compliance Check"

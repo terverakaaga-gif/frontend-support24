@@ -8,6 +8,8 @@ import {
   Eye,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/Spinner";
 import ErrorDisplay from "@/components/ErrorDisplay";
@@ -144,7 +146,7 @@ export default function ProviderJobApplicantsPage() {
   // Show error state
   if (applicationsError || jobError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className={cn("min-h-screen flex items-center justify-center", BG_COLORS.muted)}>
         <ErrorDisplay 
           message={applicationsError?.message || jobError?.message || "Failed to load applications"}
         />
@@ -155,13 +157,13 @@ export default function ProviderJobApplicantsPage() {
   const job = jobData;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="">
         {/* Header */}
         <GeneralHeader
           showBackButton
           stickyTop={false}
-          title={`Applicants - ${job?.jobRole || "Job Listing"}`}
+          title={`Applicants - ${job?.job?.jobRole || "Job Listing"}`}
           subtitle=""
           user={user}
           onLogout={logout}
@@ -425,7 +427,7 @@ export default function ProviderJobApplicantsPage() {
         entityType="job-application"
         actionType={actionType}
         isLoading={updateStatusMutation.isPending}
-        contextTitle={job?.jobRole || "Job Listing"}
+        contextTitle={job?.job?.jobRole || "Job Listing"}
       />
     </div>
   );

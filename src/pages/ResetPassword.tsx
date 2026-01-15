@@ -9,6 +9,22 @@ import { toast } from "sonner";
 import authService from "@/api/services/authService";
 import { getPasswordRequirements } from "@/lib/utils";
 import { CheckCircle, Eye, EyeClosed } from "@solar-icons/react";
+import {
+  cn,
+  AUTH_PAGE_WRAPPER,
+  AUTH_PANEL,
+  AUTH_CAROUSEL_PANEL,
+  AUTH_FORM_CONTAINER,
+  AUTH_LOGO_CONTAINER,
+  AUTH_HEADING,
+  AUTH_SUBHEADING,
+  AUTH_INPUT_PASSWORD,
+  AUTH_BUTTON_PRIMARY,
+  AUTH_LABEL,
+  AUTH_LINK,
+  FLEX_ROW_CENTER,
+  FLEX_COL_CENTER,
+} from "@/lib/design-utils";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -44,22 +60,18 @@ export default function ResetPassword() {
       setError("Password must be at least 8 characters long");
       return false;
     }
-    // Check for at least one uppercase letter
     if (!/[A-Z]/.test(formData.newPassword)) {
       setError("Password must contain at least one uppercase letter");
       return false;
     }
-    // Check for at least one lowercase letter
     if (!/[a-z]/.test(formData.newPassword)) {
       setError("Password must contain at least one lowercase letter");
       return false;
     }
-    // Check for at least one number
     if (!/\d/.test(formData.newPassword)) {
       setError("Password must contain at least one number");
       return false;
     }
-    // Check for at least one special character
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword)) {
       setError("Password must contain at least one special character");
       return false;
@@ -106,21 +118,16 @@ export default function ResetPassword() {
     navigate("/login");
   };
 
-  // Redirect to forgot password if no userId
+  // Redirect if no userId
   if (!userId) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-[#FDFDFD]">
+      <div className={cn(AUTH_PAGE_WRAPPER, "items-center justify-center")}>
         <div className="text-center space-y-4">
-          <h2 className="text-2xl font-montserrat-bold text-gray-900">
-            Invalid Reset Link
-          </h2>
-          <p className="text-gray-600 font-montserrat-semibold">
+          <h2 className={AUTH_HEADING}>Invalid Reset Link</h2>
+          <p className={AUTH_SUBHEADING}>
             This password reset link is invalid or has expired.
           </p>
-          <Link
-            to="/forgot-password"
-            className="text-orange-500 hover:text-orange-600 font-montserrat-semibold"
-          >
+          <Link to="/forgot-password" className={AUTH_LINK}>
             Request New Reset Link
           </Link>
         </div>
@@ -128,19 +135,16 @@ export default function ResetPassword() {
     );
   }
 
- 
-
   return (
-    <div className="flex min-h-screen w-full bg-[#FDFDFD]">
+    <div className={AUTH_PAGE_WRAPPER}>
       {/* Left side - Illustration */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="hidden lg:flex lg:w-1/2 bg-[#F7F7F7] relative overflow-hidden"
+        className={AUTH_CAROUSEL_PANEL}
       >
-        {/* Illustration Container */}
-        <div className="flex flex-col justify-center items-center w-full p-12 relative z-10">
+        <div className={cn(FLEX_COL_CENTER, "w-full p-12 relative z-10")}>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -161,14 +165,14 @@ export default function ResetPassword() {
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
+        className={AUTH_PANEL}
       >
         {/* Logo */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="flex justify-center items-center w-full mb-16"
+          className={AUTH_LOGO_CONTAINER}
         >
           <img src="/logo.svg" alt="Support 24" className="h-12" />
         </motion.div>
@@ -178,7 +182,7 @@ export default function ResetPassword() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
-          className="w-full max-w-md space-y-8"
+          className={cn(AUTH_FORM_CONTAINER, "space-y-8")}
         >
           {isSuccess ? (
             <motion.div
@@ -190,18 +194,13 @@ export default function ResetPassword() {
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <div className="space-y-2">
-                <h1 className="text-3xl font-montserrat-bold text-gray-900">
-                  Password Reset Successfully!
-                </h1>
-                <p className="text-gray-600 font-montserrat-semibold">
+                <h1 className={AUTH_HEADING}>Password Reset Successfully!</h1>
+                <p className={AUTH_SUBHEADING}>
                   Your password has been updated. You can now login with your
                   new password.
                 </p>
               </div>
-              <Button
-                onClick={handleLoginRedirect}
-                className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg"
-              >
+              <Button onClick={handleLoginRedirect} className={AUTH_BUTTON_PRIMARY}>
                 Continue to Login
               </Button>
             </motion.div>
@@ -209,10 +208,8 @@ export default function ResetPassword() {
             <>
               {/* Header */}
               <div className="text-center">
-                <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
-                  Reset Password
-                </h1>
-                <p className="font-montserrat-semibold text-gray-600">
+                <h1 className={AUTH_HEADING}>Reset Password</h1>
+                <p className={AUTH_SUBHEADING}>
                   Create a strong new password and confirm to secure
                   <br />
                   your account
@@ -229,10 +226,7 @@ export default function ResetPassword() {
 
                 {/* New Password Field */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="newPassword"
-                    className="text-gray-700 font-montserrat-semibold"
-                  >
+                  <Label htmlFor="newPassword" className={AUTH_LABEL}>
                     New Password
                   </Label>
                   <div className="relative">
@@ -243,7 +237,7 @@ export default function ResetPassword() {
                       value={formData.newPassword}
                       onChange={handleInputChange("newPassword")}
                       required
-                      className="h-12 px-4 pr-12 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                      className={AUTH_INPUT_PASSWORD}
                       disabled={isLoading}
                     />
                     <button
@@ -262,10 +256,7 @@ export default function ResetPassword() {
 
                 {/* Confirm Password Field */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="confirmPassword"
-                    className="text-gray-700 font-montserrat-semibold"
-                  >
+                  <Label htmlFor="confirmPassword" className={AUTH_LABEL}>
                     Confirm Password
                   </Label>
                   <div className="relative">
@@ -276,14 +267,12 @@ export default function ResetPassword() {
                       value={formData.confirmPassword}
                       onChange={handleInputChange("confirmPassword")}
                       required
-                      className="h-12 px-4 pr-12 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                      className={AUTH_INPUT_PASSWORD}
                       disabled={isLoading}
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       {showConfirmPassword ? (
@@ -298,20 +287,22 @@ export default function ResetPassword() {
                 {/* Password Requirements */}
                 {formData.newPassword && (
                   <div className="space-y-2">
-                    {getPasswordRequirements(formData.newPassword.length,formData.newPassword).map((req, index) => (
+                    {getPasswordRequirements(
+                      formData.newPassword.length,
+                      formData.newPassword
+                    ).map((req, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 text-sm"
+                        className={cn(FLEX_ROW_CENTER, "gap-2 text-sm")}
                       >
                         <div
-                          className={`w-2 h-2 rounded-full ${
+                          className={cn(
+                            "w-2 h-2 rounded-full",
                             req.met ? "bg-green-500" : "bg-gray-300"
-                          }`}
+                          )}
                         />
                         <span
-                          className={
-                            req.met ? "text-green-600" : "text-gray-1000"
-                          }
+                          className={req.met ? "text-green-600" : "text-gray-900"}
                         >
                           {req.text}
                         </span>
@@ -327,7 +318,7 @@ export default function ResetPassword() {
                 >
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                    className={AUTH_BUTTON_PRIMARY}
                     disabled={
                       isLoading ||
                       !formData.newPassword ||
@@ -335,7 +326,7 @@ export default function ResetPassword() {
                     }
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
+                      <div className={cn(FLEX_ROW_CENTER, "gap-2")}>
                         <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Resetting Password...
                       </div>

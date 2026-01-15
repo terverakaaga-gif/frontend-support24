@@ -19,6 +19,8 @@ import {
 } from "@/hooks/useAnalyticsHooks";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/formatters";
 import { Bell, BranchingPathsDown, Buildings2, Calendar, CheckCircle, ClockCircle, CourseUp, DiagramDown, Dollar, Layers, Repeat, UserCheck, UserPlus, UsersGroupRounded } from "@solar-icons/react";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING, SPACING, GAP, HEADING_STYLES, TEXT_STYLES, FLEX_LAYOUTS, GRID_LAYOUTS } from "@/constants/design-system";
 
 export default function AdminAnalyticsDashboard() {
 	// State for date range and comparison
@@ -321,7 +323,7 @@ export default function AdminAnalyticsDashboard() {
 	};
 
 	return (
-		<div className="p-6 space-y-8">
+		<div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive, "space-y-8")}>
 			{/* Header Section */}
 			<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div>

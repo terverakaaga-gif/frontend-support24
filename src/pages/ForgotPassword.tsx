@@ -5,11 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
-import authService from "@/api/services/authService";
 import { Spinner } from "@/components/Spinner";
 import { useForgotPassword } from "@/hooks/useAuthHooks";
 import { AltArrowRight, CheckCircle } from "@solar-icons/react";
+import {
+  cn,
+  AUTH_PAGE_WRAPPER,
+  AUTH_PANEL,
+  AUTH_CAROUSEL_PANEL,
+  AUTH_FORM_CONTAINER,
+  AUTH_LOGO_CONTAINER,
+  AUTH_HEADING,
+  AUTH_SUBHEADING,
+  AUTH_INPUT,
+  AUTH_BUTTON_PRIMARY,
+  AUTH_LABEL,
+  AUTH_LINK,
+  FLEX_ROW_CENTER,
+  FLEX_COL_CENTER,
+} from "@/lib/design-utils";
+import { BG_COLORS, TEXT_COLORS, TEXT_SIZE } from "@/constants/design-system";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -27,8 +42,6 @@ export default function ForgotPassword() {
         const response = await mutateAsync(email);
 
         if (isSuccess) {
-          // Redirect to OTP verification page with email and userId
-          // Wait for 3s to navigate
           setTimeout(() => {
             navigate(
               `/otp-verify?email=${encodeURIComponent(email)}&userId=${
@@ -38,27 +51,23 @@ export default function ForgotPassword() {
           }, 3000);
         }
       } catch (err: any) {
-        const errorMessage =
-          err.response?.data?.error ||
-          err.message ||
-          "An error occurred. Please try again.";
-        toast.error(errorMessage);
+        // Error handling is done in the mutation
       }
     },
     [email, isSuccess, mutateAsync, navigate]
   );
 
   return (
-    <div className="flex min-h-screen w-full bg-[#FDFDFD]">
+    <div className={AUTH_PAGE_WRAPPER}>
       {/* Left side - Illustration */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="hidden lg:flex lg:w-1/2 bg-[#F7F7F7] relative overflow-hidden"
+        className={AUTH_CAROUSEL_PANEL}
       >
         {/* Illustration Container */}
-        <div className="flex flex-col justify-center items-center w-full p-12 relative z-10">
+        <div className={cn(FLEX_COL_CENTER, "w-full p-12 relative z-10")}>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -79,14 +88,14 @@ export default function ForgotPassword() {
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
+        className={AUTH_PANEL}
       >
         {/* Logo */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="flex justify-center items-center w-full mb-16"
+          className={AUTH_LOGO_CONTAINER}
         >
           <img src="/logo.svg" alt="Support 24" className="h-12" />
         </motion.div>
@@ -96,32 +105,35 @@ export default function ForgotPassword() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
-          className="w-full max-w-md space-y-8"
+          className={cn(AUTH_FORM_CONTAINER, "space-y-8")}
         >
           {isSuccess ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center space-y-6"
+              className={cn(FLEX_COL_CENTER, "space-y-6")}
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle className="w-8 h-8 text-green-600" />
+              <div className={cn(
+                "w-16 h-16",
+                BG_COLORS.successLight,
+                "rounded-full",
+                FLEX_ROW_CENTER,
+                "mx-auto"
+              )}>
+                <CheckCircle className={cn("w-8 h-8", TEXT_COLORS.success)} />
               </div>
-              <div className="space-y-2">
-                <h1 className="text-3xl font-montserrat-bold text-gray-900">
-                  Check your email
-                </h1>
-                <p className="text-gray-600 font-montserrat-semibold">
+              <div className={cn(FLEX_COL_CENTER, "space-y-2")}>
+                <h1 className={AUTH_HEADING}>Check your email</h1>
+                <p className={AUTH_SUBHEADING}>
                   We've sent password reset instructions to {email}
                 </p>
               </div>
-              <Button
-                asChild
-                className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg"
-              >
-                <Link to={`/otp-verify?email=${encodeURIComponent(email)}&userId=${
-                  data?.userId
-                }&forgotPassword=true`}>
+              <Button asChild className={AUTH_BUTTON_PRIMARY}>
+                <Link
+                  to={`/otp-verify?email=${encodeURIComponent(email)}&userId=${
+                    data?.userId
+                  }&forgotPassword=true`}
+                >
                   Next
                   <AltArrowRight className="w-4 h-4 mr-2" />
                 </Link>
@@ -130,11 +142,9 @@ export default function ForgotPassword() {
           ) : (
             <>
               {/* Header */}
-              <div className="text-center">
-                <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
-                  Forgot Password
-                </h1>
-                <p className="font-montserrat-semibold text-gray-600">
+              <div className={FLEX_COL_CENTER}>
+                <h1 className={AUTH_HEADING}>Forgot Password</h1>
+                <p className={AUTH_SUBHEADING}>
                   Please enter your email and we will send an OTP code
                   <br />
                   in the next step to reset your password
@@ -150,11 +160,8 @@ export default function ForgotPassword() {
                 )}
 
                 {/* Email Field */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="email"
-                    className="text-gray-700 font-montserrat-semibold"
-                  >
+                <div className={cn(FLEX_COL_CENTER, "space-y-2")}>
+                  <Label htmlFor="email" className={AUTH_LABEL}>
                     Email Address
                   </Label>
                   <Input
@@ -164,7 +171,7 @@ export default function ForgotPassword() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-12 px-4 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                    className={AUTH_INPUT}
                     disabled={isPending}
                   />
                 </div>
@@ -176,16 +183,16 @@ export default function ForgotPassword() {
                 >
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                    className={AUTH_BUTTON_PRIMARY}
                     disabled={isPending || !email.trim()}
                   >
                     {isPending ? (
-                      <>
+                      <div className={cn(FLEX_ROW_CENTER, "gap-2")}>
                         <Spinner />
-                        <span className="ml-2">Sending...</span>
-                      </>
+                        <span>Sending...</span>
+                      </div>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <div className={cn(FLEX_ROW_CENTER, "gap-2")}>
                         Continue
                         <AltArrowRight className="w-4 h-4" />
                       </div>
@@ -195,11 +202,8 @@ export default function ForgotPassword() {
               </form>
 
               {/* Back to Login */}
-              <div className="text-center pt-4">
-                <Link
-                  to="/login"
-                  className="text-orange-500 hover:text-orange-600 font-montserrat-semibold transition-colors inline-flex items-center gap-1"
-                >
+              <div className={FLEX_COL_CENTER}>
+                <Link to="/login" className={AUTH_LINK}>
                   Back to Login
                 </Link>
               </div>

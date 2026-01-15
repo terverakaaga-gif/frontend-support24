@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { Post, PostCard } from "@/components/provider/PostCard";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 
 // Mock accommodations data
 const mockAccommodations = [
@@ -137,7 +139,7 @@ export default function ProviderAccommodationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <GeneralHeader
         stickyTop={true}
         title="Accommodations"

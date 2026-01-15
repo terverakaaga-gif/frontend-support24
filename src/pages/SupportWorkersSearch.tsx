@@ -37,6 +37,35 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 
+import {
+  cn,
+  FLEX_ROW_BETWEEN,
+  FLEX_ROW_CENTER,
+  FLEX_COL_CENTER,
+  PAGE_WRAPPER,
+  CARD_FOOTER,
+  CARD_CONTENT,
+  CARD_HEADER,
+  CARD,
+} from "@/lib/design-utils";
+import {
+  GAP,
+  BUTTON_VARIANTS,
+  BG_COLORS,
+  CONTAINER_PADDING,
+  GRID_LAYOUTS,
+  GAP as GRID_GAP,
+  SPACING,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  FONT_FAMILY,
+  TEXT_COLORS,
+  SHADOW,
+  RADIUS,
+  BORDER_STYLES,
+  ICON_SIZES,
+} from "@/constants/design-system";
+
 export default function SearchSupportWorkersPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -201,11 +230,11 @@ export default function SearchSupportWorkersPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn(PAGE_WRAPPER)}>
       <div className="w-full">
         {/* Header */}
         <GeneralHeader
-          showBackButton={true}
+          
           title="Find Support Workers"
           subtitle={
             hasLocationFilters
@@ -217,14 +246,19 @@ export default function SearchSupportWorkersPage() {
           onViewProfile={() => navigate(`/participant/profile/`)}
           rightComponent={
             <>
-              {/* Search Bar */}
-              <div className="mr-4">
+              {/* Desktop Search Bar */}
+              <div className="hidden md:block mr-4">
                 <div className="relative">
-                  <Magnifer className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" />
+                  <Magnifer className={cn("absolute left-3 top-1/2 transform -translate-y-1/2", ICON_SIZES.md, TEXT_COLORS.gray400)} />
                   <Input
                     type="search"
                     placeholder="Search by name, skills, or keywords..."
-                    className="pl-10 pr-10 h-9 border-gray-400 focus:border-primary focus-visible:ring-primary/20"
+                    className={cn(
+                      "pl-10 pr-10 h-9",
+                      BORDER_STYLES.default,
+                      "focus:border-primary focus-visible:ring-primary/20",
+                      "w-[300px] lg:w-[400px]"
+                    )}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -234,7 +268,7 @@ export default function SearchSupportWorkersPage() {
                       onClick={() => setSearchQuery("")}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary/60 hover:text-primary transition-colors"
                     >
-                      <CloseCircle className="h-5 w-5" />
+                      <CloseCircle className={ICON_SIZES.md} />
                     </button>
                   )}
                 </div>
@@ -243,13 +277,40 @@ export default function SearchSupportWorkersPage() {
           }
         />
 
+        {/* Mobile Search Bar (Visible only on small screens) */}
+        <div className={cn("md:hidden mb-4")}>
+          <div className="relative">
+            <Magnifer className={cn("absolute left-3 top-1/2 transform -translate-y-1/2", ICON_SIZES.md, TEXT_COLORS.gray400)} />
+            <Input
+              type="search"
+              placeholder="Search by name, skills..."
+              className={cn(
+                "pl-10 pr-10 h-10 w-full",
+                 BORDER_STYLES.default,
+                 "focus:border-primary focus-visible:ring-primary/20"
+              )}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+             {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary/60 hover:text-primary transition-colors"
+              >
+                <CloseCircle className={ICON_SIZES.md} />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-primary/10 p-4 md:p-6 mb-6">
+        <div className={cn(BG_COLORS.white, RADIUS.lg, SHADOW.sm, BORDER_STYLES.subtle, `p-4 md:p-${SPACING.md} mb-${SPACING.lg}`)}>
           {/* Filters Grid */}
-          <div className="flex flex-wrap items-center gap-4">
+          <div className={cn("flex flex-wrap items-center", GAP.md)}>
             {/* State Filter */}
             <Select value={selectedState} onValueChange={setSelectedState}>
-              <SelectTrigger className="h-6 border-gray-400 text-xs w-fit rounded-full">
+              <SelectTrigger className={cn("h-8 text-xs w-fit", RADIUS.full, BORDER_STYLES.default)}>
                 <SelectValue placeholder="Select State" />
               </SelectTrigger>
               <SelectContent>
@@ -273,7 +334,7 @@ export default function SearchSupportWorkersPage() {
               onValueChange={setSelectedRegion}
               disabled={!selectedState}
             >
-              <SelectTrigger className="h-6 border-gray-400 text-xs w-fit rounded-full">
+              <SelectTrigger className={cn("h-8 text-xs w-fit", RADIUS.full, BORDER_STYLES.default)}>
                 <SelectValue placeholder="Select Region" />
               </SelectTrigger>
               <SelectContent>
@@ -301,7 +362,7 @@ export default function SearchSupportWorkersPage() {
               onValueChange={setSelectedServiceArea}
               disabled={!selectedState}
             >
-              <SelectTrigger className="h-6 border-gray-400 text-xs w-fit rounded-full">
+              <SelectTrigger className={cn("h-8 text-xs w-fit", RADIUS.full, BORDER_STYLES.default)}>
                 <SelectValue placeholder="Select Service Area" />
               </SelectTrigger>
               <SelectContent>
@@ -325,7 +386,7 @@ export default function SearchSupportWorkersPage() {
 
             {/* Max Distance Filter */}
             <Select value={maxDistance} onValueChange={setMaxDistance}>
-              <SelectTrigger className="h-6 border-gray-400 text-xs w-fit rounded-full">
+              <SelectTrigger className={cn("h-8 text-xs w-fit", RADIUS.full, BORDER_STYLES.default)}>
                 <SelectValue placeholder="Max Distance" />
               </SelectTrigger>
               <SelectContent>
@@ -339,7 +400,7 @@ export default function SearchSupportWorkersPage() {
 
             {/* Min Rating Filter */}
             <Select value={minRating} onValueChange={setMinRating}>
-              <SelectTrigger className="h-6 border-gray-400 text-xs w-fit rounded-full">
+              <SelectTrigger className={cn("h-8 text-xs w-fit", RADIUS.full, BORDER_STYLES.default)}>
                 <SelectValue placeholder="Min Rating" />
               </SelectTrigger>
               <SelectContent>
@@ -353,7 +414,12 @@ export default function SearchSupportWorkersPage() {
             <Input
               type="number"
               placeholder="Max Hourly Rate ($)"
-              className="h-6 border-gray-400 text-xs w-32 rounded-full focus:border-primary px-3 placeholder:text-black placeholder:text-xs"
+              className={cn(
+                "h-8 text-xs w-36",
+                RADIUS.full,
+                BORDER_STYLES.default,
+                "focus:border-primary px-3 placeholder:text-gray-500"
+              )}
               value={maxHourlyRate}
               onChange={(e) => setMaxHourlyRate(e.target.value)}
             />
@@ -361,14 +427,16 @@ export default function SearchSupportWorkersPage() {
             {/* Verified Filter */}
             <Button
               variant={onlyVerified ? "default" : "outline"}
-              className={`h-6 text-xs px-3 rounded-full ${
+              className={cn(
+                "h-8 text-xs px-3",
+                RADIUS.full,
                 onlyVerified
                   ? "bg-primary hover:bg-primary/90"
-                  : "border-gray-400 text-primary hover:bg-primary/10"
-              }`}
+                  : "border-gray-200 text-primary hover:bg-primary/10"
+              )}
               onClick={() => setOnlyVerified(!onlyVerified)}
             >
-              <CheckCircle className="mr-1 h-3 w-3" />
+              <CheckCircle className={cn("mr-1", ICON_SIZES.xs)} />
               Verified Only
             </Button>
 
@@ -376,7 +444,7 @@ export default function SearchSupportWorkersPage() {
             {hasActiveFilters && (
               <Button
                 variant="ghost"
-                className="h-6 text-xs px-3 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="h-8 text-xs px-3 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={handleClearFilters}
               >
                 Clear Filters
@@ -391,8 +459,8 @@ export default function SearchSupportWorkersPage() {
             <Loader />
           </div>
         ) : isError ? (
-          <div className="bg-white rounded-lg shadow-sm border border-red-200 p-8 text-center">
-            <p className="text-red-600 font-medium mb-2">
+          <div className={cn(BG_COLORS.white, RADIUS.lg, SHADOW.sm, "border border-red-200 p-8 text-center")}>
+            <p className={cn("text-red-600 font-medium mb-2")}>
               Failed to load support workers
             </p>
             <p className="text-sm text-muted-foreground mb-4">
@@ -400,14 +468,14 @@ export default function SearchSupportWorkersPage() {
                 ? error.message
                 : "Please try again later"}
             </p>
-            <Button onClick={() => window.location.reload()}>Try Again</Button>
+            <Button onClick={() => window.location.reload()} className={BUTTON_VARIANTS.primary}>Try Again</Button>
           </div>
         ) : !searchResults || searchResults.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-primary/10 p-12 text-center">
+          <div className={cn(BG_COLORS.white, RADIUS.lg, SHADOW.sm, BORDER_STYLES.subtle, "p-12 text-center")}>
             <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
               <Magnifer className="w-10 h-10 text-primary/60" />
             </div>
-            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-2">
+            <h3 className={cn("text-lg", FONT_FAMILY.montserratSemibold, TEXT_COLORS.gray900, "mb-2")}>
               No support workers found
             </h3>
             <p className="text-muted-foreground mb-4">
@@ -436,7 +504,7 @@ export default function SearchSupportWorkersPage() {
             </div>
 
             {/* Workers Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 ">
+            <div className={cn("grid grid-cols-2 lg:grid-cols-5", GRID_GAP.sm, "md:gap-6")}>
               {searchResults.map((worker) => {
                 const isInOrganization = isWorkerInOrganization(worker._id);
                 const isPending =
@@ -445,57 +513,59 @@ export default function SearchSupportWorkersPage() {
                 return (
                   <Card
                     key={worker._id}
-                    className="shadow-lg hover:shadow-xl flex flex-col items-center transition-all duration-200"
+                    className={cn(CARD)}
                   >
-                    <CardHeader className="flex flex-col items-center justify-center gap-1">
-                      <Avatar className="h-16 w-16 border-2 border-primary/10 flex-shrink-0">
+                    <CardHeader className={CARD_HEADER}>
+                      <Avatar className={cn("h-16 w-16 border-2 border-primary/10 flex-shrink-0")}>
                         <AvatarImage
                           src={worker.profileImage}
                           alt={`${worker.firstName} ${worker.lastName}`}
                         />
-                        <AvatarFallback className="bg-primary text-white text-lg font-montserrat-semibold">
+                        <AvatarFallback className={cn("bg-primary text-white text-lg", FONT_FAMILY.montserratSemibold)}>
                           {getWorkerInitials(worker.firstName, worker.lastName)}
                         </AvatarFallback>
                       </Avatar>
 
-                      <h3 className="font-montserrat-semibold text-sm text-gray-900 ">
+                      <h3 className={cn(FONT_FAMILY.montserratSemibold, "text-sm text-gray-900 mt-2 text-center")}>
                         {worker.firstName} {worker.lastName}
                       </h3>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-row items-center gap-1 text-xs flex-wrap">
+                      <div className="w-full">
+                        <div className={cn("flex flex-row items-center justify-center gap-x-3 gap-y-1 text-xs flex-wrap mt-1")}>
                           <div className="flex items-center space-x-1 text-yellow-600">
-                            <Star className="h-4 w-4" />
+                            <Star className={ICON_SIZES.sm} />
                             <span>
                               {worker.ratings?.average?.toFixed(1) || "0.0"} (
                               {worker.ratings?.count || 0})
                             </span>
                           </div>
-                          <div className="flex items-center space-x-1 text-primary font-montserrat-semibold">
-                            <DollarMinimalistic className="h-4 w-4" />
+                          <div className={cn("flex items-center space-x-1 text-primary", FONT_FAMILY.montserratSemibold)}>
+                            <DollarMinimalistic className={ICON_SIZES.sm} />
                             <span>${worker.hourlyRate?.baseRate || 0}/hr</span>
                           </div>
-                          {worker.verificationStatus?.identityVerified && (
-                            <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
-                              ✓ Verified
-                            </Badge>
-                          )}
-                          <div className="flex items-center space-x-1 text-muted-foreground">
-                            <MapPoint className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate">
-                              {worker.serviceAreas?.[0] || "Australia"}
-                              {worker.distance &&
-                                ` • ${Number(worker.distance).toFixed(
-                                  1
-                                )}km away`}
-                            </span>
-                          </div>
+                        </div>
+                        {worker.verificationStatus?.identityVerified && (
+                            <div className="flex justify-center mt-2">
+                                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px] py-0 px-2 h-5">
+                                    ✓ Verified
+                                </Badge>
+                            </div>
+                        )}
+                        <div className="flex items-center justify-center space-x-1 text-muted-foreground mt-2 text-xs">
+                           <MapPoint className={cn(ICON_SIZES.sm, "flex-shrink-0")} />
+                           <span className="truncate max-w-[120px]">
+                             {worker.serviceAreas?.[0] || "Australia"}
+                             {worker.distance &&
+                               ` • ${Number(worker.distance).toFixed(
+                                 1
+                               )}km`}
+                           </span>
                         </div>
                       </div>
                     </CardHeader>
 
                     {/* Skills */}
                     {worker.skills && worker.skills.length > 0 && (
-                      <CardContent className="flex flex-wrap gap-1">
+                      <CardContent className={CARD_CONTENT}>
                         {worker.skills.slice(0, 2).map((skill, index) => {
                           const skillName =
                             typeof skill === "string" ? skill : skill.name;
@@ -507,7 +577,7 @@ export default function SearchSupportWorkersPage() {
                             <Badge
                               key={skillKey}
                               variant="secondary"
-                              className="text-xs bg-gray-100 text-gray-700 border-gray-200"
+                              className={cn("text-[10px] bg-gray-100 text-gray-700 border-gray-200", RADIUS.sm)}
                             >
                               {skillName}
                             </Badge>
@@ -516,7 +586,7 @@ export default function SearchSupportWorkersPage() {
                         {worker.skills.length > 2 && (
                           <Badge
                             variant="secondary"
-                            className="text-xs bg-gray-100 text-gray-700"
+                            className={cn("text-[10px] bg-gray-100 text-gray-700", RADIUS.sm)}
                           >
                             +{worker.skills.length - 2} more
                           </Badge>
@@ -525,45 +595,19 @@ export default function SearchSupportWorkersPage() {
                     )}
 
                     {/* Actions */}
-                    <CardFooter className="flex gap-1 w-full px-4 mt-auto">
+                    <CardFooter className={CARD_FOOTER}>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleViewProfile(worker._id)}
-                        className="w-full border-primary hover:bg-primary-700 text-primary font-montserrat-semibold text-base py-6 rounded-xl"
+                        className={cn(
+                          
+                          FONT_FAMILY.montserratSemibold,
+                          RADIUS.lg
+                        )}
                       >
                         View Profile
                       </Button>
-
-                      {/* {isInOrganization ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled
-                          className="flex-1 bg-primary-50 border-primary-200 text-primary-700"
-                        >
-                          <CheckCircle size={16} className="mr-1" />
-                          In Network
-                        </Button>
-                      ) : isPending ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled
-                          className="flex-1 bg-yellow-50 border-yellow-200 text-yellow-700 h-9 rounded-full hover:cursor-not-allowed"
-                        >
-                          <CheckCircle size={16} className="mr-1" />
-                          Pending
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          onClick={() => handleInvite(worker._id)}
-                          className="flex-1 bg-primary hover:bg-primary/90"
-                        >
-                          Invite
-                        </Button>
-                      )} */}
                     </CardFooter>
                   </Card>
                 );

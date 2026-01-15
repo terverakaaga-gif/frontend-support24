@@ -65,6 +65,13 @@ import {
   useGetComplianceById,
   useReviewCompliance,
 } from "@/hooks/useComplianceHooks";
+import {
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  DASHBOARD_STATS_GRID,
+  DASHBOARD_FILTERS,
+  DASHBOARD_TABLE_CONTAINER,
+} from "@/lib/design-utils";
 
 const REJECTION_REASONS = [
   "Missing or incomplete documents",
@@ -194,7 +201,7 @@ export default function ComplianceManagementPage() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 space-y-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
       <GeneralHeader
         title="Compliance Management"
         subtitle="Review and approve worker compliance submissions"
@@ -203,9 +210,9 @@ export default function ComplianceManagementPage() {
         onViewProfile={() => {}}
       />
 
-      <div className="">
+      <div className={DASHBOARD_CONTENT}>
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className={DASHBOARD_STATS_GRID}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>

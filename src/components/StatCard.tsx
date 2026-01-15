@@ -1,7 +1,16 @@
 import { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/design-utils";
 import { Card } from "@/components/ui/card";
 import { CourseUp, CourseDown } from "@solar-icons/react";
+import { 
+  SPACING, 
+  RADIUS, 
+  TEXT_SIZE, 
+  FONT_FAMILY,
+  TEXT_COLORS,
+  TEXT_STYLES,
+  HEADING_STYLES,
+} from "@/constants/design-system";
 
 interface StatCardProps {
   title: string;
@@ -31,7 +40,7 @@ export function StatCard({
         className
       )}
     >
-      <div className="p-6">
+      <div className={`p-${SPACING.md}`}>
         {/* Background Gradient Effect */}
         <div
           className="absolute inset-0 opacity-50 group-hover:opacity-70 transition-opacity"
@@ -44,13 +53,15 @@ export function StatCard({
 
         {/* Content */}
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-montserrat-semibold text-muted-foreground group-hover:text-guardian transition-colors">
+          <div className={`flex items-center justify-between mb-${SPACING.sm}`}>
+            <h3 className={cn(TEXT_STYLES.small, "group-hover:text-guardian transition-colors")}>
               {title}
             </h3>
             <div
               className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200",
+                "flex items-center justify-center w-10 h-10",
+                RADIUS.full,
+                "transition-all duration-200",
                 "bg-guardian/10 group-hover:bg-guardian/20",
                 iconClassName
               )}
@@ -60,14 +71,17 @@ export function StatCard({
           </div>
 
           <div className="space-y-1">
-            <div className="flex items-baseline gap-2">
-              <div className="text-2xl font-montserrat-bold tracking-tight transition-transform group-hover:scale-105 text-guardian">
+            <div className={`flex items-baseline gap-${SPACING.xs}`}>
+              <div className={cn(HEADING_STYLES.h4, "tracking-tight transition-transform group-hover:scale-105 text-guardian")}>
                 {value}
               </div>
               {change && (
                 <div
                   className={cn(
-                    "flex items-center text-sm font-montserrat-semibold transition-all",
+                    "flex items-center",
+                    TEXT_SIZE.sm,
+                    FONT_FAMILY.montserratSemibold,
+                    "transition-all",
                     change.positive
                       ? "text-emerald-600 group-hover:text-emerald-700"
                       : "text-red-500 group-hover:text-red-600"
@@ -84,7 +98,7 @@ export function StatCard({
             </div>
 
             {additionalText && (
-              <div className="text-sm text-muted-foreground group-hover:text-guardian/60">
+              <div className={cn(TEXT_STYLES.small, "group-hover:text-guardian/60")}>
                 {additionalText}
               </div>
             )}
@@ -94,7 +108,9 @@ export function StatCard({
           <div className="absolute -top-6 -right-6 pointer-events-none transition-opacity group-hover:opacity-75">
             <div
               className={cn(
-                "w-24 h-24 rounded-full blur-3xl opacity-20 transition-all duration-500 group-hover:scale-110",
+                "w-24 h-24",
+                RADIUS.full,
+                "blur-3xl opacity-20 transition-all duration-500 group-hover:scale-110",
                 change?.positive
                   ? "bg-emerald-500"
                   : change

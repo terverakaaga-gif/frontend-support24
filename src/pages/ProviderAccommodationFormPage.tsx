@@ -6,6 +6,8 @@ import {
   MapPoint,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -266,7 +268,7 @@ export default function ProviderAccommodationFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       {/* Header */}
       <GeneralHeader
         showBackButton

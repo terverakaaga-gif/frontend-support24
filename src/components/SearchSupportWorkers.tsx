@@ -32,6 +32,25 @@ import { SearchFilters } from "./SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "./Spinner";
 
+// Design System
+import {
+  cn,
+  FLEX_ROW_BETWEEN,
+  FLEX_ROW_CENTER,
+  FLEX_COL,
+} from "@/lib/design-utils";
+import {
+  BG_COLORS,
+  TEXT_COLORS,
+  GAP,
+  BUTTON_VARIANTS,
+  SPACING,
+  RADIUS,
+  HEADING_STYLES,
+  FONT_FAMILY,
+  TEXT_STYLES
+} from "@/constants/design-system";
+
 interface SearchSupportWorkersProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -132,10 +151,10 @@ export function SearchSupportWorkers({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[1000px] max-h-[90vh] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden bg-gray-100">
+      <DialogContent className={cn("sm:max-w-[1000px] max-h-[90vh] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden", BG_COLORS.muted)}>
         {/* Header */}
-        <DialogHeader className="p-6 pb-4 bg-white border-b flex-none">
-          <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
+        <DialogHeader className={cn("p-6 pb-4 bg-white border-b flex-none")}>
+          <DialogTitle className={cn("text-xl", FONT_FAMILY.montserratBold, TEXT_COLORS.primary, FLEX_ROW_CENTER, GAP.sm)}>
             <Magnifer className="w-6 h-6" /> Find Support Workers
           </DialogTitle>
           <DialogDescription>
@@ -210,7 +229,7 @@ export function SearchSupportWorkers({
 
             {/* Active Filters Display */}
             {activeFilterCount > 0 && (
-              <div className="p-3 bg-blue-50 border-b flex items-center gap-2 flex-wrap">
+              <div className={cn("p-3 bg-blue-50 border-b flex items-center flex-wrap", GAP.sm)}>
                 <span className="text-xs font-semibold text-gray-700">Active Filters:</span>
                 {appliedFilters.skills && appliedFilters.skills.length > 0 && (
                   <Badge variant="secondary" className="text-xs">
@@ -277,17 +296,17 @@ export function SearchSupportWorkers({
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-6">
+                <div className={cn("grid grid-cols-1", GAP.lg)}>
                   {workers.map((worker: ISearchSupportWorkers) => {
                     const status = getWorkerStatus(worker._id);
                     return (
                       <div
                         key={worker._id}
-                        className="bg-white rounded-2xl border-2 border-gray-100 hover:border-primary-50 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                        className={cn("bg-white border-2 border-gray-100 hover:border-primary-50 hover:shadow-xl transition-all duration-300 overflow-hidden", RADIUS.xl)}
                       >
                         {/* Header Section with Gradient Background */}
                         <div className="p-6 border-b">
-                          <div className="flex flex-col sm:flex-row gap-6">
+                          <div className={cn(FLEX_COL, "sm:flex-row", GAP.lg)}>
                             {/* Avatar and Status */}
                             <div className="relative flex-shrink-0">
                               <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-white shadow-lg">
@@ -310,15 +329,15 @@ export function SearchSupportWorkers({
 
                             {/* Worker Info */}
                             <div className="flex-1 min-w-0">
-                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                              <div className={cn(FLEX_COL, "sm:flex-row sm:items-start sm:justify-between", GAP.sm)}>
                                 <div className="flex-1">
-                                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                                  <h3 className={cn("text-2xl", FONT_FAMILY.montserratBold, "text-gray-900 mb-1")}>
                                     {worker.firstName} {worker.lastName}
                                   </h3>
                                   
                                   {/* Rating and Verification Badges */}
-                                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                                    <div className="flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
+                                  <div className={cn("flex flex-wrap items-center mb-3", GAP.sm)}>
+                                    <div className={cn("flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1", RADIUS.lg)}>
                                       <span className="text-amber-500 text-lg">★</span>
                                       <span className="font-bold text-amber-700">
                                         {worker.ratings?.average.toFixed(1) || "New"}
@@ -345,7 +364,7 @@ export function SearchSupportWorkers({
                                   </div>
 
                                   {/* Location Info */}
-                                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                                  <div className={cn("flex flex-wrap items-center gap-3 text-sm text-gray-600")}>
                                     <div className="flex items-center gap-1.5">
                                       <MapPoint className="w-4 h-4 text-primary" />
                                       <span className="font-medium">
@@ -363,8 +382,8 @@ export function SearchSupportWorkers({
                                 </div>
 
                                 {/* Pricing Card */}
-                                <div className="bg-white rounded-xl border-2 border-primary/20 p-4 text-center shadow-sm min-w-[70px]">
-                                  <div className="text-xs text-primary font-montserrat-semibold mb-1">Hourly Rate</div>
+                                <div className={cn("bg-white border-2 border-primary/20 p-4 text-center shadow-sm min-w-[70px]", RADIUS.xl)}>
+                                  <div className={cn(TEXT_STYLES.caption, "text-primary", FONT_FAMILY.montserratSemibold, "mb-1")}>Hourly Rate</div>
                                   <div className="text-xl font-bold text-primary">
                                     ${worker.hourlyRate?.baseRate}
                                   </div>
@@ -376,7 +395,7 @@ export function SearchSupportWorkers({
                         </div>
 
                         {/* Content Section */}
-                        <div className="p-6 space-y-5">
+                        <div className={cn("p-6", GAP.lg, "space-y-5")}>
                           {/* Bio */}
                           {worker.bio && (
                             <div>
@@ -395,7 +414,7 @@ export function SearchSupportWorkers({
                               <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
                                 Skills & Services
                               </h4>
-                              <div className="flex flex-wrap gap-2">
+                              <div className={cn("flex flex-wrap", GAP.sm)}>
                                 {worker.skills.map((skill: any) => (
                                   <Badge
                                     key={skill._id}
@@ -415,7 +434,7 @@ export function SearchSupportWorkers({
                               <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
                                 Languages
                               </h4>
-                              <div className="flex flex-wrap gap-2">
+                              <div className={cn("flex flex-wrap", GAP.sm)}>
                                 {worker.languages.map((lang: string, idx: number) => (
                                   <Badge
                                     key={idx}
@@ -443,7 +462,7 @@ export function SearchSupportWorkers({
                         </div>
 
                         {/* Footer with Actions */}
-                        <div className="px-6 py-4 bg-gray-50 border-t flex flex-col sm:flex-row gap-3 items-stretch sm:items-center sm:justify-between">
+                        <div className={cn("px-6 py-4 bg-gray-50 border-t flex flex-col sm:flex-row gap-3 items-stretch sm:items-center sm:justify-between")}>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             {status === "network" && (
                               <Badge className="bg-primary text-white">

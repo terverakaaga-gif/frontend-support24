@@ -25,7 +25,7 @@ export function cn(...inputs: ClassValue[]) {
  */
 export const PAGE_WRAPPER = cn(
   "min-h-screen",
-  "bg-gray-50",
+  "bg-gray-100",
   "px-4 py-6",
   "sm:px-6 sm:py-8",
   "lg:px-8 lg:py-10"
@@ -58,6 +58,250 @@ export const CONTENT_SECTION = cn(
   "px-4",
   "sm:px-6",
   "lg:px-8"
+);
+
+// ============================================================================
+// AUTH PAGE LAYOUTS
+// ============================================================================
+
+/**
+ * Auth page wrapper (Login, Register, ForgotPassword, etc.)
+ */
+export const AUTH_PAGE_WRAPPER = cn(
+  "flex",
+  "min-h-screen",
+  "w-full",
+  "bg-gray-50"
+);
+
+/**
+ * Auth page split panel (left/right side)
+ */
+export const AUTH_PANEL = cn(
+  "w-full",
+  "lg:w-1/2",
+  "flex",
+  "flex-col",
+  "justify-center",
+  "items-center",
+  "p-8",
+  "lg:p-12",
+  "relative"
+);
+
+/**
+ * Auth page carousel/illustration panel
+ */
+export const AUTH_CAROUSEL_PANEL = cn(
+  "hidden",
+  "lg:flex",
+  "lg:w-1/2",
+  "bg-gray-100",
+  "relative",
+  "overflow-hidden"
+);
+
+/**
+ * Auth page carousel content container
+ */
+export const AUTH_CAROUSEL_CONTENT = cn(
+  "flex",
+  "flex-col",
+  "justify-between",
+  "w-full",
+  "p-12",
+  "relative",
+  "z-10"
+);
+
+/**
+ * Auth form container
+ */
+export const AUTH_FORM_CONTAINER = cn(
+  "w-full",
+  "max-w-md",
+  "space-y-6"
+);
+
+/**
+ * Auth page logo container
+ */
+export const AUTH_LOGO_CONTAINER = cn(
+  "flex",
+  "justify-center",
+  "items-center",
+  "w-full",
+  "my-16"
+);
+
+/**
+ * Auth page heading
+ */
+export const AUTH_HEADING = cn(
+  "text-3xl",
+  "font-montserrat-bold",
+  "text-gray-900",
+  "mb-2"
+);
+
+/**
+ * Auth page subheading/description
+ */
+export const AUTH_SUBHEADING = cn(
+  "font-montserrat-semibold",
+  "text-gray-600"
+);
+
+/**
+ * Auth form input field
+ */
+export const AUTH_INPUT = cn(
+  "h-12",
+  "px-4",
+  "bg-gray-100",
+  "border-gray-200",
+  "rounded-lg",
+  "focus:ring-2",
+  "focus:ring-primary-500",
+  "focus:border-primary-500",
+  "transition-all",
+  "duration-200"
+);
+
+/**
+ * Auth form input with password toggle
+ */
+export const AUTH_INPUT_PASSWORD = cn(
+  AUTH_INPUT,
+  "pr-12"
+);
+
+/**
+ * Auth primary button
+ */
+export const AUTH_BUTTON_PRIMARY = cn(
+  "w-full",
+  "h-12",
+  "bg-primary-600",
+  "hover:bg-primary-700",
+  "text-white",
+  "font-montserrat-semibold",
+  "rounded-lg",
+  "shadow-md",
+  "hover:shadow-lg",
+  "transition-all",
+  "duration-200"
+);
+
+/**
+ * Auth form label
+ */
+export const AUTH_LABEL = cn(
+  "text-gray-700",
+  "font-montserrat-semibold"
+);
+
+/**
+ * Auth link (accent color)
+ */
+export const AUTH_LINK = cn(
+  "text-accent-500",
+  "hover:text-accent-600",
+  "font-montserrat-semibold",
+  "transition-colors"
+);
+
+// ============================================================================
+// DASHBOARD PAGE LAYOUTS
+// ============================================================================
+
+/**
+ * Dashboard page wrapper - used for all dashboard pages
+ */
+export const DASHBOARD_PAGE_WRAPPER = cn(
+  "min-h-screen",
+  "bg-gray-100",
+  "p-6",
+  "space-y-8"
+);
+
+/**
+ * Dashboard content container
+ */
+export const DASHBOARD_CONTENT = cn(
+  "space-y-6"
+);
+
+/**
+ * Dashboard section header with title and optional actions
+ */
+export const DASHBOARD_SECTION_HEADER = cn(
+  "flex",
+  "flex-col",
+  "sm:flex-row",
+  "sm:items-center",
+  "sm:justify-between",
+  "gap-4"
+);
+
+/**
+ * Dashboard stats grid (4 columns responsive)
+ */
+export const DASHBOARD_STATS_GRID = cn(
+  "grid",
+  "grid-cols-1",
+  "md:grid-cols-2",
+  "lg:grid-cols-4",
+  "gap-4"
+);
+
+/**
+ * Dashboard stat card
+ */
+export const DASHBOARD_STAT_CARD = cn(
+  "bg-white",
+  "rounded-lg",
+  "border",
+  "border-gray-200",
+  "p-6"
+);
+
+/**
+ * Dashboard table container
+ */
+export const DASHBOARD_TABLE_CONTAINER = cn(
+  "bg-white",
+  "rounded-lg",
+  "border",
+  "border-gray-200",
+  "overflow-hidden"
+);
+
+/**
+ * Dashboard filters row
+ */
+export const DASHBOARD_FILTERS = cn(
+  "flex",
+  "flex-col",
+  "sm:flex-row",
+  "gap-4",
+  "mb-6"
+);
+
+/**
+ * Dashboard empty state
+ */
+export const DASHBOARD_EMPTY_STATE = cn(
+  "flex",
+  "flex-col",
+  "items-center",
+  "justify-center",
+  "py-12",
+  "text-center",
+  "bg-white",
+  "rounded-lg",
+  "border",
+  "border-gray-200"
 );
 
 // ============================================================================

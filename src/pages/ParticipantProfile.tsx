@@ -12,7 +12,27 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import EditableAvatar from "@/components/EditableAvatar";
 import { Participant } from "@/types/participant";
 import { StatsCard } from "@/components/participant/profile/ProfileUtils";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  HEADING_1,
+  TEXT_MUTED,
+  FLEX_ROW_BETWEEN,
+  FLEX_COL_CENTER,
+  FLEX_CENTER,
+  FLEX_ROW_CENTER,
+} from "@/lib/design-utils";
+import { 
+  HEADING_STYLES, 
+  TEXT_COLORS, 
+  TEXT_SIZE,
+  CONTAINER_PADDING,
+  SPACING,
+  BG_COLORS,
+  FONT_WEIGHT,
+  GAP
+} from "@/constants/design-system";
 
 // Tabs
 import { SupportTab } from "@/components/participant/profile/tabs/SupportTab";
@@ -50,47 +70,47 @@ export default function ParticipantProfile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="p-6 md:p-8">
+    <div className={DASHBOARD_PAGE_WRAPPER}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+        <div className={cn("flex flex-col gap-4 md:flex-row md:items-center md:justify-between", `mb-${SPACING.lg}`)}>
           <div>
-            <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">My Profile</h1>
-            <p className="text-gray-600">Manage your personal information and care preferences</p>
+            <h1 className={cn(HEADING_STYLES.h1)}>My Profile</h1>
+            <p className={TEXT_COLORS.gray600}>Manage your personal information and care preferences</p>
           </div>
-          <Button onClick={() => navigate("/participant/profile/edit")} className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
+          <Button onClick={() => navigate("/participant/profile/edit")} className={cn("gap-2 shadow-lg hover:shadow-xl transition-all duration-300")}>
             <Pen2 className="w-5 h-5" /> Edit Profile
           </Button>
         </div>
 
         {/* Profile Card */}
-        <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-              <div className="flex justify-center"><EditableAvatar /></div>
-              <div className="flex-1 space-y-3">
+        <Card className={cn("border-0 shadow-lg hover:shadow-xl transition-all duration-300", `mb-${SPACING.lg}`)}>
+          <CardContent className={CONTAINER_PADDING.card}>
+            <div className={cn("flex flex-col md:flex-row", `gap-${SPACING.lg}`, "items-start md:items-center")}>
+              <div className={cn(FLEX_CENTER)}><EditableAvatar /></div>
+              <div className={cn("flex-1", `space-y-${SPACING.md}`)}>
                 <div>
-                  <h2 className="text-2xl font-montserrat-bold text-gray-900">{participant.firstName} {participant.lastName}</h2>
-                  <Badge className="mt-2 bg-primary text-white hover:bg-primary/90 capitalize">{participant.role}</Badge>
+                  <h2 className={cn(TEXT_SIZE["2xl"], FONT_WEIGHT.bold, TEXT_COLORS.gray900)}>{participant.firstName} {participant.lastName}</h2>
+                  <Badge className={cn(`mt-${SPACING.md}`, BG_COLORS.primary, TEXT_COLORS.white, "hover:bg-primary/90 capitalize")}>{participant.role}</Badge>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary/5 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
-                      <Letter className="w-5 h-5 text-primary" />
+                <div className={cn("grid grid-cols-1 md:grid-cols-2", `gap-${SPACING.md}`)}>
+                  <div className={cn(FLEX_ROW_CENTER, `gap-${SPACING.md}`, `p-${SPACING.md}`, "rounded-lg", BG_COLORS.gray50, "hover:bg-primary/5 transition-colors")}>
+                    <div className={cn("w-10 h-10 rounded-full", BG_COLORS.primaryLight, FLEX_CENTER)}>
+                      <Letter className={cn("w-5 h-5", TEXT_COLORS.primary)} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-600 font-montserrat-semibold">Email</p>
-                      <p className="text-sm text-gray-900 truncate">{participant.email}</p>
+                      <p className={cn(TEXT_SIZE.xs, TEXT_COLORS.gray600, FONT_WEIGHT.semibold)}>Email</p>
+                      <p className={cn(TEXT_SIZE.sm, TEXT_COLORS.gray900, "truncate")}>{participant.email}</p>
                     </div>
                   </div>
                   {participant.phone && (
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary/5 transition-colors">
-                      <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
-                        <Phone className="w-5 h-5 text-primary" />
+                    <div className={cn(FLEX_ROW_CENTER, `gap-${SPACING.md}`, `p-${SPACING.md}`, "rounded-lg", BG_COLORS.gray50, "hover:bg-primary/5 transition-colors")}>
+                      <div className={cn("w-10 h-10 rounded-full", BG_COLORS.primaryLight, FLEX_CENTER)}>
+                        <Phone className={cn("w-5 h-5", TEXT_COLORS.primary)} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-gray-600 font-montserrat-semibold">Phone</p>
-                        <p className="text-sm text-gray-900">{participant.phone}</p>
+                        <p className={cn(TEXT_SIZE.xs, TEXT_COLORS.gray600, FONT_WEIGHT.semibold)}>Phone</p>
+                        <p className={cn(TEXT_SIZE.sm, TEXT_COLORS.gray900)}>{participant.phone}</p>
                       </div>
                     </div>
                   )}

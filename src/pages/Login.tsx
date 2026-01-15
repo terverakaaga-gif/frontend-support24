@@ -19,6 +19,32 @@ import { useLogin } from "@/hooks/useAuthHooks";
 import { Eye, EyeClosed } from "@solar-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/user.types";
+import {
+  cn,
+  AUTH_PAGE_WRAPPER,
+  AUTH_PANEL,
+  AUTH_CAROUSEL_PANEL,
+  AUTH_CAROUSEL_CONTENT,
+  AUTH_FORM_CONTAINER,
+  AUTH_LOGO_CONTAINER,
+  AUTH_HEADING,
+  AUTH_SUBHEADING,
+  AUTH_INPUT,
+  AUTH_INPUT_PASSWORD,
+  AUTH_BUTTON_PRIMARY,
+  AUTH_LABEL,
+  AUTH_LINK,
+  FLEX_ROW_CENTER,
+  FLEX_COL_CENTER,
+  FLEX_CENTER,
+  FLEX_ROW_BETWEEN,
+} from "@/lib/design-utils";
+import {
+  TEXT_SIZE,
+  TEXT_COLORS,
+  FONT_WEIGHT,
+  BG_COLORS,
+} from "@/constants/design-system";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -79,9 +105,6 @@ export default function Login() {
         email: values.email,
         password: values.password,
       });
-
-      // The login mutation should update the user state
-      // We need to wait for that to complete before navigation
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -92,15 +115,13 @@ export default function Login() {
     setShowPassword((prev) => !prev);
   };
 
-  // Add this useEffect to handle navigation after successful login
+  // Handle navigation after successful login
   useEffect(() => {
     if (user && !login.isPending) {
-      // Check for return URL first, but validate it against user role
       const returnUrl = sessionStorage.getItem("returnUrl");
       const lastUserRole = sessionStorage.getItem("lastUserRole");
 
       if (returnUrl && lastUserRole === user.role) {
-        // Only use return URL if it's for the same user role
         const isValidReturnUrl = validateReturnUrlForRole(returnUrl, user.role);
         if (isValidReturnUrl) {
           sessionStorage.removeItem("returnUrl");
@@ -110,11 +131,9 @@ export default function Login() {
         }
       }
 
-      // Clear any invalid return URL
       sessionStorage.removeItem("returnUrl");
       sessionStorage.removeItem("lastUserRole");
 
-      // Navigate to role-specific dashboard
       const dashboardRoute = getRoleBasedRoute(user.role);
       navigate(dashboardRoute, { replace: true });
     }
@@ -156,21 +175,21 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-gray-50">
+    <div className={AUTH_PAGE_WRAPPER}>
       {/* Left side - Onboarding Carousel */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="hidden lg:flex lg:w-1/2 bg-[#F7F7F7] relative overflow-hidden"
+        className={AUTH_CAROUSEL_PANEL}
       >
         {/* Carousel Container */}
-        <div className="flex flex-col justify-between w-full p-12 relative z-10">
+        <div className={AUTH_CAROUSEL_CONTENT}>
           {/* Top Section with Carousel */}
-          <div className="flex-1 gap-8 flex flex-col justify-center items-center">
+          <div className={cn(FLEX_COL_CENTER, "flex-1 gap-8")}>
             {/* Carousel Images */}
-            <div className="w-full max-w-lg mb-8 relative">
-              <div className="relative w-full h-80 overflow-hidden rounded-2xl">
+            <div className={`w-full max-w-lg mb-8 relative`}>
+              <div className={cn("relative w-full h-80 overflow-hidden", "rounded-2xl")}>
                 {onboardingSlides.map((slide, index) => (
                   <motion.div
                     key={index}
@@ -180,9 +199,11 @@ export default function Login() {
                       x: currentSlide === index ? 0 : 100,
                     }}
                     transition={{ duration: 0.5, ease: "easeInOut" }}
-                    className={`absolute inset-0 flex items-center justify-center ${
+                    className={cn(
+                      FLEX_CENTER,
+                      "absolute inset-0",
                       currentSlide === index ? "z-10" : "z-0"
-                    }`}
+                    )}
                   >
                     <img
                       src={slide.image}
@@ -193,18 +214,20 @@ export default function Login() {
                 ))}
               </div>
             </div>
+
             {/* Slide Indicators */}
-            <div className="self-start flex items-center gap-4">
-              <div className="flex gap-2">
+            <div className={cn(FLEX_ROW_CENTER, "self-start gap-4")}>
+              <div className={cn(FLEX_ROW_CENTER, "gap-2")}>
                 {onboardingSlides.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`w-4 h-2 rounded-full transition-all duration-300 ${
+                    className={cn(
+                      "h-2 rounded-full transition-all duration-300",
                       currentSlide === index
-                        ? "bg-primary-600 w-9"
-                        : "bg-gray-300 hover:bg-gray-400"
-                    }`}
+                        ? `${BG_COLORS.primary} w-9`
+                        : `${BG_COLORS.gray300} hover:bg-gray-400 w-4`
+                    )}
                   />
                 ))}
               </div>
@@ -218,45 +241,57 @@ export default function Login() {
               transition={{ duration: 0.5 }}
               className="max-w-md self-start"
             >
-              <h2 className="text-3xl font-montserrat-bold text-gray-900 mb-4">
+              <h2 className={cn(AUTH_HEADING, TEXT_SIZE["3xl"], "mb-4")}>
                 {currentSlide === 0 && (
                   <>
                     Effortless NDIS{" "}
-                    <span className="text-primary-600">Support Service</span>
+                    <span className={TEXT_COLORS.primary}>Support Service</span>
                   </>
                 )}
                 {currentSlide === 1 && (
                   <>
                     Trusted &{" "}
-                    <span className="text-primary-600">Verified Workers</span>
+                    <span className={TEXT_COLORS.primary}>Verified Workers</span>
                   </>
                 )}
                 {currentSlide === 2 && (
                   <>
                     24/7{" "}
-                    <span className="text-primary-600">Support Network</span>
+                    <span className={TEXT_COLORS.primary}>Support Network</span>
                   </>
                 )}
               </h2>
-              <p className="text-gray-600 text-lg leading-relaxed font-montserrat-semibold">
+              <p className={cn(AUTH_SUBHEADING, TEXT_SIZE.lg, "leading-relaxed")}>
                 {onboardingSlides[currentSlide].subtitle}
               </p>
             </motion.div>
+
             {/* Bottom Navigation */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="self-start w-full flex items-center justify-between"
+              className={cn(FLEX_ROW_BETWEEN, "self-start w-full")}
             >
               <button
-                className="text-gray-1000 font-montserrat-semibold hover:text-gray-700 transition-colors"
+                className={cn(
+                  TEXT_COLORS.gray900,
+                  FONT_WEIGHT.semibold,
+                  "hover:text-gray-700 transition-colors"
+                )}
                 onClick={() => setCurrentSlide(onboardingSlides.length - 1)}
               >
                 Skip
               </button>
               <Button
-                className="bg-primary-600 font-montserrat-semibold hover:bg-primary-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+                className={cn(
+                  BG_COLORS.primary,
+                  FONT_WEIGHT.semibold,
+                  TEXT_COLORS.white,
+                  "px-6 py-2 rounded-lg",
+                  FLEX_ROW_CENTER,
+                  "gap-2"
+                )}
                 onClick={() =>
                   setCurrentSlide(
                     (prev) => (prev + 1) % onboardingSlides.length
@@ -264,10 +299,10 @@ export default function Login() {
                 }
               >
                 Next
-                <div className="flex gap-1">
-                  <div className="w-1 h-1 bg-white rounded-full opacity-60"></div>
-                  <div className="w-1 h-1 bg-white rounded-full opacity-60"></div>
-                  <div className="w-1 h-1 bg-white rounded-full"></div>
+                <div className={cn(FLEX_ROW_CENTER, "gap-1")}>
+                  <div className={`w-1 h-1 bg-white rounded-full opacity-60`}></div>
+                  <div className={`w-1 h-1 bg-white rounded-full opacity-60`}></div>
+                  <div className={`w-1 h-1 bg-white rounded-full`}></div>
                 </div>
               </Button>
             </motion.div>
@@ -280,14 +315,14 @@ export default function Login() {
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 relative"
+        className={AUTH_PANEL}
       >
-         {/* Logo */}
+        {/* Logo */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="flex justify-center items-center w-full my-28"
+          className={cn(AUTH_LOGO_CONTAINER, "my-28")}
         >
           <img src="/logo.svg" alt="Support 24" className="h-12" />
         </motion.div>
@@ -297,14 +332,12 @@ export default function Login() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
-          className="w-full max-w-md space-y-6"
+          className={AUTH_FORM_CONTAINER}
         >
           {/* Header */}
-          <div className="text-center">
-            <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">
-              Welcome Back!
-            </h1>
-            <p className="font-montserrat-semibold text-gray-600">
+          <div className={FLEX_COL_CENTER}>
+            <h1 className={AUTH_HEADING}>Welcome Back!</h1>
+            <p className={AUTH_SUBHEADING}>
               Enter your details below to continue to Support24
             </p>
           </div>
@@ -318,18 +351,16 @@ export default function Login() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 font-montserrat-semibold">
-                      Email Address
-                    </FormLabel>
+                    <FormLabel className={AUTH_LABEL}>Email Address</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g johndoe@gmail.com"
                         type="email"
-                        className="h-12 px-4 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                        className={AUTH_INPUT}
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500 text-sm" />
+                    <FormMessage className={cn(TEXT_COLORS.error, TEXT_SIZE.sm)} />
                   </FormItem>
                 )}
               />
@@ -340,21 +371,23 @@ export default function Login() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 font-montserrat-semibold">
-                      Password
-                    </FormLabel>
+                    <FormLabel className={AUTH_LABEL}>Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           placeholder="e.g Phoenix-878-@"
                           type={showPassword ? "text" : "password"}
-                          className="h-12 px-4 pr-12 bg-[#F7F7F7] border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                          className={AUTH_INPUT_PASSWORD}
                           {...field}
                         />
                         <button
                           type="button"
                           onClick={togglePasswordVisibility}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                          className={cn(
+                            "absolute right-3 top-1/2 transform -translate-y-1/2",
+                            TEXT_COLORS.gray400,
+                            "hover:text-gray-600 transition-colors"
+                          )}
                         >
                           {showPassword ? (
                             <EyeClosed className="h-5 w-5" />
@@ -364,14 +397,14 @@ export default function Login() {
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage className="text-red-500 text-sm" />
+                    <FormMessage className={cn(TEXT_COLORS.error, TEXT_SIZE.sm)} />
                   </FormItem>
                 )}
               />
 
               {/* Save Password & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
+              <div className={FLEX_ROW_BETWEEN}>
+                <div className={cn(FLEX_ROW_CENTER, "space-x-2")}>
                   <Checkbox
                     id="savePassword"
                     checked={savePassword}
@@ -382,15 +415,12 @@ export default function Login() {
                   />
                   <label
                     htmlFor="savePassword"
-                    className="text-sm text-gray-600 cursor-pointer"
+                    className={cn(TEXT_SIZE.sm, TEXT_COLORS.gray600, "cursor-pointer")}
                   >
                     Save Password
                   </label>
                 </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-orange-500 hover:text-orange-600 font-montserrat-semibold transition-colors"
-                >
+                <Link to="/forgot-password" className={AUTH_LINK}>
                   Forgot Password?
                 </Link>
               </div>
@@ -402,11 +432,11 @@ export default function Login() {
               >
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                  className={AUTH_BUTTON_PRIMARY}
                   disabled={login.isPending}
                 >
                   {login.isPending ? (
-                    <div className="flex items-center gap-2">
+                    <div className={cn(FLEX_ROW_CENTER, "gap-2")}>
                       <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       Signing in...
                     </div>
@@ -419,12 +449,9 @@ export default function Login() {
           </Form>
 
           {/* Sign up link */}
-          <div className="text-center pt-4">
-            <span className="text-gray-600">Don't have an account? </span>
-            <Link
-              to="/register"
-              className="text-orange-500 hover:text-orange-600 font-montserrat-semibold transition-colors"
-            >
+          <div className={cn(FLEX_COL_CENTER, "pt-4")}>
+            <span className={TEXT_COLORS.gray600}>Don't have an account? </span>
+            <Link to="/register" className={AUTH_LINK}>
               Create account
             </Link>
           </div>

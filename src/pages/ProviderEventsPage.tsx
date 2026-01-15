@@ -27,60 +27,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { Post, PostCard } from "@/components/provider/PostCard";
+import { cn } from "@/lib/design-utils";
+import {
+  SPACING,
+  GAP,
+  CONTAINER_PADDING,
+  BG_COLORS,
+  FLEX_LAYOUTS,
+  GRID_LAYOUTS,
+  RADIUS,
+  BORDER_STYLES,
+  FONT_FAMILY,
+  TEXT_SIZE,
+} from "@/constants/design-system";
 
-// Mock events data
-const mockEvents = [
-  {
-    id: 1,
-    title: "Local City Tour 2025",
-    date: "22nd Nov - 29 Nov, 2025",
-    time: "8:00 AM - 12:00 PM",
-    location: "Albion Park, AU",
-    participants: 21,
-    status: "Upcoming" as const,
-    image: null,
-  },
-  {
-    id: 2,
-    title: "Local City Tour 2025",
-    date: "22nd Nov - 29 Nov, 2025",
-    time: "8:00 AM - 12:00 PM",
-    location: "Albion Park, AU",
-    participants: 21,
-    status: "Upcoming" as const,
-    image: null,
-  },
-  {
-    id: 3,
-    title: "Local City Tour 2025",
-    date: "22nd Nov - 29 Nov, 2025",
-    time: "8:00 AM - 12:00 PM",
-    location: "Albion Park, AU",
-    participants: 21,
-    status: "Past" as const,
-    image: null,
-  },
-  {
-    id: 4,
-    title: "Local City Tour 2025",
-    date: "22nd Nov - 29 Nov, 2025",
-    time: "8:00 AM - 12:00 PM",
-    location: "Albion Park, AU",
-    participants: 21,
-    status: "Upcoming" as const,
-    image: null,
-  },
-  {
-    id: 5,
-    title: "Local City Tour 2025",
-    date: "22nd Nov - 29 Nov, 2025",
-    time: "8:00 AM - 12:00 PM",
-    location: "Albion Park, AU",
-    participants: 21,
-    status: "Past" as const,
-    image: null,
-  },
-];
+import { useGetEvents } from "@/hooks/useEventHooks";
 
 type FilterType = "all" | "upcoming" | "past";
 
@@ -92,8 +53,28 @@ export default function ProviderEventsPage() {
   const [entriesPerPage, setEntriesPerPage] = useState("5");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Load events from API
+  const { data: eventsData, isLoading: isLoadingEvents } = useGetEvents();
+
+  const events = (eventsData?.events || []).map((e) => ({
+    id: e._id,
+    title: e.eventName,
+    date:
+      e.eventStartDate && e.eventEndDate
+        ? `${new Date(e.eventStartDate).toLocaleDateString()} - ${new Date(
+            e.eventEndDate
+          ).toLocaleDateString()}`
+        : e.eventStartDate || "",
+    time:
+      e.eventStartTime && e.eventEndTime ? `${e.eventStartTime} - ${e.eventEndTime}` : e.eventStartTime || "",
+    location: e.eventLocation || "",
+    participants: e.registrationCount || 0,
+    status: e.status || "published",
+    image: e.eventImage || null,
+  }));
+
   // Filter events based on status
-  const filteredEvents = mockEvents.filter((event) => {
+  const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -103,11 +84,9 @@ export default function ProviderEventsPage() {
   });
 
   // Count for each filter
-  const allCount = mockEvents.length;
-  const upcomingCount = mockEvents.filter(
-    (e) => e.status === "Upcoming"
-  ).length;
-  const pastCount = mockEvents.filter((e) => e.status === "Past").length;
+  const allCount = events.length;
+  const upcomingCount = events.filter((e) => e.status === "upcoming").length;
+  const pastCount = events.filter((e) => e.status === "past").length;
 
   // Pagination
   const totalPages = Math.ceil(
@@ -123,7 +102,7 @@ export default function ProviderEventsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <GeneralHeader
         stickyTop={true}
         title="Events"
@@ -151,9 +130,9 @@ export default function ProviderEventsPage() {
       />
 
       {/* Filter Tabs and Search */}
-      <div className="mb-8 md:mb-12 space-y-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-wrap gap-2">
+      <div className={`mb-${SPACING['2xl']} md:mb-${SPACING['3xl']} space-y-${SPACING.base}`}>
+        <div className={cn(FLEX_LAYOUTS.colToRow, GAP.base)}>
+          <div className={cn(FLEX_LAYOUTS.rowWrap, GAP.sm)}>
             <Button
               variant={"default"}
               size="sm"
@@ -194,12 +173,12 @@ export default function ProviderEventsPage() {
         </div>
 
         {/* Events */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className={cn(GRID_LAYOUTS.responsive, "lg:grid-cols-4 xl:grid-cols-5", GAP.base)}>
           {currentEvents.map((event) => (
             <PostCard
               key={event.id}
               post={{ ...event, type: "event" } as Post}
-              basePath={"/provider/events"}
+              basePath={window.location.pathname}
               onDelete={() => {}}
             />
           ))}

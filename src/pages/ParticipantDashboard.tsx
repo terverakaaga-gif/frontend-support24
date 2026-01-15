@@ -62,6 +62,34 @@ import { DateRangePicker } from "@/components/analytics/DateRangePicker";
 import { DateRange, DateRangeType } from "@/entities/Analytics";
 import { createDateRange } from "@/api/services/analyticsService";
 
+// Design System imports
+import {
+  cn,
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  DASHBOARD_STAT_CARD,
+  DASHBOARD_TABLE_CONTAINER,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+  FLEX_CENTER,
+  FLEX_COL_CENTER,
+  BADGE_SUCCESS,
+  BADGE_SM,
+} from "@/lib/design-utils";
+import {
+  SPACING,
+  GAP,
+  RADIUS,
+  BORDER_STYLES,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  FONT_FAMILY,
+  TEXT_COLORS,
+  BG_COLORS,
+  GRID_LAYOUTS,
+  CONTAINER_PADDING,
+} from "@/constants/design-system";
+
 // Service type labels for display
 const SERVICE_TYPE_LABELS: Record<string, string> = {
   PERSONALCARE: "Personal Care",
@@ -114,27 +142,30 @@ function StatCard({
   trendDirection?: "up" | "down" | null;
 }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex items-center justify-between">
-        <div className="text-sm font-montserrat-semibold text-gray-600">
+    <div className={cn(DASHBOARD_STAT_CARD)}>
+      <div className={cn(FLEX_ROW_BETWEEN)}>
+        <div className={cn(TEXT_STYLES.label, "text-gray-600")}>
           {title}
         </div>
-        <div className="p-2 rounded-full bg-primary-300/20">
+        <div className={cn(`p-${SPACING.sm}`, RADIUS.full, BG_COLORS.primaryLight)}>
           <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
         </div>
       </div>
-      <div className="text-2xl font-montserrat-bold text-gray-900 mb-1">
+      <div className={cn("text-2xl", FONT_FAMILY.montserratBold, "text-gray-900", `mb-${SPACING.xs}`)}>
         {value}
       </div>
       {trend && (
         <div
-          className={`text-xs font-montserrat-semibold flex items-center ${
+          className={cn(
+            "text-xs",
+            FONT_FAMILY.montserratSemibold,
+            FLEX_ROW_CENTER,
             trendDirection === "up"
-              ? "text-green-600"
+              ? TEXT_COLORS.success
               : trendDirection === "down"
-              ? "text-red-600"
+              ? TEXT_COLORS.error
               : "text-gray-1000"
-          }`}
+          )}
         >
           {trendDirection === "up" && <CourseUp className="mr-1" />}
           {trendDirection === "down" && <CourseDown className="mr-1" />}
@@ -142,7 +173,7 @@ function StatCard({
         </div>
       )}
       {additionalText && (
-        <div className="text-sm text-gray-1000">{additionalText}</div>
+        <div className={cn(TEXT_STYLES.small)}>{additionalText}</div>
       )}
     </div>
   );
@@ -167,9 +198,9 @@ function SpendingServiceChart({
   }, [spendingData, serviceData]);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">
+    <div className={cn(DASHBOARD_STAT_CARD)}>
+      <div className={cn(FLEX_ROW_BETWEEN, `mb-${SPACING.lg}`)}>
+        <h2 className={cn(HEADING_STYLES.h5)}>
           Monthly Spending Trend
         </h2>
       </div>
@@ -219,17 +250,17 @@ function SpendingServiceChart({
         </ComposedChart>
       </ResponsiveContainer>
 
-      <div className="flex justify-center gap-8 text-sm mt-4">
-        <div className="flex items-center">
+      <div className={cn(FLEX_ROW_CENTER, "justify-center", GAP.xl, TEXT_STYLES.small, `mt-${SPACING.base}`)}>
+        <div className={cn(FLEX_ROW_CENTER)}>
           <div
-            className="w-4 h-3 rounded mr-2"
+            className={cn("w-4 h-3", RADIUS.sm, `mr-${SPACING.sm}`)}
             style={{ backgroundColor: "#0D2BEC" }}
           ></div>
-          <span className="text-gray-600">Service Hours</span>
+          <span className={TEXT_COLORS.gray600}>Service Hours</span>
         </div>
-        <div className="flex items-center">
-          <div className="w-8 h-1 bg-yellow-400 rounded mr-2"></div>
-          <span className="text-gray-600">Monthly Spending</span>
+        <div className={cn(FLEX_ROW_CENTER)}>
+          <div className={cn("w-8 h-1", BG_COLORS.warning, RADIUS.sm, `mr-${SPACING.sm}`)}></div>
+          <span className={TEXT_COLORS.gray600}>Monthly Spending</span>
         </div>
       </div>
     </div>
@@ -240,15 +271,15 @@ function SpendingServiceChart({
 function SupportWorkersTable({ workers }: { workers: any[] }) {
   const navigate = useNavigate();
   return (
-    <div className="bg-white mt-8 rounded-lg border border-gray-200">
-      <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">
+    <div className={cn(DASHBOARD_TABLE_CONTAINER, `mt-${SPACING['2xl']}`)}>
+      <div className={cn(`p-${SPACING.lg}`, "border-b", BORDER_STYLES.subtle, FLEX_ROW_BETWEEN)}>
+        <h2 className={cn(HEADING_STYLES.h5)}>
           Top Support Workers
         </h2>
         <Button
           variant="link"
           onClick={() => navigate("/participant/organizations")}
-          className="text-status-pending hover:text-status-pending text-sm font-montserrat-semibold"
+          className={cn("text-status-pending hover:text-status-pending", TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}
         >
           View all →
         </Button>
@@ -256,20 +287,20 @@ function SupportWorkersTable({ workers }: { workers: any[] }) {
 
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-100">
-            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
+          <TableRow className={cn(BG_COLORS.muted)}>
+            <TableHead className={cn("text-xs uppercase tracking-wider", FONT_FAMILY.montserratBold)}>
               Worker Name
             </TableHead>
-            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
+            <TableHead className={cn("text-xs uppercase tracking-wider", FONT_FAMILY.montserratBold)}>
               Service Type
             </TableHead>
-            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
+            <TableHead className={cn("text-xs uppercase tracking-wider", FONT_FAMILY.montserratBold)}>
               Hours This Month
             </TableHead>
-            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
+            <TableHead className={cn("text-xs uppercase tracking-wider", FONT_FAMILY.montserratBold)}>
               Rating
             </TableHead>
-            <TableHead className="text-xs font-montserrat-bold uppercase tracking-wider">
+            <TableHead className={cn("text-xs uppercase tracking-wider", FONT_FAMILY.montserratBold)}>
               Status
             </TableHead>
           </TableRow>
@@ -278,40 +309,40 @@ function SupportWorkersTable({ workers }: { workers: any[] }) {
           {workers.map((worker) => (
             <TableRow key={worker.workerId}>
               <TableCell>
-                <div className="flex items-center">
-                  <Avatar className="h-8 w-8 mr-3">
+                <div className={cn(FLEX_ROW_CENTER)}>
+                  <Avatar className={cn("h-8 w-8", `mr-${SPACING.md}`)}>
                     <AvatarFallback className="bg-primary-100 text-primary-700">
                       {worker.name[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-montserrat-semibold text-gray-900">
+                  <span className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold, "text-gray-900")}>
                     {worker.name}
                   </span>
                 </div>
               </TableCell>
-              <TableCell className="text-sm text-gray-600">
+              <TableCell className={cn(TEXT_STYLES.small)}>
                 Multiple Services
               </TableCell>
-              <TableCell className="text-sm text-gray-600">
+              <TableCell className={cn(TEXT_STYLES.small)}>
                 {worker.hours} hours
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-1">
+                <div className={cn(FLEX_ROW_CENTER, GAP.xs)}>
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-montserrat-semibold">
+                  <span className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>
                     {worker.rating > 0 ? worker.rating.toFixed(1) : "New"}
                   </span>
                 </div>
               </TableCell>
               <TableCell>
-                <span className="px-3 py-1 rounded-full text-xs font-montserrat-semibold bg-green-100 text-green-800">
+                <span className={cn(BADGE_SUCCESS, BADGE_SM)}>
                   Active
                 </span>
               </TableCell>
               <TableCell className="text-right">
                 <button
                   onClick={() => navigate("/participant/chats")}
-                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-100"
+                  className={cn(`px-${SPACING.md} py-${SPACING.xs}`, BORDER_STYLES.subtle, RADIUS.lg, TEXT_STYLES.small, "hover:bg-gray-100")}
                 >
                   Message
                 </button>
@@ -329,18 +360,18 @@ function ServiceDistribution({ services }: { services: any[] }) {
   if (!services || services.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-6">
+    <div className={cn(DASHBOARD_STAT_CARD)}>
+      <h2 className={cn(HEADING_STYLES.h5, `mb-${SPACING.lg}`)}>
         Service Distribution
       </h2>
-      <div className="space-y-4">
+      <div className={cn(`space-y-${SPACING.base}`)}>
         {services.map((service, index) => (
           <div key={index}>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-montserrat-semibold text-gray-700">
+            <div className={cn(FLEX_ROW_BETWEEN, `mb-${SPACING.sm}`)}>
+              <span className={cn(TEXT_STYLES.label)}>
                 {getServiceTypeDisplayName(service.serviceType)}
               </span>
-              <span className="text-sm text-gray-600">
+              <span className={cn(TEXT_STYLES.small)}>
                 {service.hours} hours ({service.percentage}%)
               </span>
             </div>
@@ -351,6 +382,7 @@ function ServiceDistribution({ services }: { services: any[] }) {
     </div>
   );
 }
+
 function ParticipantDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -402,15 +434,15 @@ function ParticipantDashboard() {
 
   if (overviewError || serviceError) {
     return (
-      <div className="p-8 space-y-8">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <CloseCircle className="mx-auto h-12 w-12 text-red-500" />
-            <p className="mt-4 text-muted-foreground">
+      <div className={cn(CONTAINER_PADDING.responsive, `space-y-${SPACING['2xl']}`)}>
+        <div className={cn(FLEX_CENTER, "py-12")}>
+          <div className={FLEX_COL_CENTER}>
+            <CloseCircle className={cn("mx-auto h-12 w-12", TEXT_COLORS.error)} />
+            <p className={cn(`mt-${SPACING.base}`, TEXT_STYLES.body)}>
               Failed to load dashboard data
             </p>
             <Button
-              className="mt-4 bg-primary hover:bg-primary-700"
+              className={cn(`mt-${SPACING.base}`, BG_COLORS.primary, "hover:bg-primary-700")}
               onClick={() => window.location.reload()}
             >
               Try Again
@@ -432,8 +464,8 @@ function ParticipantDashboard() {
   const budgetTrend = budgetUsed > 80 ? "up" : budgetUsed > 50 ? null : "down";
 
   return (
-    <div className="min-h-screen font-montserrat bg-gray-100">
-      <div className="p-8">
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
+      <div className={cn(DASHBOARD_CONTENT)}>
         {/* Header */}
         <GeneralHeader
           stickyTop={true}
@@ -452,12 +484,13 @@ function ParticipantDashboard() {
         {user &&
           user.role === "participant" &&
           !(user as Participant)?.onboardingComplete && (
-            <div className="mb-6">
+            <div className={cn(`mb-${SPACING.lg}`)}>
               <ParticipantSetupAlert />
             </div>
           )}
+        
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className={cn(GRID_LAYOUTS.cols4, GAP.lg, `mb-${SPACING['2xl']}`)}>
           <StatCard
             title="Active Workers"
             value={
@@ -507,9 +540,9 @@ function ParticipantDashboard() {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={cn("grid grid-cols-1 lg:grid-cols-3", GAP.lg)}>
           {/* Left Column - Charts & Service Distribution */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={cn("lg:col-span-2", `space-y-${SPACING.lg}`)}>
             <SpendingServiceChart
               spendingData={spendingTrendData}
               serviceData={serviceTrendData}

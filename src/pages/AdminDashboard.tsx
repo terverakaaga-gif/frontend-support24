@@ -7,8 +7,35 @@ import { NotificationsList } from "@/components/NotificationsList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { AltArrowRight, Bell, Chart, ClockCircle, CloudDownload, CourseUp, Dollar, Filter, Magnifer, UsersGroupRounded } from "@solar-icons/react";
+import { cn } from "@/lib/design-utils";
+import {
+  SPACING,
+  GAP,
+  CONTAINER_PADDING,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  FONT_FAMILY,
+  RADIUS,
+  SHADOW,
+  BORDER_STYLES,
+  GRID_LAYOUTS,
+  FLEX_LAYOUTS,
+  TEXT_COLORS,
+  BG_COLORS,
+  ICON_SIZES,
+} from "@/constants/design-system";
+import {
+  AltArrowRight,
+  Bell,
+  Chart,
+  ClockCircle,
+  CloudDownload,
+  CourseUp,
+  Dollar,
+  Filter,
+  Magnifer,
+  UsersGroupRounded,
+} from "@solar-icons/react";
 
 // Mock data for charts
 const bookingTrendsData = [
@@ -106,51 +133,23 @@ const bookingsData = [
   },
 ];
 
-// Mock stakeholders data
-const stakeholders = [
-  {
-    type: "Guardians",
-    count: 450,
-    active: 380,
-    pending: 15,
-    growth: "+12%",
-    progress: 75,
-  },
-  {
-    type: "Support Workers",
-    count: 320,
-    active: 280,
-    pending: 25,
-    growth: "+8%",
-    progress: 65,
-  },
-  {
-    type: "Coordinators",
-    count: 45,
-    active: 42,
-    pending: 3,
-    growth: "+5%",
-    progress: 85,
-  },
-];
-
 export default function AdminDashboard() {
   const [currentMonth, setCurrentMonth] = useState("Mar 2024");
 
   return (
-    <div className="p-6 space-y-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       {/* Header Section */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className={cn(FLEX_LAYOUTS.colToRow, GAP.base, `mb-${SPACING['2xl']}`)}>
         <div>
-          <h1 className="text-3xl font-montserrat-bold tracking-tight">Admin Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className={HEADING_STYLES.h2}>Admin Dashboard</h1>
+          <p className={TEXT_STYLES.body}>
             Welcome back! Here's your system overview.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className={cn(FLEX_LAYOUTS.rowWrap, GAP.sm)}>
           <Button variant="outline" size="sm" className="h-9">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
+            <Filter className={ICON_SIZES.sm} />
+            <span className={`ml-${SPACING.sm}`}>Filter</span>
           </Button>
           <Button variant="outline" size="sm" className="h-9">
             {currentMonth}
@@ -160,52 +159,52 @@ export default function AdminDashboard() {
             size="sm"
             className="h-9 bg-gradient-to-r from-guardian to-guardian-dark hover:from-guardian-dark hover:to-guardian"
           >
-            <CloudDownload className="h-4 w-4 mr-2" />
-            Export Report
+            <CloudDownload className={ICON_SIZES.sm} />
+            <span className={`ml-${SPACING.sm}`}>Export Report</span>
           </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className={cn(GRID_LAYOUTS.cols4, GAP.base, `mb-${SPACING['2xl']}`)}>
         <StatCard
           title="Total Users"
           value="1,234"
-          icon={<UsersGroupRounded className="h-4 w-4 text-guardian" />}
+          icon={<UsersGroupRounded className={ICON_SIZES.sm} />}
           change={{ value: "+12%", positive: true }}
           trend="up"
         />
         <StatCard
           title="Total Hours"
           value="8,560"
-          icon={<ClockCircle className="h-4 w-4 text-guardian" />}
+          icon={<ClockCircle className={ICON_SIZES.sm} />}
           change={{ value: "+8%", positive: true }}
           trend="up"
         />
         <StatCard
           title="Revenue"
           value="$375,000"
-          icon={<Dollar className="h-4 w-4 text-guardian" />}
+          icon={<Dollar className={ICON_SIZES.sm} />}
           change={{ value: "+15%", positive: true }}
           trend="up"
         />
         <StatCard
           title="Pending Invitations"
           value="5"
-          icon={<Bell className="h-4 w-4 text-guardian" />}
+          icon={<Bell className={ICON_SIZES.sm} />}
           additionalText="3 new today"
           trend="none"
         />
       </div>
 
       {/* Charts Section */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="p-6">
+      <div className={cn(GRID_LAYOUTS.cols2, GAP.base, `mb-${SPACING['2xl']}`)}>
+        <Card className={CONTAINER_PADDING.card}>
           <CardHeader className="px-0 pt-0">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-montserrat-semibold">
-                <div className="flex items-center gap-2">
-                  <Chart className="h-5 w-5 text-guardian" />
+            <div className={FLEX_LAYOUTS.rowBetween}>
+              <CardTitle className={cn(HEADING_STYLES.h5, GAP.sm)}>
+                <div className={cn("flex items-center", GAP.sm)}>
+                  <Chart className={cn(ICON_SIZES.md, TEXT_COLORS.brand)} />
                   <span>Booking Trends</span>
                 </div>
               </CardTitle>
@@ -225,12 +224,12 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="p-6">
+        <Card className={CONTAINER_PADDING.card}>
           <CardHeader className="px-0 pt-0">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-montserrat-semibold">
-                <div className="flex items-center gap-2">
-                  <CourseUp className="h-5 w-5 text-guardian" />
+            <div className={FLEX_LAYOUTS.rowBetween}>
+              <CardTitle className={cn(HEADING_STYLES.h5)}>
+                <div className={cn("flex items-center", GAP.sm)}>
+                  <CourseUp className={cn(ICON_SIZES.md, TEXT_COLORS.brand)} />
                   <span>Revenue Overview</span>
                 </div>
               </CardTitle>
@@ -252,63 +251,69 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Bookings & Notifications */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="md:col-span-2 border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+      <div className={cn(GRID_LAYOUTS.cols3, GAP.base)}>
+        <Card className={cn("md:col-span-2", BORDER_STYLES.subtle, "transition-all duration-200", SHADOW.lg)}>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-montserrat-semibold text-[#1e3b93]">
+            <div className={FLEX_LAYOUTS.rowBetween}>
+              <CardTitle className={cn(HEADING_STYLES.h5, TEXT_COLORS.brand)}>
                 Recent Bookings
               </CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-[#1e3b93] hover:bg-[#1e3b93]/10 hover:text-[#1e3b93]"
+                className={cn(TEXT_COLORS.brand, BG_COLORS.primaryLightHover)}
               >
                 View All
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
+            <div className={`space-y-${SPACING.lg}`}>
+              <div className={cn("flex items-center", GAP.base)}>
                 <div className="flex-1">
                   <Input
                     placeholder="Search bookings..."
-                    className="max-w-sm border-[#1e3b93]/20 focus:border-[#1e3b93] focus-visible:ring-[#1e3b93]/20"
+                    className={cn(BORDER_STYLES.subtle, "max-w-sm focus:border-primary focus-visible:ring-primary/20")}
                   />
                 </div>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40"
+                  className={cn(BORDER_STYLES.subtle, BG_COLORS.primaryLightHover)}
                 >
-                  <Magnifer className="h-4 w-4 text-[#1e3b93]" />
+                  <Magnifer className={cn(ICON_SIZES.sm, TEXT_COLORS.brand)} />
                 </Button>
               </div>
 
-              <div className="space-y-4">
+              <div className={`space-y-${SPACING.base}`}>
                 {bookingsData.map((booking) => (
                   <div
                     key={booking.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-[#1e3b93]/10 bg-card hover:bg-[#1e3b93]/5 transition-colors"
+                    className={cn(
+                      "flex items-center justify-between",
+                      `p-${SPACING.base}`,
+                      RADIUS.lg,
+                      BORDER_STYLES.subtle,
+                      "bg-card hover:bg-primary-50 transition-colors"
+                    )}
                   >
-                    <div className="flex items-center gap-4">
-                      <Avatar className="border-2 border-[#1e3b93]/10">
+                    <div className={cn("flex items-center", GAP.base)}>
+                      <Avatar className={cn(BORDER_STYLES.subtle)}>
                         <AvatarImage src={booking.participant.avatar} />
-                        <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-montserrat-semibold">
+                        <AvatarFallback className={cn(BG_COLORS.primaryLight, TEXT_COLORS.brand, FONT_FAMILY.montserratSemibold)}>
                           {booking.participant.name[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-montserrat-semibold text-gray-900">
+                        <div className={cn(FONT_FAMILY.montserratSemibold, "text-gray-900")}>
                           {booking.participant.name}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className={TEXT_STYLES.bodySecondary}>
                           {booking.type} • {booking.timeStart}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className={cn("flex items-center", GAP.base)}>
                       <Badge
                         variant={
                           booking.status === "confirmed"
@@ -318,12 +323,9 @@ export default function AdminDashboard() {
                             : "outline"
                         }
                         className={cn("capitalize", {
-                          "bg-[#1e3b93] text-white":
-                            booking.status === "confirmed",
-                          "bg-[#1e3b93]/10 text-[#1e3b93] border-[#1e3b93]/20":
-                            booking.status === "in-progress",
-                          "border-[#1e3b93]/20 text-[#1e3b93]":
-                            booking.status === "pending",
+                          "bg-primary text-white": booking.status === "confirmed",
+                          "bg-primary/10 text-primary border-primary/20": booking.status === "in-progress",
+                          "border-primary/20 text-primary": booking.status === "pending",
                         })}
                       >
                         {booking.status}
@@ -331,9 +333,9 @@ export default function AdminDashboard() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="hover:bg-[#1e3b93]/10"
+                        className={BG_COLORS.primaryLightHover}
                       >
-                        <AltArrowRight className="h-4 w-4 text-[#1e3b93]" />
+                        <AltArrowRight className={cn(ICON_SIZES.sm, TEXT_COLORS.brand)} />
                       </Button>
                     </div>
                   </div>
@@ -343,9 +345,9 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
+        <Card className={cn(BORDER_STYLES.subtle, "transition-all duration-200", SHADOW.lg)}>
           <CardHeader>
-            <CardTitle className="text-lg font-montserrat-semibold text-[#1e3b93]">
+            <CardTitle className={cn(HEADING_STYLES.h5, TEXT_COLORS.brand)}>
               Notifications
             </CardTitle>
           </CardHeader>
@@ -354,36 +356,6 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Stakeholder Overview */}
-      {/* <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-montserrat-semibold">
-            Stakeholder Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-3">
-            {stakeholders.map((item) => (
-              <div key={item.type} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-montserrat-semibold">{item.type}</div>
-                  <Badge variant="outline" className="font-normal">
-                    {item.growth}
-                  </Badge>
-                </div>
-                <div className="text-2xl font-montserrat-bold">{item.count}</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <span>{item.active} Active</span>
-                  <span className="mx-2">•</span>
-                  <span>{item.pending} Pending</span>
-                </div>
-                <Progress value={item.progress} className="h-2" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card> */}
     </div>
   );
 }

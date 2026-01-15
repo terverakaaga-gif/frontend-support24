@@ -27,6 +27,8 @@ import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { formatDistanceToNow } from "date-fns";
 import { JobPostingCard } from "@/components/supportworker/JobPostingCard";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 
 export default function SupportSavedJobsPage() {
   const navigate = useNavigate();
@@ -130,14 +132,14 @@ export default function SupportSavedJobsPage() {
 
   if (savedJobsError) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <ErrorDisplay message="Failed to load saved jobs" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <GeneralHeader
         stickyTop={true}
         title="Saved Jobs"

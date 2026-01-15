@@ -1,40 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   AltArrowLeft,
   CloseCircle,
   UploadMinimalistic,
   Calendar as CalendarIcon,
-  ClockCircle,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { FileDropZone, UploadedFile } from "@/components/ui/FileDropZone";
+import { CustomDateTimePicker } from "@/components/ui/CustomDateTimePicker";
+import { useGetEventById, useCreateEvent, useUpdateEvent } from "@/hooks/useEventHooks";
 
-// Mock event data for edit mode
-const mockEventData = {
-  id: 1,
-  title: "Local City Tour 2025",
-  startDate: "2025-11-22",
-  endDate: "2025-11-29",
-  startTime: "08:00",
-  endTime: "12:00",
-  location: "Albion Park, AU",
-  description:
-    "Join us for an exciting city tour experience where participants explore local attractions.",
-  image: null,
-};
+
 
 interface EventFormData {
   title: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
   location: string;
   description: string;
   image: File | null;
@@ -46,30 +35,43 @@ export default function ProviderEventFormPage() {
   const { eventId } = useParams();
   const isEditMode = !!eventId;
 
-  // Initialize form with mock data if in edit mode
-  const [formData, setFormData] = useState<EventFormData>(
-    isEditMode
-      ? {
-          title: mockEventData.title,
-          startDate: mockEventData.startDate,
-          endDate: mockEventData.endDate,
-          startTime: mockEventData.startTime,
-          endTime: mockEventData.endTime,
-          location: mockEventData.location,
-          description: mockEventData.description,
-          image: null,
-        }
-      : {
-          title: "",
-          startDate: "",
-          endDate: "",
-          startTime: "",
-          endTime: "",
-          location: "",
-          description: "",
-          image: null,
-        }
-  );
+  const { data: eventData, isLoading: isLoadingEvent } = useGetEventById(eventId);
+
+  const [formData, setFormData] = useState<EventFormData>({
+    title: "",
+    startDate: undefined,
+    endDate: undefined,
+    location: "",
+    description: "",
+    image: null,
+  });
+
+  // populate form when editing
+  useEffect(() => {
+    if (isEditMode && eventData) {
+      const startDate = eventData.eventStartDate ? new Date(eventData.eventStartDate) : undefined;
+      const endDate = eventData.eventEndDate ? new Date(eventData.eventEndDate) : undefined;
+
+      // Apply times if available
+      if (startDate && eventData.eventStartTime) {
+        const [hours, minutes] = eventData.eventStartTime.split(':');
+        startDate.setHours(parseInt(hours), parseInt(minutes));
+      }
+      if (endDate && eventData.eventEndTime) {
+        const [hours, minutes] = eventData.eventEndTime.split(':');
+        endDate.setHours(parseInt(hours), parseInt(minutes));
+      }
+
+      setFormData({
+        title: eventData.eventName || "",
+        startDate,
+        endDate,
+        location: eventData.eventLocation || "",
+        description: eventData.eventDescr || "",
+        image: null,
+      });
+    }
+  }, [isEditMode, eventData]);
 
   const [imageFiles, setImageFiles] = useState<UploadedFile[]>([]);
   const [errors, setErrors] = useState<
@@ -109,27 +111,19 @@ export default function ProviderEventFormPage() {
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = "Start date is required";
+      newErrors.startDate = "Start date and time is required";
     }
 
     if (!formData.endDate) {
-      newErrors.endDate = "End date is required";
+      newErrors.endDate = "End date and time is required";
     }
 
     if (
       formData.startDate &&
       formData.endDate &&
-      formData.startDate > formData.endDate
+      formData.startDate >= formData.endDate
     ) {
       newErrors.endDate = "End date must be after start date";
-    }
-
-    if (!formData.startTime) {
-      newErrors.startTime = "Start time is required";
-    }
-
-    if (!formData.endTime) {
-      newErrors.endTime = "End time is required";
     }
 
     if (!formData.location.trim()) {
@@ -144,6 +138,9 @@ export default function ProviderEventFormPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const createEventMutation = useCreateEvent();
+  const updateEventMutation = useUpdateEvent();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -151,23 +148,52 @@ export default function ProviderEventFormPage() {
       return;
     }
 
-    // Handle form submission
-    console.log("Form data:", formData);
+    // Build form data for multipart submission
+    const fd = new FormData();
+    fd.append("eventName", formData.title);
+    fd.append("eventDescr", formData.description);
+    if (formData.location) fd.append("eventLocation", formData.location);
 
-    if (isEditMode) {
-      console.log("Updating event:", eventId);
-      // Add your update logic here
-    } else {
-      console.log("Creating new event");
-      // Add your create logic here
+    if (formData.startDate) {
+      // Extract date and time separately
+      const startDateStr = formData.startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      const startTimeStr = formData.startDate.toTimeString().slice(0, 5); // HH:MM
+      fd.append("eventStartDate", startDateStr);
+      fd.append("eventStartTime", startTimeStr);
     }
 
-    // Navigate back to events list
-    navigate("/provider/events");
+    if (formData.endDate) {
+      // Extract date and time separately
+      const endDateStr = formData.endDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      const endTimeStr = formData.endDate.toTimeString().slice(0, 5); // HH:MM
+      fd.append("eventEndDate", endDateStr);
+      fd.append("eventEndTime", endTimeStr);
+    }
+
+    if (imageFiles && imageFiles.length > 0) {
+      const f = imageFiles[0].file as File | undefined;
+      if (f) {
+        fd.append("eventImage", f);
+      }
+    }
+
+    if (isEditMode && eventId) {
+      updateEventMutation.mutate({ eventId, formData: fd }, {
+        onSuccess: () => {
+          navigate("/provider/events");
+        },
+      });
+    } else {
+      createEventMutation.mutate(fd, {
+        onSuccess: () => {
+          navigate("/provider/events");
+        },
+      });
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       {/* Header */}
         <GeneralHeader
         showBackButton
@@ -224,50 +250,35 @@ export default function ProviderEventFormPage() {
         {/* Date and Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <Label
-              htmlFor="startTime"
-              className="text-sm font-semibold text-gray-700 mb-2 block"
-            >
-              Event Start Time
-            </Label>
-            <div className="relative">
-              <Input
-                id="startTime"
-                name="startTime"
-                type="time"
-                placeholder="Enter start time"
-                value={formData.startTime}
-                onChange={handleInputChange}
-                className={errors.startTime ? "border-red-500" : ""}
-              />
-              <ClockCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-            </div>
-            {errors.startTime && (
-              <p className="text-xs text-red-600 mt-1">{errors.startTime}</p>
+            <CustomDateTimePicker
+              label="Event Start Date & Time"
+              date={formData.startDate}
+              setDate={(date) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  startDate: date,
+                }))
+              }
+            />
+            {errors.startDate && (
+              <p className="text-xs text-red-600 mt-1">{errors.startDate}</p>
             )}
           </div>
 
           <div>
-            <Label
-              htmlFor="endTime"
-              className="text-sm font-semibold text-gray-700 mb-2 block"
-            >
-              Event End Time
-            </Label>
-            <div className="relative">
-              <Input
-                id="endTime"
-                name="endTime"
-                type="time"
-                placeholder="Enter end time"
-                value={formData.endTime}
-                onChange={handleInputChange}
-                className={errors.endTime ? "border-red-500" : ""}
-              />
-              <ClockCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-            </div>
-            {errors.endTime && (
-              <p className="text-xs text-red-600 mt-1">{errors.endTime}</p>
+            <CustomDateTimePicker
+              label="Event End Date & Time"
+              date={formData.endDate}
+              setDate={(date) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  endDate: date,
+                }))
+              }
+              minDate={formData.startDate}
+            />
+            {errors.endDate && (
+              <p className="text-xs text-red-600 mt-1">{errors.endDate}</p>
             )}
           </div>
         </div>
@@ -291,57 +302,6 @@ export default function ProviderEventFormPage() {
           {errors.location && (
             <p className="text-xs text-red-600 mt-1">{errors.location}</p>
           )}
-        </div>
-
-        {/* Date Range */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <Label
-              htmlFor="startDate"
-              className="text-sm font-semibold text-gray-700 mb-2 block"
-            >
-              Event Start Date
-            </Label>
-            <div className="relative">
-              <Input
-                id="startDate"
-                name="startDate"
-                type="date"
-                placeholder="Enter start date"
-                value={formData.startDate}
-                onChange={handleInputChange}
-                className={errors.startDate ? "border-red-500" : ""}
-              />
-              <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-            </div>
-            {errors.startDate && (
-              <p className="text-xs text-red-600 mt-1">{errors.startDate}</p>
-            )}
-          </div>
-
-          <div>
-            <Label
-              htmlFor="endDate"
-              className="text-sm font-semibold text-gray-700 mb-2 block"
-            >
-              Event End Date
-            </Label>
-            <div className="relative">
-              <Input
-                id="endDate"
-                name="endDate"
-                type="date"
-                placeholder="Enter end date"
-                value={formData.endDate}
-                onChange={handleInputChange}
-                className={errors.endDate ? "border-red-500" : ""}
-              />
-              <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-            </div>
-            {errors.endDate && (
-              <p className="text-xs text-red-600 mt-1">{errors.endDate}</p>
-            )}
-          </div>
         </div>
 
         {/* Description */}
@@ -370,8 +330,11 @@ export default function ProviderEventFormPage() {
         <Button
           type="submit"
           className="w-full bg-primary hover:bg-primary/90 h-12"
+          disabled={createEventMutation.isPending || updateEventMutation.isPending}
         >
-          {isEditMode ? "Update Event" : "Post"}
+          { (createEventMutation.isPending || updateEventMutation.isPending)
+            ? "Saving..."
+            : (isEditMode ? "Update Event" : "Post") }
         </Button>
       </form>
     </div>

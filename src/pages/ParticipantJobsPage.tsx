@@ -10,6 +10,8 @@ import {
   CloseCircle,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn, PAGE_WRAPPER } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING, FLEX_LAYOUTS, GAP, GRID_LAYOUTS } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -212,14 +214,14 @@ export default function ParticipantJobsPage() {
 
   if (jobsError) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <ErrorDisplay message="Failed to load jobs" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={PAGE_WRAPPER}>
       <GeneralHeader
         stickyTop={true}
         title="My Job Postings"
@@ -228,7 +230,7 @@ export default function ParticipantJobsPage() {
         onLogout={logout}
         onViewProfile={() => navigate("/participant/profile")}
         rightComponent={
-          <div className="w-fit flex gap-2">
+          <div className={cn(FLEX_LAYOUTS.rowWrap, GAP.responsive)}>
             <Input
               placeholder="Search jobs..."
               value={searchQuery}
@@ -523,7 +525,7 @@ export default function ParticipantJobsPage() {
         </div>
 
         {/* Jobs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className={cn(GRID_LAYOUTS.responsive, GAP.responsive)}>
           {currentJobs.map((job) => (
             <PostCard
               key={job.id}

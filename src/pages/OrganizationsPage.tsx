@@ -22,6 +22,8 @@ import {
 import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import GeneralHeader from "@/components/GeneralHeader";
 
 export default function SupportWorkerOrganizationsPage() {
@@ -83,7 +85,7 @@ export default function SupportWorkerOrganizationsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
@@ -111,7 +113,7 @@ export default function SupportWorkerOrganizationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="p-8">
         {/* Header */}
         <GeneralHeader

@@ -7,6 +7,8 @@ import {
   CloseCircle,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -24,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetEventById, useGetEventRegistrations, useAcceptRegistration, useRejectRegistration } from "@/hooks/useEventHooks";
 import {
   ApprovalActionModal,
   ActionType,
@@ -31,62 +34,18 @@ import {
 } from "@/components/provider/ApprovalActionModal";
 import { toast } from "sonner";
 
-// Mock event data
-const mockEvent = {
-  id: 1,
-  title: "Local City Tour, 2025",
-  date: "22nd Nov - 29 Nov, 2025",
-  time: "8:00 AM - 12:00 PM",
-  location: "Albion Park, AU",
-};
+// Using API to fetch event and registrations
 
-// Define participant type
 interface Participant {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  reason: string;
-  avatar: string | null;
+  id: string | number;
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  reason?: string;
+  avatar?: string | null;
 }
 
-// Mock participants data
-const mockParticipants: Record<string, Participant[]> = {
-  new: Array(12)
-    .fill({
-      id: 1,
-      name: "John Doe Singh",
-      email: "johndoe@gmail.com",
-      phone: "+61 8654245534",
-      location: "Albion Park, AU",
-      reason: "I wanna tour round the city, it's my first time",
-      avatar: null,
-    })
-    .map((p, i) => ({ ...p, id: i + 1, name: `${p.name} ${i + 1}` })),
-  accepted: Array(19)
-    .fill({
-      id: 0,
-      name: "John Doe Singh",
-      email: "johndoe@gmail.com",
-      phone: "+61 8654245534",
-      location: "Albion Park, AU",
-      reason: "I wanna tour round the city, it's my first time",
-      avatar: null,
-    })
-    .map((p, i) => ({ ...p, id: i + 100, name: `${p.name} ${i + 1}` })),
-  rejected: [
-    {
-      id: 300,
-      name: "John Doe Singh",
-      email: "johndoe@gmail.com",
-      phone: "+61 8654245534",
-      location: "Albion Park, AU",
-      reason: "I wanna tour round the city, it's my first time",
-      avatar: null,
-    },
-  ],
-};
 
 type TabType = "new" | "accepted" | "rejected";
 
@@ -104,16 +63,27 @@ export default function ProviderRegisteredEventParticipantsPage() {
   const [actionType, setActionType] = useState<ActionType>("accept");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Get current participants based on tab
-  const currentParticipants = mockParticipants[currentTab];
+  // Fetch event details and registrations
+  const { data: eventData } = useGetEventById(eventId);
+  const { data: registrationsData, isLoading: isLoadingRegistrations, refetch: refetchRegistrations } = useGetEventRegistrations(eventId || "");
+
+  // Map registrations into tabs
+  const regs = registrationsData?.registrations || [];
+  const partitioned: Record<string, Participant[]> = {
+    new: regs.filter((r) => r.status === "new").map((r) => ({ id: r._id, name: r.fullName, email: r.email, phone: r.phone, location: "", reason: r.reason, avatar: null })),
+    accepted: regs.filter((r) => r.status === "accepted").map((r) => ({ id: r._id, name: r.fullName, email: r.email, phone: r.phone, location: "", reason: r.reason, avatar: null })),
+    rejected: regs.filter((r) => r.status === "rejected").map((r) => ({ id: r._id, name: r.fullName, email: r.email, phone: r.phone, location: "", reason: r.reason, avatar: null })),
+  };
+
+  const currentParticipants = partitioned[currentTab];
 
   // Pagination
   const totalPages = Math.ceil(
-    currentParticipants.length / parseInt(entriesPerPage)
+    (currentParticipants?.length || 0) / parseInt(entriesPerPage)
   );
   const startIndex = (currentPage - 1) * parseInt(entriesPerPage);
   const endIndex = startIndex + parseInt(entriesPerPage);
-  const paginatedParticipants = currentParticipants.slice(startIndex, endIndex);
+  const paginatedParticipants = (currentParticipants || []).slice(startIndex, endIndex);
 
   const handleTabChange = (tab: TabType) => {
     setCurrentTab(tab);
@@ -126,6 +96,9 @@ export default function ProviderRegisteredEventParticipantsPage() {
     setIsModalOpen(true);
   };
 
+  const acceptMutation = useAcceptRegistration();
+  const rejectMutation = useRejectRegistration();
+
   const handleConfirmAction = async (data: {
     entityId: number | string;
     reason?: string;
@@ -133,21 +106,19 @@ export default function ProviderRegisteredEventParticipantsPage() {
     setIsProcessing(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      console.log(`${actionType} participant:`, data);
-
       if (actionType === "accept") {
+        await acceptMutation.mutateAsync({ registrationId: String(data.entityId), data: { reason: data.reason } });
         toast.success(`${selectedParticipant?.name} has been accepted`);
       } else {
+        await rejectMutation.mutateAsync({ registrationId: String(data.entityId), data: { reason: data.reason } });
         toast.success(`${selectedParticipant?.name} has been rejected`);
       }
 
       setIsModalOpen(false);
       setSelectedParticipant(null);
 
-      // In real app, refetch data or update local state
+      // refetch registrations
+      refetchRegistrations();
     } catch (error) {
       console.error("Error processing action:", error);
       toast.error("Failed to process action. Please try again.");
@@ -171,13 +142,13 @@ export default function ProviderRegisteredEventParticipantsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="">
         {/* Header */}
         <GeneralHeader
           showBackButton
           stickyTop={false}
-          title={mockEvent.title}
+          title={eventData?.eventName || "Event Participants"}
           subtitle=""
           user={user}
           onLogout={logout}
@@ -196,7 +167,7 @@ export default function ProviderRegisteredEventParticipantsPage() {
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                 }`}
               >
-                New {mockParticipants.new.length}
+                New {partitioned.new.length}
               </Button>
               <Button
                 size="sm"
@@ -207,7 +178,7 @@ export default function ProviderRegisteredEventParticipantsPage() {
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                 }`}
               >
-                Accepted {mockParticipants.accepted.length}
+                Accepted {partitioned.accepted.length}
               </Button>
               <Button
                 size="sm"
@@ -218,7 +189,7 @@ export default function ProviderRegisteredEventParticipantsPage() {
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                 }`}
               >
-                Rejected {mockParticipants.rejected.length}
+                Rejected {partitioned.rejected.length}
               </Button>
             </div>
           </div>
@@ -412,7 +383,7 @@ export default function ProviderRegisteredEventParticipantsPage() {
         entityType="event-participant"
         actionType={actionType}
         isLoading={isProcessing}
-        contextTitle={mockEvent.title}
+        contextTitle={eventData?.eventName || ""}
       />
     </div>
   );

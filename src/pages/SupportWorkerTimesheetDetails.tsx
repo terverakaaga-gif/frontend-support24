@@ -12,6 +12,8 @@ import {
   Calendar,
 } from "@solar-icons/react";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -116,7 +118,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-12 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -132,7 +134,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
   if (error || !timesheet) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
@@ -157,7 +159,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="p-6 md:p-8">
         {/* Header */}
         <GeneralHeader

@@ -7,8 +7,11 @@ import {
   Pen2,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetEventById } from "@/hooks/useEventHooks";
 
 // Mock event data
 const mockEvent = {
@@ -40,15 +43,27 @@ export default function ProviderEventDetailsPage() {
   const { user } = useAuth();
   const { eventId } = useParams();
 
+  const { data: eventData } = useGetEventById(eventId);
+
+  const formatDateRange = (start?: string, end?: string) => {
+    if (start && end) return `${new Date(start).toLocaleDateString()} - ${new Date(end).toLocaleDateString()}`;
+    return start || end || "";
+  };
+
+  const formatTimeRange = (start?: string, end?: string) => {
+    if (start && end) return `${start} - ${end}`;
+    return start || end || "";
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="">
         {/* Header */}
         <div className="mb-6">
           <GeneralHeader
             stickyTop={false}
             showBackButton
-            title={mockEvent.title}
+            title={eventData?.eventName || "Untitled Event"}
             subtitle=""
             user={user}
             onLogout={() => {}}
@@ -70,7 +85,7 @@ export default function ProviderEventDetailsPage() {
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <h2 className="text-xl font-bold text-gray-900">
-              {mockEvent.title}
+              {eventData?.eventName}
             </h2>
             <Button
               onClick={() => navigate(`/provider/events/${eventId}/edit`)}
@@ -89,7 +104,7 @@ export default function ProviderEventDetailsPage() {
               <div>
                 <p className="text-xs text-gray-500">Date</p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {mockEvent.date}
+                  {formatDateRange(eventData?.eventStartDate, eventData?.eventEndDate)}
                 </p>
               </div>
             </div>
@@ -101,7 +116,7 @@ export default function ProviderEventDetailsPage() {
               <div>
                 <p className="text-xs text-gray-500">Time</p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {mockEvent.time}
+                  {formatTimeRange(eventData?.eventStartTime, eventData?.eventEndTime)}
                 </p>
               </div>
             </div>
@@ -113,7 +128,7 @@ export default function ProviderEventDetailsPage() {
               <div>
                 <p className="text-xs text-gray-500">Location</p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {mockEvent.location}
+                  {eventData?.eventLocation}
                 </p>
               </div>
             </div>
@@ -128,7 +143,7 @@ export default function ProviderEventDetailsPage() {
                 ></div>
               ))}
             </div>
-            <span className="text-sm text-gray-600">+21</span>
+            <span className="text-sm text-gray-600">+{eventData?.registrationCount || 0}</span>
           </div>
 
           <div className="border-t border-gray-200 pt-6">
@@ -136,22 +151,8 @@ export default function ProviderEventDetailsPage() {
               Event Description
             </h3>
             <div className="text-sm text-gray-600 space-y-4 whitespace-pre-line">
-              {mockEvent.description}
+              {eventData?.eventDescr}
             </div>
-          </div>
-
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Participants can look forward to:
-            </h3>
-            <ul className="space-y-3">
-              {mockEvent.highlights.map((highlight, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-gray-900 mt-2 flex-shrink-0"></div>
-                  <p className="text-sm text-gray-700">{highlight}</p>
-                </li>
-              ))}
-            </ul>
           </div>
 
           <div className="border-t border-gray-200 pt-6 mt-6">

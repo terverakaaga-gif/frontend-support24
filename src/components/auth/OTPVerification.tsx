@@ -7,6 +7,8 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { toast } from "sonner";
+import { cn, AUTH_BUTTON_PRIMARY, FLEX_COL_CENTER } from "@/lib/design-utils";
+import { TEXT_SIZE, FONT_WEIGHT, TEXT_COLORS } from "@/constants/design-system";
 
 interface OTPVerificationProps {
   email: string;
@@ -66,14 +68,14 @@ export function OTPVerification({
   return (
     <ScrollArea className="h-[400px] w-full">
       <div className="space-y-6 px-4 py-2">
-        <div className="text-center">
-          <h2 className="text-2xl font-montserrat-bold">Verify Your Email</h2>
-          <p className="text-muted-foreground mt-2">
-            We've sent a 6-digit verification code to <span className="font-montserrat-semibold">{email}</span>
+        <div className={FLEX_COL_CENTER}>
+          <h2 className={cn(TEXT_SIZE["2xl"], FONT_WEIGHT.bold, "font-montserrat-bold")}>Verify Your Email</h2>
+          <p className={cn(TEXT_COLORS.muted, "mt-2")}>
+            We've sent a 6-digit verification code to <span className={FONT_WEIGHT.semibold}>{email}</span>
           </p>
         </div>
 
-        <div className="flex justify-center my-8">
+        <div className={cn(FLEX_COL_CENTER, "my-8")}>
           <InputOTP maxLength={6} value={otp} onChange={setOtp}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
@@ -89,13 +91,13 @@ export function OTPVerification({
         <Button 
           onClick={handleVerify} 
           disabled={isVerifying || otp.length !== 6} 
-          className="w-full"
+          className={AUTH_BUTTON_PRIMARY}
         >
           {isVerifying ? "Verifying..." : "Verify Email"}
         </Button>
 
-        <div className="text-center mt-4">
-          <p className="text-sm text-muted-foreground">
+        <div className={cn(FLEX_COL_CENTER, "mt-4")}>
+          <p className={cn(TEXT_SIZE.sm, TEXT_COLORS.muted)}>
             Didn't receive the code?{" "}
             {canResend ? (
               <Button 

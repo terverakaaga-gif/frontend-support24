@@ -10,6 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -130,7 +132,7 @@ const SupportWorkerTimesheets: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 p-6">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <Card className="border-0 shadow-sm">
           <CardContent className="pt-6">
             <div className="text-center text-red-500">
@@ -143,7 +145,7 @@ const SupportWorkerTimesheets: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <div className="space-y-6">
         {/* Header */}
         <GeneralHeader

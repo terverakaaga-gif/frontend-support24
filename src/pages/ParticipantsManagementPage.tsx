@@ -50,6 +50,8 @@ import {
 } from "@/components/ui/dialog";
 import GeneralHeader from "@/components/GeneralHeader";
 import Loader from "@/components/Loader";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -199,7 +201,7 @@ export default function ParticipantsManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       <GeneralHeader
         stickyTop={true}
         title="Participants Management"

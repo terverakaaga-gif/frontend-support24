@@ -13,6 +13,8 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,7 +32,6 @@ import {
   CheckCircle,
   DollarMinimalistic,
 } from "@solar-icons/react";
-import { cn } from "@/lib/utils";
 import { SupportWorker } from "@/types/user.types";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -163,7 +164,7 @@ export default function SupportWorkerInvite() {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-6 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
@@ -178,7 +179,7 @@ export default function SupportWorkerInvite() {
 
   if (profileError || !workerProfile) {
     return (
-      <div className="min-h-screen bg-gray-100 p-6 md:p-8">
+      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
         <Card className="shadow-md bg-white">
           <CardContent className="p-12 text-center">
             <p className="text-red-600 font-montserrat-semibold mb-4">
@@ -195,7 +196,7 @@ export default function SupportWorkerInvite() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 md:p-8">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
       {/* Header */}
       <GeneralHeader
         showBackButton
