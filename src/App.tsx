@@ -102,6 +102,7 @@ import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
 
 import ComplianceCheckPage from "./pages/ComplianceCheckPage";
 import ComplianceFormPage from "./pages/ComplianceFormPage";
+import ComplianceEditPage from "./pages/ComplianceEditPage";
 import ComplianceManagementPage from "./pages/ComplianceManagementPage";
 
 import ParticipantJobsPage from "./pages/ParticipantJobsPage";
@@ -406,6 +407,10 @@ const AppRoutes = () => {
                 <Route
                   path="/compliance/verify"
                   element={<ComplianceFormPage />}
+                />
+                <Route
+                  path="/compliance/edit"
+                  element={<ComplianceEditPage />}
                 />
                 <Route path="/incidents" element={<IncidentsPage />} />
 

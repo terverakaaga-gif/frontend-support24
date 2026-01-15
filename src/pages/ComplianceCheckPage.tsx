@@ -1,18 +1,35 @@
 import GeneralHeader from "@/components/GeneralHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { AltArrowRight, CheckCircle, ClockCircle, CloseCircle } from "@solar-icons/react";
+import { AltArrowRight, CheckCircle, ClockCircle, CloseCircle, Pen2 } from "@solar-icons/react";
 import { useNavigate } from "react-router-dom";
 import { useGetMyCompliance } from "@/hooks/useComplianceHooks";
 import { ComplianceStatus, DOCUMENT_TYPE_LABELS } from "@/types/compliance.types";
 import { format } from "date-fns";
-import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/Loader";
 import {
   cn,
   DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  CARD,
   FLEX_CENTER,
+  HEADING_4,
+  HEADING_5,
+  TEXT_BODY,
+  TEXT_BODY_SM,
+  TEXT_MUTED,
+  FLEX_COL_CENTER,
+  FLEX_ROW_BETWEEN,
 } from "@/lib/design-utils";
+import {
+  CONTAINER_PADDING,
+  SPACING,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  BG_COLORS,
+  SHADOW,
+  TRANSITIONS,
+} from "@/constants/design-system";
 
 export default function ComplianceCheckPage() {
   const { logout, user } = useAuth();
@@ -97,8 +114,9 @@ export default function ComplianceCheckPage() {
       />
 
       {/* Main Content */}
-      <div className="max-w-md font-montserrat-bold mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative pb-12">
+      <div className={cn("max-w-2xl mx-auto", CONTAINER_PADDING.responsive)}>
+        {/* Main Card */}
+        <div className={cn(CARD, "relative overflow-hidden")}>
           {/* Watermark */}
           {!isVerified && (
             <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
@@ -114,9 +132,9 @@ export default function ComplianceCheckPage() {
             </div>
           )}
 
-          <div className="relative z-10 p-6 md:p-8">
+          <div className={cn("relative z-10", CONTAINER_PADDING.cardLg)}>
             {/* Avatar Section */}
-            <div className="flex items-center justify-center mb-6 relative">
+            <div className={cn(FLEX_COL_CENTER, "mb-6")}>
               <Avatar className="w-32 h-32">
                 <AvatarImage src={user?.profileImage || ""} alt="Avatar Image" />
                 <AvatarFallback>
@@ -129,17 +147,17 @@ export default function ComplianceCheckPage() {
 
             {/* Rejection Notice */}
             {compliance?.status === ComplianceStatus.REJECTED && compliance.rejectionReasons && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <h4 className="text-sm font-semibold text-red-800 mb-2">
+              <div className={cn("mb-6 p-4 border rounded-lg bg-red-50 border-red-200")}>
+                <h4 className={cn(HEADING_5, "mb-2 text-red-800")}>
                   Your compliance was rejected
                 </h4>
-                <ul className="text-sm text-red-700 space-y-1">
+                <ul className={cn(TEXT_BODY_SM, "space-y-1 text-red-700")}>
                   {compliance.rejectionReasons.map((reason, idx) => (
                     <li key={idx}>• {reason}</li>
                   ))}
                 </ul>
                 {compliance.adminNotes && (
-                  <p className="text-sm text-red-600 mt-2 italic">
+                  <p className={cn(TEXT_BODY_SM, "mt-2 italic text-red-600")}>
                     Note: {compliance.adminNotes}
                   </p>
                 )}
@@ -148,8 +166,8 @@ export default function ComplianceCheckPage() {
 
             {/* Pending Notice */}
             {compliance?.status === ComplianceStatus.PENDING && (
-              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800">
+              <div className={cn("mb-6 p-4 border rounded-lg bg-yellow-50 border-yellow-200")}>
+                <p className={cn(TEXT_BODY_SM, "text-yellow-800")}>
                   Your compliance documents are under review. We'll notify you once the review is complete.
                 </p>
               </div>
@@ -157,28 +175,28 @@ export default function ComplianceCheckPage() {
 
             {/* Worker Information */}
             <section className="mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
+              <h3 className={cn(HEADING_5, "mb-4")}>
                 Worker Information
               </h3>
-              <div className="space-y-3">
+              <div className={cn("space-y-3 p-4 rounded-lg", BG_COLORS.muted)}>
                 <InfoRow
                   label="ID Number:"
                   value={compliance?._id?.slice(-8).toUpperCase() || "Not Available"}
-                  valueClassName={compliance?._id ? "text-gray-900" : "text-gray-400"}
+                  valueClassName={compliance?._id ? "text-gray-900 font-semibold" : "text-gray-400"}
                 />
                 <InfoRow label="Email:" value={user?.email || "N/A"} />
                 <InfoRow label="Phone Number:" value={user?.phone || "N/A"} />
 
                 {/* Status Row */}
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-600 text-sm">Status:</span>
+                <div className={cn(FLEX_ROW_BETWEEN, "py-2 border-t border-gray-200 pt-3")}>
+                  <span className={TEXT_MUTED}>Status:</span>
                   <div className="flex items-center gap-2">
                     {statusConfig.icon && (
-                      <div className={`w-5 h-5 ${statusConfig.bgColor} rounded-full flex items-center justify-center`}>
+                      <div className={cn("w-5 h-5 rounded-full flex items-center justify-center", statusConfig.bgColor)}>
                         {statusConfig.icon}
                       </div>
                     )}
-                    <span className={`font-semibold text-sm ${statusConfig.color}`}>
+                    <span className={cn("font-semibold text-sm", statusConfig.color)}>
                       {statusConfig.label}
                     </span>
                   </div>
@@ -189,33 +207,33 @@ export default function ComplianceCheckPage() {
                   value={compliance?.submittedAt 
                     ? format(new Date(compliance.submittedAt), "d MMM, yyyy")
                     : "Not Submitted"}
-                  valueClassName={compliance?.submittedAt ? "text-gray-900" : "text-gray-400"}
+                  valueClassName={compliance?.submittedAt ? "text-gray-900 font-semibold" : "text-gray-400"}
                 />
                 <InfoRow
                   label="Review Date:"
                   value={compliance?.reviewedAt 
                     ? format(new Date(compliance.reviewedAt), "d MMM, yyyy")
                     : "Not Reviewed"}
-                  valueClassName={compliance?.reviewedAt ? "text-gray-900" : "text-gray-400"}
+                  valueClassName={compliance?.reviewedAt ? "text-gray-900 font-semibold" : "text-gray-400"}
                 />
               </div>
             </section>
 
             {/* Qualification and Certifications */}
-            <section className="mb-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
+            <section className="mb-8">
+              <h3 className={cn(HEADING_5, "mb-4")}>
                 Qualification and Certifications
               </h3>
               {qualifications.length === 0 ? (
-                <p className="text-gray-400 text-sm">
+                <p className={cn(TEXT_MUTED, "p-4 rounded-lg", BG_COLORS.muted)}>
                   No qualifications and certifications added yet
                 </p>
               ) : (
-                <ul className="space-y-3">
+                <ul className={cn("space-y-2 p-4 rounded-lg", BG_COLORS.muted)}>
                   {qualifications.map((qual, index) => (
                     <li
                       key={index}
-                      className="flex items-center gap-3 text-gray-700 text-sm"
+                      className={cn("flex items-center gap-3", TEXT_BODY_SM)}
                     >
                       <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                       <span>{qual}</span>
@@ -227,8 +245,8 @@ export default function ComplianceCheckPage() {
 
             {/* Signature Section - only for verified */}
             {isVerified && (
-              <section className="mb-6 pb-6 border-b border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
+              <section className="mb-6 pb-6 border-b border-gray-200">
+                <h3 className={cn(HEADING_5, "mb-4")}>
                   Signature
                 </h3>
                 <div className="h-16 flex items-center">
@@ -250,22 +268,45 @@ export default function ComplianceCheckPage() {
               </section>
             )}
 
-            {/* Start Verification Link */}
-            {canStartVerification && (
-              <div className="flex justify-center pt-2">
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-3 pt-4">
+              {/* Edit Button - Only for Approved/Verified */}
+              {isVerified && (
+                <button
+                  onClick={() => navigate("/support-worker/compliance/edit")}
+                  className={cn(
+                    "w-full flex items-center justify-center gap-2",
+                    "px-4 py-2.5 rounded-lg mb-6 md:mb-8",
+                    "bg-primary-600 text-white font-montserrat-semibold",
+                    "hover:bg-primary-700",
+                    TRANSITIONS.all
+                  )}
+                >
+                  <Pen2 className="h-5 w-5" />
+                  Update Information
+                </button>
+              )}
+
+              {/* Start Verification Link - For Draft/Rejected */}
+              {canStartVerification && (
                 <button
                   onClick={() => navigate("/support-worker/compliance/verify")}
-                  className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold transition-colors text-sm"
+                  className={cn(
+                    "flex items-center justify-center gap-2",
+                    "text-primary-600 hover:text-primary-700 font-montserrat-semibold",
+                    TRANSITIONS.all,
+                    "py-2 mb-3"
+                  )}
                 >
                   {compliance?.status === ComplianceStatus.REJECTED ? "Resubmit Verification" : "Start Verification"}
                   <AltArrowRight className="h-4 w-4" />
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           
           {/* Footer graphics */}
-          <div className="absolute bottom-0 left-0 w-full h-12rounded-b-2xl">
+          <div className="absolute bottom-0 left-0 w-full h-12">
             <img className="h-12" src="/new-res/compliance-footer-vector.svg" alt="Footer Graphic" />
           </div>
         </div>
