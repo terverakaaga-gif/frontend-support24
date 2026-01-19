@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { CreateParticipantModal } from "@/components/coordinator/CreateParticipantModal";
 
 // Mock data
 const participants = [
@@ -163,6 +164,7 @@ export default function ParticipantsPage() {
   const [budgetStatusFilter, setBudgetStatusFilter] = useState("");
   const [lastContactFilter, setLastContactFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const itemsPerPage = 5;
 
   const getFilteredParticipants = () => {
@@ -225,7 +227,7 @@ export default function ParticipantsPage() {
 
           {/* Create New Participant Button */}
           <Button
-            onClick={() => navigate("/support-coordinator/participants/create")}
+            onClick={() => setShowCreateModal(true)}
             className="bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold px-6"
           >
             <AddCircle className="h-5 w-5 mr-2" />
@@ -435,6 +437,12 @@ export default function ParticipantsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Create Participant Modal */}
+      <CreateParticipantModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+      />
     </div>
   );
 }

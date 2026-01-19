@@ -91,6 +91,7 @@ import ProviderEventsPage from "./pages/ProviderEventsPage";
 import ProviderEventDetailsPage from "./pages/ProviderEventDetailsPage";
 import ProviderEventFormPage from "./pages/ProviderEventFormPage";
 import ProviderRegisteredEventParticipantsPage from "./pages/ProviderRegisteredEventParticipantsPage";
+import ParticipantDetailsPage from "./pages/ParticipantDetailsPage";
 import ProviderJobsPage from "./pages/ProviderJobsPage";
 import ProviderJobDetailsPage from "./pages/ProviderJobDetailsPage";
 import ProviderJobFormPage from "./pages/ProviderJobFormPage";
@@ -469,6 +470,7 @@ const AppRoutes = () => {
                 <Route path="/tender" element={<TenderPage />} />
                 <Route path="/draft" element={<DraftPage />} />
                 <Route path="/participants" element={<ParticipantsPage />} />
+                <Route path="/participants/:id" element={<ParticipantDetailsPage />} />
                 <Route path="/providers" element={<ProvidersPage />} />
                 <Route path="/support-workers" element={<CoordinatorSupportWorkersPage />} />
                 <Route path="/my-panel" element={<MyPanelPage />} />
