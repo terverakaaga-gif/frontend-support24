@@ -95,6 +95,7 @@ import ProviderJobsPage from "./pages/ProviderJobsPage";
 import ProviderJobDetailsPage from "./pages/ProviderJobDetailsPage";
 import ProviderJobFormPage from "./pages/ProviderJobFormPage";
 import ProviderJobApplicantsPage from "./pages/ProviderJobApplicantsPage";
+import ProviderMarketplacePage from "./pages/ProviderMarketplacePage"
 
 import SupportJobListingPage from "./pages/SupportJobListingPage";
 import SupportSavedJobsPage from "./pages/SupportSavedJobsPage";
@@ -112,6 +113,7 @@ import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
 
 import ParticipantEventPage from "./pages/ParticipantEventPage";
 import ParticipantEventDetailsPage from "./pages/ParticipantEventDetailsPage";
+import ProviderSupportWorkerProfilePage from "./pages/ProviderSupportWorkerProfilePage";
 // import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 // import CoordinatorParticipants from "./pages/CoordinatorParticipants";
 
@@ -492,6 +494,8 @@ const AppRoutes = () => {
                   path="/accommodations/:accommodationId/interested"
                   element={<ProviderAccommodationInterestedUsersPage />}
                 />
+                <Route path="/find-support-workers" element={<ProviderMarketplacePage />} />
+                <Route path="/find-support-workers/:workerId" element={<ProviderSupportWorkerProfilePage />} />
                 <Route path="/jobs" element={<ProviderJobsPage />} />
                 <Route
                   path="/jobs/:jobId"

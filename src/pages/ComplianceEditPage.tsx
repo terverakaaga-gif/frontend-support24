@@ -141,8 +141,8 @@ export default function ComplianceEditPage() {
           onViewProfile={() => navigate("/support-worker/profile")}
         />
         <div className={cn("max-w-2xl mx-auto", CONTAINER_PADDING.responsive)}>
-          <div className={cn("p-${SPACING.xl} text-center bg-white rounded-xl", SHADOW.sm)}>
-            <p className={cn(TEXT_STYLES.body, "mb-${SPACING.md}")}>
+          <div className={cn(`p-${SPACING.xl} text-center bg-white rounded-xl`, SHADOW.sm)}>
+            <p className={cn(TEXT_STYLES.body, `mb-${SPACING.md}`)}>
               You can only update your compliance information when your status is Approved.
             </p>
             <button
@@ -203,6 +203,7 @@ export default function ComplianceEditPage() {
     return (
       <div className={DASHBOARD_PAGE_WRAPPER}>
         <GeneralHeader
+          showBackButton
           title="Review Your Answers"
           subtitle="Please review your compliance answers before submitting"
           onLogout={logout}
@@ -215,7 +216,7 @@ export default function ComplianceEditPage() {
           <button
             onClick={handleBackToForm}
             className={cn(
-              "flex items-center gap-2 mb-${SPACING.lg}",
+            `flex items-center gap-2 mb-${SPACING.lg}`,
               "text-primary-600 hover:text-primary-700 font-montserrat-semibold",
               "transition-colors"
             )}
@@ -225,7 +226,7 @@ export default function ComplianceEditPage() {
           </button>
 
           {/* Review Card */}
-          <div className={cn("bg-white rounded-xl p-${SPACING.lg}", SHADOW.md)}>
+          <div className={cn(`bg-white rounded-xl p-${SPACING.lg}`, SHADOW.md)}>
             <div className={cn(`mb-${SPACING.lg}`)}>
               <h2 className={cn(HEADING_STYLES.h3, `mb-${SPACING.md}`)}>
                 Compliance Answers Review
@@ -361,7 +362,7 @@ export default function ComplianceEditPage() {
 
         {/* Updated Documents Section */}
         {compliance?.documents && compliance.documents.length > 0 && (
-          <div className={cn("bg-white rounded-xl mb-${SPACING.xl}", SHADOW.md)}>
+          <div className={cn(`bg-white rounded-xl mb-${SPACING.xl}`, SHADOW.md)}>
             <div className={CONTAINER_PADDING.cardLg}>
               <h2 className={cn(HEADING_STYLES.h3, `mb-${SPACING.md}`)}>
                 Your Uploaded Documents
@@ -397,7 +398,7 @@ export default function ComplianceEditPage() {
         )}
 
         {/* Update Documents Section */}
-        <div className={cn("bg-white rounded-xl mb-${SPACING.xl}", SHADOW.md)}>
+        <div className={cn(`bg-white rounded-xl mb-${SPACING.xl}`, SHADOW.md)}>
           <div className={CONTAINER_PADDING.cardLg}>
             <h2 className={cn(HEADING_STYLES.h3, `mb-${SPACING.base}`)}>
               Update Documents (Optional)
