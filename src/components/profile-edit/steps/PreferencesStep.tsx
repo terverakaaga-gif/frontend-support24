@@ -24,7 +24,7 @@ export const PreferencesStep = React.memo(
             <Star className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Preferences</h2>
+            <h2 className="text-xl font-montserrat-bold text-gray-900">Preferences</h2>
             <p className="text-sm text-gray-600">Your care preferences</p>
           </div>
         </div>

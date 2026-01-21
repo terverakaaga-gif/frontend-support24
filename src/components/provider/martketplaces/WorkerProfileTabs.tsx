@@ -34,7 +34,7 @@ const DataRow = ({
         <span className="text-gray-700 font-medium text-sm">{label}</span>
       </div>
       <div className={cn(
-        "text-sm font-semibold transition-all duration-500",
+        "text-sm font-montserrat-semibold transition-all duration-500",
         isUnlocked ? "text-gray-900" : "text-transparent bg-gray-200 rounded animate-pulse select-none blur-[4px]"
       )}>
         {value || "Hidden Data"}
@@ -95,7 +95,7 @@ export const ComplianceTab = ({ isUnlocked }: TabProps) => {
               </div>
               
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-gray-900 mr-2">{skill.score}</span>
+                <span className="text-sm font-montserrat-bold text-gray-900 mr-2">{skill.score}</span>
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star key={star} className="w-4 h-4 text-yellow-400" />
@@ -125,7 +125,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
               <span className="text-sm text-gray-700 font-medium">Disability Support Worker</span>
             </div>
             <div className="text-right">
-              <div className={cn("text-sm font-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
+              <div className={cn("text-sm font-montserrat-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
                 <Suitcase className="w-4 h-4 text-yellow-500" /> Provider A
               </div>
               <div className="text-xs text-gray-500 italic">2 years</div>
@@ -138,7 +138,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
               <span className="text-sm text-gray-700 font-medium">Support Worker</span>
             </div>
             <div className="text-right">
-              <div className={cn("text-sm font-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
+              <div className={cn("text-sm font-montserrat-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
                 <Suitcase className="w-4 h-4 text-yellow-500" /> Provider B
               </div>
               <div className="text-xs text-gray-500 italic">2 months</div>
@@ -151,7 +151,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
               <span className="text-sm text-gray-700 font-medium">Casual Support Worker</span>
             </div>
             <div className="text-right">
-              <div className={cn("text-sm font-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
+              <div className={cn("text-sm font-montserrat-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
                 <Suitcase className="w-4 h-4 text-yellow-500" /> Provider C
               </div>
               <div className="text-xs text-gray-500 italic">1 years</div>
@@ -173,7 +173,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
             <div className="flex items-center gap-2">
                <span className="text-gray-700 font-medium text-sm">Punctuality</span>
             </div>
-            <div className={cn("text-sm font-bold", isUnlocked ? "text-gray-900" : "blur-sm")}>
+            <div className={cn("text-sm font-montserrat-bold", isUnlocked ? "text-gray-900" : "blur-sm")}>
               95% on time arrivals
             </div>
           </div>
@@ -189,7 +189,7 @@ export const RiskTab = ({ isUnlocked }: TabProps) => {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <section>
         <h3 className="font-montserrat-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-          Risk Assessment <span className="text-sm font-normal text-green-600 bg-green-50 px-2 py-0.5 rounded-full">(Low Risk)</span>
+          Risk Assessment <span className="text-sm font-montserrat text-green-600 bg-green-50 px-2 py-0.5 rounded-full">(Low Risk)</span>
         </h3>
         <div className="space-y-1">
           <DataRow label="Predicted Cancellation Rate" value="2-5%" isUnlocked={isUnlocked} />

@@ -267,7 +267,7 @@ export default function ParticipantJobsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <MapPoint className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold text-gray-900">Location Filters</h3>
+              <h3 className="font-montserrat-semibold text-gray-900">Location Filters</h3>
             </div>
             {hasActiveLocationFilters && (
               <Button
@@ -539,7 +539,7 @@ export default function ParticipantJobsPage() {
         {currentJobs.length === 0 && (
           <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-200">
             <SuitcaseTag className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p className="font-semibold">No job postings found</p>
+            <p className="font-montserrat-semibold">No job postings found</p>
             <p className="text-sm mt-1">
               Try adjusting your search or filters, or create a new job posting
             </p>

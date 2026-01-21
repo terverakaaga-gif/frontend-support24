@@ -198,22 +198,22 @@ export default function ProviderRegisteredEventParticipantsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-b border-gray-200 bg-white">
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider">
                     Participant Name
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden md:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden md:table-cell">
                     Email
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden lg:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden lg:table-cell">
                     Phone Number
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden xl:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden xl:table-cell">
                     Location
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden xl:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden xl:table-cell">
                     Reason for Attending
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">
+                  <TableHead className="px-4 md:px-6 py-3 text-right text-xs font-montserrat-semibold text-black uppercase tracking-wider">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -236,11 +236,11 @@ export default function ProviderRegisteredEventParticipantsPage() {
                     >
                       <TableCell className="px-4 md:px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center text-gray-600 text-sm font-semibold">
+                          <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center text-gray-600 text-sm font-montserrat-semibold">
                             {participant.name.charAt(0)}
                           </div>
                           <div>
-                            <span className="text-sm font-semibold text-gray-900 block">
+                            <span className="text-sm font-montserrat-semibold text-gray-900 block">
                               {participant.name}
                             </span>
                             <span className="text-xs text-gray-500 md:hidden">

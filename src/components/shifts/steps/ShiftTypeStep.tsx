@@ -7,7 +7,7 @@ import { memo } from "react";
 
 export const ShiftTypeStep = memo(({ selection, onSelect }: any) => (
   <div className="space-y-4">
-    <Label className="text-base font-semibold">Choose Shift Type</Label>
+    <Label className="text-base font-montserrat-semibold">Choose Shift Type</Label>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {SHIFT_TYPES.map((type) => {
         const Icon = type.icon;
@@ -21,7 +21,7 @@ export const ShiftTypeStep = memo(({ selection, onSelect }: any) => (
               <div className="w-16 h-16 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
                 <Icon className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg">{type.title}</h3>
+              <h3 className="font-montserrat-semibold text-lg">{type.title}</h3>
               <p className="text-sm text-gray-600">{type.description}</p>
               {selection === type.id && <CheckCircle className="w-6 h-6 text-primary mx-auto" />}
             </CardContent>

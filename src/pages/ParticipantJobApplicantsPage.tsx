@@ -259,22 +259,22 @@ export default function ParticipantJobApplicantsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-b border-gray-200 bg-white">
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider">
                     Support Worker
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden md:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden md:table-cell">
                     Contact
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden lg:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden lg:table-cell">
                     Location
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden lg:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden lg:table-cell">
                     Applied
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden xl:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden xl:table-cell">
                     Attachments
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">
+                  <TableHead className="px-4 md:px-6 py-3 text-right text-xs font-montserrat-semibold text-black uppercase tracking-wider">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -317,12 +317,12 @@ export default function ParticipantJobApplicantsPage() {
                                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                               />
                             ) : (
-                              <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-semibold">
+                              <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-montserrat-semibold">
                                 {initials}
                               </div>
                             )}
                             <div>
-                              <span className="text-sm font-semibold text-gray-900 block">
+                              <span className="text-sm font-montserrat-semibold text-gray-900 block">
                                 {applicantName}
                               </span>
                               <span
@@ -330,7 +330,7 @@ export default function ParticipantJobApplicantsPage() {
                                   application.status === "pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : application.status === "reviewed"
-                                    ? "bg-blue-100 text-blue-800"
+                                    ? "bg-primary-100 text-primary-800"
                                     : application.status === "shortlisted"
                                     ? "bg-purple-100 text-purple-800"
                                     : application.status === "accepted"

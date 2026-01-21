@@ -58,7 +58,7 @@ export const JobLocationSection = React.memo(({ formData, errors, onChange, addr
       <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
         <div className="flex items-center gap-2 mb-4">
           <Magnifer className="h-5 w-5 text-primary" />
-          <Label className="text-sm font-semibold text-gray-900">Service Location</Label>
+          <Label className="text-sm font-montserrat-semibold text-gray-900">Service Location</Label>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -98,7 +98,7 @@ export const JobLocationSection = React.memo(({ formData, errors, onChange, addr
 
       {/* Google Address */}
       <div className="mb-6 relative">
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Specific Location/Address</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Specific Location/Address</Label>
         <div className="relative">
           <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
           <Input
@@ -124,7 +124,7 @@ export const JobLocationSection = React.memo(({ formData, errors, onChange, addr
       {/* Service Areas */}
       {formData.regionId && (
         <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">Service Areas</Label>
+          <Label className="text-sm font-montserrat-semibold text-gray-700 mb-3 block">Service Areas</Label>
           {loadingAreas ? (
             <div className="text-center py-4 text-sm text-gray-500">Loading areas...</div>
           ) : serviceAreas.length > 0 ? (

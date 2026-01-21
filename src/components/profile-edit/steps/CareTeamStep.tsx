@@ -11,14 +11,14 @@ export const CareTeamStep = React.memo(({ formData, onNestedChange }: any) => {
           <Buildings2 className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Care Team</h2>
+          <h2 className="text-xl font-montserrat-bold text-gray-900">Care Team</h2>
           <p className="text-sm text-gray-600">Your plan manager and coordinator details</p>
         </div>
       </div>
 
       {/* Plan Manager */}
       <div className="space-y-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
-        <h3 className="font-semibold text-gray-900">Plan Manager</h3>
+        <h3 className="font-montserrat-semibold text-gray-900">Plan Manager</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Name</Label>
@@ -40,7 +40,7 @@ export const CareTeamStep = React.memo(({ formData, onNestedChange }: any) => {
 
       {/* Coordinator */}
       <div className="space-y-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
-        <h3 className="font-semibold text-gray-900">Coordinator</h3>
+        <h3 className="font-montserrat-semibold text-gray-900">Coordinator</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Name</Label>
@@ -62,7 +62,7 @@ export const CareTeamStep = React.memo(({ formData, onNestedChange }: any) => {
 
       {/* Behavior Support Practitioner */}
       <div className="space-y-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
-        <h3 className="font-semibold text-gray-900">Behavior Support Practitioner</h3>
+        <h3 className="font-montserrat-semibold text-gray-900">Behavior Support Practitioner</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Name</Label>

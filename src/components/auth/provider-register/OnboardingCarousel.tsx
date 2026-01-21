@@ -96,7 +96,7 @@ export function OnboardingCarousel() {
       <div className="flex justify-between items-center w-full mt-8">
         <button
           onClick={() => setCurrentSlide(onboardingSlides.length - 1)}
-          className="text-gray-600 font-semibold"
+          className="text-gray-600 font-montserrat-semibold"
         >
           Skip
         </button>

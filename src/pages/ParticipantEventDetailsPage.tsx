@@ -112,7 +112,7 @@ export default function EventDetailsPage() {
                 <div className={cn(`pt-${SPACING.lg}`)}>
                   <button
                     onClick={() => setIsRegisterModalOpen(true)}
-                    className={cn(BUTTON_PRIMARY, "w-full py-4 text-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200")}
+                    className={cn(BUTTON_PRIMARY, "w-full py-4 text-lg font-montserrat-semibold shadow-sm hover:shadow-md transition-all duration-200")}
                   >
                     Register for Event
                   </button>

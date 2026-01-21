@@ -219,7 +219,7 @@ export default function ComplianceManagementPage() {
               <UsersGroupRounded className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-montserrat-bold">
                 {isLoading ? <Skeleton className="h-8 w-16" /> : statistics?.total || 0}
               </div>
             </CardContent>
@@ -231,7 +231,7 @@ export default function ComplianceManagementPage() {
               <ClockCircle className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">
+              <div className="text-2xl font-montserrat-bold text-yellow-600">
                 {isLoading ? <Skeleton className="h-8 w-16" /> : statistics?.pending || 0}
               </div>
             </CardContent>
@@ -243,7 +243,7 @@ export default function ComplianceManagementPage() {
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-montserrat-bold text-green-600">
                 {isLoading ? <Skeleton className="h-8 w-16" /> : statistics?.approved || 0}
               </div>
             </CardContent>
@@ -255,7 +255,7 @@ export default function ComplianceManagementPage() {
               <CloseCircle className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-montserrat-bold text-red-600">
                 {isLoading ? <Skeleton className="h-8 w-16" /> : statistics?.rejected || 0}
               </div>
             </CardContent>
@@ -411,7 +411,7 @@ export default function ComplianceManagementPage() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold text-lg">
+                  <p className="font-montserrat-semibold text-lg">
                     {selectedCompliance.workerId?.firstName || "Unknown"} {selectedCompliance.workerId?.lastName || "Worker"}
                   </p>
                   <p className="text-gray-500">{selectedCompliance.workerId?.email || "No email"}</p>
@@ -423,7 +423,7 @@ export default function ComplianceManagementPage() {
 
               {/* Documents */}
               <div>
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                <h4 className="font-montserrat-semibold mb-3 flex items-center gap-2">
                   <DocumentText className="h-4 w-4" />
                   Uploaded Documents ({selectedCompliance.documents?.length || 0})
                 </h4>
@@ -450,7 +450,7 @@ export default function ComplianceManagementPage() {
 
               {/* Answers */}
               <div>
-                <h4 className="font-semibold mb-3">Compliance Answers</h4>
+                <h4 className="font-montserrat-semibold mb-3">Compliance Answers</h4>
                 <div className="grid gap-2 max-h-[200px] overflow-y-auto">
                   {selectedCompliance.complianceAnswers && Object.entries(selectedCompliance.complianceAnswers).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between py-2 border-b last:border-0">
@@ -468,7 +468,7 @@ export default function ComplianceManagementPage() {
               {/* Rejection info if rejected */}
               {selectedCompliance.status === ComplianceStatus.REJECTED && selectedCompliance.rejectionReasons && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <h4 className="font-semibold text-red-800 mb-2">Rejection Reasons</h4>
+                  <h4 className="font-montserrat-semibold text-red-800 mb-2">Rejection Reasons</h4>
                   <ul className="text-sm text-red-700 space-y-1">
                     {selectedCompliance.rejectionReasons.map((reason, idx) => (
                       <li key={idx}>• {reason}</li>

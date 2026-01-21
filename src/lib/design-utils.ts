@@ -614,9 +614,9 @@ export const BADGE_ERROR = cn(
 
 export const BADGE_INFO = cn(
   BADGE_BASE,
-  "bg-blue-100",
-  "text-blue-700",
-  "border border-blue-200"
+  "bg-primary-100",
+  "text-primary-700",
+  "border border-primary-200"
 );
 
 // Badge sizes
@@ -926,9 +926,9 @@ export const STATUS_PENDING = cn(
 
 export const STATUS_IN_PROGRESS = cn(
   BADGE_BASE,
-  "bg-blue-100",
-  "text-blue-700",
-  "border border-blue-200",
+  "bg-primary-100",
+  "text-primary-700",
+  "border border-primary-200",
   BADGE_MD
 );
 

@@ -252,7 +252,7 @@ export default function ComplianceEditPage() {
                         {q.question}
                       </p>
                     </div>
-                    <div className={cn("ml-4 px-3 py-1 rounded-full text-sm font-semibold", 
+                    <div className={cn("ml-4 px-3 py-1 rounded-full text-sm font-montserrat-semibold", 
                       q.answer ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-700")}>
                       {q.answer ? "Yes" : "No"}
                     </div>

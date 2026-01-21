@@ -35,7 +35,7 @@ export function CustomDatePicker({
           variant={"outline"}
           disabled={disabled}
           className={cn(
-            "w-full pl-3 text-left font-normal h-12 rounded-lg border-gray-200",
+            "w-full pl-3 text-left font-montserrat h-12 rounded-lg border-gray-200",
             !value && "text-muted-foreground"
           )}
         >

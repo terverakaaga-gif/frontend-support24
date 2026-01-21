@@ -213,25 +213,25 @@ export default function ProviderJobApplicantsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-b border-gray-200 bg-white">
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider">
                     Participant
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden md:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden md:table-cell">
                     Contact
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden lg:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden lg:table-cell">
                     Support Needs
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden xl:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden xl:table-cell">
                     Services Required
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden lg:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden lg:table-cell">
                     Applied
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider hidden 2xl:table-cell">
+                  <TableHead className="px-4 md:px-6 py-3 text-left text-xs font-montserrat-semibold text-black uppercase tracking-wider hidden 2xl:table-cell">
                     Status
                   </TableHead>
-                  <TableHead className="px-4 md:px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">
+                  <TableHead className="px-4 md:px-6 py-3 text-right text-xs font-montserrat-semibold text-black uppercase tracking-wider">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -266,12 +266,12 @@ export default function ProviderJobApplicantsPage() {
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-semibold">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-montserrat-semibold">
                             {applicantInitials}
                           </div>
                           )}
                           <div>
-                            <span className="text-sm font-semibold text-gray-900 block">
+                            <span className="text-sm font-montserrat-semibold text-gray-900 block">
                               {applicantName}
                             </span>
                             <span className="text-xs text-gray-500 block">

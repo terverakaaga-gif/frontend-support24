@@ -126,7 +126,7 @@ export default function ProviderRegisterPage() {
         <div className="w-full max-w-md space-y-6">
           <div className="text-center mb-8">
             <img src="/logo.svg" alt="Logo" className="h-10 mx-auto mb-6" />
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-montserrat-bold text-gray-900">
               Provider Registration
             </h1>
             <p className="text-gray-600">
@@ -143,7 +143,7 @@ export default function ProviderRegisterPage() {
                   className="flex flex-col items-center z-10 bg-gray-50"
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${
                       currentStep >= step.number
                         ? "bg-primary-600 text-white"
                         : "bg-gray-200 text-gray-500"
@@ -221,7 +221,7 @@ export default function ProviderRegisterPage() {
             <span className="text-gray-600">Already have an account? </span>
             <Link
               to="/login"
-              className="text-primary-600 font-bold hover:underline"
+              className="text-primary-600 font-montserrat-bold hover:underline"
             >
               Sign in
             </Link>

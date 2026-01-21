@@ -54,7 +54,7 @@ export default function ParticipantJobDetailsPage() {
       case "casual":
         return "bg-orange-100 text-orange-800";
       case "contract":
-        return "bg-blue-100 text-blue-800";
+        return "bg-primary-100 text-primary-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -150,18 +150,18 @@ export default function ParticipantJobDetailsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2 flex-wrap">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-montserrat-bold text-gray-900">
                   {job.jobRole}
                 </h2>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                  className={`px-3 py-1 rounded-full text-xs font-montserrat-semibold ${getStatusColor(
                     job.status
                   )}`}
                 >
                   {getStatusLabel(job.status)}
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${getAvailabilityColor(
+                  className={`px-3 py-1 rounded-full text-xs font-montserrat-semibold ${getAvailabilityColor(
                     job.jobType
                   )}`}
                 >
@@ -189,28 +189,28 @@ export default function ParticipantJobDetailsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="text-center">
               <DollarMinimalistic className="h-6 w-6 mx-auto mb-1 text-primary" />
-              <p className="text-2xl font-bold text-primary">
+              <p className="text-2xl font-montserrat-bold text-primary">
                 ${job.price}
               </p>
               <p className="text-xs text-gray-500">per hour</p>
             </div>
             <div className="text-center">
               <ClockCircle className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-montserrat-semibold text-gray-900">
                 {Object.values(job.requiredCompetencies).map(v => v ? 1 : 0).reduce((a, b) => a + b, 0)}
               </p>
               <p className="text-xs text-gray-500">Competencies Checks</p>
             </div>
             <div className="text-center">
               <UsersGroupRounded className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-montserrat-semibold text-gray-900">
                 {job.applicationCount}
               </p>
               <p className="text-xs text-gray-500">Applicants</p>
             </div>
             <div className="text-center">
               <SuitcaseTag className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900 truncate">
+              <p className="text-lg font-montserrat-semibold text-gray-900 truncate">
                 {job.jobRole}
               </p>
               <p className="text-xs text-gray-500">Position</p>
@@ -236,7 +236,7 @@ export default function ParticipantJobDetailsPage() {
 
           {/* Description */}
           <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Document className="h-5 w-5 text-primary" />
               Job Description
             </h3>
@@ -248,7 +248,7 @@ export default function ParticipantJobDetailsPage() {
           {/* Required Competencies */}
           {getCompetencies().length > 0 && (
             <div className="border-t border-gray-200 pt-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-600" />
                 Required Competencies
               </h3>
@@ -269,7 +269,7 @@ export default function ParticipantJobDetailsPage() {
           {/* Key Responsibilities */}
           {job.keyResponsibilities && (
             <div className="border-t border-gray-200 pt-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
                 Key Responsibilities
               </h3>
               <div 
@@ -282,7 +282,7 @@ export default function ParticipantJobDetailsPage() {
           {/* Additional Notes */}
           {job.additionalNote && (
             <div className="border-t border-gray-200 pt-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
                 Additional Information
               </h3>
               <p className="text-sm text-gray-600">{job.additionalNote}</p>
@@ -291,7 +291,7 @@ export default function ParticipantJobDetailsPage() {
 
           {/* Location */}
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4 flex items-center gap-2">
               <MapPoint className="h-5 w-5 text-primary" />
               Location
             </h3>

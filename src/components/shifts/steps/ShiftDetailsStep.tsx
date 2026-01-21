@@ -69,7 +69,7 @@ export const ShiftDetailsStep = memo(({
          {formData.endTime && (
              <div className="p-3 bg-primary-50 text-primary-700 rounded-lg text-sm flex justify-between items-center">
                  <span>End Time:</span>
-                 <span className="font-bold">
+                 <span className="font-montserrat-bold">
                     {new Date(formData.endTime).toLocaleString("en-AU", { dateStyle: "short", timeStyle: "short" })}
                  </span>
              </div>

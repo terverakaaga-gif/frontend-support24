@@ -107,7 +107,7 @@ export default function ProviderSupportWorkerProfilePage() {
             
             <div className="flex items-center gap-2 mb-1">
               <h1 className="text-xl font-montserrat-bold text-gray-900">{WORKER_DETAILS.name}</h1>
-              {WORKER_DETAILS.isVerified && <VerifiedCheck className="w-6 h-6 text-blue-600" />}
+              {WORKER_DETAILS.isVerified && <VerifiedCheck className="w-6 h-6 text-primary-600" />}
             </div>
             
             <p className="text-gray-500 font-medium mb-3">{WORKER_DETAILS.role}</p>
@@ -133,20 +133,20 @@ export default function ProviderSupportWorkerProfilePage() {
           {/* 2. Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
             {/* View Icon (Blue background) */}
-            <button className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors">
+            <button className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors">
               <Eye className="w-6 h-6" />
             </button>
             
             {/* Add Icon (Unlock Trigger) */}
             <button 
               onClick={handleAddToWorkflow}
-              className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors"
+              className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors"
             >
               <AddSquare className="w-6 h-6" />
             </button>
             
             {/* Video Icon */}
-            <button className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors">
+            <button className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors">
               <Videocamera className="w-6 h-6" />
             </button>
 
@@ -184,11 +184,11 @@ export default function ProviderSupportWorkerProfilePage() {
             
             {/* Locked Overlay Hint (Optional - to guide user) */}
             {!isUnlocked && (
-              <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100 flex flex-col items-center text-center">
-                <p className="text-blue-800 font-medium mb-2">Want to see full details?</p>
+              <div className="mt-8 p-4 bg-primary-50 rounded-lg border border-primary-100 flex flex-col items-center text-center">
+                <p className="text-primary-800 font-medium mb-2">Want to see full details?</p>
                 <button 
                   onClick={handleUnlockAttempt}
-                  className="text-sm bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold shadow-md"
+                  className="text-sm bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 font-montserrat-bold shadow-md"
                 >
                   Unlock Full Profile
                 </button>
@@ -221,7 +221,7 @@ export default function ProviderSupportWorkerProfilePage() {
             </p>
             <button 
               onClick={handlePaymentSuccess}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700"
+              className="w-full bg-primary-600 text-white py-3 rounded-xl font-montserrat-bold hover:bg-primary-700"
             >
               Continue to Panel
             </button>
@@ -238,7 +238,7 @@ const TabButton = ({ label, isActive, onClick }: { label: string, isActive: bool
   <button
     onClick={onClick}
     className={cn(
-      "flex-1 py-2.5 px-3 rounded-md text-xs md:text-sm font-semibold transition-all duration-200",
+      "flex-1 py-2.5 px-3 rounded-md text-xs md:text-sm font-montserrat-semibold transition-all duration-200",
       isActive 
         ? "bg-white text-gray-900 shadow-sm" 
         : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"

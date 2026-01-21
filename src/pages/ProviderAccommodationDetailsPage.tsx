@@ -104,11 +104,11 @@ export default function ProviderAccommodationDetailsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-montserrat-bold text-gray-900">
                   {mockAccommodation.title}
                 </h2>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                  className={`px-3 py-1 rounded-full text-xs font-montserrat-semibold ${getStatusColor(
                     mockAccommodation.status
                   )}`}
                 >
@@ -135,28 +135,28 @@ export default function ProviderAccommodationDetailsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="text-center">
               <DollarMinimalistic className="h-6 w-6 mx-auto mb-1 text-primary" />
-              <p className="text-2xl font-bold text-primary">
+              <p className="text-2xl font-montserrat-bold text-primary">
                 ${mockAccommodation.price}
               </p>
               <p className="text-xs text-gray-500">per {mockAccommodation.priceUnit}</p>
             </div>
             <div className="text-center">
               <Buildings className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-montserrat-semibold text-gray-900">
                 {mockAccommodation.bedrooms}
               </p>
               <p className="text-xs text-gray-500">Bedrooms</p>
             </div>
             <div className="text-center">
               <Home className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-montserrat-semibold text-gray-900">
                 {mockAccommodation.bathrooms}
               </p>
               <p className="text-xs text-gray-500">Bathrooms</p>
             </div>
             <div className="text-center">
               <Buildings className="h-6 w-6 mx-auto mb-1 text-gray-600" />
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-montserrat-semibold text-gray-900">
                 {mockAccommodation.parking}
               </p>
               <p className="text-xs text-gray-500">Parking</p>
@@ -180,7 +180,7 @@ export default function ProviderAccommodationDetailsPage() {
 
           {/* Description */}
           <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
               Description
             </h3>
             <div className="text-sm text-gray-600 space-y-4 whitespace-pre-line">
@@ -190,7 +190,7 @@ export default function ProviderAccommodationDetailsPage() {
 
           {/* Features */}
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
               Features
             </h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -205,7 +205,7 @@ export default function ProviderAccommodationDetailsPage() {
 
           {/* Accessibility */}
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Bed className="h-5 w-5 text-primary" />
               Accessibility Features
             </h3>
@@ -221,7 +221,7 @@ export default function ProviderAccommodationDetailsPage() {
 
           {/* Nearby Services */}
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
               Nearby Services
             </h3>
             <ul className="space-y-3">

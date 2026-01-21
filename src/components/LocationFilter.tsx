@@ -66,7 +66,7 @@ export function LocationFilter({ filters, onChange }: LocationFilterProps) {
             onChange('matchParticipantLocation', checked ? 'true' : undefined)
           }
         />
-        <Label htmlFor="auto-location" className="text-sm cursor-pointer font-normal">
+        <Label htmlFor="auto-location" className="text-sm cursor-pointer font-montserrat">
           Use my location
         </Label>
       </div>

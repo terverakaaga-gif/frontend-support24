@@ -38,7 +38,7 @@ export const RoutineManager = memo(({
   return (
     <div className="border-t pt-6 space-y-4">
       <div className="space-y-3">
-        <Label className="text-base font-semibold">Routine Options</Label>
+        <Label className="text-base font-montserrat-semibold">Routine Options</Label>
 
         {/* Option Selection Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -67,7 +67,7 @@ export const RoutineManager = memo(({
       {option === "create" && (
         <Card className="bg-white border-2 border-primary/10">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold flex items-center gap-2">
+            <h3 className="font-montserrat-bold flex items-center gap-2">
               <ListCheck className="w-5 h-5 text-primary" /> Create Routine
             </h3>
 
@@ -95,7 +95,7 @@ export const RoutineManager = memo(({
               {currentRoutine?.tasks?.map((task: any, index: number) => (
                 <div key={index} className="bg-gray-50 p-3 rounded-lg border space-y-2 relative group">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-semibold text-gray-500">Task {index + 1}</span>
+                    <span className="text-xs font-montserrat-semibold text-gray-500">Task {index + 1}</span>
                     <button 
                       type="button" 
                       onClick={() => removeTask(index)}
@@ -150,7 +150,7 @@ export const RoutineManager = memo(({
                   <RadioGroupItem value={routine.routineId} id={routine.routineId} className="mt-1" />
                   <div className="flex-1">
                     <div className="flex justify-between">
-                        <h4 className="font-semibold text-sm">{routine.name}</h4>
+                        <h4 className="font-montserrat-semibold text-sm">{routine.name}</h4>
                         <Badge variant="outline" className="text-[10px]">{routine.tasks.length} Tasks</Badge>
                     </div>
                     <p className="text-xs text-gray-500 mt-1 line-clamp-2">{routine.description}</p>

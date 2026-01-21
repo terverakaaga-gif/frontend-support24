@@ -94,7 +94,7 @@ export default function EventRegistrationModal({
 
         <div className={MODAL_BODY}>
           <p className="mb-6 text-gray-600 text-sm leading-relaxed">
-            Enter your details below to register for <span className="font-semibold text-gray-900">{eventName}</span>. 
+            Enter your details below to register for <span className="font-montserrat-semibold text-gray-900">{eventName}</span>. 
             Additional information will be sent to your email.
           </p>
 

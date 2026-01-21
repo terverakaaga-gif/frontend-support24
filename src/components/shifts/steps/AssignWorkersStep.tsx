@@ -56,7 +56,7 @@ const WorkerCard = ({ worker, isSelected, onClick, selectionComponent }: any) =>
                 <AvatarFallback>{getWorkerInitials(worker.workerId)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
-                <p className="font-semibold">{getWorkerDisplayName(worker.workerId)}</p>
+                <p className="font-montserrat-semibold">{getWorkerDisplayName(worker.workerId)}</p>
                 <p className="text-xs text-gray-500">Available</p>
             </div>
             {isSelected && <CheckCircle className="w-5 h-5 text-primary" />}

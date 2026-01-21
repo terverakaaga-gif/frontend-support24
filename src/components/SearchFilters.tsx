@@ -145,7 +145,7 @@ export function SearchFilters({
                     checked={selectedSkills.includes(skill._id)}
                     onCheckedChange={() => handleSkillToggle(skill._id)}
                   />
-                  <Label htmlFor={skill._id} className="text-xs cursor-pointer font-normal">
+                  <Label htmlFor={skill._id} className="text-xs cursor-pointer font-montserrat">
                     {skill.name}
                   </Label>
                 </div>
@@ -176,7 +176,7 @@ export function SearchFilters({
         <div className={cn(`space-y-${SPACING.sm}`)}>
           <div className={cn(FLEX_ROW_BETWEEN)}>
             <Label className={cn(TEXT_STYLES.small, FONT_FAMILY.montserratSemibold)}>Hourly Rate</Label>
-            <span className="text-xs text-primary font-bold">
+            <span className="text-xs text-primary font-montserrat-bold">
                 Max: ${maxRate[0] >= 100 ? '100+' : maxRate[0]}
             </span>
           </div>
@@ -195,7 +195,7 @@ export function SearchFilters({
             checked={localFilters.onlyVerified || false}
             onCheckedChange={(checked) => updateLocalFilter('onlyVerified', checked ? true : undefined)}
           />
-          <Label htmlFor="verified" className="text-sm font-normal cursor-pointer">
+          <Label htmlFor="verified" className="text-sm font-montserrat cursor-pointer">
             Show verified workers only
           </Label>
         </div>

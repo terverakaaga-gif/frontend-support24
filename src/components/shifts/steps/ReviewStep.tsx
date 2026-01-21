@@ -7,7 +7,7 @@ export const ReviewStep = ({ formData, shiftTypeLabel }: any) => {
         <div className="space-y-6">
             <Card>
                 <CardContent className="p-6 space-y-4">
-                    <h3 className="font-bold text-lg">{shiftTypeLabel} Shift</h3>
+                    <h3 className="font-montserrat-bold text-lg">{shiftTypeLabel} Shift</h3>
                     <div className="grid grid-cols-2 gap-4 border-t pt-4">
                         <div>
                             <p className="text-xs text-gray-500">Start</p>

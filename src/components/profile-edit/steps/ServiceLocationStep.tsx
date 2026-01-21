@@ -122,7 +122,7 @@ export const ServiceLocationStep = React.memo(({
           <MapPoint className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Service Locations</h2>
+          <h2 className="text-xl font-montserrat-bold text-gray-900">Service Locations</h2>
           <p className="text-sm text-gray-600">Configure where you provide services</p>
         </div>
       </div>

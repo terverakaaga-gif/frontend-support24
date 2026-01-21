@@ -237,7 +237,7 @@ export default function ProviderAccommodationsPage() {
         {currentAccommodations.length === 0 && (
           <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-200">
             <Home className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p className="font-semibold">No accommodations found</p>
+            <p className="font-montserrat-semibold">No accommodations found</p>
             <p className="text-sm mt-1">Try adjusting your search or filters</p>
           </div>
         )}

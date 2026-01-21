@@ -63,7 +63,7 @@ export default function WorkerCard({
               {worker.name}
             </h3>
             {worker.isVerified && (
-              <VerifiedCheck className="w-5 h-5 text-blue-600" />
+              <VerifiedCheck className="w-5 h-5 text-primary-600" />
             )}
           </div>
           <p className="text-gray-500 text-xs font-medium">{worker.role}</p>

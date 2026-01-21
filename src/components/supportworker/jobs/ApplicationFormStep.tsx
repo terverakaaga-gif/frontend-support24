@@ -81,13 +81,13 @@ export const ApplicationFormStep = React.memo(({
                         <CheckCircle className={`h-5 w-5 ${doc.uploaded ? "text-green-600" : "text-gray-400"}`} />
                         <span className={`text-sm font-medium ${doc.uploaded ? "text-green-700" : "text-gray-600"}`}>{doc.name}</span>
                     </div>
-                    {doc.uploaded ? <span className="text-xs text-green-600 font-bold">Uploaded</span> : <span className="text-xs text-gray-400">Required</span>}
+                    {doc.uploaded ? <span className="text-xs text-green-600 font-montserrat-bold">Uploaded</span> : <span className="text-xs text-gray-400">Required</span>}
                 </div>
             ))}
         </div>
       </div>
 
-      <Button onClick={onReview} className="w-full h-12 bg-primary hover:bg-primary/90 text-lg font-semibold mt-4">
+      <Button onClick={onReview} className="w-full h-12 bg-primary hover:bg-primary/90 text-lg font-montserrat-semibold mt-4">
         Review
       </Button>
     </div>

@@ -193,7 +193,7 @@ export default function SupportSavedJobsPage() {
         {currentJobs.length === 0 && (
           <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-200">
             <SuitcaseTag className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p className="font-semibold">No saved jobs</p>
+            <p className="font-montserrat-semibold">No saved jobs</p>
             <p className="text-sm mt-1">
               Jobs you save will appear here for easy access
             </p>

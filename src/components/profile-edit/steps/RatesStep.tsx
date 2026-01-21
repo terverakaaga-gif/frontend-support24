@@ -145,7 +145,7 @@ export const RatesStep = React.memo(({ formData, onChange }: Props) => {
           <CalendarMark className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Hourly Rates</h2>
+          <h2 className="text-xl font-montserrat-bold text-gray-900">Hourly Rates</h2>
           <p className="text-sm text-gray-600">
             Set your rates for different time bands (Min $38)
           </p>
@@ -217,7 +217,7 @@ export const RatesStep = React.memo(({ formData, onChange }: Props) => {
       {/* Availability Section */}
       <div className="border-t pt-6 mt-8">
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">
+          <h3 className="text-lg font-montserrat-bold text-gray-900 mb-1">
             Weekly Availability
           </h3>
           <p className="text-sm text-gray-600">Set your weekly schedule</p>

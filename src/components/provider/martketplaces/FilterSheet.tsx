@@ -74,11 +74,11 @@ export default function FilterSheet({
               <div className={cn(
                 "w-6 h-6 rounded-full border flex items-center justify-center transition-all",
                 localSelected === option.id 
-                  ? "border-blue-600" 
-                  : "border-gray-300 group-hover:border-blue-400"
+                  ? "border-primary-600" 
+                  : "border-gray-300 group-hover:border-primary-400"
               )}>
                 {localSelected === option.id && (
-                  <div className="w-3.5 h-3.5 bg-blue-600 rounded-full" />
+                  <div className="w-3.5 h-3.5 bg-primary-600 rounded-full" />
                 )}
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function FilterSheet({
         <div className="p-4 border-t border-gray-100 mt-auto">
           <button 
             onClick={handleShowResults}
-            className={cn(BUTTON_PRIMARY, "w-full py-3 bg-blue-700 hover:bg-blue-800 rounded-xl")}
+            className={cn(BUTTON_PRIMARY, "w-full py-3 bg-primary-700 hover:bg-primary-800 rounded-xl")}
           >
             Show Results
           </button>

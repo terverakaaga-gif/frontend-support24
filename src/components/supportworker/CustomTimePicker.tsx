@@ -80,7 +80,7 @@ export function CustomTimePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-full pl-3 text-left font-normal h-12 rounded-lg border-gray-200",
+            "w-full pl-3 text-left font-montserrat h-12 rounded-lg border-gray-200",
             !value && "text-muted-foreground"
           )}
         >
@@ -94,7 +94,7 @@ export function CustomTimePicker({
       </PopoverTrigger>
       <PopoverContent className="w-auto p-4">
         <div className="flex flex-col gap-3">
-          <div className="text-sm font-semibold">Select Time</div>
+          <div className="text-sm font-montserrat-semibold">Select Time</div>
           <div className="flex gap-2 items-center">
             <Select
               value={hour.toString()}
@@ -112,7 +112,7 @@ export function CustomTimePicker({
               </SelectContent>
             </Select>
             
-            <span className="text-lg font-semibold">:</span>
+            <span className="text-lg font-montserrat-semibold">:</span>
             
             <Select
               value={minute.toString()}

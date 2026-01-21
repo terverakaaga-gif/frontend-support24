@@ -54,7 +54,7 @@ export const SkillsLanguagesStep = React.memo(
             <Star className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-montserrat-bold text-gray-900">
               Skills & Languages
             </h2>
             <p className="text-sm text-gray-600">

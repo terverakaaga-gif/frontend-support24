@@ -44,9 +44,9 @@ export const CareTeamTab = ({ participant, onEdit }: Props) => {
           )}
 
           {participant.behaviorSupportPractitioner && (
-            <div className="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+            <div className="mb-6 p-4 rounded-lg bg-primary-50 border border-primary-200">
               <h4 className="font-montserrat-semibold text-gray-900 mb-2 flex items-center gap-2">
-                <User className="w-4 h-4 text-blue-600" /> Behavior Support Practitioner
+                <User className="w-4 h-4 text-primary-600" /> Behavior Support Practitioner
               </h4>
               <div className="space-y-2">
                 <p className="text-sm"><span className="font-montserrat-semibold">Name:</span> {participant.behaviorSupportPractitioner.name}</p>

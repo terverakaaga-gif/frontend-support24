@@ -56,7 +56,7 @@ export const ReviewStep = memo(({ form, onEditStep }: Props) => {
         />
 
         <div className="col-span-2 border-t pt-2 mt-1">
-          <p className="font-semibold text-gray-500 mb-2">Primary Contact</p>
+          <p className="font-montserrat-semibold text-gray-500 mb-2">Primary Contact</p>
           <div className="grid grid-cols-2 gap-3">
             <ReviewRow label="Name" value={values.primaryContactName} />
             <ReviewRow label="Phone" value={values.primaryContactPhone} />

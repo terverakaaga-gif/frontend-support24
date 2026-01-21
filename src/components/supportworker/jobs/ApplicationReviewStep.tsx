@@ -78,7 +78,7 @@ export const ApplicationReviewStep = React.memo(
                     : "Document";
                   const badgeColor =
                     type === "Resume"
-                      ? "bg-blue-100 text-blue-700"
+                      ? "bg-primary-100 text-primary-700"
                       : type === "Cover Letter"
                       ? "bg-purple-100 text-purple-700"
                       : "bg-gray-100 text-gray-700";

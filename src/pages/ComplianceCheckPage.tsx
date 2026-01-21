@@ -126,7 +126,7 @@ export default function ComplianceCheckPage() {
 
           {isVerified && (
             <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none select-none">
-              <div className="text-primary-600 font-bold text-8xl md:text-9xl tracking-wider transform rotate-[-15deg]">
+              <div className="text-primary-600 font-montserrat-bold text-8xl md:text-9xl tracking-wider transform rotate-[-15deg]">
                 VERIFIED
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function ComplianceCheckPage() {
                 <InfoRow
                   label="ID Number:"
                   value={compliance?._id?.slice(-8).toUpperCase() || "Not Available"}
-                  valueClassName={compliance?._id ? "text-gray-900 font-semibold" : "text-gray-400"}
+                  valueClassName={compliance?._id ? "text-gray-900 font-montserrat-semibold" : "text-gray-400"}
                 />
                 <InfoRow label="Email:" value={user?.email || "N/A"} />
                 <InfoRow label="Phone Number:" value={user?.phone || "N/A"} />
@@ -196,7 +196,7 @@ export default function ComplianceCheckPage() {
                         {statusConfig.icon}
                       </div>
                     )}
-                    <span className={cn("font-semibold text-sm", statusConfig.color)}>
+                    <span className={cn("font-montserrat-semibold text-sm", statusConfig.color)}>
                       {statusConfig.label}
                     </span>
                   </div>
@@ -207,14 +207,14 @@ export default function ComplianceCheckPage() {
                   value={compliance?.submittedAt 
                     ? format(new Date(compliance.submittedAt), "d MMM, yyyy")
                     : "Not Submitted"}
-                  valueClassName={compliance?.submittedAt ? "text-gray-900 font-semibold" : "text-gray-400"}
+                  valueClassName={compliance?.submittedAt ? "text-gray-900 font-montserrat-semibold" : "text-gray-400"}
                 />
                 <InfoRow
                   label="Review Date:"
                   value={compliance?.reviewedAt 
                     ? format(new Date(compliance.reviewedAt), "d MMM, yyyy")
                     : "Not Reviewed"}
-                  valueClassName={compliance?.reviewedAt ? "text-gray-900 font-semibold" : "text-gray-400"}
+                  valueClassName={compliance?.reviewedAt ? "text-gray-900 font-montserrat-semibold" : "text-gray-400"}
                 />
               </div>
             </section>
@@ -328,7 +328,7 @@ function InfoRow({
   return (
     <div className="flex justify-between items-center py-2">
       <span className="text-gray-600 text-sm">{label}</span>
-      <span className={`font-semibold text-sm ${valueClassName}`}>{value}</span>
+      <span className={`font-montserrat-semibold text-sm ${valueClassName}`}>{value}</span>
     </div>
   );
 }

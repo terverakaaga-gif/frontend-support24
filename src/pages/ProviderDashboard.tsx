@@ -202,17 +202,17 @@ function StatCard({
   return (
     <div className={DASHBOARD_STAT_CARD}>
       <div className="flex items-center justify-between mb-3">
-        <div className="text-sm font-semibold text-gray-600">{title}</div>
+        <div className="text-sm font-montserrat-semibold text-gray-600">{title}</div>
         <div className="p-2 rounded-full bg-primary-300/20">
           <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
         </div>
       </div>
-      <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+      <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900 mb-1">
         {value}
       </div>
       {trend && (
         <div
-          className={`text-xs font-semibold flex items-center gap-1 ${
+          className={`text-xs font-montserrat-semibold flex items-center gap-1 ${
             trendDirection === "up"
               ? "text-green-600"
               : trendDirection === "down"
@@ -240,7 +240,7 @@ function EngagementChart() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full lg:col-span-2">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">
           Engagement Overview
         </h2>
         <Button
@@ -255,10 +255,10 @@ function EngagementChart() {
 
       <div className="flex flex-wrap items-center gap-4 md:gap-8 mb-6">
         <div className="flex gap-3 items-center">
-          <div className="text-2xl md:text-3xl font-bold text-gray-900">
+          <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900">
             80%
           </div>
-          <div className="text-green-600 bg-green-600/10 rounded-lg px-2 py-1 text-sm font-semibold flex items-center">
+          <div className="text-green-600 bg-green-600/10 rounded-lg px-2 py-1 text-sm font-montserrat-semibold flex items-center">
             <span className="mr-1">↑</span>
             12.6%
           </div>
@@ -340,7 +340,7 @@ function NotificationsPanel() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
+        <h2 className="text-lg font-montserrat-semibold text-gray-900">Notifications</h2>
         <Button
           variant="link"
           className="text-yellow-600 hover:text-yellow-700"
@@ -423,7 +423,7 @@ function RecentPosts() {
   return (
     <div className="bg-white mt-8 rounded-lg border border-gray-200">
       <div className="p-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">All Posts</h2>
+        <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-4">All Posts</h2>
         <div className="flex flex-wrap gap-2 bg-gray-200 p-2 rounded-lg w-fit">
           <Button
             variant="ghost"

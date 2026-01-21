@@ -18,7 +18,7 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
             <User className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Current Profile</h2>
+            <h2 className="text-xl font-montserrat-bold text-gray-900">Current Profile</h2>
             <p className="text-sm text-gray-600">
               Review your current information before making changes
             </p>
@@ -37,26 +37,26 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">First Name</p>
-                <p className="font-semibold">
+                <p className="font-montserrat-semibold">
                   {formData.firstName || "Not set"}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Last Name</p>
-                <p className="font-semibold">
+                <p className="font-montserrat-semibold">
                   {formData.lastName || "Not set"}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Email</p>
-                <p className="font-semibold flex items-center gap-2">
+                <p className="font-montserrat-semibold flex items-center gap-2">
                   <Mailbox className="w-4 h-4 text-gray-500" />
                   {formData.email || "Not set"}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Phone</p>
-                <p className="font-semibold flex items-center gap-2">
+                <p className="font-montserrat-semibold flex items-center gap-2">
                   <Phone className="w-4 h-4 text-gray-500" />
                   {formData.phone || "Not set"}
                 </p>
@@ -64,7 +64,7 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
               {formData.dateOfBirth && (
                 <div>
                   <p className="text-sm text-gray-600">Date of Birth</p>
-                  <p className="font-semibold flex items-center gap-2">
+                  <p className="font-montserrat-semibold flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-gray-500" />
                     {format(new Date(formData.dateOfBirth), "MMM dd, yyyy")}
                   </p>
@@ -73,7 +73,7 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
               {formData.gender && (
                 <div>
                   <p className="text-sm text-gray-600">Gender</p>
-                  <p className="font-semibold">{formData.gender}</p>
+                  <p className="font-montserrat-semibold">{formData.gender}</p>
                 </div>
               )}
             </div>
@@ -89,7 +89,7 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-semibold">
+            <p className="font-montserrat-semibold">
               {formData.address || "No address provided"}
             </p>
           </CardContent>
@@ -106,7 +106,7 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
                 <CardContent className="space-y-2">
                   <div>
                     <p className="text-sm text-gray-600">NDIS Number</p>
-                    <p className="font-semibold">{formData.ndisNumber}</p>
+                    <p className="font-montserrat-semibold">{formData.ndisNumber}</p>
                   </div>
                   {formData.planManaged !== undefined && (
                     <div>
@@ -130,19 +130,19 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
                 <CardContent className="space-y-2">
                   <div>
                     <p className="text-sm text-gray-600">Name</p>
-                    <p className="font-semibold">
+                    <p className="font-montserrat-semibold">
                       {formData.emergencyContact.name || "Not set"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Relationship</p>
-                    <p className="font-semibold">
+                    <p className="font-montserrat-semibold">
                       {formData.emergencyContact.relationship || "Not set"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-semibold">
+                    <p className="font-montserrat-semibold">
                       {formData.emergencyContact.phone || "Not set"}
                     </p>
                   </div>
@@ -202,9 +202,9 @@ export const ProfilePreviewStep: React.FC<ProfilePreviewStepProps> = React.memo(
           </Card>
         )}
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-          <p className="text-sm text-blue-800">
-            Click <span className="font-semibold">Next</span> to start editing
+        <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mt-6">
+          <p className="text-sm text-primary-800">
+            Click <span className="font-montserrat-semibold">Next</span> to start editing
             your profile information step by step.
           </p>
         </div>

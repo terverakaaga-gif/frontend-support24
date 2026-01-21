@@ -199,7 +199,7 @@ export function SearchSupportWorkers({
                     <Button variant="outline" size="icon" className="relative">
                       <Filter className="w-4 h-4" />
                       {activeFilterCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full text-white text-xs flex items-center justify-center font-bold">
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full text-white text-xs flex items-center justify-center font-montserrat-bold">
                           {activeFilterCount}
                         </span>
                       )}
@@ -229,8 +229,8 @@ export function SearchSupportWorkers({
 
             {/* Active Filters Display */}
             {activeFilterCount > 0 && (
-              <div className={cn("p-3 bg-blue-50 border-b flex items-center flex-wrap", GAP.sm)}>
-                <span className="text-xs font-semibold text-gray-700">Active Filters:</span>
+              <div className={cn("p-3 bg-primary-50 border-b flex items-center flex-wrap", GAP.sm)}>
+                <span className="text-xs font-montserrat-semibold text-gray-700">Active Filters:</span>
                 {appliedFilters.skills && appliedFilters.skills.length > 0 && (
                   <Badge variant="secondary" className="text-xs">
                     {appliedFilters.skills.length} skill{appliedFilters.skills.length > 1 ? 's' : ''}
@@ -315,7 +315,7 @@ export function SearchSupportWorkers({
                                   alt={`${worker.firstName} ${worker.lastName}`}
                                   className="object-cover"
                                 />
-                                <AvatarFallback className="bg-gradient-to-br from-primary to-primary-700 text-white text-2xl font-bold">
+                                <AvatarFallback className="bg-gradient-to-br from-primary to-primary-700 text-white text-2xl font-montserrat-bold">
                                   {worker.firstName[0]}
                                   {worker.lastName[0]}
                                 </AvatarFallback>
@@ -339,7 +339,7 @@ export function SearchSupportWorkers({
                                   <div className={cn("flex flex-wrap items-center mb-3", GAP.sm)}>
                                     <div className={cn("flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1", RADIUS.lg)}>
                                       <span className="text-amber-500 text-lg">★</span>
-                                      <span className="font-bold text-amber-700">
+                                      <span className="font-montserrat-bold text-amber-700">
                                         {worker.ratings?.average.toFixed(1) || "New"}
                                       </span>
                                       {worker.ratings?.count > 0 && (
@@ -357,7 +357,7 @@ export function SearchSupportWorkers({
                                     )}
                                     
                                     {worker.verificationStatus?.ndisWorkerScreeningVerified && (
-                                      <Badge variant="outline" className="border-blue-300 bg-blue-50 text-blue-700">
+                                      <Badge variant="outline" className="border-primary-300 bg-primary-50 text-primary-700">
                                         Background Checked
                                       </Badge>
                                     )}
@@ -374,7 +374,7 @@ export function SearchSupportWorkers({
                                       </span>
                                     </div>
                                     {worker.distance !== undefined && (
-                                      <Badge variant="secondary" className="bg-primary/10 text-primary font-semibold">
+                                      <Badge variant="secondary" className="bg-primary/10 text-primary font-montserrat-semibold">
                                         {worker.distance.toFixed(1)}km away
                                       </Badge>
                                     )}
@@ -384,7 +384,7 @@ export function SearchSupportWorkers({
                                 {/* Pricing Card */}
                                 <div className={cn("bg-white border-2 border-primary/20 p-4 text-center shadow-sm min-w-[70px]", RADIUS.xl)}>
                                   <div className={cn(TEXT_STYLES.caption, "text-primary", FONT_FAMILY.montserratSemibold, "mb-1")}>Hourly Rate</div>
-                                  <div className="text-xl font-bold text-primary">
+                                  <div className="text-xl font-montserrat-bold text-primary">
                                     ${worker.hourlyRate?.baseRate}
                                   </div>
                                   <div className="text-xs text-gray-500 mt-1">per hour</div>
@@ -399,7 +399,7 @@ export function SearchSupportWorkers({
                           {/* Bio */}
                           {worker.bio && (
                             <div>
-                              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                              <h4 className="text-sm font-montserrat-semibold text-gray-500 uppercase tracking-wide mb-2">
                                 About
                               </h4>
                               <p className="text-gray-700 leading-relaxed line-clamp-3">
@@ -411,7 +411,7 @@ export function SearchSupportWorkers({
                           {/* Skills & Services */}
                           {worker.skills && worker.skills.length > 0 && (
                             <div>
-                              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                              <h4 className="text-sm font-montserrat-semibold text-gray-500 uppercase tracking-wide mb-3">
                                 Skills & Services
                               </h4>
                               <div className={cn("flex flex-wrap", GAP.sm)}>
@@ -431,7 +431,7 @@ export function SearchSupportWorkers({
                           {/* Languages */}
                           {worker.languages && worker.languages.length > 0 && (
                             <div>
-                              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                              <h4 className="text-sm font-montserrat-semibold text-gray-500 uppercase tracking-wide mb-3">
                                 Languages
                               </h4>
                               <div className={cn("flex flex-wrap", GAP.sm)}>
@@ -451,7 +451,7 @@ export function SearchSupportWorkers({
                           {/* Service Areas - if multiple */}
                           {worker.serviceAreas && worker.serviceAreas.length > 2 && (
                             <div>
-                              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                              <h4 className="text-sm font-montserrat-semibold text-gray-500 uppercase tracking-wide mb-2">
                                 Service Areas
                               </h4>
                               <p className="text-sm text-gray-600">
@@ -481,7 +481,7 @@ export function SearchSupportWorkers({
                           <div className="flex gap-3">
                             <Button
                               variant="outline"
-                              className="flex-1 sm:flex-none border-primary/30 text-primary hover:bg-primary/5 font-semibold"
+                              className="flex-1 sm:flex-none border-primary/30 text-primary hover:bg-primary/5 font-montserrat-semibold"
                               onClick={() => {
                                 navigate(`/participant/profile/${worker._id}`);
                                 onOpenChange(false);
@@ -492,7 +492,7 @@ export function SearchSupportWorkers({
                             
                             {status === "none" && (
                               <Button
-                                className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-semibold shadow-md hover:shadow-lg transition-all"
+                                className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-montserrat-semibold shadow-md hover:shadow-lg transition-all"
                                 onClick={() => {
                                   navigate(`/participant/invite/${worker._id}`);
                                   onOpenChange(false);

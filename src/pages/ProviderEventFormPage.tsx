@@ -212,7 +212,7 @@ export default function ProviderEventFormPage() {
       >
         {/* Image Upload */}
         <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+          <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
             Upload Image Event
           </Label>
           <FileDropZone
@@ -230,7 +230,7 @@ export default function ProviderEventFormPage() {
         <div className="mb-6">
           <Label
             htmlFor="title"
-            className="text-sm font-semibold text-gray-700 mb-2 block"
+            className="text-sm font-montserrat-semibold text-gray-700 mb-2 block"
           >
             Event Name
           </Label>
@@ -287,7 +287,7 @@ export default function ProviderEventFormPage() {
         <div className="mb-6">
           <Label
             htmlFor="location"
-            className="text-sm font-semibold text-gray-700 mb-2 block"
+            className="text-sm font-montserrat-semibold text-gray-700 mb-2 block"
           >
             Event Location
           </Label>
@@ -308,7 +308,7 @@ export default function ProviderEventFormPage() {
         <div className="mb-6">
           <Label
             htmlFor="description"
-            className="text-sm font-semibold text-gray-700 mb-2 block"
+            className="text-sm font-montserrat-semibold text-gray-700 mb-2 block"
           >
             Event Description
           </Label>

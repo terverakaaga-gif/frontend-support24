@@ -84,7 +84,7 @@ export default function ProviderEventDetailsPage() {
         {/* Event Details */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-montserrat-bold text-gray-900">
               {eventData?.eventName}
             </h2>
             <Button
@@ -103,7 +103,7 @@ export default function ProviderEventDetailsPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Date</p>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-montserrat-semibold text-gray-900">
                   {formatDateRange(eventData?.eventStartDate, eventData?.eventEndDate)}
                 </p>
               </div>
@@ -115,7 +115,7 @@ export default function ProviderEventDetailsPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Time</p>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-montserrat-semibold text-gray-900">
                   {formatTimeRange(eventData?.eventStartTime, eventData?.eventEndTime)}
                 </p>
               </div>
@@ -127,7 +127,7 @@ export default function ProviderEventDetailsPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Location</p>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-montserrat-semibold text-gray-900">
                   {eventData?.eventLocation}
                 </p>
               </div>
@@ -147,7 +147,7 @@ export default function ProviderEventDetailsPage() {
           </div>
 
           <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
               Event Description
             </h3>
             <div className="text-sm text-gray-600 space-y-4 whitespace-pre-line">

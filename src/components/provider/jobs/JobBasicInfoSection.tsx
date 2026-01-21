@@ -17,7 +17,7 @@ export const JobBasicInfoSection = React.memo(({ formData, errors, onChange }: P
     <>
       {/* Job Role */}
       <div className="mb-6">
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Job Role</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Job Role</Label>
         <Select value={formData.jobRole} onValueChange={(val) => onChange("jobRole", val)}>
           <SelectTrigger className={errors.jobRole ? "border-red-500" : ""}>
             <SelectValue placeholder="Select job role" />
@@ -33,7 +33,7 @@ export const JobBasicInfoSection = React.memo(({ formData, errors, onChange }: P
 
       {/* Description */}
       <div className="mb-6">
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Job Description</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Job Description</Label>
         <Textarea
           placeholder="Describe the job role..."
           value={formData.jobDescription}
@@ -46,7 +46,7 @@ export const JobBasicInfoSection = React.memo(({ formData, errors, onChange }: P
 
       {/* Key Responsibilities (Quill) */}
       <div className="mb-6">
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Key Responsibilities</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Key Responsibilities</Label>
         <div className="quill-wrapper">
           <ReactQuill
             theme="snow"

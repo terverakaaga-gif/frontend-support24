@@ -82,7 +82,7 @@ export default function ParticipantJobFormPage() {
 
         {/* Additional Notes */}
         <div className="mb-6">
-          <Label htmlFor="additionalNote" className="text-sm font-semibold text-gray-700 mb-2 block">
+          <Label htmlFor="additionalNote" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
             Additional Notes
           </Label>
           <Textarea

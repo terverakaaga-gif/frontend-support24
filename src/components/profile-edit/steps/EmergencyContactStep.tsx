@@ -11,7 +11,7 @@ export const EmergencyContactStep = React.memo(({ formData, onNestedChange }: an
           <DangerCircle className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Emergency Contact</h2>
+          <h2 className="text-xl font-montserrat-bold text-gray-900">Emergency Contact</h2>
           <p className="text-sm text-gray-600">Person to contact in case of emergency</p>
         </div>
       </div>

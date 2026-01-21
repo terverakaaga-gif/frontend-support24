@@ -59,8 +59,8 @@ export const TimesheetForm = React.memo(({
             </div>
             {/* Display Readonly Times */}
             <div className="p-3 bg-primary-50 border border-primary-200 rounded-lg text-sm text-primary-900">
-                <p><span className="font-semibold">Start:</span> {formatTime(formData.actualStartTime)}</p>
-                <p><span className="font-semibold">End:</span> {formatTime(formData.actualEndTime)}</p>
+                <p><span className="font-montserrat-semibold">Start:</span> {formatTime(formData.actualStartTime)}</p>
+                <p><span className="font-montserrat-semibold">End:</span> {formatTime(formData.actualEndTime)}</p>
             </div>
         </div>
       ) : (
@@ -89,7 +89,7 @@ export const TimesheetForm = React.memo(({
       {/* Expenses Section */}
       <div className="space-y-3 border-t pt-3">
         <div className="flex justify-between items-center">
-            <Label className="font-semibold">Expenses (Optional)</Label>
+            <Label className="font-montserrat-semibold">Expenses (Optional)</Label>
             <Button type="button" variant="outline" size="sm" onClick={onAddExpense}>Add Expense</Button>
         </div>
         {formData.expenses.length > 0 && formData.expenses.map((expense, index) => (

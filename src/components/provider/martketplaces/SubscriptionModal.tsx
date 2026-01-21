@@ -28,7 +28,7 @@ export default function SubscriptionModal({
       )}>
         
         {/* Header Section with soft gradient */}
-        <div className="relative pt-12 pb-6 px-6 text-center bg-gradient-to-b from-blue-50/80 to-white">
+        <div className="relative pt-12 pb-6 px-6 text-center bg-gradient-to-b from-primary-50/80 to-white">
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 text-black hover:text-gray-700 transition-colors"
@@ -68,16 +68,16 @@ export default function SubscriptionModal({
 
               <button 
                 onClick={() => onSelectPlan('free')}
-                className={cn(BUTTON_OUTLINE, "w-full py-3 rounded-lg border-blue-600 text-blue-600 hover:bg-blue-50 font-bold")}
+                className={cn(BUTTON_OUTLINE, "w-full py-3 rounded-lg border-primary-600 text-primary-600 hover:bg-primary-50 font-montserrat-bold")}
               >
                 Get Started
               </button>
             </div>
 
             {/* 2. Full Profile / Boosted Card */}
-            <div className="border-2 border-blue-600 rounded-xl p-6 flex flex-col h-full relative shadow-lg transform md:-translate-y-2">
+            <div className="border-2 border-primary-600 rounded-xl p-6 flex flex-col h-full relative shadow-lg transform md:-translate-y-2">
               <div className="bg-gray-100 rounded-lg p-4 mb-6 relative">
-                <div className="absolute -top-3 right-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                <div className="absolute -top-3 right-4 bg-primary-600 text-white text-xs font-montserrat-bold px-3 py-1 rounded-full uppercase tracking-wide">
                   Best Choice
                 </div>
                 <h3 className="font-montserrat-bold text-lg text-gray-900">Full Profile</h3>
@@ -97,7 +97,7 @@ export default function SubscriptionModal({
 
               <button 
                 onClick={() => onSelectPlan('paid')}
-                className={cn(BUTTON_PRIMARY, "w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-blue-200")}
+                className={cn(BUTTON_PRIMARY, "w-full py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-montserrat-bold shadow-primary-200")}
               >
                 Get Started
               </button>

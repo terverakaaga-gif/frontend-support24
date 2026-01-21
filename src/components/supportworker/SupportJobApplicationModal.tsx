@@ -36,7 +36,7 @@ export default function SupportJobApplicationModal({
         {/* Header - Hidden on success to look cleaner */}
         {step !== "success" && (
             <div className="p-6 pb-4 border-b bg-white flex justify-between items-center sticky top-0 z-10">
-                <DialogTitle className="text-xl font-bold">
+                <DialogTitle className="text-xl font-montserrat-bold">
                     {step === "review" ? "Review Application" : "Apply Now"}
                 </DialogTitle>
                 <button onClick={handleModalClose} className="text-gray-400 hover:text-gray-600 transition-colors">

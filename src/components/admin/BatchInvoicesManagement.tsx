@@ -413,7 +413,7 @@ const BatchInvoicesManagement: React.FC = () => {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-start text-left font-normal"
+                      className="w-full justify-start text-left font-montserrat"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {startDate ? formatDateShort(startDate.toISOString()) : "Pick a date"}
@@ -437,7 +437,7 @@ const BatchInvoicesManagement: React.FC = () => {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-start text-left font-normal"
+                      className="w-full justify-start text-left font-montserrat"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {endDate ? formatDateShort(endDate.toISOString()) : "Pick a date"}

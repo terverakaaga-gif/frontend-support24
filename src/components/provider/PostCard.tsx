@@ -210,7 +210,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
             </div>
             <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
               <DollarMinimalistic className="h-3 w-3 flex-shrink-0" />
-              <span className="font-semibold text-primary">
+              <span className="font-montserrat-semibold text-primary">
                 ${post.price}/{post.priceUnit}
               </span>
               <p className="text-xs text-gray-500">
@@ -225,7 +225,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
           <>
             <div className="flex items-center gap-1 text-xs text-gray-600 mb-1.5">
               <DollarMinimalistic className="h-3.5 w-3.5 flex-shrink-0 text-primary" />
-              <span className="font-semibold text-primary text-sm">
+              <span className="font-montserrat-semibold text-primary text-sm">
                 ${post.hourlyRate}/hr
               </span>
               <span className="text-xs text-gray-500">·</span>
@@ -273,18 +273,18 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-sm font-semibold text-gray-600">
+                  <span className="text-sm font-montserrat-semibold text-gray-600">
                     {post.workerName.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
               {/* Name and Status */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-gray-900 truncate">
+                <h3 className="text-sm font-montserrat-semibold text-gray-900 truncate">
                   {post.workerName}
                 </h3>
                 <span
-                  className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold mt-0.5 ${getStatusColor(
+                  className={`inline-block px-2 py-0.5 rounded-full text-xs font-montserrat-semibold mt-0.5 ${getStatusColor(
                     post.status
                   )}`}
                 >
@@ -398,7 +398,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
 
           {/* Status Badge - Bottom Left */}
           <span
-            className={`absolute bottom-1 left-1 px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(
+            className={`absolute bottom-1 left-1 px-2 py-0.5 rounded-full text-xs font-montserrat-semibold ${getStatusColor(
               post.status
             )}`}
           >
@@ -452,7 +452,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2">
+        <h3 className="text-sm font-montserrat-semibold text-gray-900 line-clamp-2 mb-2">
           {post.title}
         </h3>
 

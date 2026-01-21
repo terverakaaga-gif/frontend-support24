@@ -146,7 +146,7 @@ export default function SupportJobDetailsPage() {
                 {job.jobRole}
                 <span className="font-montserrat-semibold text-primary text-xs p-1 ml-1 px-2 w-fit bg-primary-100 rounded-full">
                   ${job.price}
-                  <span className="text-gray-500 font-normal">/hr</span>
+                  <span className="text-gray-500 font-montserrat">/hr</span>
                 </span>
               </h1>
               <p className="text-sm text-gray-500">

@@ -11,7 +11,7 @@ interface Props {
 export const JobCompetenciesSection = ({ requiredCompetencies, onToggle }: Props) => {
   return (
     <div className="mb-6">
-      <Label className="text-sm font-semibold text-gray-700 mb-3 block">Required Competencies</Label>
+      <Label className="text-sm font-montserrat-semibold text-gray-700 mb-3 block">Required Competencies</Label>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {COMPETENCY_OPTIONS.map((comp) => (
           <div key={comp.id} className="flex items-center space-x-2">

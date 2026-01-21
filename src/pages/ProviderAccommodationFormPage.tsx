@@ -287,7 +287,7 @@ export default function ProviderAccommodationFormPage() {
       >
         {/* Image Upload */}
         <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+          <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
             Property Images
           </Label>
 
@@ -335,7 +335,7 @@ export default function ProviderAccommodationFormPage() {
 
         {/* Property Title */}
         <div className="mb-6">
-          <Label htmlFor="title" className="text-sm font-semibold text-gray-700 mb-2 block">
+          <Label htmlFor="title" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
             Property Title
           </Label>
           <Input
@@ -353,7 +353,7 @@ export default function ProviderAccommodationFormPage() {
 
         {/* Location */}
         <div className="mb-6">
-          <Label htmlFor="location" className="text-sm font-semibold text-gray-700 mb-2 block">
+          <Label htmlFor="location" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
             Full Address
           </Label>
           <div className="relative">
@@ -375,7 +375,7 @@ export default function ProviderAccommodationFormPage() {
         {/* Price and Property Type */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
-            <Label htmlFor="price" className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label htmlFor="price" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
               Price ($)
             </Label>
             <Input
@@ -393,7 +393,7 @@ export default function ProviderAccommodationFormPage() {
           </div>
 
           <div>
-            <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
               Price Period
             </Label>
             <Select
@@ -412,7 +412,7 @@ export default function ProviderAccommodationFormPage() {
           </div>
 
           <div>
-            <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
               Property Type
             </Label>
             <Select
@@ -439,7 +439,7 @@ export default function ProviderAccommodationFormPage() {
         {/* Bedrooms, Bathrooms, Parking */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
-            <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
               Bedrooms
             </Label>
             <Select
@@ -463,7 +463,7 @@ export default function ProviderAccommodationFormPage() {
           </div>
 
           <div>
-            <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
               Bathrooms
             </Label>
             <Select
@@ -487,7 +487,7 @@ export default function ProviderAccommodationFormPage() {
           </div>
 
           <div>
-            <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+            <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
               Parking Spaces
             </Label>
             <Select
@@ -510,7 +510,7 @@ export default function ProviderAccommodationFormPage() {
 
         {/* Description */}
         <div className="mb-6">
-          <Label htmlFor="description" className="text-sm font-semibold text-gray-700 mb-2 block">
+          <Label htmlFor="description" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
             Property Description
           </Label>
           <Textarea
@@ -529,7 +529,7 @@ export default function ProviderAccommodationFormPage() {
 
         {/* Features */}
         <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">
+          <Label className="text-sm font-montserrat-semibold text-gray-700 mb-3 block">
             Property Features
           </Label>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -553,7 +553,7 @@ export default function ProviderAccommodationFormPage() {
 
         {/* Accessibility Features */}
         <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">
+          <Label className="text-sm font-montserrat-semibold text-gray-700 mb-3 block">
             Accessibility Features
           </Label>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">

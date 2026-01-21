@@ -56,7 +56,7 @@ export const ExperienceStep = React.memo(
             <Translation className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Work Experience</h2>
+            <h2 className="text-xl font-montserrat-bold text-gray-900">Work Experience</h2>
             <p className="text-sm text-gray-600">
               Add your relevant work experience and upload your resume
             </p>
@@ -251,8 +251,8 @@ export const ExperienceStep = React.memo(
                 </div>
               )}
               {formData.resume && !resumeFile && (
-                <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <CheckCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-sm text-gray-600 bg-primary-50 p-3 rounded-lg border border-primary-200">
+                  <CheckCircle className="h-4 w-4 text-primary-600 flex-shrink-0" />
                   <span className="flex-1">Current resume on file</span>
                 </div>
               )}

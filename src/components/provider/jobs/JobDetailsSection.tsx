@@ -14,7 +14,7 @@ export const JobDetailsSection = React.memo(({ formData, errors, onChange }: Pro
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div>
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Price ($)</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Price ($)</Label>
         <Input
           type="number"
           step="0.01"
@@ -27,7 +27,7 @@ export const JobDetailsSection = React.memo(({ formData, errors, onChange }: Pro
       </div>
 
       <div>
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Job Type</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Job Type</Label>
         <Select value={formData.jobType} onValueChange={(val) => onChange("jobType", val)}>
           <SelectTrigger className={errors.jobType ? "border-red-500" : ""}><SelectValue placeholder="Select type" /></SelectTrigger>
           <SelectContent>
@@ -38,7 +38,7 @@ export const JobDetailsSection = React.memo(({ formData, errors, onChange }: Pro
       </div>
 
       <div>
-        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Status</Label>
+        <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">Status</Label>
         <Select value={formData.status} onValueChange={(val) => onChange("status", val)}>
           <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
           <SelectContent>

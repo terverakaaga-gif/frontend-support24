@@ -16,7 +16,7 @@ export const WorkerBioStep = React.memo(({
           <CaseRoundMinimalistic className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Professional Bio</h2>
+          <h2 className="text-xl font-montserrat-bold text-gray-900">Professional Bio</h2>
           <p className="text-sm text-gray-600">Your address and professional summary</p>
         </div>
       </div>

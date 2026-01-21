@@ -730,7 +730,7 @@ export function SupportWorkerSetup({
                       className="flex flex-col items-center z-10 bg-gray-100"
                     >
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${
                           step >= s.number
                             ? "bg-primary-600 text-white"
                             : "bg-gray-200 text-gray-500"

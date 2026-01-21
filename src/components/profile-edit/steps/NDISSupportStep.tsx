@@ -58,7 +58,7 @@ export const NDISSupportStep = React.memo(
             <Heart className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-montserrat-bold text-gray-900">
               NDIS & Support Needs
             </h2>
             <p className="text-sm text-gray-600">

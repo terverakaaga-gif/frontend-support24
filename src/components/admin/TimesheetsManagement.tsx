@@ -450,7 +450,7 @@ const TimesheetsManagement: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start text-left font-montserrat",
                         !startDate && "text-muted-foreground"
                       )}
                     >
@@ -479,7 +479,7 @@ const TimesheetsManagement: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start text-left font-montserrat",
                         !endDate && "text-muted-foreground"
                       )}
                     >

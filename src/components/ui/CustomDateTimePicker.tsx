@@ -48,11 +48,11 @@ export function CustomDateTimePicker({ date, setDate, label, minDate }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      {label && <span className="text-sm font-semibold">{label}</span>}
+      {label && <span className="text-sm font-montserrat-semibold">{label}</span>}
       <div className="flex gap-2">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
+            <Button variant="outline" className={cn("w-full justify-start text-left font-montserrat", !date && "text-muted-foreground")}>
               <CalendarIcon className="mr-2 h-4 w-4" />
               {date ? format(date, "PPP", { locale: enAU }) : <span>Pick a date</span>}
             </Button>
@@ -67,7 +67,7 @@ export function CustomDateTimePicker({ date, setDate, label, minDate }: Props) {
             <Button 
               variant="outline" 
               disabled={!date}
-              className={cn("w-36 justify-start text-left font-normal", !date && "text-muted-foreground")}
+              className={cn("w-36 justify-start text-left font-montserrat", !date && "text-muted-foreground")}
             >
               <ClockCircle className="mr-2 h-4 w-4" />
               {date ? format(date, "h:mm a") : <span>Time</span>}
@@ -75,7 +75,7 @@ export function CustomDateTimePicker({ date, setDate, label, minDate }: Props) {
           </PopoverTrigger>
           <PopoverContent className="w-auto p-4">
             <div className="flex flex-col gap-3">
-              <div className="text-sm font-semibold">Select Time</div>
+              <div className="text-sm font-montserrat-semibold">Select Time</div>
               <div className="flex gap-2 items-center">
                 <Select
                   value={hour.toString()}
@@ -93,7 +93,7 @@ export function CustomDateTimePicker({ date, setDate, label, minDate }: Props) {
                   </SelectContent>
                 </Select>
                 
-                <span className="text-lg font-semibold">:</span>
+                <span className="text-lg font-montserrat-semibold">:</span>
                 
                 <Select
                   value={minute.toString()}

@@ -249,7 +249,7 @@ export default React.memo(function EditProfile() {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Profile</h1>
+          <h1 className="text-3xl font-montserrat-bold text-gray-900 mb-2">Edit Profile</h1>
           <p className="text-gray-600">
             {currentStep === 0 ? "Preview" : `Step ${currentStep} of ${STEPS.length}`}
           </p>
@@ -288,7 +288,7 @@ export default React.memo(function EditProfile() {
             className="cursor-pointer group"
           >
             <p className={cn(
-              "text-xs font-semibold transition-colors",
+              "text-xs font-montserrat-semibold transition-colors",
               currentStep === 0 ? "text-primary" : "text-gray-500 group-hover:text-primary"
             )}>
               Preview
@@ -309,7 +309,7 @@ export default React.memo(function EditProfile() {
                     step.id === currentStep ? "text-primary" : "text-gray-400 group-hover:text-primary"
                   )} />
                   <p className={cn(
-                    "text-xs font-semibold transition-colors",
+                    "text-xs font-montserrat-semibold transition-colors",
                     step.id === currentStep ? "text-primary" : "text-gray-500 group-hover:text-primary"
                   )}>
                     {step.title}
@@ -335,7 +335,7 @@ export default React.memo(function EditProfile() {
           <CardContent className="p-4 flex items-start gap-3">
             <DangerCircle className="w-5 h-5 text-red-500" />
             <div>
-                <h3 className="text-red-800 font-bold mb-1">Please fix errors:</h3>
+                <h3 className="text-red-800 font-montserrat-bold mb-1">Please fix errors:</h3>
                 <ul className="text-red-700 text-sm list-disc pl-4">{validationErrors.map((e, i) => <li key={i}>{e}</li>)}</ul>
             </div>
           </CardContent>

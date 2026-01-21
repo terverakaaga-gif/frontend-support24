@@ -257,7 +257,7 @@ export function ShiftsManagement() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
+                          "w-full justify-start text-left font-montserrat",
                           !startDateFilter && "text-muted-foreground"
                         )}
                       >
@@ -284,7 +284,7 @@ export function ShiftsManagement() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
+                          "w-full justify-start text-left font-montserrat",
                           !endDateFilter && "text-muted-foreground"
                         )}
                       >

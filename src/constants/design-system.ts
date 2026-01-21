@@ -198,10 +198,10 @@ export const TEXT_SIZE = {
  * Font weight scale
  */
 export const FONT_WEIGHT = {
-  normal: 'font-normal',
+  normal: 'font-montserrat',
   medium: 'font-medium',
-  semibold: 'font-semibold',
-  bold: 'font-bold',
+  semibold: 'font-montserrat-semibold',
+  bold: 'font-montserrat-bold',
 } as const;
 
 /**
@@ -255,7 +255,7 @@ export const TEXT_STYLES = {
  * Text color utilities
  */
 export const TEXT_COLORS = {
-  /** Primary text color (brand blue) */
+  /** Primary text color (brand primary) */
   primary: 'text-primary-600',
   primaryHover: 'hover:text-primary-700',
   /** Secondary text color */
@@ -284,7 +284,7 @@ export const TEXT_COLORS = {
   /** Error text (red) */
   error: 'text-error-600',
   errorHover: 'hover:text-error-700',
-  /** Info text (blue) */
+  /** Info text (primary) */
   info: 'text-info-600',
   infoHover: 'hover:text-info-700',
 
@@ -308,7 +308,7 @@ export const BG_COLORS = {
   /** White background */
   white: 'bg-white',
   whiteHover: 'hover:bg-gray-50',
-  /** Primary background (brand blue) */
+  /** Primary background (brand primary) */
   primary: 'bg-primary-600',
   primaryHover: 'hover:bg-primary-700',
   primaryLight: 'bg-primary-50',
@@ -342,7 +342,7 @@ export const BG_COLORS = {
   errorHover: 'hover:bg-error-700',
   errorLight: 'bg-error-50',
   errorLightHover: 'hover:bg-error-100',
-  /** Info background (blue) */
+  /** Info background (primary) */
   info: 'bg-info-600',
   infoHover: 'hover:bg-info-700',
   infoLight: 'bg-info-50',
@@ -452,7 +452,7 @@ export const BADGE_VARIANTS = {
   success: 'bg-green-100 text-green-700 border border-green-200',
   warning: 'bg-yellow-100 text-yellow-700 border border-yellow-200',
   error: 'bg-red-100 text-red-700 border border-red-200',
-  info: 'bg-blue-100 text-blue-700 border border-blue-200',
+  info: 'bg-primary-100 text-primary-700 border border-primary-200',
   accent: 'bg-accent-100 text-accent-700 border border-accent-200',
 } as const;
 
@@ -482,10 +482,10 @@ export const STATUS_COLORS = {
     badge: 'bg-yellow-100 text-yellow-700 border border-yellow-200',
   },
   inProgress: {
-    bg: 'bg-blue-100',
-    text: 'text-blue-700',
-    border: 'border-blue-200',
-    badge: 'bg-blue-100 text-blue-700 border border-blue-200',
+    bg: 'bg-primary-100',
+    text: 'text-primary-700',
+    border: 'border-primary-200',
+    badge: 'bg-primary-100 text-primary-700 border border-primary-200',
   },
   completed: {
     bg: 'bg-green-100',
