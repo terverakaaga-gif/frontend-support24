@@ -110,6 +110,7 @@ import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
 import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
 import SupportCoordinatorDashboard from "./pages/SupportCoordinatorDashboard";
 import TenderPage from "./pages/TenderPage";
+import TenderDetailsPage from "./pages/TenderDetailsPage";
 import ParticipantsPage from "./pages/ParticipantsPage";
 import ProvidersPage from "./pages/ProvidersPage";
 import NotificationsPage from "./pages/NotificationsPage";
@@ -468,6 +469,7 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="/" element={<SupportCoordinatorDashboard />} />
                 <Route path="/tender" element={<TenderPage />} />
+                <Route path="/tender/:id" element={<TenderDetailsPage />} />
                 <Route path="/draft" element={<DraftPage />} />
                 <Route path="/participants" element={<ParticipantsPage />} />
                 <Route path="/participants/:id" element={<ParticipantDetailsPage />} />

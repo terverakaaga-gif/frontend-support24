@@ -9,6 +9,13 @@ import {
   Pen,
   UsersGroupRounded,
   Download,
+  Letter,
+  Chart,
+  AddCircle,
+  AltArrowRight,
+  Eye,
+  FileText,
+  Upload,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,9 +23,22 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ParticipantDetailsModal } from "@/components/coordinator/ParticipantDetailsModal";
 import { ProviderDetailsModal } from "@/components/coordinator/ProviderDetailsModal";
 import { EditBudgetModal } from "@/components/coordinator/EditBudgetModal";
+import { ViewPerformanceModal } from "@/components/coordinator/ViewPerformanceModal";
+import { RemoveProviderModal } from "@/components/providers/RemoveProviderModal";
+import { AddNoteModal } from "@/components/coordinator/AddNoteModal";
 
 // Mock data
 const participantData = {
@@ -96,6 +116,100 @@ const participantData = {
       amountSpent: "$12,500.00",
     },
   ],
+  assignedProviders: [
+    {
+      id: "1",
+      name: "Hope Care Services Ltd",
+      logo: null,
+      serviceType: "Personal Care",
+      startDate: "Jan 15, 2025",
+      status: "Active",
+    },
+    {
+      id: "2",
+      name: "Hope Care Services Ltd",
+      logo: null,
+      serviceType: "Personal Care",
+      startDate: "Jan 15, 2025",
+      status: "Active",
+    },
+    {
+      id: "3",
+      name: "Hope Care Services Ltd",
+      logo: null,
+      serviceType: "Personal Care",
+      startDate: "Jan 15, 2025",
+      status: "Active",
+    },
+    {
+      id: "4",
+      name: "Hope Care Services Ltd",
+      logo: null,
+      serviceType: "Personal Care",
+      startDate: "Jan 15, 2025",
+      status: "Active",
+    },
+  ],
+  timeline: [
+    {
+      id: "1",
+      type: "meeting",
+      date: "Oct 26, 2025 3:30 PM",
+      description: "Follow-up meeting with John Doe regarding progress on independence goals",
+      participant: "Sarah Reves",
+    },
+    {
+      id: "2",
+      type: "provider_change",
+      date: "Oct 26, 2025 3:30 PM",
+      description: "Replaced well Link Transport with MobilityPlus Ltd due to service coverage",
+      participant: "Sarah Reves",
+    },
+    {
+      id: "3",
+      type: "plan_review",
+      date: "Oct 26, 2025 3:30 PM",
+      description: "Updated Core support budget to $2,000,000 after quarterly review",
+      participant: "Sarah Reves",
+    },
+    {
+      id: "4",
+      type: "incident",
+      date: "Oct 26, 2025 3:30 PM",
+      description: "Minor delay in physiotherapy session reported by participant",
+      participant: "Sarah Reves",
+    },
+  ],
+  goals: [
+    {
+      id: "1",
+      title: "Increase Independence in Daily Living",
+      date: "Oct 26, 2025 3:30 PM",
+      description: "John can now manage personal hygiene and prepare simple meals independently",
+      progress: 60,
+    },
+    {
+      id: "2",
+      title: "Increase Independence in Daily Living",
+      date: "Oct 26, 2025 3:30 PM",
+      description: "John can now manage personal hygiene and prepare simple meals independently",
+      progress: 60,
+    },
+  ],
+  documents: [
+    {
+      id: "1",
+      name: "Q3 Progress Report.pdf",
+      size: "234KB",
+      type: "pdf",
+    },
+    {
+      id: "2",
+      name: "Mobility Evaluation.pdf",
+      size: "234KB",
+      type: "pdf",
+    },
+  ],
 };
 
 export default function ParticipantDetailsPage() {
@@ -106,11 +220,32 @@ export default function ParticipantDetailsPage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPerformanceModal, setShowPerformanceModal] = useState(false);
+  const [showAddNoteModal, setShowAddNoteModal] = useState(false);
+  const [timelineFilter, setTimelineFilter] = useState("all");
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
 
   const handleViewProvider = (provider: any) => {
     setSelectedProvider(provider);
     setShowProviderModal(true);
+  };
+
+  const handleViewPerformance = (provider: any) => {
+    setSelectedProvider(provider);
+    setShowPerformanceModal(true);
+  };
+
+  const handleRemoveClick = (provider: any) => {
+    setSelectedProvider(provider);
+    setShowRemoveModal(true);
+  };
+
+  const handleRemoveConfirm = () => {
+    // Handle remove logic here
+    console.log("Removing provider:", selectedProvider);
+    setShowRemoveModal(false);
+    setSelectedProvider(null);
   };
 
   return (
@@ -128,11 +263,12 @@ export default function ParticipantDetailsPage() {
 
         <div className="flex items-center gap-3">
           {/* Notification Badge */}
-          <div className="relative">
-            <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-              <span className="text-red-600 font-montserrat-semibold">1</span>
-            </div>
-          </div>
+          <button
+            onClick={() => navigate("/support-coordinator/notifications")}
+            className="relative h-10 w-10 rounded-full bg-red-100 flex items-center justify-center hover:bg-red-200 transition-colors cursor-pointer"
+          >
+            <span className="text-red-600 font-montserrat-semibold">1</span>
+          </button>
 
           {/* User Avatar */}
           <Avatar className="h-10 w-10 cursor-pointer">
@@ -472,27 +608,261 @@ export default function ParticipantDetailsPage() {
               </TabsContent>
 
               <TabsContent value="providers">
-                <p className="text-gray-600 font-montserrat">
-                  Providers & Support Workers content coming soon...
-                </p>
+                <div>
+                  <h3 className="text-lg font-montserrat-bold text-gray-900 mb-4">
+                    Assigned Providers & Support Workers
+                  </h3>
+
+                  {/* Find Providers Button */}
+                  <Button
+                    className="mb-6 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold"
+                  >
+                    <AddCircle className="h-5 w-5 mr-2" />
+                    Find Providers & Support Workers
+                  </Button>
+
+                  {/* Provider Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {participantData.assignedProviders.map((provider) => (
+                      <Card key={provider.id} className="p-4">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage src={provider.logo || undefined} />
+                              <AvatarFallback className="bg-gray-800 text-white text-xs">
+                                HC
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-montserrat-bold text-gray-900">
+                                {provider.name}
+                              </p>
+                              <Badge className="bg-green-100 text-green-700 hover:bg-green-100 font-montserrat text-xs mt-1">
+                                {provider.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Provider Details */}
+                        <div className="space-y-2 mb-4">
+                          <div className="text-sm">
+                            <span className="text-gray-600 font-montserrat">
+                              Service Type:{" "}
+                            </span>
+                            <span className="font-montserrat-semibold text-gray-900">
+                              {provider.serviceType}
+                            </span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-gray-600 font-montserrat">
+                              Start Date:{" "}
+                            </span>
+                            <span className="font-montserrat-semibold text-gray-900">
+                              {provider.startDate}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-10 w-10 rounded-lg hover:bg-primary-50"
+                          >
+                            <Letter className="h-5 w-5 text-primary-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-10 w-10 rounded-lg hover:bg-primary-50"
+                            onClick={() => handleViewPerformance(provider)}
+                          >
+                            <Chart className="h-5 w-5 text-primary-600" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="flex-1 border-red-200 text-red-600 hover:bg-red-50 font-montserrat-semibold"
+                            onClick={() => handleRemoveClick(provider)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="timeline">
-                <p className="text-gray-600 font-montserrat">
-                  Timeline/Activity Feeds content coming soon...
-                </p>
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-montserrat-bold text-gray-900">
+                      Timeline/Activity Feeds
+                    </h3>
+                    <Select value={timelineFilter} onValueChange={setTimelineFilter}>
+                      <SelectTrigger className="w-[180px] bg-white">
+                        <SelectValue placeholder="Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="meeting">Meetings</SelectItem>
+                        <SelectItem value="provider_change">Provider Changes</SelectItem>
+                        <SelectItem value="plan_review">Plan Reviews</SelectItem>
+                        <SelectItem value="incident">Incidents</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-4">
+                    {participantData.timeline
+                      .filter((item) =>
+                        timelineFilter === "all" ? true : item.type === timelineFilter
+                      )
+                      .map((item) => (
+                        <Card key={item.id} className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-sm font-montserrat-semibold text-gray-900 capitalize">
+                                  {item.type.replace("_", " ")}
+                                </span>
+                                <span className="text-sm text-gray-600 font-montserrat">
+                                  {item.date}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-700 font-montserrat">
+                                {item.description}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              <AltArrowRight className="h-5 w-5 text-gray-400" />
+                              <span className="text-sm font-montserrat-semibold text-gray-900">
+                                {item.participant}
+                              </span>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="goals">
-                <p className="text-gray-600 font-montserrat">
-                  Goals & Outcome content coming soon...
-                </p>
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-montserrat-bold text-gray-900">
+                      Goals and Outcome
+                    </h3>
+                    <Button
+                      className="bg-primary-600 hover:bg-primary-700 text-white font-montserrat-semibold"
+                      onClick={() => setShowAddNoteModal(true)}
+                    >
+                      <AddCircle className="h-5 w-5 mr-2" />
+                      Add Notes
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {participantData.goals.map((goal) => (
+                      <Card key={goal.id} className="p-4">
+                        <div className="mb-3">
+                          <h4 className="text-base font-montserrat-bold text-gray-900 mb-2">
+                            {goal.title}
+                          </h4>
+                          <p className="text-sm text-gray-600 font-montserrat mb-2">
+                            {goal.date}
+                          </p>
+                          <p className="text-sm text-gray-700 font-montserrat mb-3">
+                            {goal.description}
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-montserrat text-gray-600">
+                                Progress
+                              </span>
+                              <span className="text-sm font-montserrat-semibold text-gray-900">
+                                {goal.progress}%
+                              </span>
+                            </div>
+                            <Progress value={goal.progress} className="h-2" />
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="documents">
-                <p className="text-gray-600 font-montserrat">
-                  Documents content coming soon...
-                </p>
+                <div>
+                  <h3 className="text-lg font-montserrat-bold text-gray-900 mb-6">
+                    Documents
+                  </h3>
+
+                  {/* Documents List */}
+                  <div className="space-y-3 mb-8">
+                    {participantData.documents.map((doc) => (
+                      <Card key={doc.id} className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded bg-red-100 flex items-center justify-center">
+                              <FileText className="h-6 w-6 text-red-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-montserrat-semibold text-gray-900">
+                                {doc.name}
+                              </p>
+                              <p className="text-xs text-gray-600 font-montserrat">
+                                {doc.size}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-10 w-10 hover:bg-gray-100"
+                            >
+                              <Eye className="h-5 w-5 text-gray-600" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-10 w-10 hover:bg-gray-100"
+                            >
+                              <Download className="h-5 w-5 text-gray-600" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Upload Documents */}
+                  <div>
+                    <h4 className="text-base font-montserrat-bold text-gray-900 mb-4">
+                      Upload Documents
+                    </h4>
+                    <Card className="p-8 border-2 border-dashed border-gray-300 hover:border-primary-400 transition-colors">
+                      <div className="flex flex-col items-center justify-center text-center">
+                        <div className="h-16 w-16 rounded-full bg-primary-100 flex items-center justify-center mb-4">
+                          <Upload className="h-8 w-8 text-primary-600" />
+                        </div>
+                        <p className="text-sm text-gray-600 font-montserrat mb-2">
+                          Drop and drop your file or{" "}
+                          <button className="text-primary-600 hover:text-primary-700 font-montserrat-semibold">
+                            Browse
+                          </button>
+                        </p>
+                        <p className="text-xs text-gray-500 font-montserrat">
+                          File type: PNG + JPG + PDF, File limit: 5MB
+                        </p>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           </Card>
@@ -515,6 +885,24 @@ export default function ParticipantDetailsPage() {
         open={showEditModal}
         onOpenChange={setShowEditModal}
         budgetData={participantData.budgetCategories}
+      />
+
+      <ViewPerformanceModal
+        open={showPerformanceModal}
+        onOpenChange={setShowPerformanceModal}
+        provider={selectedProvider}
+      />
+
+      <AddNoteModal
+        open={showAddNoteModal}
+        onOpenChange={setShowAddNoteModal}
+      />
+
+      <RemoveProviderModal
+        open={showRemoveModal}
+        onOpenChange={setShowRemoveModal}
+        provider={selectedProvider}
+        onConfirm={handleRemoveConfirm}
       />
     </div>
   );

@@ -360,6 +360,7 @@ export default function TenderPage() {
             variant="ghost"
             size="icon"
             className="relative h-10 w-10 rounded-full hover:bg-gray-100"
+            onClick={() => navigate("/support-coordinator/notifications")}
           >
             <BellBing className="h-6 w-6 text-gray-700" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>

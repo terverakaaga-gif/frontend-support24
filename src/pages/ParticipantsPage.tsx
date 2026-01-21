@@ -212,7 +212,12 @@ export default function ParticipantsPage() {
         </div>
         <div className="flex items-center gap-4">
           {/* Notification */}
-          <Button variant="ghost" size="icon" className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => navigate("/support-coordinator/notifications")}
+          >
             <BellBing className="h-6 w-6 text-gray-700" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
           </Button>

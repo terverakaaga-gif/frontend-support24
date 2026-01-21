@@ -79,8 +79,8 @@ export default function MyPanelPage() {
     setPanelMembers(
       panelMembers.map((member) =>
         member.id === id ? { ...member, isFavorite: !member.isFavorite } : member
-      )
-    );
+        )
+      );
   };
 
   const handleRemove = (id: number) => {
@@ -128,7 +128,12 @@ export default function MyPanelPage() {
           </Button>
 
           {/* Notification */}
-          <Button variant="ghost" size="icon" className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => navigate("/support-coordinator/notifications")}
+          >
             <BellBing className="h-6 w-6 text-gray-700" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
           </Button>
@@ -220,7 +225,7 @@ export default function MyPanelPage() {
                     src="/tdesign_logo-cnb-filled.png"
                     alt="Provider logo"
                     className="h-8 w-8"
-                  />
+                />
                 </div>
               ) : (
                 <Avatar className="h-12 w-12">
