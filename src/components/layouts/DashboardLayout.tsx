@@ -32,6 +32,7 @@ import {
   SuitcaseTag,
   Bookmark,
   ShieldCheck,
+  ShopMinimalistic,
 } from "@solar-icons/react";
 
 interface DashboardLayoutProps {
@@ -339,6 +340,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Events"
               active={isActive("/provider/events")}
             />
+            <NavItem
+              to="/provider/find-support-workers"
+              icon={<ShopMinimalistic className="w-6 h-6" />}
+              label="Support Workers"
+              active={isActive("/provider/find-support-workers")}
+            />
+            
             <NavItem
               to="/provider/accommodations"
               icon={<Home className="w-6 h-6" />}
