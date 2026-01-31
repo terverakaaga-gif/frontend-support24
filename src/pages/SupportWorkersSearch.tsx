@@ -36,6 +36,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import UnifiedWorkerCard from "@/components/UnifiedWorkerCard";
 
 import {
   cn,
@@ -510,106 +511,38 @@ export default function SearchSupportWorkersPage() {
                 const isPending =
                   !isInOrganization && isWorkerPendingInvite(worker._id);
 
+                // Convert API response to unified type
+                const unifiedWorker = {
+                  _id: worker._id,
+                  id: worker._id,
+                  firstName: worker.firstName,
+                  lastName: worker.lastName,
+                  name: `${worker.firstName} ${worker.lastName}`,
+                  email: worker.email,
+                  phone: worker.phone,
+                  profileImage: worker.profileImage,
+                  role: 'Support Worker',
+                  skills: worker.skills || [],
+                  languages: worker.languages || [],
+                  serviceAreas: worker.serviceAreas || [],
+                  bio: worker.bio,
+                  ratings: worker.ratings,
+                  rating: worker.ratings?.average,
+                  isVerified: worker.verificationStatus?.identityVerified,
+                  verificationStatus: worker.verificationStatus,
+                  location: worker.serviceAreas?.[0] || 'Australia',
+                  distance: worker.distance,
+                  hourlyRate: worker.hourlyRate,
+                  isInUserOrganization: isInOrganization,
+                };
+
                 return (
-                  <Card
+                  <UnifiedWorkerCard
                     key={worker._id}
-                    className={cn(CARD)}
-                  >
-                    <CardHeader className={CARD_HEADER}>
-                      <Avatar className={cn("h-16 w-16 border-2 border-primary/10 flex-shrink-0")}>
-                        <AvatarImage
-                          src={worker.profileImage}
-                          alt={`${worker.firstName} ${worker.lastName}`}
-                        />
-                        <AvatarFallback className={cn("bg-primary text-white text-lg", FONT_FAMILY.montserratSemibold)}>
-                          {getWorkerInitials(worker.firstName, worker.lastName)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <h3 className={cn(FONT_FAMILY.montserratSemibold, "text-sm text-gray-900 mt-2 text-center")}>
-                        {worker.firstName} {worker.lastName}
-                      </h3>
-                      <div className="w-full">
-                        <div className={cn("flex flex-row items-center justify-center gap-x-3 gap-y-1 text-xs flex-wrap mt-1")}>
-                          <div className="flex items-center space-x-1 text-yellow-600">
-                            <Star className={ICON_SIZES.sm} />
-                            <span>
-                              {worker.ratings?.average?.toFixed(1) || "0.0"} (
-                              {worker.ratings?.count || 0})
-                            </span>
-                          </div>
-                          <div className={cn("flex items-center space-x-1 text-primary", FONT_FAMILY.montserratSemibold)}>
-                            <DollarMinimalistic className={ICON_SIZES.sm} />
-                            <span>${worker.hourlyRate?.baseRate || 0}/hr</span>
-                          </div>
-                        </div>
-                        {worker.verificationStatus?.identityVerified && (
-                            <div className="flex justify-center mt-2">
-                                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px] py-0 px-2 h-5">
-                                    ✓ Verified
-                                </Badge>
-                            </div>
-                        )}
-                        <div className="flex items-center justify-center space-x-1 text-muted-foreground mt-2 text-xs">
-                           <MapPoint className={cn(ICON_SIZES.sm, "flex-shrink-0")} />
-                           <span className="truncate max-w-[120px]">
-                             {worker.serviceAreas?.[0] || "Australia"}
-                             {worker.distance &&
-                               ` • ${Number(worker.distance).toFixed(
-                                 1
-                               )}km`}
-                           </span>
-                        </div>
-                      </div>
-                    </CardHeader>
-
-                    {/* Skills */}
-                    {worker.skills && worker.skills.length > 0 && (
-                      <CardContent className={CARD_CONTENT}>
-                        {worker.skills.slice(0, 2).map((skill, index) => {
-                          const skillName =
-                            typeof skill === "string" ? skill : skill.name;
-                          const skillKey =
-                            typeof skill === "string"
-                              ? skill
-                              : skill._id || `skill-${index}`;
-                          return (
-                            <Badge
-                              key={skillKey}
-                              variant="secondary"
-                              className={cn("text-[10px] bg-gray-100 text-gray-700 border-gray-200", RADIUS.sm)}
-                            >
-                              {skillName}
-                            </Badge>
-                          );
-                        })}
-                        {worker.skills.length > 2 && (
-                          <Badge
-                            variant="secondary"
-                            className={cn("text-[10px] bg-gray-100 text-gray-700", RADIUS.sm)}
-                          >
-                            +{worker.skills.length - 2} more
-                          </Badge>
-                        )}
-                      </CardContent>
-                    )}
-
-                    {/* Actions */}
-                    <CardFooter className={CARD_FOOTER}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewProfile(worker._id)}
-                        className={cn(
-                          
-                          FONT_FAMILY.montserratSemibold,
-                          RADIUS.lg
-                        )}
-                      >
-                        View Profile
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                    worker={unifiedWorker}
+                    onViewProfile={handleViewProfile}
+                    variant="participant"
+                  />
                 );
               })}
             </div>

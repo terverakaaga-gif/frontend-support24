@@ -22,8 +22,8 @@ import {
 import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
-import { cn } from "@/lib/design-utils";
-import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
+import { BUTTON_BASE, CARD, cn, DASHBOARD_CONTENT, DASHBOARD_STATS_GRID, DASHBOARD_STAT_ICON_CONTAINER, DASHBOARD_STAT_ICON, DASHBOARD_DETAIL_ICON_CONTAINER, DASHBOARD_DETAIL_ICON, ORG_ICON_CONTAINER_LG, ORG_ICON_LG, FLEX_COL, FLEX_ROW_BETWEEN, FLEX_ROW_CENTER, GRID_RESPONSIVE, HEADING_5, PAGE_WRAPPER, TEXT_MUTED, TEXT_SMALL, CARD_CONTENT } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING, FONT_FAMILY, FONT_WEIGHT, GAP, TEXT_STYLES } from "@/constants/design-system";
 import GeneralHeader from "@/components/GeneralHeader";
 
 export default function SupportWorkerOrganizationsPage() {
@@ -85,7 +85,7 @@ export default function SupportWorkerOrganizationsPage() {
 
   if (error) {
     return (
-      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+      <div className={cn(PAGE_WRAPPER, BG_COLORS.gray100,)}>
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
@@ -113,8 +113,8 @@ export default function SupportWorkerOrganizationsPage() {
   }
 
   return (
-    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
-      <div className="p-8">
+    <div className={cn(PAGE_WRAPPER, BG_COLORS.gray100,)}>
+      <div className={cn(DASHBOARD_CONTENT)}>
         {/* Header */}
         <GeneralHeader
           title={
@@ -138,87 +138,73 @@ export default function SupportWorkerOrganizationsPage() {
         />
 
         {/* Stats Cards */}
-        <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+        <div className={cn(DASHBOARD_STATS_GRID,)}>
+          <Card className={cn(CARD)}>
+            <CardContent className={cn(CARD_CONTENT)}>
+              <div className={cn(FLEX_ROW_BETWEEN)}>
+                <p className={cn(TEXT_STYLES.label,)}>
                   Total Organizations
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
-                  <Buildings3 className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
+                <div className={cn(DASHBOARD_STAT_ICON_CONTAINER)}>
+                  <Buildings3 className={cn(DASHBOARD_STAT_ICON)} />
                 </div>
               </div>
-              <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
+              <div className={cn(FLEX_COL, "space-y-0.5")}>
+                <p className={cn(TEXT_STYLES.title, )}>
                   {stats.totalOrganizations}
                 </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
-                  Created and Managed
-                </p>
+                <p className={cn(TEXT_STYLES.tiny, FONT_FAMILY.montserratSemibold)}>Created and Managed</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+          <Card className={cn(CARD)}>
+            <CardContent className={cn(CARD_CONTENT)}>
+              <div className={cn(FLEX_ROW_BETWEEN)}>
+                <p className={cn(TEXT_STYLES.label)}>
                   Support Workers
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
-                  <UsersGroupRounded className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
+                <div className={cn(DASHBOARD_STAT_ICON_CONTAINER)}>
+                  <UsersGroupRounded className={cn(DASHBOARD_STAT_ICON)} />
                 </div>
               </div>
-              <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
-                  {stats.supportWorkers}
-                </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
-                  Active Teams
-                </p>
+              <div className={cn(FLEX_COL, "space-y-0.5")}>
+                <p className={cn(TEXT_STYLES.title)}>{stats.supportWorkers}</p>
+                <p className={cn(TEXT_STYLES.tiny, FONT_FAMILY.montserratSemibold)}>Active Teams</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+          <Card className={cn(CARD)}>
+            <CardContent className={cn(CARD_CONTENT)}>
+              <div className={cn(FLEX_ROW_BETWEEN)}>
+                <p className={cn(TEXT_STYLES.label)}>
                   Average Per Rate
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
-                  <Dollar className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
+                <div className={cn(DASHBOARD_STAT_ICON_CONTAINER)}>
+                  <Dollar className={cn(DASHBOARD_STAT_ICON)} />
                 </div>
               </div>
-              <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
-                  ${stats.averageRate.toFixed(2)}
-                </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
-                  Per Hour
-                </p>
+              <div className={cn(FLEX_COL, "space-y-0.5")}>
+                <p className={cn(TEXT_STYLES.title)}>${stats.averageRate.toFixed(2)}</p>
+                <p className={cn(TEXT_STYLES.tiny, FONT_FAMILY.montserratSemibold)}>Per Hour</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white shadow-sm">
-            <CardContent className="p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs md:text-sm text-gray-600 font-montserrat-semibold">
+          <Card className={cn(CARD)}>
+            <CardContent className={cn(CARD_CONTENT)}>
+              <div className={cn(FLEX_ROW_BETWEEN)}>
+                <p className={cn(TEXT_STYLES.label)}>
                   Pending Invitations
                 </p>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-50 flex items-center justify-center">
-                  <ClockCircle className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
+                <div className={cn(DASHBOARD_STAT_ICON_CONTAINER)}>
+                  <ClockCircle className={cn(DASHBOARD_STAT_ICON)} />
                 </div>
               </div>
-              <div className="space-y-0.5">
-                <p className="text-lg md:text-2xl font-montserrat-bold text-gray-900">
-                  {stats.pendingInvitations}
-                </p>
-                <p className="text-[8px] md:text-xs font-montserrat-bold">
-                  Awaiting Responses
-                </p>
+              <div className={cn(FLEX_COL, "space-y-0.5")}>
+                <p className={cn(TEXT_STYLES.title)}>{stats.pendingInvitations}</p>
+                <p className={cn(TEXT_STYLES.tiny, FONT_FAMILY.montserratSemibold)}>Awaiting Responses</p>
               </div>
             </CardContent>
           </Card>
@@ -226,18 +212,18 @@ export default function SupportWorkerOrganizationsPage() {
 
         {/* Organizations List */}
         <div>
-          <h2 className="text-lg md:text-xl font-montserrat-bold text-gray-900 mb-4">
+          <h2 className={cn(HEADING_5, "font-montserrat-bold text-gray-900 mb-4")}>
             All Organizations ({filteredOrganizations.length})
           </h2>
 
           {filteredOrganizations.length === 0 ? (
-            <Card className="border-0 bg-white shadow-sm">
-              <CardContent className="p-12 text-center">
+            <Card className={cn(CARD)}>
+              <CardContent className={cn("p-12 text-center")}>
                 <Buildings3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                <h3 className={cn(HEADING_5, "font-montserrat-bold text-gray-900 mb-2")}>
                   No organizations found
                 </h3>
-                <p className="text-gray-600">
+                <p className={cn(TEXT_MUTED)}>
                   {searchTerm
                     ? "Try adjusting your search criteria"
                     : "You don't have any organization connections yet"}
@@ -245,33 +231,33 @@ export default function SupportWorkerOrganizationsPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+            <div className={cn(GRID_RESPONSIVE, GAP.responsive)}>
               {filteredOrganizations.map((org) => (
                 <Card
                   key={org._id}
-                  className="border-0 bg-white shadow-sm hover:shadow-md transition-shadow"
+                  className={cn(CARD, "hover:shadow-md transition-shadow")}
                 >
                   <CardContent className="p-5 md:p-6">
-                    <div className="flex items-start gap-3 md:gap-4 mb-5 md:mb-6">
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary-600 flex items-center justify-center flex-shrink-0">
-                        <UsersGroupTwoRounded className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                    <div className={cn(FLEX_ROW_CENTER, "items-start", GAP.lg, "md:" + GAP.xl, "mb-5 md:mb-6")}>
+                      <div className={cn(ORG_ICON_CONTAINER_LG)}>
+                        <UsersGroupTwoRounded className={cn(ORG_ICON_LG)} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base md:text-lg font-montserrat-bold text-gray-900 mb-1">
+                        <h3 className={cn("text-base md:text-lg font-montserrat-bold text-gray-900 mb-1")}>
                           {org.name}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className={cn(TEXT_MUTED, "text-sm")}>
                           {org.description}
                         </p>
                       </div>
                     </div>
 
-                    <div className="space-y-3 md:space-y-3.5 mb-5 md:mb-6 text-xs md:text-sm">
-                      <div className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                          <Calendar className="w-4 h-4 text-primary-600" />
+                    <div className={cn(FLEX_COL, "space-y-3 md:space-y-3.5 mb-5 md:mb-6 text-xs md:text-sm")}>
+                      <div className={cn(FLEX_ROW_CENTER, "text-sm", GAP.lg)}>
+                        <div className={cn(DASHBOARD_DETAIL_ICON_CONTAINER)}>
+                          <Calendar className={cn(DASHBOARD_DETAIL_ICON)} />
                         </div>
-                        <span className="text-gray-600 font-montserrat-semibold">
+                        <span className={cn(TEXT_MUTED, "font-montserrat-semibold")}>
                           Created on
                         </span>
                         <span className="ml-auto text-gray-900 font-montserrat-semibold">
@@ -279,11 +265,11 @@ export default function SupportWorkerOrganizationsPage() {
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                          <ClockCircle className="w-4 h-4 text-primary-600" />
+                      <div className={cn(FLEX_ROW_CENTER, "text-sm", GAP.lg)}>
+                        <div className={cn(DASHBOARD_DETAIL_ICON_CONTAINER)}>
+                          <ClockCircle className={cn(DASHBOARD_DETAIL_ICON)} />
                         </div>
-                        <span className="text-gray-600 font-montserrat-semibold">
+                        <span className={cn(TEXT_MUTED, "font-montserrat-semibold")}>
                           Last Updated
                         </span>
                         <span className="ml-auto text-gray-900 font-montserrat-semibold">
@@ -291,13 +277,11 @@ export default function SupportWorkerOrganizationsPage() {
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                          <span className="text-primary-600 font-montserrat-bold text-xs">
-                            #
-                          </span>
+                      <div className={cn(FLEX_ROW_CENTER, "text-sm", GAP.lg)}>
+                        <div className={cn(DASHBOARD_DETAIL_ICON_CONTAINER)}>
+                          <span className="text-primary-600 font-montserrat-bold text-xs">#</span>
                         </div>
-                        <span className="text-gray-600 font-montserrat-semibold">
+                        <span className={cn(TEXT_MUTED, "font-montserrat-semibold")}>
                           Organization ID
                         </span>
                         <span className="ml-auto text-gray-900 font-montserrat-semibold text-xs truncate max-w-[140px] md:max-w-[200px]">
@@ -308,7 +292,7 @@ export default function SupportWorkerOrganizationsPage() {
 
                     <Button
                       variant="outline"
-                      className="w-fit flex place-self-end border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700 font-montserrat-semibold gap-2"
+                      className={cn(BUTTON_BASE, "w-fit flex place-self-end border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700 font-montserrat-semibold gap-2")}
                       onClick={() =>
                         navigate(`/support-worker/organizations/${org._id}`)
                       }

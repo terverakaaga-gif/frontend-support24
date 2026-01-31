@@ -1,17 +1,39 @@
-export interface SupportWorker {
+import { UnifiedSupportWorkerCard } from './unified-support-worker';
+
+/**
+ * Marketplace Support Worker
+ * Extends the unified support worker type with marketplace-specific presentation fields
+ */
+export interface SupportWorker extends Partial<UnifiedSupportWorkerCard> {
   id: string;
+  _id?: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   isVerified: boolean;
   role: string;
   rating: number;
+  ratings?: { average: number; count: number };
   location: string;
   distance: string;
   hourlyRate: string; // e.g., "$65-75/hr"
-  specialization: string;
-  availability: string;
-  readabilityScore: number;
-  readabilityShifts: number;
+  specialization: string; // Marketplace-specific
+  availability: string; // Marketplace-specific
+  readabilityScore: number; // Marketplace-specific
+  readabilityShifts: number; // Marketplace-specific
   profileImage: string;
+  email?: string;
+  phone?: string;
+  skills?: Array<{ name: string }>;
+  languages?: string[];
+  bio?: string;
+  serviceAreas?: string[];
+  verificationStatus?: {
+    profileSetupComplete: boolean;
+    identityVerified: boolean;
+    policeCheckVerified: boolean;
+    ndisWorkerScreeningVerified: boolean;
+  };
 }
 
 // Mock Data based on your screenshot

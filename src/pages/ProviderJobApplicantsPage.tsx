@@ -318,24 +318,28 @@ export default function ProviderJobApplicantsPage() {
                         <div className="flex gap-2 justify-end">
                           {currentTab === "pending" && (
                             <>
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() =>
                                   openActionModal(applicant, "accept")
                                 }
                                 title="Accept"
-                                className="p-1 hover:bg-green-50 rounded-full transition-colors"
+                                className="p-1 hover:bg-green-50 rounded-full h-auto w-auto"
                               >
                                 <CheckCircle className="h-5 w-5 text-green-600" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() =>
                                   openActionModal(applicant, "reject")
                                 }
                                 title="Reject"
-                                className="p-1 hover:bg-red-50 rounded-full transition-colors"
+                                className="p-1 hover:bg-red-50 rounded-full h-auto w-auto"
                               >
                                 <CloseCircle className="h-5 w-5 text-red-600" />
-                              </button>
+                              </Button>
                             </>
                           )}
                         </div>

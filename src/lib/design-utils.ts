@@ -5,6 +5,7 @@
  * Import these to ensure consistency and reduce code duplication.
  */
 
+import { GAP } from "@/constants/design-system";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -249,10 +250,9 @@ export const DASHBOARD_SECTION_HEADER = cn(
  */
 export const DASHBOARD_STATS_GRID = cn(
   "grid",
-  "grid-cols-1",
-  "md:grid-cols-2",
+  "grid-cols-2",
   "lg:grid-cols-4",
-  "gap-4"
+  GAP.responsive
 );
 
 /**
@@ -761,8 +761,7 @@ export const GRID_RESPONSIVE = cn(
  */
 export const GRID_2_COLS = cn(
   "grid",
-  "grid-cols-1",
-  "md:grid-cols-2"
+  "grid-cols-2",
 );
 
 /**
@@ -770,8 +769,7 @@ export const GRID_2_COLS = cn(
  */
 export const GRID_4_COLS = cn(
   "grid",
-  "grid-cols-1",
-  "md:grid-cols-2",
+  "grid-cols-2",
   "lg:grid-cols-4"
 );
 
@@ -843,6 +841,76 @@ export const HOVER_LIFT = cn(
 export const HOVER_SCALE = cn(
   TRANSITION,
   "hover:scale-105"
+);
+
+// ============================================================================
+// DASHBOARD ICONS
+// ============================================================================
+
+/**
+ * Dashboard stat card icon container (with responsive sizing)
+ * Used for icon badges in stat cards and dashboards
+ */
+export const DASHBOARD_STAT_ICON_CONTAINER = cn(
+  "w-8 h-8 p-1.5",
+  "md:w-12 md:h-12",
+  "rounded-full",
+  "bg-primary-50",
+  FLEX_CENTER
+);
+
+/**
+ * Dashboard stat card icon (with responsive sizing)
+ * Applied to the icon element itself inside the container
+ */
+export const DASHBOARD_STAT_ICON = cn(
+  "w-5 h-5",
+  "md:w-6 md:h-6",
+  "text-primary-600"
+);
+
+/**
+ * Dashboard detail icon container (smaller variant)
+ * Used for info rows in organization/detail cards
+ */
+export const DASHBOARD_DETAIL_ICON_CONTAINER = cn(
+  "w-8 h-8",
+  "rounded-full",
+  "bg-primary-50",
+  FLEX_CENTER,
+  "flex-shrink-0"
+);
+
+/**
+ * Dashboard detail icon (smaller variant)
+ * Applied to the icon element itself
+ */
+export const DASHBOARD_DETAIL_ICON = cn(
+  "w-4 h-4",
+  "text-primary-600"
+);
+
+/**
+ * Organization card large icon container
+ * Used for org/user profile icons in card headers
+ */
+export const ORG_ICON_CONTAINER_LG = cn(
+  "w-12 h-12",
+  "md:w-14 md:h-14",
+  "rounded-full",
+  "bg-primary-600",
+  FLEX_CENTER,
+  "flex-shrink-0"
+);
+
+/**
+ * Organization card large icon
+ * Applied to the icon element itself
+ */
+export const ORG_ICON_LG = cn(
+  "w-6 h-6",
+  "md:w-7 md:h-7",
+  "text-white"
 );
 
 // ============================================================================

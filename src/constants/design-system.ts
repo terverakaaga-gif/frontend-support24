@@ -231,6 +231,8 @@ export const HEADING_STYLES = {
  * Common text styles
  */
 export const TEXT_STYLES = {
+  /** Title text */
+  title: 'text-2xl font-montserrat-bold text-gray-900',
   /** Body text - primary */
   body: 'text-base text-gray-600',
   /** Body text - secondary/muted */

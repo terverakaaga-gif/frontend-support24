@@ -298,13 +298,15 @@ export default function ProviderAccommodationFormPage() {
                 alt="Property preview"
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
                 onClick={handleRemoveImage}
                 className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
               >
                 <CloseCircle className="h-5 w-5 text-red-600" />
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">

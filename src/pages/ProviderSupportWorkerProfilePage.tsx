@@ -1,28 +1,47 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  VerifiedCheck, 
-  Star, 
-  MapPoint, 
+import {
+  ArrowLeft,
+  VerifiedCheck,
+  Star,
+  MapPoint,
   DollarMinimalistic,
   Eye,
   AddSquare,
   Videocamera,
   CloseCircle,
-  ConfettiMinimalistic
+  ConfettiMinimalistic,
+  VideocameraAdd,
 } from "@solar-icons/react";
-import { 
-  PAGE_WRAPPER, 
-  PAGE_CONTAINER, 
+import {
+  PAGE_WRAPPER,
+  PAGE_CONTAINER,
   BUTTON_OUTLINE,
   CARD,
-  cn 
+  cn,
+  FLEX_ROW_CENTER,
+  TRANSITION,
 } from "@/lib/design-utils";
+import { Button } from "@/components/ui/button";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
-import { ComplianceTab, ExperienceTab, RiskTab } from "@/components/provider/martketplaces/WorkerProfileTabs";
+import {
+  ComplianceTab,
+  ExperienceTab,
+  RiskTab,
+} from "@/components/provider/martketplaces/WorkerProfileTabs";
 import SubscriptionModal from "@/components/provider/martketplaces/SubscriptionModal";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  BG_COLORS,
+  FONT_FAMILY,
+  GAP,
+  RADIUS,
+  TEXT_COLORS,
+} from "@/constants/design-system";
+import ScheduleInterviewModal, {
+  ScheduleInterviewData,
+} from "@/components/provider/interviews/ScheduleInterviewModal";
 
 // --- Mock Data ---
 const WORKER_DETAILS = {
@@ -33,19 +52,23 @@ const WORKER_DETAILS = {
   location: "Brimbank (42 km)",
   price: "$40",
   image: "/placeholder-avatar.jpg",
-  isVerified: true
+  isVerified: true,
 };
 
 export default function ProviderSupportWorkerProfilePage() {
   const navigate = useNavigate();
   const { workerId } = useParams();
   const { user, logout } = useAuth();
-  
+
   // State
-  const [activeTab, setActiveTab] = useState<'compliance' | 'experience' | 'risk'>('compliance');
+  const [activeTab, setActiveTab] = useState<
+    "compliance" | "experience" | "risk"
+  >("compliance");
   const [isUnlocked, setIsUnlocked] = useState(false); // Controls Blurred vs Clear view
   const [showSubscription, setShowSubscription] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [isScheduling, setIsScheduling] = useState(false);
 
   // --- Handlers ---
 
@@ -55,63 +78,90 @@ export default function ProviderSupportWorkerProfilePage() {
     setShowSubscription(true);
   };
 
-  const handlePlanSelection = (plan: 'free' | 'paid') => {
+  const handlePlanSelection = (plan: "free" | "paid") => {
     setShowSubscription(false);
-    
+
     // Simulate payment processing delay
     setTimeout(() => {
-        setShowSuccessModal(true);
+      setShowSuccessModal(true);
     }, 500);
   };
 
   const handlePaymentSuccess = () => {
     setShowSuccessModal(false);
     setIsUnlocked(true); // This unblurs the content
+    setShowScheduleModal(true); // Open scheduling after successful payment
   };
 
-  // Add to workflow action (Only works if unlocked, otherwise triggers unlock)
-  const handleAddToWorkflow = () => {
-    if (!isUnlocked) {
-      handleUnlockAttempt();
-    } else {
-      // Logic to actually add to workflow
-      alert("Added to workflow panel!");
-    }
+  const handleScheduleInterview = (data: ScheduleInterviewData) => {
+    setIsScheduling(true);
+
+    // Simulate scheduling delay
+    setTimeout(() => {
+      setIsScheduling(false);
+      setShowScheduleModal(false);
+
+      // Navigate to Interview Page with candidate info
+      const params = new URLSearchParams({
+        candidateId: WORKER_DETAILS.id,
+        candidateName: data.name,
+        preferredDate: data.preferredDate,
+        preferredTime: data.preferredTime,
+        notes: data.additionalNotes,
+      });
+
+      navigate(`/provider/interviews?${params.toString()}`);
+    }, 500);
   };
 
   return (
     <div className={cn(PAGE_WRAPPER)}>
-       <GeneralHeader
-       showBackButton
+      <GeneralHeader
+        showBackButton
         title="Marketplace"
         subtitle="Back to MarketPlace"
         user={user}
         onLogout={logout}
         onViewProfile={() => navigate("/participant/profile")}
         // Custom left component to match "Back to Marketplace" link in design
-       
       />
 
       <div className={cn(PAGE_CONTAINER, "mt-6 max-w-4xl")}>
-        <div className={cn(CARD, "p-6 md:p-8 rounded-2xl bg-white shadow-sm border border-gray-100")}>
-          
+        <div
+          className={cn(
+            CARD,
+            "p-6 md:p-8 rounded-2xl bg-white shadow-sm border border-gray-100",
+          )}
+        >
           {/* 1. Header Section */}
           <div className="flex flex-col items-center justify-center mb-8">
-            <div className="w-24 h-24 rounded-full border-4 border-gray-100 overflow-hidden mb-3">
-              <img 
-                src={WORKER_DETAILS.image} 
-                alt={WORKER_DETAILS.name} 
-                className="w-full h-full object-cover"
+            <Avatar className="w-24 h-24 border-4 border-gray-100 mb-3">
+              <AvatarImage
+                src={WORKER_DETAILS.image}
+                alt={WORKER_DETAILS.name}
+                className="object-cover"
               />
-            </div>
-            
+              <AvatarFallback className="bg-gray-100 text-gray-900 font-montserrat-bold text-lg">
+                {WORKER_DETAILS.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+
             <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-xl font-montserrat-bold text-gray-900">{WORKER_DETAILS.name}</h1>
-              {WORKER_DETAILS.isVerified && <VerifiedCheck className="w-6 h-6 text-primary-600" />}
+              <h1 className="text-xl font-montserrat-bold text-gray-900">
+                {WORKER_DETAILS.name}
+              </h1>
+              {WORKER_DETAILS.isVerified && (
+                <VerifiedCheck className="w-6 h-6 text-primary-600" />
+              )}
             </div>
-            
-            <p className="text-gray-500 font-medium mb-3">{WORKER_DETAILS.role}</p>
-            
+
+            <p className="text-gray-500 font-medium mb-3">
+              {WORKER_DETAILS.role}
+            </p>
+
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 text-yellow-500" />
@@ -133,77 +183,97 @@ export default function ProviderSupportWorkerProfilePage() {
           {/* 2. Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
             {/* View Icon (Blue background) */}
-            <button className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors">
-              <Eye className="w-6 h-6" />
-            </button>
-            
-            {/* Add Icon (Unlock Trigger) */}
-            <button 
-              onClick={handleAddToWorkflow}
-              className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors"
+            <Button
+              variant="ghost"
+              onClick={handleUnlockAttempt}
+              className={cn(
+                "w-fit h-10 px-2",
+                TEXT_COLORS.primary,
+                BG_COLORS.primaryLight,
+                "hover:bg-primary/20",
+                FONT_FAMILY.montserratSemibold,
+                "rounded-lg",
+              )}
             >
-              <AddSquare className="w-6 h-6" />
-            </button>
-            
+              <Eye className="w-6 h-6" />
+            </Button>
+
             {/* Video Icon */}
-            <button className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors">
-              <Videocamera className="w-6 h-6" />
-            </button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowScheduleModal(true)}
+              className={cn(
+                "w-fit h-10 px-4",
+                TEXT_COLORS.primary,
+                BG_COLORS.primaryLight,
+                "hover:bg-primary/20",
+                FONT_FAMILY.montserratSemibold,
+                "rounded-lg gap-2",
+              )}
+            >
+              <VideocameraAdd className="w-6 h-6" />
+              <span>Schedule for an interview</span>
+            </Button>
 
             {/* Decline Button */}
-            <button className="h-10 px-8 rounded-lg border border-red-500 text-red-500 flex items-center gap-2 hover:bg-red-50 transition-colors font-medium">
+            {/* <Button variant="outline" onClick={()=>navigate(-1)} className="h-10 px-8 rounded-lg border-red-500 text-red-500 hover:bg-red-50 font-medium">
               <CloseCircle className="w-5 h-5" />
               Decline
-            </button>
+            </Button> */}
           </div>
 
           {/* 3. Tabs Navigation */}
           <div className="bg-gray-100 p-1 rounded-lg flex flex-col md:flex-row gap-1 mb-8">
-            <TabButton 
-              label="Compliance Status & Competency Score" 
-              isActive={activeTab === 'compliance'} 
-              onClick={() => setActiveTab('compliance')} 
+            <TabButton
+              label="Compliance Status & Competency Score"
+              isActive={activeTab === "compliance"}
+              onClick={() => setActiveTab("compliance")}
             />
-            <TabButton 
-              label="Experience & Readability Score" 
-              isActive={activeTab === 'experience'} 
-              onClick={() => setActiveTab('experience')} 
+            <TabButton
+              label="Experience & Readability Score"
+              isActive={activeTab === "experience"}
+              onClick={() => setActiveTab("experience")}
             />
-            <TabButton 
-              label="Risk Assessment & Specialization Match" 
-              isActive={activeTab === 'risk'} 
-              onClick={() => setActiveTab('risk')} 
+            <TabButton
+              label="Risk Assessment & Specialization Match"
+              isActive={activeTab === "risk"}
+              onClick={() => setActiveTab("risk")}
             />
           </div>
 
           {/* 4. Tab Content (Blur logic handled inside) */}
           <div className="min-h-[400px]">
-            {activeTab === 'compliance' && <ComplianceTab isUnlocked={isUnlocked} />}
-            {activeTab === 'experience' && <ExperienceTab isUnlocked={isUnlocked} />}
-            {activeTab === 'risk' && <RiskTab isUnlocked={isUnlocked} />}
-            
+            {activeTab === "compliance" && (
+              <ComplianceTab isUnlocked={isUnlocked} />
+            )}
+            {activeTab === "experience" && (
+              <ExperienceTab isUnlocked={isUnlocked} />
+            )}
+            {activeTab === "risk" && <RiskTab isUnlocked={isUnlocked} />}
+
             {/* Locked Overlay Hint (Optional - to guide user) */}
             {!isUnlocked && (
               <div className="mt-8 p-4 bg-primary-50 rounded-lg border border-primary-100 flex flex-col items-center text-center">
-                <p className="text-primary-800 font-medium mb-2">Want to see full details?</p>
-                <button 
+                <p className="text-primary-800 font-medium mb-2">
+                  Want to see full details?
+                </p>
+                <Button
                   onClick={handleUnlockAttempt}
                   className="text-sm bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 font-montserrat-bold shadow-md"
                 >
                   Unlock Full Profile
-                </button>
+                </Button>
               </div>
             )}
           </div>
-
         </div>
       </div>
 
       {/* --- Modals --- */}
-      
+
       {/* 1. Subscription Selection */}
-      <SubscriptionModal 
-        isOpen={showSubscription} 
+      <SubscriptionModal
+        isOpen={showSubscription}
         onClose={() => setShowSubscription(false)}
         onSelectPlan={handlePlanSelection}
       />
@@ -213,37 +283,57 @@ export default function ProviderSupportWorkerProfilePage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center animate-in zoom-in-95">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-               <ConfettiMinimalistic className="w-8 h-8 text-orange-500" />
+              <ConfettiMinimalistic className="w-8 h-8 text-orange-500" />
             </div>
-            <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">Payment Successful</h3>
+            <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+              Payment Successful
+            </h3>
             <p className="text-sm text-gray-600 mb-6">
-              This support worker has been added to your workforce panel. AI vetting insights are now available.
+              This support worker has been added to your workforce panel. AI
+              vetting insights are now available.
             </p>
-            <button 
+            <Button
               onClick={handlePaymentSuccess}
               className="w-full bg-primary-600 text-white py-3 rounded-xl font-montserrat-bold hover:bg-primary-700"
             >
               Continue to Panel
-            </button>
+            </Button>
           </div>
         </div>
       )}
-
+      <ScheduleInterviewModal
+        isOpen={showScheduleModal}
+        candidateName={WORKER_DETAILS.name}
+        onClose={() => {
+          setShowScheduleModal(false);
+        }}
+        onSchedule={handleScheduleInterview}
+        isProcessing={isScheduling}
+      />
     </div>
   );
 }
 
 // Helper Tab Button
-const TabButton = ({ label, isActive, onClick }: { label: string, isActive: boolean, onClick: () => void }) => (
-  <button
+const TabButton = ({
+  label,
+  isActive,
+  onClick,
+}: {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) => (
+  <Button
+    variant="ghost"
     onClick={onClick}
     className={cn(
-      "flex-1 py-2.5 px-3 rounded-md text-xs md:text-sm font-montserrat-semibold transition-all duration-200",
-      isActive 
-        ? "bg-white text-gray-900 shadow-sm" 
-        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+      "flex-1 py-2.5 px-3 rounded-md text-xs md:text-sm font-montserrat-semibold",
+      isActive
+        ? "bg-white text-gray-900 shadow-sm hover:bg-white"
+        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50",
     )}
   >
     {label}
-  </button>
+  </Button>
 );

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Magnifer, AltArrowDown } from "@solar-icons/react";
+import { Magnifer, AltArrowDown, AltArrowRight, AltArrowLeft } from "@solar-icons/react";
 import { PAGE_WRAPPER, GRID_4_COLS, cn } from "@/lib/design-utils";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { MOCK_WORKERS } from "@/types/marketplace";
 import { CONTAINER_PADDING, GAP, GRID_LAYOUTS } from "@/constants/design-system";
 import WorkerCard from "@/components/provider/martketplaces/WorkerCard";
@@ -10,6 +11,7 @@ import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import SubscriptionModal from "@/components/provider/martketplaces/SubscriptionModal";
+import ScheduleInterviewModal, { ScheduleInterviewData } from "@/components/provider/interviews/ScheduleInterviewModal";
 
 // Filter Data (Derived from your screenshots)
 const FILTER_DATA = {
@@ -47,7 +49,7 @@ export default function ProviderMarketplacePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null);
+  const [selectedWorker, setSelectedWorker] = useState<{ id: string; name: string } | null>(null);
 
   // Updated Handler
   const handleViewProfile = (id: string) => {
@@ -57,23 +59,27 @@ export default function ProviderMarketplacePage() {
     if (isSubscribed) {
       navigate(`/provider/find-support-workers/${id}`);
     } else {
-      setSelectedWorkerId(id);
+      const worker = MOCK_WORKERS.find(w => w.id === id);
+      setSelectedWorker({ id, name: worker?.name || "Candidate" });
       setShowSubscriptionModal(true);
     }
   };
 
   const handlePlanSelection = (plan: 'free' | 'paid') => {
-    console.log(`User selected ${plan} plan for worker ${selectedWorkerId}`);
-    setShowSubscriptionModal(false);
+    console.log(`User selected ${plan} plan for worker ${selectedWorker?.id}`);
     
     if (plan === 'paid') {
-      // Navigate to payment or checkout
-      // navigate('/checkout');
+      // Simulate payment - show schedule interview modal
+      setShowSubscriptionModal(false);
+     
     } else {
       // Navigate to limited view
-      navigate(`/provider/find-support-workers/${selectedWorkerId}?view=limited`);
+      setShowSubscriptionModal(false);
+      navigate(`/provider/find-support-workers/${selectedWorker?.id}?view=limited`);
     }
   };
+
+ 
 
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,13 +113,15 @@ export default function ProviderMarketplacePage() {
     filterKey: keyof typeof FILTER_DATA;
     active?: boolean;
   }) => (
-    <button
+    <Button
+      variant="outline"
+      size="sm"
       onClick={() => setActiveModal(filterKey)}
       className={cn(
-        "flex items-center gap-2 px-4 py-2 rounded-full border text-sm whitespace-nowrap transition-all",
+        "h-6 px-4 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
         active
-          ? "border-primary-600 bg-primary-50 text-primary-700" 
-          : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
+          ? "border-primary-600 bg-primary-50 text-primary-700 hover:bg-primary-100" 
+          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400"
       )}
     >
       <span>
@@ -121,8 +129,8 @@ export default function ProviderMarketplacePage() {
           ? filters[filterKey as keyof typeof filters]
           : label}
       </span>
-      <AltArrowDown className="w-4 h-4" />
-    </button>
+      <AltArrowDown className="w-3 h-3" />
+    </Button>
   );
 
   return (
@@ -146,18 +154,18 @@ export default function ProviderMarketplacePage() {
         }
       />
       {/* 2. Scrollable Filter Bar */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
         <FilterButton
           label="Suburbs"
           filterKey="suburbs"
           active={!!filters.suburbs}
         />
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm whitespace-nowrap">
-          Radius <AltArrowDown className="w-4 h-4" />
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm whitespace-nowrap">
-          Role Type <AltArrowDown className="w-4 h-4" />
-        </button>
+        <Button variant="outline" size="sm" className="h-6 px-4 rounded-full border-gray-300 bg-white text-gray-700 text-xs font-montserrat-semibold whitespace-nowrap hover:bg-gray-50 hover:border-gray-400">
+          Radius <AltArrowDown className="w-3 h-3" />
+        </Button>
+        <Button variant="outline" size="sm" className="h-6 px-4 rounded-full border-gray-300 bg-white text-gray-700 text-xs font-montserrat-semibold whitespace-nowrap hover:bg-gray-50 hover:border-gray-400">
+          Role Type <AltArrowDown className="w-3 h-3" />
+        </Button>
         <FilterButton
           label="Qualification"
           filterKey="certification"
@@ -187,7 +195,7 @@ export default function ProviderMarketplacePage() {
               key={worker.id}
               worker={worker}
               onViewProfile={handleViewProfile}
-              onContact={handleContact}
+              // onContact={handleContact}
             />
           ))}
         </div>
@@ -203,27 +211,27 @@ export default function ProviderMarketplacePage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50">
-              &lt;
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center bg-primary-700 text-white rounded">
+            <Button variant="outline" size="icon" className="w-8 h-8 border-gray-200 bg-white text-gray-500 hover:bg-gray-50">
+              <AltArrowLeft className="w-3 h-3" />
+            </Button>
+            <Button size="icon" className="w-8 h-8 bg-primary-700 text-white hover:bg-primary-800">
               1
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded bg-white text-gray-600 hover:bg-gray-50">
+            </Button>
+            <Button variant="outline" size="icon" className="w-8 h-8 border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
               2
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded bg-white text-gray-600 hover:bg-gray-50">
+            </Button>
+            <Button variant="outline" size="icon" className="w-8 h-8 border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
               3
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded bg-white text-gray-600 hover:bg-gray-50">
+            </Button>
+            <Button variant="outline" size="icon" className="w-8 h-8 border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
               4
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded bg-white text-gray-600 hover:bg-gray-50">
+            </Button>
+            <Button variant="outline" size="icon" className="w-8 h-8 border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
               5
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50">
-              &gt;
-            </button>
+            </Button>
+            <Button variant="outline" size="icon" className="w-8 h-8 border-gray-200 bg-white text-gray-500 hover:bg-gray-50">
+              <AltArrowRight className="w-3 h-3" />
+            </Button>
           </div>
         </div>
       </div>
@@ -290,6 +298,8 @@ export default function ProviderMarketplacePage() {
         onClose={() => setShowSubscriptionModal(false)}
         onSelectPlan={handlePlanSelection}
       />
+
+      
     </div>
   );
 }

@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Magnifer,
   Widget,
   List,
-  AltArrowLeft,
-  AltArrowRight,
 } from "@solar-icons/react";
 import { useGetShifts } from "@/hooks/useShiftHooks";
 import Loader from "@/components/Loader";
@@ -24,7 +22,25 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DASHBOARD_PAGE_WRAPPER, DASHBOARD_CONTENT } from "@/lib/design-utils";
+import {
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  CARD,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+  FLEX_CENTER,
+  FLEX_COL,
+  GRID_RESPONSIVE,
+  GRID_2_COLS,
+  HEADING_5,
+  TEXT_SMALL,
+  TEXT_MUTED,
+  FORM_INPUT,
+  EMPTY_STATE,
+  BUTTON_BASE,
+  cn,
+} from "@/lib/design-utils";
+import { BG_COLORS, GAP } from "@/constants/design-system";
 
 const ShiftsPage = () => {
   const { user, logout } = useAuth();
@@ -112,7 +128,7 @@ const ShiftsPage = () => {
   }
 
   return (
-    <div className={DASHBOARD_PAGE_WRAPPER}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER, BG_COLORS.gray100)}>
       <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
@@ -123,7 +139,7 @@ const ShiftsPage = () => {
           onLogout={logout}
           rightComponent={
             <>
-              <div className="flex-1 relative max-w-[150px] md:max-w-md">
+              <div className={cn("flex-1 relative max-w-[150px] md:max-w-md")}>
                 <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   type="text"
@@ -133,7 +149,7 @@ const ShiftsPage = () => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                  className={cn("pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent")}
                 />
               </div>
             </>
@@ -150,7 +166,7 @@ const ShiftsPage = () => {
         />
 
         {/* Filters */}
-        <div className="flex gap-2 mb-6 overflow-x-auto">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, "mb-6 overflow-x-auto")}>
           {[
             { key: "all", label: "All", bg: "bg-primary" },
             { key: "pending", label: "Pending", bg: "bg-orange-600" },
@@ -165,19 +181,21 @@ const ShiftsPage = () => {
                 setStatusFilter(key);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
+              className={cn(
+                "px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2",
                 statusFilter === key
                   ? `${bg} text-white`
                   : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
-              }`}
+              )}
             >
               {label}
               <span
-                className={`px-1.5 py-0.5 rounded-full text-xs ${
+                className={cn(
+                  "px-1.5 py-0.5 rounded-full text-xs",
                   statusFilter === key
                     ? `${bg}/10 text-white`
                     : `${bg} text-white`
-                }`}
+                )}
               >
                 {getStatusCount(key)}
               </span>
@@ -186,16 +204,16 @@ const ShiftsPage = () => {
         </div>
 
         {/* Search and View Toggle */}
-        <div className="flex gap-4 mb-6">
-          <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+        <div className={cn(FLEX_ROW_CENTER, GAP.lg, "mb-6")}>
+          <div className={cn("flex bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm")}> 
             <Button
               variant="ghost"
               onClick={() => setViewMode("grid")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
-                viewMode === "grid"
-                  ? "bg-primary text-white rounded-r-none"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
+              className={cn(
+                BUTTON_BASE,
+                "px-4 py-2 flex items-center gap-2",
+                viewMode === "grid" ? "bg-primary text-white rounded-r-none" : "text-gray-600 hover:bg-gray-100"
+              )}
             >
               <Widget size={24} />
               Grid
@@ -203,11 +221,11 @@ const ShiftsPage = () => {
             <Button
               variant="ghost"
               onClick={() => setViewMode("list")}
-              className={`px-4 py-2 flex items-center gap-2 text-sm font-montserrat-semibold transition-all duration-200 ${
-                viewMode === "list"
-                  ? "bg-primary text-white rounded-l-none"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
+              className={cn(
+                BUTTON_BASE,
+                "px-4 py-2 flex items-center gap-2",
+                viewMode === "list" ? "bg-primary text-white rounded-l-none" : "text-gray-600 hover:bg-gray-100"
+              )}
             >
               <List size={24} />
               List
@@ -216,13 +234,7 @@ const ShiftsPage = () => {
         </div>
 
         {/* Shifts Grid/List */}
-        <div
-          className={`gap-5 ${
-            viewMode === "grid"
-              ? "grid md:grid-cols-2 lg:grid-cols-3"
-              : "flex flex-col"
-          }`}
-        >
+        <div className={cn(viewMode === "grid" ? GRID_RESPONSIVE : FLEX_COL, GAP.xl)}>
           {paginatedShifts.map((shift: any) => (
             <ShiftCard
               key={shift._id}
@@ -235,26 +247,24 @@ const ShiftsPage = () => {
 
         {/* No Results */}
         {paginatedShifts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-1000 text-lg">No shifts found</p>
-            <p className="text-gray-400 text-sm mt-2">
-              Try adjusting your search or filters
-            </p>
+          <div className={cn(EMPTY_STATE, "py-12 text-center")}>
+            <p className={cn(HEADING_5)}>No shifts found</p>
+            <p className={cn(TEXT_MUTED, "mt-2")}>Try adjusting your search or filters</p>
           </div>
         )}
 
         {/* Pagination and Items Per Page */}
         {filteredShifts.length > 0 && (
           <div className="flex items-center justify-between mt-6">
-            <div className="flex items-center gap-4">
-              <p className="text-sm text-gray-600">
-                Showing{" "}
-                <span className="font-montserrat-semibold">
-                  {Math.min(itemsPerPage, paginatedShifts.length)}
-                </span>{" "}
-                of <span className="font-montserrat-semibold">{filteredShifts.length}</span>{" "}
-                entries
-              </p>
+            <div className={cn(FLEX_ROW_CENTER, GAP.lg)}>
+                <p className={cn(TEXT_SMALL, TEXT_MUTED)}>
+                  Showing {" "}
+                  <span className="font-montserrat-semibold">
+                    {Math.min(itemsPerPage, paginatedShifts.length)}
+                  </span>{" "}
+                  of <span className="font-montserrat-semibold">{filteredShifts.length}</span>{" "}
+                  entries
+                </p>
 
               {/* Items Per Page Selector */}
               <div className="flex items-center gap-2">
@@ -282,13 +292,13 @@ const ShiftsPage = () => {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex items-center gap-2">
+              <div className={cn(FLEX_ROW_CENTER, GAP.md)}>
                 <Button
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(1, prev - 1))
                   }
                   disabled={currentPage === 1}
-                  className="border-gray-200 border"
+                  className={cn(BUTTON_BASE, "border-gray-200 border")}
                   variant="outline"
                 >
                   Previous
@@ -297,11 +307,13 @@ const ShiftsPage = () => {
                   <Button
                     key={idx}
                     onClick={() => setCurrentPage(idx + 1)}
-                    className={`px-3 py-1 rounded-md text-sm font-montserrat-semibold transition-colors ${
+                    className={cn(
+                      BUTTON_BASE,
+                      "px-3 py-1 rounded-md text-sm font-montserrat-semibold transition-colors",
                       currentPage === idx + 1
                         ? "bg-primary text-white"
                         : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
-                    }`}
+                    )}
                   >
                     {idx + 1}
                   </Button>
@@ -311,7 +323,7 @@ const ShiftsPage = () => {
                     setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="border-gray-200"
+                  className={cn(BUTTON_BASE, "border-gray-200")}
                   variant="outline"
                 >
                   Next

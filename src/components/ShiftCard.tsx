@@ -9,6 +9,17 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  CARD,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+  FLEX_COL,
+  TEXT_SMALL,
+  TEXT_MUTED,
+  BUTTON_BASE,
+  cn,
+} from "@/lib/design-utils";
+import { CONTAINER_PADDING, GAP } from "@/constants/design-system";
 
 interface ShiftCardProps {
   shift: any;
@@ -85,15 +96,12 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
 
   if (viewMode === "list") {
     return (
-      <div
-        className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
-        onClick={onClick}
-      >
-        <div className="flex flex-col sm:flex-row md:items-start items-center justify-between gap-2 sm:gap-4">
+      <div className={cn(CARD,CONTAINER_PADDING.card, "cursor-pointer")} onClick={onClick}>
+        <div className={cn(FLEX_COL, "sm:flex-row md:items-start items-center justify-between", GAP.sm, "sm:gap-4")}>
           {/* Left Section - Service Info */}
           <div className="flex-shrink-0 min-w-0 w-full sm:w-auto">
             <div className="flex items-start gap-1 flex-1 min-w-0 mb-3">
-              <h3 className="font-montserrat-semibold text-xs mt-1.5">
+              <h3 className={cn(TEXT_SMALL, "font-montserrat-semibold mt-1.5")}>
                 {shift.serviceTypeId?.name || "No Service Type"}
               </h3>
               <span
@@ -104,34 +112,33 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
                 {getStatusLabel(shift.status)}
               </span>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2 text-xs md:text-sm text-gray-1000">
+            <div className={cn(FLEX_ROW_CENTER, GAP.sm, TEXT_MUTED)}>
               <span>Date: {formatDate(shift.startTime)}</span>
               <span>|</span>
               <span>
-                Time: {formatTime(shift.startTime)} -{" "}
-                {formatTime(shift.endTime)}
+                Time: {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
               </span>
             </div>
           </div>
 
           {/* Middle Section - User & Location */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 flex-1 min-w-0 w-full sm:w-auto">
-            <div className="flex items-center gap-1 sm:gap-2 text-xs md:text-sm">
+            <div className={cn(FLEX_ROW_CENTER, GAP.sm, "text-xs md:text-sm")}>
               <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
               <span className="truncate">
                 {participant.firstName} {participant.lastName}
               </span>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 flex-1 min-w-0">
+            <div className={cn(FLEX_ROW_CENTER, GAP.sm, "text-xs sm:text-sm", "flex-1 min-w-0", TEXT_MUTED)}>
               <MapPoint className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
               <span className="truncate">{shift.address}</span>
             </div>
           </div>
 
           {/* Right Section - Status & Action */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end">
-            <Button className="bg-primary w-6 h-6 hover:bg-primary-700 text-white p-1.5 sm:p-2 rounded-full transition-colors">
+          <div className={cn(FLEX_ROW_CENTER, GAP.sm, "flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end")}>
+            <Button className={cn(BUTTON_BASE, "bg-primary w-6 h-6 text-white p-1.5 sm:p-2 rounded-full")}>
               <ArrowRightUp className="h-4 w-4" />
             </Button>
           </div>
@@ -142,14 +149,11 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
 
   // Grid View
   return (
-    <div
-      className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 md:p-5 hover:shadow-md transition-shadow cursor-pointer"
-      onClick={onClick}
-    >
+    <div className={cn(CARD,CONTAINER_PADDING.card, "cursor-pointer")} onClick={onClick}>
       {/* Header with Title and Status */}
-      <div className="flex justify-between items-start mb-3 sm:mb-4">
-        <div className="flex items-start gap-1 flex-1 min-w-0">
-          <h3 className="font-montserrat-semibold text-xs mt-1.5">
+      <div className={cn(FLEX_ROW_BETWEEN, "items-start mb-3 sm:mb-4")}>
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, "flex-1 min-w-0")}>
+          <h3 className={cn(TEXT_SMALL, "font-montserrat-semibold mt-1.5")}>
             {shift.serviceTypeId?.name || "No Service Type"}
           </h3>
           <span
@@ -162,7 +166,7 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
         </div>
 
         {/* Avatar Stack */}
-        <div className="flex -space-x-1 sm:-space-x-2 flex-shrink-0">
+        <div className={cn("flex -space-x-1 sm:-space-x-2 flex-shrink-0")}>
           <Avatar className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white">
             <AvatarImage src={participant.profileImage} alt="Avatar" />
             <AvatarFallback>
@@ -181,33 +185,33 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
       </div>
 
       {/* Date and Time Info */}
-      <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
-        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
+      <div className={cn("space-y-1 sm:space-y-2 mb-3 sm:mb-4")}>
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, "text-xs sm:text-sm", TEXT_MUTED)}>
           <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span className="font-montserrat-semibold">Date:</span>
+          <span className={cn("font-montserrat-semibold")}>Date:</span>
           <span>{formatDate(shift.startTime)}</span>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, "text-xs sm:text-sm", TEXT_MUTED)}>
           <ClockCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span className="font-montserrat-semibold">Time:</span>
+          <span className={cn("font-montserrat-semibold")}>Time:</span>
           <span>
             {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
           </span>
-          <span className="text-gray-400 text-xs">
+          <span className={cn(TEXT_MUTED, "text-xs")}>
             ({calculateDuration(shift.startTime, shift.endTime)})
           </span>
         </div>
       </div>
 
       {/* Participant and Location Pills */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-wrap">
-        <div className="bg-gray-100 rounded-full border border-gray-200 px-2 sm:px-3 py-1 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-700 w-fit sm:w-auto">
+      <div className={cn(FLEX_COL, "sm:flex-row items-start sm:items-center gap-2 flex-wrap")}>
+        <div className={cn("bg-gray-100 rounded-full border border-gray-200 px-2 sm:px-3 py-1 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-700 w-fit sm:w-auto")}>
           <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
           <span className="truncate font-montserrat-semibold">
             {shift.participantId?.firstName} {shift.participantId?.lastName}
           </span>
         </div>
-        <div className="bg-gray-100 rounded-full border border-gray-200 px-2 sm:px-3 py-1 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 flex-1 min-w-0 w-fit sm:w-auto">
+        <div className={cn("bg-gray-100 rounded-full border border-gray-200 px-2 sm:px-3 py-1 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 flex-1 min-w-0 w-fit sm:w-auto")}>
           <MapPoint className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
           <span className="truncate font-montserrat-semibold">
             {shift.address}

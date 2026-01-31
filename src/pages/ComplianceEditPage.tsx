@@ -145,18 +145,18 @@ export default function ComplianceEditPage() {
             <p className={cn(TEXT_STYLES.body, `mb-${SPACING.md}`)}>
               You can only update your compliance information when your status is Approved.
             </p>
-            <button
+            <Button
+              variant="link"
               onClick={() => navigate("/support-worker/compliance")}
               className={cn(
                 "flex items-center justify-center gap-2 mx-auto",
                 "px-4 py-2 rounded-lg",
-                "text-primary-600 hover:text-primary-700 font-montserrat-semibold",
-                "transition-colors"
+                "text-primary-600 hover:text-primary-700 font-montserrat-semibold"
               )}
             >
               <AltArrowLeft className="h-4 w-4" />
               Back to Compliance Check
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -213,17 +213,17 @@ export default function ComplianceEditPage() {
 
         <div className={cn("max-w-3xl mx-auto", CONTAINER_PADDING.responsive)}>
           {/* Back Button */}
-          <button
+          <Button
+            variant="link"
             onClick={handleBackToForm}
             className={cn(
             `flex items-center gap-2 mb-${SPACING.lg}`,
-              "text-primary-600 hover:text-primary-700 font-montserrat-semibold",
-              "transition-colors"
+              "text-primary-600 hover:text-primary-700 font-montserrat-semibold"
             )}
           >
             <AltArrowLeft className="h-5 w-5" />
             Back to Form
-          </button>
+          </Button>
 
           {/* Review Card */}
           <div className={cn(`bg-white rounded-xl p-${SPACING.lg}`, SHADOW.md)}>
@@ -263,28 +263,28 @@ export default function ComplianceEditPage() {
 
             {/* Action Buttons */}
             <div className={cn(`flex gap-${SPACING.base}`)}>
-              <button
+              <Button
+                variant="outline"
                 onClick={handleBackToForm}
                 className={cn(
-                  "flex-1 px-4 py-2.5 rounded-lg border",
-                  "font-montserrat-semibold transition-colors",
+                  "flex-1 px-4 py-2.5 rounded-lg",
+                  "font-montserrat-semibold",
                   "border-gray-300 text-gray-700 hover:bg-gray-50"
                 )}
               >
                 Edit Answers
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSubmit}
                 disabled={updateAnswers.isPending}
                 className={cn(
                   "flex-1 px-4 py-2.5 rounded-lg",
                   "bg-primary-600 text-white font-montserrat-semibold",
-                  "hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed",
-                  "transition-colors"
+                  "hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >
                 {updateAnswers.isPending ? "Updating..." : "Update Answers"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -417,26 +417,27 @@ export default function ComplianceEditPage() {
 
         {/* Action Buttons */}
         <div className={cn(`flex gap-${SPACING.base} mb-${SPACING.xl}`)}>
-          <button
+          <Button
+            variant="outline"
             onClick={() => navigate("/support-worker/compliance")}
             className={cn(
-              "flex-1 px-4 py-3 rounded-lg border",
-              "font-montserrat-semibold transition-colors",
+              "flex-1 px-4 py-3 rounded-lg",
+              "font-montserrat-semibold",
               "border-gray-300 text-gray-700 hover:bg-gray-50"
             )}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleReview}
             className={cn(
               "flex-1 px-4 py-3 rounded-lg",
               "bg-primary-600 text-white font-montserrat-semibold",
-              "hover:bg-primary-700 transition-colors"
+              "hover:bg-primary-700"
             )}
           >
             Review Changes
-          </button>
+          </Button>
         </div>
       </div>
     </div>

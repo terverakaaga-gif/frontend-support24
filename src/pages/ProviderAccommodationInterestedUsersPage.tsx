@@ -312,46 +312,56 @@ export default function ProviderAccommodationInterestedUsersPage() {
                       </TableCell>
                       <TableCell className="px-4 md:px-6 py-4 text-right">
                         <div className="flex gap-2 justify-end">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleContact(user.id)}
                             title="Message"
-                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                            className="p-1 hover:bg-gray-100 rounded-full h-auto w-auto"
                           >
                             <ChatLine className="h-5 w-5 text-primary" />
-                          </button>
+                          </Button>
                           {currentTab === "new" ? (
                             <>
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => openActionModal(user, "accept")}
                                 title="Approve"
-                                className="p-1 hover:bg-green-50 rounded-full transition-colors"
+                                className="p-1 hover:bg-green-50 rounded-full h-auto w-auto"
                               >
                                 <CheckCircle className="h-5 w-5 text-green-600" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => openActionModal(user, "reject")}
                                 title="Reject"
-                                className="p-1 hover:bg-red-50 rounded-full transition-colors"
+                                className="p-1 hover:bg-red-50 rounded-full h-auto w-auto"
                               >
                                 <CloseCircle className="h-5 w-5 text-red-600" />
-                              </button>
+                              </Button>
                             </>
                           ) : currentTab === "approved" ? (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => openActionModal(user, "reject")}
                               title="Remove"
-                              className="p-1 hover:bg-red-50 rounded-full transition-colors"
+                              className="p-1 hover:bg-red-50 rounded-full h-auto w-auto"
                             >
                               <CloseCircle className="h-5 w-5 text-red-600" />
-                            </button>
+                            </Button>
                           ) : (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => openActionModal(user, "accept")}
                               title="Approve"
-                              className="p-1 hover:bg-green-50 rounded-full transition-colors"
+                              className="p-1 hover:bg-green-50 rounded-full h-auto w-auto"
                             >
                               <CheckCircle className="h-5 w-5 text-green-600" />
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </TableCell>

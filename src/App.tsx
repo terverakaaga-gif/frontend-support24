@@ -95,11 +95,12 @@ import ProviderJobsPage from "./pages/ProviderJobsPage";
 import ProviderJobDetailsPage from "./pages/ProviderJobDetailsPage";
 import ProviderJobFormPage from "./pages/ProviderJobFormPage";
 import ProviderJobApplicantsPage from "./pages/ProviderJobApplicantsPage";
-import ProviderMarketplacePage from "./pages/ProviderMarketplacePage"
+import ProviderMarketplacePage from "./pages/ProviderMarketplacePage";
 
 import SupportJobListingPage from "./pages/SupportJobListingPage";
 import SupportSavedJobsPage from "./pages/SupportSavedJobsPage";
 import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
+import SupportWorkerInterviewsPage from "./pages/SupportWorkerInterviewsPage";
 
 import ComplianceCheckPage from "./pages/ComplianceCheckPage";
 import ComplianceFormPage from "./pages/ComplianceFormPage";
@@ -114,6 +115,9 @@ import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
 import ParticipantEventPage from "./pages/ParticipantEventPage";
 import ParticipantEventDetailsPage from "./pages/ParticipantEventDetailsPage";
 import ProviderSupportWorkerProfilePage from "./pages/ProviderSupportWorkerProfilePage";
+import ProviderShiftCancellationPage from "./pages/ProviderShiftCancellationPage";
+import ProviderWorkforcePage from "./pages/ProviderWorkforcePage";
+import ProviderInterviewPage from "./pages/ProviderInterviewPage";
 // import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 // import CoordinatorParticipants from "./pages/CoordinatorParticipants";
 
@@ -266,12 +270,15 @@ const AppRoutes = () => {
                   path="service-types"
                   element={<ServiceTypesManagementPage />}
                 />
-                
+
                 <Route
                   path="service-types/:id"
                   element={<ServiceTypeDetailPage />}
                 />
-                <Route path="compliance" element={<ComplianceManagementPage />} />
+                <Route
+                  path="compliance"
+                  element={<ComplianceManagementPage />}
+                />
                 <Route path="incidents" element={<IncidentsPage />} />
 
                 <Route path="chats" element={<Converations />} />
@@ -332,7 +339,10 @@ const AppRoutes = () => {
                 />
 
                 <Route path="/jobs" element={<ParticipantJobsPage />} />
-                <Route path="jobs/:jobId" element={<ParticipantJobDetailsPage />} />
+                <Route
+                  path="jobs/:jobId"
+                  element={<ParticipantJobDetailsPage />}
+                />
                 <Route
                   path="/jobs/:jobId/applicants"
                   element={<ParticipantJobApplicantsPage />}
@@ -347,7 +357,10 @@ const AppRoutes = () => {
                 />
 
                 <Route path="/events" element={<ParticipantEventPage />} />
-                <Route path="/events/:eventId" element={<ParticipantEventDetailsPage />} />
+                <Route
+                  path="/events/:eventId"
+                  element={<ParticipantEventDetailsPage />}
+                />
 
                 {/* <Route
                   path="/organizations/:id"
@@ -438,6 +451,8 @@ const AppRoutes = () => {
                   element={<SupportJobDetailsPage />}
                 />
                 <Route path="/saved-jobs" element={<SupportSavedJobsPage />} />
+                {/* Interviews */}
+                <Route path="/interviews" element={<SupportWorkerInterviewsPage />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
@@ -470,10 +485,22 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="/" element={<ProviderDashboard />} />
                 <Route path="/events" element={<ProviderEventsPage />} />
-                <Route path="/events/create" element={<ProviderEventFormPage />} />
-                <Route path="/events/:eventId" element={<ProviderEventDetailsPage />} />
-                <Route path="/events/:eventId/edit" element={<ProviderEventFormPage />} />
-                <Route path="/events/:eventId/participants" element={<ProviderRegisteredEventParticipantsPage />} />
+                <Route
+                  path="/events/create"
+                  element={<ProviderEventFormPage />}
+                />
+                <Route
+                  path="/events/:eventId"
+                  element={<ProviderEventDetailsPage />}
+                />
+                <Route
+                  path="/events/:eventId/edit"
+                  element={<ProviderEventFormPage />}
+                />
+                <Route
+                  path="/events/:eventId/participants"
+                  element={<ProviderRegisteredEventParticipantsPage />}
+                />
                 <Route
                   path="/accommodations"
                   element={<ProviderAccommodationsPage />}
@@ -494,8 +521,14 @@ const AppRoutes = () => {
                   path="/accommodations/:accommodationId/interested"
                   element={<ProviderAccommodationInterestedUsersPage />}
                 />
-                <Route path="/find-support-workers" element={<ProviderMarketplacePage />} />
-                <Route path="/find-support-workers/:workerId" element={<ProviderSupportWorkerProfilePage />} />
+                <Route
+                  path="/find-support-workers"
+                  element={<ProviderMarketplacePage />}
+                />
+                <Route
+                  path="/find-support-workers/:workerId"
+                  element={<ProviderSupportWorkerProfilePage />}
+                />
                 <Route path="/jobs" element={<ProviderJobsPage />} />
                 <Route
                   path="/jobs/:jobId"
@@ -505,13 +538,22 @@ const AppRoutes = () => {
                   path="/jobs/:jobId/applicants"
                   element={<ProviderJobApplicantsPage />}
                 />
-                <Route
-                  path="/jobs/create"
-                  element={<ProviderJobFormPage />}
-                />
+                <Route path="/jobs/create" element={<ProviderJobFormPage />} />
                 <Route
                   path="/jobs/:jobId/edit"
                   element={<ProviderJobFormPage />}
+                />
+
+                {/* Provider Interviews Page */}
+                <Route path="/interviews" element={<ProviderInterviewPage />} />
+
+                {/* Provider Workforce Page */}
+                <Route path="/workforce" element={<ProviderWorkforcePage />} />
+
+                {/* Shift Cancellation */}
+                <Route
+                  path="/shift-cancellation"
+                  element={<ProviderShiftCancellationPage />}
                 />
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:conversationId" element={<ChatView />} />

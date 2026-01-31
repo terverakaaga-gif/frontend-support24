@@ -33,7 +33,10 @@ import {
   Bookmark,
   ShieldCheck,
   ShopMinimalistic,
+  CalendarMark,
+  Videocamera,
 } from "@solar-icons/react";
+import { Nav } from "react-day-picker";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -254,8 +257,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/participant/chats")}
             />
-            
-            
+
             <NavItem
               to={"/participant/jobs"}
               icon={<SuitcaseTag className="w-6 h-6" />}
@@ -311,6 +313,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/support-worker/chats")}
             />
             <NavItem
+              to="/support-worker/interviews"
+              icon={<Videocamera className="w-6 h-6" />}
+              label="Interviews"
+              active={isActive("/support-worker/interviews")}
+            />
+            <NavItem
               to="/support-worker/jobs"
               icon={<SuitcaseTag className="w-6 h-6" />}
               label="Jobs"
@@ -324,7 +332,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
           </>
         );
-          
+
       case "provider":
         return (
           <>
@@ -334,25 +342,42 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Dashboard"
               active={isActive("/provider/")}
             />
-            <NavItem
-              to="/provider/events"
-              icon={<CalendarDate className="w-6 h-6" />}
-              label="Events"
-              active={isActive("/provider/events")}
-            />
+
             <NavItem
               to="/provider/find-support-workers"
               icon={<ShopMinimalistic className="w-6 h-6" />}
               label="Support Workers"
               active={isActive("/provider/find-support-workers")}
             />
-            
+
+            <NavItem
+              to="/provider/interviews"
+              icon={<Videocamera className="w-6 h-6" />}
+              label="Interviews"
+              active={isActive("/provider/interviews")}
+            />
+
+            <NavItem
+              to="/provider/workforce"
+              icon={<Buildings3 className="w-6 h-6" />}
+              label="Workforce"
+              active={isActive("/provider/workforce")}
+            />
+
             <NavItem
               to="/provider/accommodations"
               icon={<Home className="w-6 h-6" />}
               label="Accommodations"
               active={isActive("/provider/accommodations")}
             />
+
+            <NavItem
+              to="/provider/events"
+              icon={<CalendarDate className="w-6 h-6" />}
+              label="Events"
+              active={isActive("/provider/events")}
+            />
+
             <NavItem
               to="/provider/jobs"
               icon={<SuitcaseTag className="w-6 h-6" />}
@@ -364,6 +389,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<ChatLine className="w-6 h-6" />}
               label="Messages"
               active={isActive("/provider/chats")}
+            />
+
+            <NavItem
+              to="/provider/shift-cancellation"
+              icon={<CalendarMark className="w-6 h-6" />}
+              label="Shift Cancellation"
+              active={isActive("/provider/shift-cancellation")}
             />
           </>
         );
@@ -478,7 +510,7 @@ const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
       "flex items-center gap-3 rounded-lg px-4 py-3 text-xs font-montserrat-semibold transition-colors relative",
       active
         ? "bg-primary text-white"
-        : "text-white/80 hover:bg-primary-700 hover:text-white"
+        : "text-white/80 hover:bg-primary-700 hover:text-white",
     )}
   >
     {icon}

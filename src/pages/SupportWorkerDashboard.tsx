@@ -64,7 +64,22 @@ import {
   DASHBOARD_CONTENT,
   DASHBOARD_STATS_GRID,
   DASHBOARD_STAT_CARD,
+  CARD,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+  FLEX_CENTER,
+  FLEX_COL,
+  GRID_2_COLS,
+  HEADING_5,
+  TEXT_SMALL,
+  TEXT_MUTED,
+  TEXT_BODY,
+  cn,
+  GRID_RESPONSIVE,
+  DASHBOARD_STAT_ICON,
+  DASHBOARD_STAT_ICON_CONTAINER,
 } from "@/lib/design-utils";
+import { BG_COLORS, BORDER_STYLES, CONTAINER_PADDING, FLEX_LAYOUTS, GAP, RADIUS, TEXT_COLORS, TEXT_STYLES } from "@/constants/design-system";
 
 // Stat card component
 
@@ -84,25 +99,28 @@ function StatCard({
   trendDirection,
 }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-sm font-montserrat-semibold text-gray-600">{title}</div>
-        <div className="p-2 rounded-full bg-primary-300/20">
-          <Icon className="h-5 w-5" style={{ color: "#4B7BF5" }} />
+    <div className={cn(CARD, CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+      <div className={FLEX_ROW_BETWEEN + " mb-3"}>
+        <div className={cn(TEXT_STYLES.label)}>{title}</div>
+        <div className={cn(DASHBOARD_STAT_ICON_CONTAINER)}>
+          <Icon className={cn(DASHBOARD_STAT_ICON)} />
         </div>
       </div>
-      <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900 mb-1">
+      <div className={cn(TEXT_STYLES.title, "mb-2")}>
         {value}
       </div>
       {trend && (
         <div
-          className={`text-xs font-montserrat-semibold flex items-center gap-1 ${
+          className={cn(
+            FLEX_ROW_CENTER,
+            TEXT_MUTED,
+            GAP.sm,
             trendDirection === "up"
               ? "text-green-600"
               : trendDirection === "down"
               ? "text-red-600"
               : "text-gray-600"
-          }`}
+          )}
         >
           {trendDirection === "up" && <CourseUp className="h-3 w-3" />}
           {trendDirection === "down" && <CourseDown className="h-3 w-3" />}
@@ -152,7 +170,7 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
+      <div className={cn(CARD, "col-span-full md:col-span-5", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
           <div className="h-64 bg-gray-100 rounded"></div>
@@ -163,14 +181,14 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
 
   if (chartData.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-lg font-montserrat-semibold text-gray-900">
+      <div className={cn(CARD, "col-span-full md:col-span-5", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+        <div className={cn(FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base, "mb-6")}>
+          <h2 className={HEADING_5}>
             Performance Overview
           </h2>
         </div>
 
-        <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+        <div className={cn(FLEX_CENTER, "h-64 ", TEXT_COLORS.gray300, RADIUS.lg, BORDER_STYLES.subtle, "border-dashed")}>
           <div className="text-center p-8">
             <Chart className="h-12 w-12 mx-auto mb-3 text-gray-400" />
             <p className="text-sm font-montserrat-semibold">
@@ -186,14 +204,14 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 col-span-full md:col-span-5">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">
+    <div className={cn(CARD, "col-span-full md:col-span-5", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+      <div className={cn(FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base, "mb-6")}>
+        <h2 className={HEADING_5}>
           Performance Overview
         </h2>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 md:gap-8 mb-6">
+      <div className={cn("flex flex-wrap items-center", GAP.lg, "md:" + GAP.xl, "mb-6")}>
         <div className="flex gap-3 items-center">
           <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900">
             {metrics.completionRate}%
@@ -262,7 +280,7 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
         </ComposedChart>
       </ResponsiveContainer>
 
-      <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-sm mt-4">
+      <div className={cn(GAP.responsive, FLEX_LAYOUTS.rowWrap,TEXT_SMALL, "mt-4" )}>
         <div className="flex items-center">
           <div className="w-4 h-3 rounded mr-2 bg-[#0D2BEC]"></div>
           <span className="text-gray-600">Completion Rate</span>
@@ -281,14 +299,14 @@ function DocumentAlerts({ alerts }) {
   if (!alerts || alerts.length === 0) return null;
 
   return (
-    <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
-      <div className="flex items-start">
+    <div className={cn("mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg", CONTAINER_PADDING.cardSm)}>
+      <div className={cn(FLEX_ROW_CENTER, "items-start")}>
         <InfoCircle className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
         <div>
           <h3 className="font-montserrat-semibold">Action Required</h3>
-          <ul className="list-disc list-inside text-sm mt-1">
+          <ul className={cn("list-disc list-inside text-sm", "mt-1")}>
             {alerts.map((alert, index) => (
-              <li key={index}>{alert.message}</li> // Assuming alert has a 'message' property
+              <li key={index}>{alert.message}</li>
             ))}
           </ul>
         </div>
@@ -308,10 +326,10 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
   if (!availability || !comparison) return null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div className={cn(GRID_RESPONSIVE, GAP.lg, "mb-6")}>
       {/* Availability Card */}
-      <div className="lg:col-span-1 bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
+      <div className={cn(CARD, "lg:col-span-1", CONTAINER_PADDING.card)}>
+        <h2 className={cn(HEADING_5, "mb-4")}>
           Availability
         </h2>
         <div className="space-y-4">
@@ -356,12 +374,12 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
       </div>
 
       {/* Skill Utilization Card */}
-      <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
+      <div className={cn(CARD, "lg:col-span-2", CONTAINER_PADDING.card)}>
+        <h2 className={cn(HEADING_5, "mb-4")}>
           Skill Utilization
         </h2>
         {skills && skills.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={cn(GRID_2_COLS, GAP.lg)}>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -386,13 +404,13 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex flex-col justify-center">
-              <p className="text-sm text-gray-600 mb-2">
+            <div className={FLEX_COL + " justify-center"}>
+              <p className={TEXT_BODY + " mb-2"}>
                 Breakdown of hours by skill type:
               </p>
               <ul className="space-y-2">
                 {skills.map((skill, index) => (
-                  <li key={index} className="flex items-center text-sm">
+                  <li key={index} className={FLEX_ROW_CENTER + " text-sm"}>
                     <span
                       className="h-3 w-3 rounded-full mr-3"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
@@ -409,7 +427,7 @@ function AvailabilityUtilization({ overviewData, performanceData }) {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
+          <div className={cn(FLEX_CENTER, "h-full text-gray-500")}>
             <p>No skill utilization data available.</p>
           </div>
         )}
@@ -426,8 +444,8 @@ function InvitationsTable({ invitations, isLoading }) {
 
   if (isLoading) {
     return (
-      <div className="bg-white mt-8 rounded-lg border border-gray-200">
-        <div className="p-4 md:p-6 border-b border-gray-200">
+      <div className={cn(CARD, "mt-8")}>
+        <div className={cn("p-4 md:p-6 border-b border-gray-200")}>
           <div className="h-6 bg-gray-200 rounded w-1/4 animate-pulse"></div>
         </div>
         <div className="p-8">
@@ -444,9 +462,9 @@ function InvitationsTable({ invitations, isLoading }) {
 
   if (!invitations || invitations.length === 0) {
     return (
-      <div className="bg-white mt-8 rounded-lg border border-gray-200">
-        <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h2 className="text-lg font-montserrat-semibold text-gray-900">
+      <div className={cn(CARD, "mt-8")}>
+        <div className={cn(CONTAINER_PADDING.responsive, FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base)}>
+          <h2 className={HEADING_5}>
             All Invitations
           </h2>
         </div>
@@ -497,9 +515,9 @@ function InvitationsTable({ invitations, isLoading }) {
   const currentInvitations = displayInvitations.slice(startIndex, endIndex);
 
   return (
-    <div className="bg-white mt-8 rounded-lg border border-gray-200">
-      <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-lg font-montserrat-semibold text-gray-900">All Invitations</h2>
+    <div className={cn(CARD, "mt-8")}>
+      <div className={cn("p-4 md:p-6 border-b border-gray-200", FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base)}>
+        <h2 className={HEADING_5}>All Invitations</h2>
         <Button
           onClick={() => {
             navigate("/support-worker/organizations");
@@ -542,8 +560,8 @@ function InvitationsTable({ invitations, isLoading }) {
                 className="hover:bg-white transition-colors"
               >
                 <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary font-montserrat-semibold text-sm flex-shrink-0">
+                  <div className={FLEX_ROW_CENTER + " gap-3"}>
+                    <div className={cn(FLEX_CENTER, "w-8 h-8 bg-primary-100 rounded-full text-primary font-montserrat-semibold text-sm flex-shrink-0")}>
                       {invitation.clientName.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm font-montserrat-semibold text-gray-900">
@@ -565,20 +583,21 @@ function InvitationsTable({ invitations, isLoading }) {
                 </TableCell>
                 <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-montserrat-semibold ${
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-montserrat-semibold",
                       invitation.status === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : invitation.status === "Confirmed"
                         ? "bg-primary-100 text-primary-800"
                         : "bg-green-100 text-green-800"
-                    }`}
+                    )}
                   >
                     {invitation.status}
                   </span>
                 </TableCell>
                 <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
                   {invitation.status === "Pending" ? (
-                    <div className="flex gap-2 justify-end">
+                    <div className={cn("flex gap-2 justify-end")}>
                       <Button
                         size="sm"
                         className="w-8 h-8 p-0 bg-primary hover:bg-primary/90"
@@ -615,8 +634,8 @@ function InvitationsTable({ invitations, isLoading }) {
         </Table>
       </div>
 
-      <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className={cn("p-4 border-t border-gray-200", FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base)}>
+        <div className={cn(FLEX_ROW_CENTER, "gap-2 text-sm text-gray-600")}>
           <span>Showing</span>
           <Select value={entriesPerPage} onValueChange={setEntriesPerPage}>
             <SelectTrigger className="w-20 h-9">
@@ -630,7 +649,7 @@ function InvitationsTable({ invitations, isLoading }) {
           </Select>
           <span>entries</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className={cn(FLEX_ROW_CENTER, "gap-3")}>
           <Button
             variant="outline"
             size="sm"
@@ -717,7 +736,7 @@ export default function SupportWorkerDashboard() {
   const analytics = overviewData?.analytics;
 
   return (
-    <div className={DASHBOARD_PAGE_WRAPPER}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER, BG_COLORS.gray100)}>
       <div className={DASHBOARD_CONTENT}>
         <GeneralHeader
           stickyTop={true}
@@ -744,7 +763,7 @@ export default function SupportWorkerDashboard() {
         <DocumentAlerts alerts={performanceData?.documentAlerts} />
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+        <div className={cn(DASHBOARD_STATS_GRID,)}>
           <StatCard
             title="Hours Worked"
             value={`${
@@ -790,13 +809,13 @@ export default function SupportWorkerDashboard() {
         />
 
         {/* Two columns layout for charts */}
-        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-6">
+        <div className={cn("grid grid-cols-1 md:grid-cols-8", GAP.base, "mb-6")}>
           {/* Performance Chart */}
           <PerformanceChart dateRange={dateRange} />
           {/* Upcoming Schedules */}
-          <div className="bg-white rounded-lg border col-span-full md:col-span-3 border-gray-200 p-4 md:p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900">
+          <div className={cn(CARD, "col-span-full md:col-span-3", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+            <div className={FLEX_ROW_BETWEEN + " mb-6"}>
+              <h2 className={HEADING_5}>
                 Upcoming Schedules
               </h2>
               <Button
@@ -834,7 +853,7 @@ export default function SupportWorkerDashboard() {
                 </TableBody>
               </Table>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+              <div className={cn(FLEX_CENTER, "h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg")}>
                 <div className="text-center p-8">
                   <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
                   <p className="text-sm font-montserrat-semibold">

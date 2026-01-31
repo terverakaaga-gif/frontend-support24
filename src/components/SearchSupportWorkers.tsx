@@ -104,6 +104,7 @@ export function SearchSupportWorkers({
     refetch,
   } = useSupportWorkers(searchFilters, {
     enabled: open,
+    queryKey: []
   });
 
   const workers = supportWorkersData?.workers || [];

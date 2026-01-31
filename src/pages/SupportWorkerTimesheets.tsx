@@ -10,8 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/design-utils";
-import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
+import { CARD, CARD_CONTENT, cn, DASHBOARD_CONTENT, DASHBOARD_STAT_ICON_CONTAINER, DASHBOARD_STAT_ICON, PAGE_WRAPPER, DASHBOARD_STATS_GRID } from "@/lib/design-utils";
+import { BG_COLORS, FLEX_LAYOUTS } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,8 @@ import {
   ClockCircle,
   Dollar,
   BillList,
+  AltArrowLeft,
+  AltArrowRight,
 } from "@solar-icons/react";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -132,7 +134,7 @@ const SupportWorkerTimesheets: React.FC = () => {
 
   if (error) {
     return (
-      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+      <div className={cn(PAGE_WRAPPER, BG_COLORS.gray100)}>
         <Card className="border-0 shadow-sm">
           <CardContent className="pt-6">
             <div className="text-center text-red-500">
@@ -145,8 +147,8 @@ const SupportWorkerTimesheets: React.FC = () => {
   }
 
   return (
-    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
-      <div className="space-y-6">
+    <div className={cn(PAGE_WRAPPER, BG_COLORS.gray100)}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
           title={
@@ -172,11 +174,11 @@ const SupportWorkerTimesheets: React.FC = () => {
 
         {/* Stats Cards */}
         {timesheetData?.summary && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className={cn(DASHBOARD_STATS_GRID)}>
             {/* Total Timesheet */}
-            <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
+            <Card className={CARD}>
+              <CardContent className={CARD_CONTENT}>
+                <div className={FLEX_LAYOUTS.rowStart}>
                   <div className="flex-1">
                     <p className="text-sm text-black mb-2">Total Timesheet</p>
                     <p className="text-3xl font-montserrat-bold text-gray-900">
@@ -189,17 +191,17 @@ const SupportWorkerTimesheets: React.FC = () => {
                       </span>
                     </div> */}
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                    <Document size={24} color="#3B82F6" />
+                  <div className={DASHBOARD_STAT_ICON_CONTAINER}>
+                    <Document className={DASHBOARD_STAT_ICON}/>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Total Hours */}
-            <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
+            <Card className={CARD}>
+              <CardContent className={CARD_CONTENT}>
+                <div className={FLEX_LAYOUTS.rowStart}>
                   <div className="flex-1">
                     <p className="text-sm text-black mb-2">Total Hours</p>
                     <p className="text-3xl font-montserrat-bold text-gray-900">
@@ -212,17 +214,17 @@ const SupportWorkerTimesheets: React.FC = () => {
                       </span>
                     </div> */}
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                    <ClockCircle size={24} color="#3B82F6" />
+                  <div className={DASHBOARD_STAT_ICON_CONTAINER}>
+                    <ClockCircle className={DASHBOARD_STAT_ICON}/>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Total Earned */}
-            <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
+            <Card className={CARD}>
+              <CardContent className={CARD_CONTENT}>
+                <div className={FLEX_LAYOUTS.rowStart}>
                   <div className="flex-1">
                     <p className="text-sm text-black mb-2">Total Earned</p>
                     <p className="text-3xl font-montserrat-bold text-gray-900">
@@ -235,17 +237,17 @@ const SupportWorkerTimesheets: React.FC = () => {
                       </span>
                     </div> */}
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                    <Dollar size={24} color="#3B82F6" />
+                  <div className={DASHBOARD_STAT_ICON_CONTAINER}>
+                    <Dollar className={DASHBOARD_STAT_ICON}/>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Pending Reviews */}
-            <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
+            <Card className={CARD}>
+              <CardContent className={CARD_CONTENT}>
+                <div className={FLEX_LAYOUTS.rowStart}>
                   <div className="flex-1">
                     <p className="text-sm text-black mb-2">Pending Reviews</p>
                     <p className="text-3xl font-montserrat-bold text-gray-900">
@@ -258,8 +260,8 @@ const SupportWorkerTimesheets: React.FC = () => {
                       </span>
                     </div> */}
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                    <ClockCircle size={24} color="#3B82F6" />
+                  <div className={DASHBOARD_STAT_ICON_CONTAINER}>
+                    <ClockCircle className={DASHBOARD_STAT_ICON}/>
                   </div>
                 </div>
               </CardContent>
@@ -443,7 +445,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                           disabled={timesheetData.pagination.page <= 1}
                           className="border-gray-200"
                         >
-                          Previous
+                          <AltArrowLeft className="h-5 w-5" />
                         </Button>
                         {Array.from(
                           {
@@ -498,7 +500,7 @@ const SupportWorkerTimesheets: React.FC = () => {
                           disabled={!timesheetData.pagination.hasMore}
                           className="border-gray-200"
                         >
-                          Next
+                          <AltArrowRight className="h-5 w-5" />
                         </Button>
                       </div>
                     </div>

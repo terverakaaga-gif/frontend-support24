@@ -7,6 +7,7 @@ import GeneralHeader from "@/components/GeneralHeader";
 import Loader from "@/components/Loader";
 import EventRegistrationModal from "@/components/participant/events/EventRegistrationModal";
 import EventCard from "@/components/participant/events/EventCard";
+import { Button } from "@/components/ui/button";
 import {
   PAGE_WRAPPER,
   BUTTON_GHOST,
@@ -54,15 +55,16 @@ export default function EventDetailsPage() {
       <div className={cn("max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 mt-6")}>
         {/* Left Column: Main Content */}
         <div className="flex-1">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate(-1)}
             className={cn(
               BUTTON_GHOST,
-              `mb-${SPACING.lg} pl-0 hover:bg-transparent hover:text-primary transition-colors`
+              `mb-${SPACING.lg} pl-0 hover:bg-transparent hover:text-primary`
             )}
           >
             <ArrowLeft className="w-5 h-5 mr-2" /> Back to Events
-          </button>
+          </Button>
 
           <div className={cn("bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden")}>
             {/* Hero Image */}
@@ -110,12 +112,12 @@ export default function EventDetailsPage() {
                 </section>
 
                 <div className={cn(`pt-${SPACING.lg}`)}>
-                  <button
+                  <Button
                     onClick={() => setIsRegisterModalOpen(true)}
-                    className={cn(BUTTON_PRIMARY, "w-full py-4 text-lg font-montserrat-semibold shadow-sm hover:shadow-md transition-all duration-200")}
+                    className={cn(BUTTON_PRIMARY, "w-full py-4 text-lg font-montserrat-semibold shadow-sm hover:shadow-md")}
                   >
                     Register for Event
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -126,9 +128,9 @@ export default function EventDetailsPage() {
         <div className={cn("w-full lg:w-96 flex-shrink-0")}>
           <div className={cn("flex justify-between items-center mb-4")}>
             <h3 className={cn(HEADING_STYLES.h4)}>Similar Events</h3>
-            <button className="text-primary text-sm font-medium hover:underline transition-colors">
+            <Button variant="link" className="text-primary text-sm font-medium hover:underline p-0 h-auto">
               View all
-            </button>
+            </Button>
           </div>
 
           <div className={cn(GAP.base, "flex flex-col")}>

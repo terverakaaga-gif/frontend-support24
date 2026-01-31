@@ -1,5 +1,6 @@
 import GeneralHeader from "@/components/GeneralHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { AltArrowRight, CheckCircle, ClockCircle, CloseCircle, Pen2 } from "@solar-icons/react";
 import { useNavigate } from "react-router-dom";
@@ -91,12 +92,13 @@ export default function ComplianceCheckPage() {
       <div className={cn(DASHBOARD_PAGE_WRAPPER, FLEX_CENTER)}>
         <div className="text-center">
           <p className="text-red-600 mb-4">Failed to load compliance status</p>
-          <button 
+          <Button 
+            variant="link"
             onClick={() => window.location.reload()}
             className="text-primary hover:underline"
           >
             Try again
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -272,35 +274,34 @@ export default function ComplianceCheckPage() {
             <div className="flex flex-col gap-3 pt-4">
               {/* Edit Button - Only for Approved/Verified */}
               {isVerified && (
-                <button
+                <Button
                   onClick={() => navigate("/support-worker/compliance/edit")}
                   className={cn(
                     "w-full flex items-center justify-center gap-2",
                     "px-4 py-2.5 rounded-lg mb-6 md:mb-8",
                     "bg-primary-600 text-white font-montserrat-semibold",
-                    "hover:bg-primary-700",
-                    TRANSITIONS.all
+                    "hover:bg-primary-700"
                   )}
                 >
                   <Pen2 className="h-5 w-5" />
                   Update Information
-                </button>
+                </Button>
               )}
 
               {/* Start Verification Link - For Draft/Rejected */}
               {canStartVerification && (
-                <button
+                <Button
+                  variant="link"
                   onClick={() => navigate("/support-worker/compliance/verify")}
                   className={cn(
                     "flex items-center justify-center gap-2",
                     "text-primary-600 hover:text-primary-700 font-montserrat-semibold",
-                    TRANSITIONS.all,
                     "py-2 mb-3"
                   )}
                 >
                   {compliance?.status === ComplianceStatus.REJECTED ? "Resubmit Verification" : "Start Verification"}
                   <AltArrowRight className="h-4 w-4" />
-                </button>
+                </Button>
               )}
             </div>
           </div>
