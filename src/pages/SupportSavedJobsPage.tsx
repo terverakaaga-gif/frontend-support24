@@ -27,8 +27,8 @@ import Loader from "@/components/Loader";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { formatDistanceToNow } from "date-fns";
 import { JobPostingCard } from "@/components/supportworker/JobPostingCard";
-import { cn } from "@/lib/design-utils";
-import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
+import { cn, DASHBOARD_PAGE_WRAPPER, CARD } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING, GAP } from "@/constants/design-system";
 
 export default function SupportSavedJobsPage() {
   const navigate = useNavigate();
@@ -62,11 +62,13 @@ export default function SupportSavedJobsPage() {
 
     return savedJobsData.savedJobs.map((savedJob) => {
       const job = savedJob.jobId;
+      const postedBy = job.postedBy || { firstName: "Unknown", lastName: "Provider", profileImage: null };
+      const providerName = `${postedBy.firstName || "Unknown"} ${postedBy.lastName || "Provider"}`;
       return {
         id: job._id,
         title: job.jobRole,
-        providerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
-        providerImage: job.postedBy.profileImage || null,
+        providerName,
+        providerImage: (postedBy as any).profileImage || null,
         location: job.location,
         hourlyRate: job.price,
         description: job.jobDescription,
@@ -132,14 +134,15 @@ export default function SupportSavedJobsPage() {
 
   if (savedJobsError) {
     return (
-      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+      <div className={DASHBOARD_PAGE_WRAPPER}>
         <ErrorDisplay message="Failed to load saved jobs" />
       </div>
     );
   }
 
   return (
-    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+  
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       <GeneralHeader
         stickyTop={true}
         title="Saved Jobs"
@@ -148,7 +151,7 @@ export default function SupportSavedJobsPage() {
         onLogout={() => {}}
         onViewProfile={() => navigate("/support-worker/profile")}
         rightComponent={
-          <div className="w-fit flex gap-2">
+          <div className={cn("w-fit flex", GAP)}>
             <div className="relative">
               <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
@@ -191,8 +194,8 @@ export default function SupportSavedJobsPage() {
         </div>
 
         {currentJobs.length === 0 && (
-          <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-200">
-            <SuitcaseTag className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+          <div className={cn(CARD, "text-center py-12 text-gray-500")}>
+            <SuitcaseTag className={cn("h-12 w-12 mx-auto mb-3 text-gray-400")} />
             <p className="font-montserrat-semibold">No saved jobs</p>
             <p className="text-sm mt-1">
               Jobs you save will appear here for easy access
@@ -208,8 +211,8 @@ export default function SupportSavedJobsPage() {
 
         {/* Pagination */}
         {currentJobs.length > 0 && (
-          <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 bg-white rounded-lg">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className={cn(CARD, "p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4")}>
+            <div className={cn("flex items-center", GAP, "text-sm text-gray-600")}>
               <span>Showing</span>
               <Select
                 value={entriesPerPage}

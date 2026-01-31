@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MapPoint, CheckCircle } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
-import { cn } from "@/lib/design-utils";
-import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
+import { cn, DASHBOARD_PAGE_WRAPPER, CARD, HEADING_4 } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING, GAP } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import SupportJobApplicationModal from "@/components/supportworker/SupportJobApplicationModal";
@@ -58,12 +58,16 @@ export default function SupportJobDetailsPage() {
   const isSaved = jobData.isSaved;
   const hasApplied = jobData.hasApplied;
 
+  // Safe provider info
+  const postedBy = job.postedBy || { firstName: "Unknown", lastName: "Provider", profileImage: null };
+  const providerName = `${postedBy.firstName || "Unknown"} ${postedBy.lastName || "Provider"}`;
+
   // Map job to JobPostingCard format
   const jobForCard = {
     id: job._id,
     title: job.jobRole,
-    providerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
-    providerImage: job.postedBy.profileImage || null,
+    providerName,
+    providerImage: (postedBy as any).profileImage || null,
     location: job.location,
     hourlyRate: job.price,
     postedDate: formatDistanceToNow(new Date(job.createdAt), {
@@ -100,7 +104,7 @@ export default function SupportJobDetailsPage() {
   const competencies = getCompetencies();
 
   return (
-    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       <GeneralHeader
         showBackButton={true}
         stickyTop={true}
@@ -128,18 +132,18 @@ export default function SupportJobDetailsPage() {
 
         {/* Right Column - Job Details */}
         <div className="flex-1">
-          <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8 shadow-sm">
+          <div className={cn(CARD, "p-6 md:p-8")}>
             {/* Header */}
             <div className="flex flex-col items-center justify-center gap-1 mb-6 border-b pb-6">
               {/* Avatar */}
               <Avatar className="w-24 h-24 mb-4 shadow-md border border-gray-300">
                 <AvatarImage
-                  src={job.postedBy.profileImage || undefined}
-                  alt={`${job.postedBy.firstName} ${job.postedBy.lastName}`}
+                  src={postedBy.profileImage || undefined}
+                  alt={providerName}
                 />
                 <AvatarFallback>
-                  {job.postedBy.firstName.charAt(0)}
-                  {job.postedBy.lastName.charAt(0)}
+                  {postedBy.firstName?.charAt(0) || "U"}
+                  {postedBy.lastName?.charAt(0) || "P"}
                 </AvatarFallback>
               </Avatar>
               <h1 className="text-xl font-montserrat-semibold text-gray-900">
@@ -150,13 +154,13 @@ export default function SupportJobDetailsPage() {
                 </span>
               </h1>
               <p className="text-sm text-gray-500">
-                {job.postedBy.firstName} {job.postedBy.lastName}
+                {providerName}
               </p>
             </div>
 
             {/* About the Role */}
             <section className="mb-6">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+              <h2 className={cn(HEADING_4, "mb-3")}>
                 About the Role
               </h2>
               <p className="text-gray-600 leading-relaxed">
@@ -167,7 +171,7 @@ export default function SupportJobDetailsPage() {
             {/* Key Responsibilities */}
             {job.keyResponsibilities && (
               <section className="mb-6">
-                <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                <h2 className={cn(HEADING_4, "mb-3")}>
                   Key Responsibilities
                 </h2>
                 <div
@@ -180,7 +184,7 @@ export default function SupportJobDetailsPage() {
             {/* Required Competencies */}
             {competencies.length > 0 && (
               <section className="mb-6">
-                <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                <h2 className={cn(HEADING_4, "mb-3")}>
                   Required Competencies
                 </h2>
                 <ul className="space-y-2">
@@ -199,7 +203,7 @@ export default function SupportJobDetailsPage() {
 
             {/* Location */}
             <section className="mb-6">
-              <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+              <h2 className={cn(HEADING_4, "mb-3")}>
                 Location
               </h2>
               <div className="flex items-center gap-2 text-gray-600">
@@ -211,7 +215,7 @@ export default function SupportJobDetailsPage() {
             {/* Additional Notes */}
             {job.additionalNote && (
               <section className="mb-8">
-                <h2 className="text-lg font-montserrat-semibold text-gray-900 mb-3">
+                <h2 className={cn(HEADING_4, "mb-3")}>
                   Additional Notes
                 </h2>
                 <p className="text-gray-600 leading-relaxed whitespace-pre-line">

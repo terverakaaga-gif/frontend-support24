@@ -19,7 +19,7 @@ import {
   Videocamera,
   User
 } from "@solar-icons/react";
-import { PAGE_WRAPPER } from "@/lib/design-utils";
+import { DASHBOARD_PAGE_WRAPPER, PAGE_WRAPPER } from "@/lib/design-utils";
 import { cn } from "@/lib/utils";
 import { GAP, GRID_LAYOUTS, RADIUS } from "@/constants/design-system";
 import { useAuth } from "@/contexts/AuthContext";
@@ -170,7 +170,7 @@ export default function SupportWorkerInterviewsPage() {
   };
 
   return (
-    <div className={cn(PAGE_WRAPPER)}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       {/* Header */}
       <GeneralHeader
         user={user}

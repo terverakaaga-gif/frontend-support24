@@ -7,8 +7,8 @@ import {
   SuitcaseTag,
 } from "@solar-icons/react";
 import GeneralHeader from "@/components/GeneralHeader";
-import { cn } from "@/lib/design-utils";
-import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
+import { cn, DASHBOARD_PAGE_WRAPPER, CARD } from "@/lib/design-utils";
+import { BG_COLORS, CONTAINER_PADDING, GAP } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -63,21 +63,25 @@ export default function SupportJobListingPage() {
   const jobs = useMemo(() => {
     if (!jobsData?.jobs) return [];
 
-    return jobsData.jobs.map((job) => ({
-      id: job._id,
-      title: job.jobRole,
-      providerName: `${job.postedBy.firstName} ${job.postedBy.lastName}`,
-      providerImage: job.postedBy.profileImage || null,
-      location: job.location,
-      hourlyRate: job.price,
-      description: job.jobDescription,
-      postedDate: formatDistanceToNow(new Date(job.createdAt), {
-        addSuffix: true,
-      }),
-      isEarlyApplicant: false, // Can be calculated based on application count
-      isSaved: false, // Will be managed by toggleSave
-      isApplied: appliedJobIds.has(job._id),
-    }));
+    return jobsData.jobs.map((job) => {
+      const postedBy = job.postedBy || { firstName: "Unknown", lastName: "Provider", profileImage: null };
+      const providerName = `${postedBy.firstName || "Unknown"} ${postedBy.lastName || "Provider"}`;
+      return {
+        id: job._id,
+        title: job.jobRole,
+        providerName,
+        providerImage: (postedBy as any).profileImage || null,
+        location: job.location,
+        hourlyRate: job.price,
+        description: job.jobDescription,
+        postedDate: formatDistanceToNow(new Date(job.createdAt), {
+          addSuffix: true,
+        }),
+        isEarlyApplicant: false, // Can be calculated based on application count
+        isSaved: false, // Will be managed by toggleSave
+        isApplied: appliedJobIds.has(job._id),
+      };
+    });
   }, [jobsData, appliedJobIds]);
 
   // Filter jobs based on search and filter type
@@ -145,7 +149,7 @@ export default function SupportJobListingPage() {
   }
 
   return (
-    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+    <div className={DASHBOARD_PAGE_WRAPPER}>
       <GeneralHeader
         stickyTop={true}
         title="Jobs"
@@ -154,7 +158,7 @@ export default function SupportJobListingPage() {
         onLogout={() => {}}
         onViewProfile={() => navigate("/support-worker/profile")}
         rightComponent={
-          <div className="w-fit flex gap-2">
+          <div className={cn("w-fit flex", GAP)}>
             <div className="relative">
               <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
@@ -170,7 +174,7 @@ export default function SupportJobListingPage() {
 
       {/* Filter Tabs */}
       <div className="mb-8 md:mb-12 space-y-4">
-        <div className="flex flex-wrap gap-2">
+        <div className={cn("flex flex-wrap", GAP)}>
           <Button
             variant="default"
             size="sm"
@@ -200,7 +204,7 @@ export default function SupportJobListingPage() {
             }}
           >
             Applied
-            <span className="ml-1 bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs">
+            <span className={cn("ml-1 bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs")}>
               {appliedCount}
             </span>
           </Button>
@@ -224,8 +228,8 @@ export default function SupportJobListingPage() {
         </div>
 
         {currentJobs.length === 0 && (
-          <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-200">
-            <SuitcaseTag className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+          <div className={cn(CARD, "text-center py-12 text-gray-500")}>
+            <SuitcaseTag className={cn("h-12 w-12 mx-auto mb-3 text-gray-400")} />
             <p className="font-montserrat-semibold">No jobs found</p>
             <p className="text-sm mt-1">Try adjusting your search or filters</p>
           </div>
@@ -233,8 +237,8 @@ export default function SupportJobListingPage() {
 
         {/* Pagination */}
         {currentJobs.length > 0 && (
-          <div className="p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 bg-white rounded-lg">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className={cn(CARD, "p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4")}>
+            <div className={cn("flex items-center", GAP, "text-sm text-gray-600")}>
               <span>Showing</span>
               <Select
                 value={entriesPerPage}

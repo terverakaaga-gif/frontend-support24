@@ -15,7 +15,7 @@ import {
   IComplianceAnswers,
   ComplianceStatus,
 } from "@/types/compliance.types";
-import { DASHBOARD_PAGE_WRAPPER } from "@/lib/design-utils";
+import { CARD, CARD_CONTENT, DASHBOARD_PAGE_WRAPPER, FLEX_COL_CENTER } from "@/lib/design-utils";
 import {
   SPACING,
   CONTAINER_PADDING,
@@ -295,6 +295,7 @@ export default function ComplianceEditPage() {
   return (
     <div className={DASHBOARD_PAGE_WRAPPER}>
       <GeneralHeader
+        showBackButton
         title="Update Compliance"
         subtitle="Update your compliance answers and documents"
         onLogout={logout}
@@ -302,10 +303,10 @@ export default function ComplianceEditPage() {
         onViewProfile={() => navigate("/support-worker/profile")}
       />
 
-      <div className={cn("max-w-3xl mx-auto", CONTAINER_PADDING.responsive)}>
+      <div className={cn("max-w-3xl mx-auto", FLEX_COL_CENTER, CONTAINER_PADDING.responsive,GAP.base)}>
         {/* Questions Section */}
-        <div className={cn("bg-white rounded-xl mb-${SPACING.xl}", SHADOW.md)}>
-          <div className={CONTAINER_PADDING.cardLg}>
+        <div className={cn(CARD)}>
+          <div className={CARD_CONTENT}>
             <div className={cn(`mb-${SPACING.lg}`)}>
               <h2 className={cn(HEADING_STYLES.h3, `mb-${SPACING.sm}`)}>
                 Compliance Questions
@@ -362,8 +363,8 @@ export default function ComplianceEditPage() {
 
         {/* Updated Documents Section */}
         {compliance?.documents && compliance.documents.length > 0 && (
-          <div className={cn(`bg-white rounded-xl mb-${SPACING.xl}`, SHADOW.md)}>
-            <div className={CONTAINER_PADDING.cardLg}>
+          <div className={cn(CARD)}>
+            <div className={CARD_CONTENT}>
               <h2 className={cn(HEADING_STYLES.h3, `mb-${SPACING.md}`)}>
                 Your Uploaded Documents
               </h2>
@@ -398,8 +399,8 @@ export default function ComplianceEditPage() {
         )}
 
         {/* Update Documents Section */}
-        <div className={cn(`bg-white rounded-xl mb-${SPACING.xl}`, SHADOW.md)}>
-          <div className={CONTAINER_PADDING.cardLg}>
+        <div className={cn(CARD,"w-full")}>
+          <div className={CARD_CONTENT}>
             <h2 className={cn(HEADING_STYLES.h3, `mb-${SPACING.base}`)}>
               Update Documents (Optional)
             </h2>
@@ -416,7 +417,7 @@ export default function ComplianceEditPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className={cn(`flex gap-${SPACING.base} mb-${SPACING.xl}`)}>
+        <div className={cn(`w-full flex gap-${SPACING.base} mb-${SPACING.xl}`)}>
           <Button
             variant="outline"
             onClick={() => navigate("/support-worker/compliance")}

@@ -16,7 +16,7 @@ import {
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import Loader from "@/components/Loader";
-import { cn, PAGE_WRAPPER } from "@/lib/design-utils";
+import { cn, PAGE_WRAPPER, DASHBOARD_PAGE_WRAPPER } from "@/lib/design-utils";
 import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { Input } from "@/components/ui/input";
@@ -138,7 +138,7 @@ const IncidentsPage = () => {
   // Update incident status mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: TIncidentStatus }) =>
-      incidentService.updateIncidentStatus(id, { status }),
+      incidentService.updateIncidentStatus(id, { status, updatedBy: user?._id || "" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["incidents"] });
     },
@@ -364,23 +364,24 @@ const IncidentsPage = () => {
 
   const filteredShifts = shifts?.filter((shift) => {
     const searchLower = shiftSearchTerm.toLowerCase();
-    const participant = shift.participantId;
+    const worker = shift.workerId;
     const hasFirstName =
-      typeof participant === "object" &&
-      participant !== null &&
-      "firstName" in participant;
+      typeof worker === "object" &&
+      worker !== null &&
+      "firstName" in worker;
     const hasLastName =
-      typeof participant === "object" &&
-      participant !== null &&
-      "lastName" in participant;
+      typeof worker === "object" &&
+      worker !== null &&
+      "lastName" in worker;
 
     return (
       shift.shiftId.toLowerCase().includes(searchLower) ||
       (hasFirstName &&
-        participant.firstName.toLowerCase().includes(searchLower)) ||
+        worker.firstName.toLowerCase().includes(searchLower)) ||
       (hasLastName &&
-        participant.lastName.toLowerCase().includes(searchLower)) ||
-      shift.serviceType.toLowerCase().includes(searchLower)
+        worker.lastName.toLowerCase().includes(searchLower)) ||
+      (shift.serviceTypeId?.name &&
+        shift.serviceTypeId.name.toLowerCase().includes(searchLower))
     );
   });
 
@@ -397,7 +398,7 @@ const IncidentsPage = () => {
   }
 
   return (
-    <div className={PAGE_WRAPPER}>
+    <div className={DASHBOARD_PAGE_WRAPPER}>
       {/* Header */}
       <GeneralHeader
         title={
@@ -1057,13 +1058,13 @@ const IncidentsPage = () => {
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="font-montserrat-bold text-gray-900">
-                              {typeof shift.participantId === "object" &&
-                              shift.participantId !== null
-                                ? `${shift.participantId.firstName} ${shift.participantId.lastName}`
-                                : String(shift.participantId)}
+                              {typeof shift.workerId === "object" &&
+                              shift.workerId !== null
+                                ? `${shift.workerId.firstName} ${shift.workerId.lastName}`
+                                : String(shift.workerId)}
                             </h3>
                             <p className="text-sm text-gray-1000">
-                              {shift.serviceType}
+                              {shift.serviceTypeId?.name || "N/A"}
                             </p>
                           </div>
                           <span
