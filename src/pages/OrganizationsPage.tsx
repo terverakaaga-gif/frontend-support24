@@ -22,7 +22,7 @@ import {
 import { pageTitles } from "@/constants/pageTitles";
 import { useAuth } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
-import { BUTTON_BASE, CARD, cn, DASHBOARD_CONTENT, DASHBOARD_STATS_GRID, DASHBOARD_STAT_ICON_CONTAINER, DASHBOARD_STAT_ICON, DASHBOARD_DETAIL_ICON_CONTAINER, DASHBOARD_DETAIL_ICON, ORG_ICON_CONTAINER_LG, ORG_ICON_LG, FLEX_COL, FLEX_ROW_BETWEEN, FLEX_ROW_CENTER, GRID_RESPONSIVE, HEADING_5, PAGE_WRAPPER, TEXT_MUTED, TEXT_SMALL, CARD_CONTENT } from "@/lib/design-utils";
+import { BUTTON_BASE, CARD, cn, DASHBOARD_CONTENT, DASHBOARD_STATS_GRID, DASHBOARD_STAT_ICON_CONTAINER, DASHBOARD_STAT_ICON, DASHBOARD_DETAIL_ICON_CONTAINER, DASHBOARD_DETAIL_ICON, ORG_ICON_CONTAINER_LG, ORG_ICON_LG, FLEX_COL, FLEX_ROW_BETWEEN, FLEX_ROW_CENTER, GRID_RESPONSIVE, HEADING_5, PAGE_WRAPPER, TEXT_MUTED, TEXT_SMALL, CARD_CONTENT, DASHBOARD_PAGE_WRAPPER } from "@/lib/design-utils";
 import { BG_COLORS, CONTAINER_PADDING, FONT_FAMILY, FONT_WEIGHT, GAP, TEXT_STYLES } from "@/constants/design-system";
 import GeneralHeader from "@/components/GeneralHeader";
 
@@ -113,7 +113,7 @@ export default function SupportWorkerOrganizationsPage() {
   }
 
   return (
-    <div className={cn(PAGE_WRAPPER, BG_COLORS.gray100,)}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER,)}>
       <div className={cn(DASHBOARD_CONTENT)}>
         {/* Header */}
         <GeneralHeader

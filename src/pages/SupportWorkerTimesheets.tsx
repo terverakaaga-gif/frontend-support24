@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { CARD, CARD_CONTENT, cn, DASHBOARD_CONTENT, DASHBOARD_STAT_ICON_CONTAINER, DASHBOARD_STAT_ICON, PAGE_WRAPPER, DASHBOARD_STATS_GRID } from "@/lib/design-utils";
+import { CARD, CARD_CONTENT, cn, DASHBOARD_CONTENT, DASHBOARD_STAT_ICON_CONTAINER, DASHBOARD_STAT_ICON, PAGE_WRAPPER, DASHBOARD_STATS_GRID, DASHBOARD_PAGE_WRAPPER } from "@/lib/design-utils";
 import { BG_COLORS, FLEX_LAYOUTS } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -147,7 +147,7 @@ const SupportWorkerTimesheets: React.FC = () => {
   }
 
   return (
-    <div className={cn(PAGE_WRAPPER, BG_COLORS.gray100)}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader

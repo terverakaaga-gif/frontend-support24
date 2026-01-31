@@ -40,7 +40,7 @@ import {
   BUTTON_BASE,
   cn,
 } from "@/lib/design-utils";
-import { BG_COLORS, GAP } from "@/constants/design-system";
+import { BG_COLORS, FONT_FAMILY, GAP, RADIUS, TEXT_STYLES, TRANSITIONS } from "@/constants/design-system";
 
 const ShiftsPage = () => {
   const { user, logout } = useAuth();
@@ -128,7 +128,7 @@ const ShiftsPage = () => {
   }
 
   return (
-    <div className={cn(DASHBOARD_PAGE_WRAPPER, BG_COLORS.gray100)}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
@@ -182,7 +182,8 @@ const ShiftsPage = () => {
                 setCurrentPage(1);
               }}
               className={cn(
-                "px-3 py-1 rounded-full text-xs md:text-sm font-montserrat-semibold whitespace-nowrap transition-colors flex items-center gap-2",
+                RADIUS.full, TEXT_STYLES.tiny, FONT_FAMILY.montserratSemibold, TRANSITIONS.colors, GAP.sm, FLEX_ROW_CENTER,
+                "px-3 py-1 md:text-sm whitespace-nowrap h-6",
                 statusFilter === key
                   ? `${bg} text-white`
                   : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"

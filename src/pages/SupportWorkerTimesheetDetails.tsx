@@ -12,8 +12,26 @@ import {
   Calendar,
 } from "@solar-icons/react";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/design-utils";
-import { BG_COLORS, CONTAINER_PADDING } from "@/constants/design-system";
+import {
+  CARD,
+  CARD_CONTENT,
+  CARD_FOOTER,
+  cn,
+  DASHBOARD_CONTENT,
+  DASHBOARD_PAGE_WRAPPER,
+  FLEX_ROW_CENTER,
+  GRID_RESPONSIVE,
+} from "@/lib/design-utils";
+import {
+  BG_COLORS,
+  CONTAINER_PADDING,
+  FONT_FAMILY,
+  GAP,
+  RADIUS,
+  TEXT_COLORS,
+  TEXT_STYLES,
+  TRANSITIONS,
+} from "@/constants/design-system";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -118,7 +136,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+      <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-12 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -134,7 +152,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
   if (error || !timesheet) {
     return (
-      <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+      <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
         <div className="max-w-md mx-auto mt-20">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8 text-center">
@@ -159,8 +177,8 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
   }
 
   return (
-    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
-      <div className="p-6 md:p-8">
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
+      <div className={DASHBOARD_CONTENT}>
         {/* Header */}
         <GeneralHeader
           showBackButton
@@ -174,60 +192,93 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                 (key) =>
                   key !== "/support-worker/timesheets" &&
                   pageTitles.supportWorker[key] ===
-                    pageTitles.supportWorker["/support-worker/profile"]
-              )
+                    pageTitles.supportWorker["/support-worker/profile"],
+              ),
             );
           }}
           onLogout={logout}
         />
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6">
+        <div className={cn(FLEX_ROW_CENTER, GAP.sm, "mb-6 overflow-x-auto")}>
           <Button
             onClick={() => setActiveTab("details")}
-            className={`rounded-full font-montserrat-semibold px-5 py-2 text-sm transition-all ${
-              activeTab === "details"
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-            }`}
+            className={cn(
+              RADIUS.full,
+              TEXT_STYLES.tiny,
+              FONT_FAMILY.montserratSemibold,
+              TRANSITIONS.colors,
+              GAP.sm,
+              FLEX_ROW_CENTER,
+              `px-3 py-1 md:text-sm whitespace-nowrap h-6 ${
+                activeTab === "details"
+                  ? "bg-primary-600 text-white hover:bg-primary-700"
+                  : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+              }`,
+            )}
           >
             Shift Details
           </Button>
           <Button
             onClick={() => setActiveTab("expenses")}
-            className={`rounded-full font-montserrat-semibold px-5 py-2 text-sm transition-all ${
-              activeTab === "expenses"
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-            }`}
+            className={cn(
+              RADIUS.full,
+              TEXT_STYLES.tiny,
+              FONT_FAMILY.montserratSemibold,
+              TRANSITIONS.colors,
+              GAP.sm,
+              FLEX_ROW_CENTER,
+              `px-3 py-1 md:text-sm whitespace-nowrap h-6 ${
+                activeTab === "expenses"
+                  ? "bg-primary-600 text-white hover:bg-primary-700"
+                  : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+              }`,
+            )}
           >
-            Expenses ({timesheet.expenses.length})
+            Expenses{" "}
+            <span className="ml-1 bg-white text-gray-600 px-2 py-0.5 rounded-full text-xs font-montserrat-semibold border border-gray-200">
+              {timesheet.expenses.length}
+            </span>
           </Button>
           <Button
             onClick={() => setActiveTab("payments")}
-            className={`rounded-full font-montserrat-semibold px-5 py-2 text-sm transition-all ${
-              activeTab === "payments"
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-            }`}
+            className={cn(
+              RADIUS.full,
+              TEXT_STYLES.tiny,
+              FONT_FAMILY.montserratSemibold,
+              TRANSITIONS.colors,
+              GAP.sm,
+              FLEX_ROW_CENTER,
+              `px-3 py-1 md:text-sm whitespace-nowrap h-6 ${
+                activeTab === "payments"
+                  ? "bg-primary-600 text-white hover:bg-primary-700"
+                  : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+              }`,
+            )}
           >
             Payment Breakdown
           </Button>
         </div>
 
         {/* Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={GRID_RESPONSIVE}>
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Shift Details Tab */}
             {activeTab === "details" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-montserrat-bold text-gray-900">
-                  Shift Information
-                </h2>
-
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="p-6">
+                <Card className={CARD}>
+                  <CardContent className={CARD_CONTENT}>
+                    <h2
+                      className={cn(
+                        TEXT_STYLES.title,
+                        FONT_FAMILY.montserratBold,
+                        TEXT_COLORS.gray900,
+                        " mb-4",
+                      )}
+                    >
+                      Shift Information
+                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Basic Info */}
                       <div className="space-y-4">
@@ -238,7 +289,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Shift ID:</span>
-                            <span className="font-montserrat-semibold text-gray-900 font-mono">
+                            <span className="font-montserrat-semibold text-gray-900">
                               {timesheet.shiftIdRef}
                             </span>
                           </div>
@@ -291,7 +342,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                             <span className="font-montserrat-semibold text-gray-900">
                               {formatDuration(
                                 timesheet.actualStartTime,
-                                timesheet.actualEndTime
+                                timesheet.actualEndTime,
                               )}
                             </span>
                           </div>
@@ -339,7 +390,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
                     {/* Notes */}
                     {timesheet.notes && (
-                      <div className="mt-6 pt-6 border-t">
+                      <div className={CARD_FOOTER}>
                         <h3 className="font-montserrat-semibold text-gray-900 mb-3">
                           Notes
                         </h3>
@@ -358,13 +409,19 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             {/* Expenses Tab */}
             {activeTab === "expenses" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-montserrat-bold text-gray-900">
-                  Expenses ({timesheet.expenses.length})
-                </h2>
-
                 {timesheet.expenses.length === 0 ? (
-                  <Card className="border-0 shadow-sm">
-                    <CardContent className="p-12 text-center">
+                  <Card className={CARD}>
+                    <CardContent className={CARD_CONTENT}>
+                      <h2
+                        className={cn(
+                          TEXT_STYLES.title,
+                          FONT_FAMILY.montserratBold,
+                          TEXT_COLORS.gray900,
+                          " mb-4",
+                        )}
+                      >
+                        Expenses ({timesheet.expenses.length})
+                      </h2>
                       <Bill2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                       <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">
                         No expenses
@@ -377,8 +434,18 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                 ) : (
                   <div className="space-y-3">
                     {timesheet.expenses.map((expense) => (
-                      <Card key={expense._id} className="border-0 shadow-sm">
-                        <CardContent className="p-4">
+                      <Card key={expense._id} className={CARD}>
+                        <CardContent className={CARD_CONTENT}>
+                           <h2
+                        className={cn(
+                          TEXT_STYLES.title,
+                          FONT_FAMILY.montserratBold,
+                          TEXT_COLORS.gray900,
+                          " mb-4",
+                        )}
+                      >
+                        Expenses 
+                      </h2>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
@@ -423,7 +490,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
                     {/* Total Card */}
                     <Card className="border-0 shadow-sm bg-primary-50">
-                      <CardContent className="p-4">
+                      <CardContent className={CARD_CONTENT}>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-700">
@@ -431,7 +498,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                             </span>
                             <span className="font-montserrat-semibold text-gray-900">
                               {formatCurrency(
-                                timesheet.participantExpensesTotal
+                                timesheet.participantExpensesTotal,
                               )}
                             </span>
                           </div>
@@ -462,15 +529,19 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             {/* Payment Breakdown Tab */}
             {activeTab === "payments" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-montserrat-bold text-gray-900">
-                  Payment Breakdown
-                </h2>
-
-                <Card className="border-0 shadow-sm">
+                <Card className={CARD}>
                   <CardContent className="p-6">
-                    <h3 className="font-montserrat-semibold text-gray-900 mb-4">
-                      Rate Calculations
-                    </h3>
+                    <h2
+                      className={cn(
+                        TEXT_STYLES.title,
+                        FONT_FAMILY.montserratBold,
+                        TEXT_COLORS.gray900,
+                        " mb-4",
+                      )}
+                    >
+                      Payment Breakdown
+                    </h2>
+
                     <div className="space-y-3">
                       {timesheet.rateCalculations.map((calc) => (
                         <div
@@ -553,7 +624,9 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             <Card className="border-0 shadow-sm sticky top-6">
               <CardContent className="p-0">
                 <div className="p-4 border-b">
-                  <h3 className="font-montserrat-bold text-gray-900">Participant</h3>
+                  <h3 className="font-montserrat-bold text-gray-900">
+                    Participant
+                  </h3>
                 </div>
 
                 <div className="p-4 space-y-4">
@@ -661,7 +734,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                         <span className="font-montserrat-semibold text-gray-900">
                           {formatDuration(
                             timesheet.actualStartTime,
-                            timesheet.actualEndTime
+                            timesheet.actualEndTime,
                           )}
                         </span>
                       </div>
@@ -690,9 +763,11 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
 
         {/* Mobile Sidebar - Bottom Sheet Style */}
         <div className="lg:hidden mt-6 space-y-4">
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-4">
-              <h3 className="font-montserrat-bold text-gray-900 mb-4">Participant</h3>
+          <Card className={CARD}>
+            <CardContent className={CARD_CONTENT}>
+              <h3 className="font-montserrat-bold text-gray-900 mb-4">
+                Participant
+              </h3>
 
               <div className="flex items-center gap-3 mb-4">
                 <Avatar className="w-12 h-12">
@@ -724,7 +799,7 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
                   <span className="font-montserrat-semibold text-gray-900">
                     {formatDuration(
                       timesheet.actualStartTime,
-                      timesheet.actualEndTime
+                      timesheet.actualEndTime,
                     )}
                   </span>
                 </div>
@@ -740,9 +815,11 @@ const SupportWorkerTimesheetDetails: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-4">
-              <h3 className="font-montserrat-bold text-gray-900 mb-4">Status Timeline</h3>
+          <Card className={CARD}>
+            <CardContent className={CARD_CONTENT}>
+              <h3 className="font-montserrat-bold text-gray-900 mb-4">
+                Status Timeline
+              </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 rounded-full bg-primary-600 mt-2 flex-shrink-0"></div>

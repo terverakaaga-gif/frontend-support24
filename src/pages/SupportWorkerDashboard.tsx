@@ -736,7 +736,7 @@ export default function SupportWorkerDashboard() {
   const analytics = overviewData?.analytics;
 
   return (
-    <div className={cn(DASHBOARD_PAGE_WRAPPER, BG_COLORS.gray100)}>
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       <div className={DASHBOARD_CONTENT}>
         <GeneralHeader
           stickyTop={true}

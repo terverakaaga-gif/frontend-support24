@@ -223,7 +223,7 @@ export const DASHBOARD_PAGE_WRAPPER = cn(
   "min-h-screen",
   "bg-gray-100",
   "p-6",
-  "space-y-8"
+  "space-y-6"
 );
 
 /**
@@ -753,7 +753,8 @@ export const GRID_RESPONSIVE = cn(
   "grid",
   "grid-cols-1",
   "md:grid-cols-2",
-  "lg:grid-cols-3"
+  "lg:grid-cols-3",
+  GAP.responsive
 );
 
 /**
