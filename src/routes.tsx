@@ -7,6 +7,7 @@ import AdminDashboard from '@/pages/AdminDashboard';
 import GuardianDashboard from '@/pages/GuardianDashboard';
 import ParticipantDashboard from '@/pages/ParticipantDashboard';
 import SupportWorkerDashboard from '@/pages/SupportWorkerDashboard';
+import SupportCoordinatorDashboard from '@/pages/SupportCoordinatorDashboard';
 import ShiftsPage from './pages/ShiftsPage';
 import ShiftDetails from './pages/ShiftDetails';
 import NotFound from '@/pages/NotFound';
@@ -81,6 +82,15 @@ const router = createBrowserRouter([
         )
       }
     ]
+  },
+  {
+    path: "/support-coordinator",
+    element: (
+      <ProtectedRoute allowedRoles={['admin', 'participant', 'supportWorker', 'guardian', 'coordinator', 'provider']}>
+        {/* <Navbar /> */}
+        <SupportCoordinatorDashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "*",

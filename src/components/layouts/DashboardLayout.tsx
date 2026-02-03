@@ -32,6 +32,9 @@ import {
   SuitcaseTag,
   Bookmark,
   ShieldCheck,
+  Star,
+  Documents,
+  ListArrowDown,
   ShopMinimalistic,
   CalendarMark,
   Videocamera,
@@ -58,7 +61,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       path === "/participant" ||
       path === "/admin" ||
       path === "/guardian" ||
-      path === "/support-worker"
+      path === "/support-worker" ||
+      path === "/support-coordinator"
     ) {
       return location.pathname === path;
     }
@@ -69,6 +73,65 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const roleBasedLinks = () => {
+    // Check if we're on the support-coordinator route
+    if (location.pathname.startsWith("/support-coordinator")) {
+      return (
+        <>
+          <NavItem
+            to="/support-coordinator"
+            icon={<Widget5 className="w-6 h-6" />}
+            label="Dashboard"
+            active={isActive("/support-coordinator")}
+          />
+          <NavItem
+            to="/support-coordinator/participants"
+            icon={<UsersGroupTwoRounded className="w-6 h-6" />}
+            label="Participants"
+            active={isActive("/support-coordinator/participants")}
+          />
+          <NavItem
+            to="/support-coordinator/providers"
+            icon={<Buildings3 className="w-6 h-6" />}
+            label="Providers"
+            active={isActive("/support-coordinator/providers")}
+          />
+          <NavItem
+            to="/support-coordinator/support-workers"
+            icon={<UsersGroupTwoRounded className="w-6 h-6" />}
+            label="Support Workers"
+            active={isActive("/support-coordinator/support-workers")}
+          />
+          <NavItem
+            to="/support-coordinator/my-panel"
+            icon={<Star className="w-6 h-6" />}
+            label="My Panel"
+            active={isActive("/support-coordinator/my-panel")}
+          />
+          <NavItem
+            to="/support-coordinator/tender"
+            icon={<Documents className="w-6 h-6" />}
+            label="Tender"
+            active={isActive("/support-coordinator/tender")}
+          />
+          <NavItem
+            to="/support-coordinator/draft"
+            icon={<ListArrowDown className="w-6 h-6" />}
+            label="Draft"
+            active={isActive("/support-coordinator/draft")}
+          />
+
+          <div className="my-4 border-t border-white/20"></div>
+
+          <NavItem
+            to="/support-coordinator/account-settings"
+            icon={<Settings className="w-6 h-6" />}
+            label="Account Settings"
+            active={isActive("/support-coordinator/account-settings")}
+          />
+        </>
+      );
+    }
+
     switch (user.role) {
       case "admin":
         return (
@@ -438,7 +501,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {user.email}
           </div>
           <div className="text-xs text-primary-300 capitalize font-montserrat">
-            {user.role === "supportWorker" ? "Support Worker" : user.role}
+            {location.pathname.startsWith("/support-coordinator")
+              ? "Support Coordinator"
+              : user.role === "supportWorker"
+                ? "Support Worker"
+                : user.role}
           </div>
           <Button
             className="w-full gap-2 items-center justify-center bg-primary-100 text-red-600/80 hover:text-red-600 hover:bg-primary-100 mt-3 font-montserrat-semibold"

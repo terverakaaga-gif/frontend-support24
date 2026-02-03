@@ -63,6 +63,10 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
           return '/participant';
         case 'supportWorker':
           return '/support-worker';
+        case 'coordinator':
+          return '/support-coordinator';
+        case 'provider':
+          return '/provider';
         default:
           return '/login';
       }

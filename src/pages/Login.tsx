@@ -149,7 +149,7 @@ export default function Login() {
       case "guardian":
         return "/guardian";
       case "coordinator":
-        return "/coordinator";
+        return "/support-coordinator"; // Updated to use support-coordinator
       case "supportWorker":
         return "/support-worker";
       case "provider":
@@ -165,7 +165,7 @@ export default function Login() {
       admin: "/admin",
       participant: "/participant",
       guardian: "/guardian",
-      coordinator: "/coordinator",
+      coordinator: "/support-coordinator",
       supportWorker: "/support-worker",
       provider: "/provider",
     };

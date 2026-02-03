@@ -91,6 +91,7 @@ import ProviderEventsPage from "./pages/ProviderEventsPage";
 import ProviderEventDetailsPage from "./pages/ProviderEventDetailsPage";
 import ProviderEventFormPage from "./pages/ProviderEventFormPage";
 import ProviderRegisteredEventParticipantsPage from "./pages/ProviderRegisteredEventParticipantsPage";
+import ParticipantDetailsPage from "./pages/ParticipantDetailsPage";
 import ProviderJobsPage from "./pages/ProviderJobsPage";
 import ProviderJobDetailsPage from "./pages/ProviderJobDetailsPage";
 import ProviderJobFormPage from "./pages/ProviderJobFormPage";
@@ -111,6 +112,18 @@ import ParticipantJobsPage from "./pages/ParticipantJobsPage";
 import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
 import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
 import ParticipantJobDetailsPage from "./pages/ParticipantJobDetailsPage";
+import SupportCoordinatorDashboard from "./pages/SupportCoordinatorDashboard";
+import TenderPage from "./pages/TenderPage";
+import TenderDetailsPage from "./pages/TenderDetailsPage";
+import ParticipantsPage from "./pages/ParticipantsPage";
+import ProvidersPage from "./pages/ProvidersPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import NotificationDetailPage from "./pages/NotificationDetailPage";
+import CoordinatorSupportWorkersPage from "./pages/CoordinatorSupportWorkersPage";
+import AccountSettingsPage from "./pages/AccountSettingsPage";
+import MyPanelPage from "./pages/MyPanelPage";
+import ComparisonPage from "./pages/ComparisonPage";
+import DraftPage from "./pages/DraftPage";
 
 import ParticipantEventPage from "./pages/ParticipantEventPage";
 import ParticipantEventDetailsPage from "./pages/ParticipantEventDetailsPage";
@@ -140,7 +153,7 @@ const AppRoutes = () => {
       case "supportWorker":
         return "/support-worker";
       case "coordinator":
-        return "/coordinator";
+        return "/support-coordinator";
       case "provider":
         return "/provider";
       default:
@@ -197,7 +210,7 @@ const AppRoutes = () => {
           ) : user.role !== "supportWorker" ? (
             <Navigate to={getDefaultRoute()} replace />
           ) : !(user as SupportWorker).verificationStatus
-              ?.profileSetupComplete ? (
+            ?.profileSetupComplete ? (
             <Navigate to="/support-worker" replace />
           ) : (
             <SetupChoicePage />
@@ -471,6 +484,35 @@ const AppRoutes = () => {
                 <Route path="/chats" element={<Converations />} />
                 <Route path="/chat/:conversationId" element={<ChatView />} />
                 {/* Add other coordinator-specific routes */}
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Support Coordinator Routes - Accessible by all roles (temporary) */}
+      <Route
+        path="/support-coordinator/*"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "participant", "supportWorker", "guardian", "coordinator", "provider"]}>
+            <DashboardLayout>
+              <Routes>
+                <Route path="/" element={<SupportCoordinatorDashboard />} />
+                <Route path="/tender" element={<TenderPage />} />
+                <Route path="/tender/:id" element={<TenderDetailsPage />} />
+                <Route path="/draft" element={<DraftPage />} />
+                <Route path="/participants" element={<ParticipantsPage />} />
+                <Route path="/participants/:id" element={<ParticipantDetailsPage />} />
+                <Route path="/providers" element={<ProvidersPage />} />
+                <Route path="/support-workers" element={<CoordinatorSupportWorkersPage />} />
+                <Route path="/my-panel" element={<MyPanelPage />} />
+                <Route path="/comparison" element={<ComparisonPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/notifications/:id" element={<NotificationDetailPage />} />
+                <Route path="/account-settings" element={<AccountSettingsPage />} />
+                <Route path="/incidents" element={<IncidentsPage />} />
+                <Route path="/chats" element={<Converations />} />
+                <Route path="/chat/:conversationId" element={<ChatView />} />
               </Routes>
             </DashboardLayout>
           </ProtectedRoute>
