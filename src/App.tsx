@@ -71,6 +71,12 @@ import ParticipantOrganizationDetailsPage from "./pages/ParticipantOrganizationD
 import { HowItWorks } from "./pages/HowItWorks";
 import OTPVerification from "./pages/OTPVerificationPage";
 import ComingSoon from "./pages/coming-soon";
+import EventsPage from "./pages/EventsPage";
+import EventDetailsPage from "./pages/EventDetailsPage";
+import AccommodationPage from "./pages/AccommodationPage";
+import AccommodationDetailsPage from "./pages/AccommodationDetailsPage";
+import OpportunitiesPage from "./pages/OpportunitiesPage";
+import SupportProviderPage from "./pages/SupportProviderPage";
 import PlatformTerms from "./pages/PlatformTerms";
 import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -162,6 +168,16 @@ const AppRoutes = () => {
 
       {/* How It Works Page */}
       <Route path="/how-it-works" element={<HowItWorks />} />
+      {/* Events Page */}
+      <Route path="/events" element={<EventsPage />} />
+      <Route path="/events/:id" element={<EventDetailsPage />} />
+      {/* Accommodation Page */}
+      <Route path="/accommodations" element={<AccommodationPage />} />
+      <Route path="/accommodations/:id" element={<AccommodationDetailsPage />} />
+      {/* Opportunities Page */}
+      <Route path="/opportunities" element={<OpportunitiesPage />} />
+      {/* Support Provider Page (Roles) */}
+      <Route path="/support-provider" element={<SupportProviderPage />} />
       {/* Coming Soon Page */}
       <Route path="/coming-soon" element={<ComingSoon />} />
       {/* Terms of Use Page */}
