@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, UsersGroupRounded, Calendar, Star, ShieldCheck as ShieldCheckAlt } from "@solar-icons/react";
+import { ShieldCheck, UsersGroupRounded, Calendar, Star, ShieldCheck as ShieldCheckAlt, Shield } from "@solar-icons/react";
 import { InlineVectorText } from "@/components/InlineVectorText";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
 }) => {
     const stats = [
         {
-            icon: Users,
+            icon: UsersGroupRounded,
             value: "10,000",
             label: "Active users",
             description: "Families and participant trust Support24",
@@ -134,36 +134,36 @@ export const WhySupport24Section: React.FC<WhySupport24SectionProps> = ({
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                     {stats.map((stat, index) => (
-                         <motion.div
-                             key={index}
-                             className="relative bg-white rounded-xl p-6 text-left border border-gray-100 transition-all overflow-hidden group"
-                             whileHover={{ y: -4 }}
-                             transition={{ duration: 0.3, delay: index * 0.1 }}
-                         >
-                             {/* Animated border */}
-                             <div className="absolute inset-0 rounded-xl overflow-hidden">
-                                 <motion.div
-                                     className="absolute inset-0 rounded-xl"
-                                     style={{
-                                         background: 'linear-gradient(90deg, transparent, transparent, #0D2BEC, transparent, transparent)',
-                                         backgroundSize: '200% 100%',
-                                     }}
-                                     animate={{
-                                         backgroundPosition: ['0% 0%', '200% 0%', '0% 0%']
-                                     }}
-                                     transition={{
-                                         duration: 20,
-                                         repeat: Infinity,
-                                         ease: 'linear'
-                                     }}
-                                     whileHover={{
-                                         backgroundPosition: ['0% 0%', '200% 0%'],
-                                         transition: { duration: 5, ease: 'easeInOut' }
-                                     }}
-                                 />
-                                 <div className="absolute inset-[1px] bg-white rounded-xl" />
-                             </div>
+                    {stats.map((stat, index) => (
+                        <motion.div
+                            key={index}
+                            className="relative bg-white rounded-xl p-6 text-left border border-gray-100 transition-all overflow-hidden group"
+                            whileHover={{ y: -4 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                        >
+                            {/* Animated border */}
+                            <div className="absolute inset-0 rounded-xl overflow-hidden">
+                                <motion.div
+                                    className="absolute inset-0 rounded-xl"
+                                    style={{
+                                        background: 'linear-gradient(90deg, transparent, transparent, #0D2BEC, transparent, transparent)',
+                                        backgroundSize: '200% 100%',
+                                    }}
+                                    animate={{
+                                        backgroundPosition: ['0% 0%', '200% 0%', '0% 0%']
+                                    }}
+                                    transition={{
+                                        duration: 20,
+                                        repeat: Infinity,
+                                        ease: 'linear'
+                                    }}
+                                    whileHover={{
+                                        backgroundPosition: ['0% 0%', '200% 0%'],
+                                        transition: { duration: 5, ease: 'easeInOut' }
+                                    }}
+                                />
+                                <div className="absolute inset-[1px] bg-white rounded-xl" />
+                            </div>
 
                             <div className="relative z-10">
                                 <stat.icon className="w-6 h-6 text-primary mb-4" strokeWidth={1.5} />
