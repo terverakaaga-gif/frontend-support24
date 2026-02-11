@@ -91,7 +91,7 @@ export default function ProviderJobApplicantsPage() {
 
     try {
       const newStatus = actionType === "accept" ? "accepted" : "rejected";
-      
+
       await updateStatusMutation.mutateAsync({
         applicationId: selectedApplicant._id,
         status: newStatus,
@@ -128,10 +128,10 @@ export default function ProviderJobApplicantsPage() {
       availability: "",
       avatar: applicant.applicantId?.profileImage || null,
       complianceStatus: [],
-      attachments: applicant.attachments?.map((att: any) => ({ 
-        name: att.fileName, 
-        size: `${(att.fileSize / 1024).toFixed(0)} KB`, 
-        url: att.fileUrl 
+      attachments: applicant.attachments?.map((att: any) => ({
+        name: att.fileName,
+        size: `${(att.fileSize / 1024).toFixed(0)} KB`,
+        url: att.fileUrl
       })) || [],
     };
   };
@@ -147,7 +147,7 @@ export default function ProviderJobApplicantsPage() {
   if (applicationsError || jobError) {
     return (
       <div className={cn("min-h-screen flex items-center justify-center", BG_COLORS.muted)}>
-        <ErrorDisplay 
+        <ErrorDisplay
           message={applicationsError?.message || jobError?.message || "Failed to load applications"}
         />
       </div>
@@ -176,33 +176,30 @@ export default function ProviderJobApplicantsPage() {
               <Button
                 size="sm"
                 onClick={() => handleTabChange("pending")}
-                className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "pending"
+                className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "pending"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-                }`}
+                  }`}
               >
                 New {applicationsData?.applications?.filter(a => a.status === "pending").length || 0}
               </Button>
               <Button
                 size="sm"
                 onClick={() => handleTabChange("accepted")}
-                className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "accepted"
+                className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "accepted"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-                }`}
+                  }`}
               >
                 Accepted {applicationsData?.applications?.filter(a => a.status === "accepted").length || 0}
               </Button>
               <Button
                 size="sm"
                 onClick={() => handleTabChange("rejected")}
-                className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "rejected"
+                className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "rejected"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-                }`}
+                  }`}
               >
                 Rejected {applicationsData?.applications?.filter(a => a.status === "rejected").length || 0}
               </Button>
@@ -251,100 +248,99 @@ export default function ProviderJobApplicantsPage() {
                     const applicantName = applicant.fullName || "Unknown";
                     const applicantInitials = applicantName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
                     const profileImage = applicant.applicantId?.profileImage || null;
-                    
+
                     return (
-                    <TableRow
-                      key={applicant._id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <TableCell className="px-4 md:px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {profileImage ? (
-                            <img 
-                              src={profileImage} 
-                              alt={applicantName}
-                              className="w-10 h-10 rounded-full object-cover"
-                            />
-                          ) : (
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-montserrat-semibold">
-                            {applicantInitials}
+                      <TableRow
+                        key={applicant._id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <TableCell className="px-4 md:px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {profileImage ? (
+                              <img
+                                src={profileImage}
+                                alt={applicantName}
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-primary/10 rounded-full flex-shrink-0 flex items-center justify-center text-primary text-sm font-montserrat-semibold">
+                                {applicantInitials}
+                              </div>
+                            )}
+                            <div>
+                              <span className="text-sm font-montserrat-semibold text-gray-900 block">
+                                {applicantName}
+                              </span>
+                              <span className="text-xs text-gray-500 block">
+                                {applicant.location || "Location not specified"}
+                              </span>
+                            </div>
                           </div>
-                          )}
-                          <div>
-                            <span className="text-sm font-montserrat-semibold text-gray-900 block">
-                              {applicantName}
-                            </span>
-                            <span className="text-xs text-gray-500 block">
-                              {applicant.location || "Location not specified"}
-                            </span>
+                        </TableCell>
+                        <TableCell className="px-4 md:px-6 py-4 hidden md:table-cell">
+                          <div className="text-sm text-gray-600">
+                            <p>{applicant.email || "N/A"}</p>
+                            <p className="text-gray-400">{applicant.phone || "N/A"}</p>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-4 md:px-6 py-4 hidden md:table-cell">
-                        <div className="text-sm text-gray-600">
-                          <p>{applicant.email || "N/A"}</p>
-                          <p className="text-gray-400">{applicant.phone || "N/A"}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
-                        <p className="line-clamp-2 max-w-xs text-gray-600">
-                          Application submitted
-                        </p>
-                      </TableCell>
-                      <TableCell className="px-4 md:px-6 py-4 hidden xl:table-cell">
-                        <div className="text-sm text-gray-600">
-                          {applicant.attachments && applicant.attachments.length > 0 ? (
-                            <a href={applicant.attachments[0].fileUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              View Attachment
-                            </a>
-                          ) : (
-                            "No attachments"
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
-                        {formatDate(applicant.createdAt)}
-                      </TableCell>
-                      <TableCell className="px-4 md:px-6 py-4 hidden 2xl:table-cell">
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                          applicant.status === "accepted" ? "bg-green-100 text-green-800" :
-                          applicant.status === "rejected" ? "bg-red-100 text-red-800" :
-                          "bg-yellow-100 text-yellow-800"
-                        }`}>
-                          {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-4 md:px-6 py-4 text-right">
-                        <div className="flex gap-2 justify-end">
-                          {currentTab === "pending" && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  openActionModal(applicant, "accept")
-                                }
-                                title="Accept"
-                                className="p-1 hover:bg-green-50 rounded-full h-auto w-auto"
-                              >
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  openActionModal(applicant, "reject")
-                                }
-                                title="Reject"
-                                className="p-1 hover:bg-red-50 rounded-full h-auto w-auto"
-                              >
-                                <CloseCircle className="h-5 w-5 text-red-600" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                        </TableCell>
+                        <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
+                          <p className="line-clamp-2 max-w-xs text-gray-600">
+                            Application submitted
+                          </p>
+                        </TableCell>
+                        <TableCell className="px-4 md:px-6 py-4 hidden xl:table-cell">
+                          <div className="text-sm text-gray-600">
+                            {applicant.attachments && applicant.attachments.length > 0 ? (
+                              <a href={applicant.attachments[0].fileUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                View Attachment
+                              </a>
+                            ) : (
+                              "No attachments"
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden lg:table-cell">
+                          {formatDate(applicant.createdAt)}
+                        </TableCell>
+                        <TableCell className="px-4 md:px-6 py-4 hidden 2xl:table-cell">
+                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-montserrat-medium ${applicant.status === "accepted" ? "bg-green-100 text-green-800" :
+                              applicant.status === "rejected" ? "bg-red-100 text-red-800" :
+                                "bg-yellow-100 text-yellow-800"
+                            }`}>
+                            {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-4 md:px-6 py-4 text-right">
+                          <div className="flex gap-2 justify-end">
+                            {currentTab === "pending" && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    openActionModal(applicant, "accept")
+                                  }
+                                  title="Accept"
+                                  className="p-1 hover:bg-green-50 rounded-full h-auto w-auto"
+                                >
+                                  <CheckCircle className="h-5 w-5 text-green-600" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    openActionModal(applicant, "reject")
+                                  }
+                                  title="Reject"
+                                  className="p-1 hover:bg-red-50 rounded-full h-auto w-auto"
+                                >
+                                  <CloseCircle className="h-5 w-5 text-red-600" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     );
                   })
                 )}
@@ -393,11 +389,10 @@ export default function ProviderJobApplicantsPage() {
                     key={page}
                     size="sm"
                     onClick={() => setCurrentPage(page)}
-                    className={`h-9 w-9 ${
-                      currentPage === page
+                    className={`h-9 w-9 ${currentPage === page
                         ? "bg-primary text-white hover:bg-primary/90"
                         : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {page}
                   </Button>

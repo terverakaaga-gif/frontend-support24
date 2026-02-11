@@ -9,11 +9,11 @@ import { toast } from "sonner";
 import { FileDropZone, useFileUpload } from "@/components/ui/FileDropZone";
 import { AltArrowLeft, CheckCircle, FileText } from "@solar-icons/react";
 import { useSubmitCompliance } from "@/hooks/useComplianceHooks";
-import { 
-  ComplianceDocumentType, 
+import {
+  ComplianceDocumentType,
   DOCUMENT_TYPE_LABELS,
   COMPLIANCE_QUESTION_LABELS,
-  IComplianceAnswers 
+  IComplianceAnswers
 } from "@/types/compliance.types";
 import { DASHBOARD_PAGE_WRAPPER, CARD } from "@/lib/design-utils";
 
@@ -204,9 +204,8 @@ export default function ComplianceFormPage() {
                     >
                       <div className="flex items-center gap-3">
                         <CheckCircle
-                          className={`h-5 w-5 ${
-                            doc.isCompleted ? "text-primary" : "text-gray-400"
-                          }`}
+                          className={`h-5 w-5 ${doc.isCompleted ? "text-primary" : "text-gray-400"
+                            }`}
                         />
                         <span className="text-gray-700">
                           {doc.name} ({doc.isMandatory ? "Mandatory" : "Optional"})
@@ -265,7 +264,7 @@ export default function ComplianceFormPage() {
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
               >
                 <AltArrowLeft className="h-4 w-4" />
-                <span className="font-medium">Back to Edit</span>
+                <span className="font-montserrat-medium">Back to Edit</span>
               </button>
 
               <h2 className="text-xl font-montserrat-semibold text-primary mb-6">
@@ -286,7 +285,7 @@ export default function ComplianceFormPage() {
                       >
                         <FileText className="h-8 w-8 text-red-500 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 truncate">
+                          <p className="font-montserrat-medium text-gray-900 truncate">
                             {file.name}
                           </p>
                           <p className="text-sm text-gray-500">{file.size}</p>
@@ -321,9 +320,8 @@ export default function ComplianceFormPage() {
                           className="cursor-default opacity-70"
                         />
                         <span
-                          className={`text-sm min-w-[50px] text-right font-medium ${
-                            q.answer ? "text-green-600" : "text-gray-400"
-                          }`}
+                          className={`text-sm min-w-[50px] text-right font-montserrat-medium ${q.answer ? "text-green-600" : "text-gray-400"
+                            }`}
                         >
                           {getDisplayValue(q)}
                         </span>

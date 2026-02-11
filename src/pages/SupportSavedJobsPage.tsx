@@ -141,14 +141,14 @@ export default function SupportSavedJobsPage() {
   }
 
   return (
-  
+
     <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
       <GeneralHeader
         stickyTop={true}
         title="Saved Jobs"
         subtitle="View and manage your saved job opportunities"
         user={user}
-        onLogout={() => {}}
+        onLogout={() => { }}
         onViewProfile={() => navigate("/support-worker/profile")}
         rightComponent={
           <div className={cn("w-fit flex", GAP)}>
@@ -169,7 +169,7 @@ export default function SupportSavedJobsPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <BookmarkCircle className="h-5 w-5 text-primary" />
-          <span className="text-gray-600 font-medium">
+          <span className="text-gray-600 font-montserrat-medium">
             {savedJobs.length} saved job{savedJobs.length !== 1 ? "s" : ""}
           </span>
         </div>
@@ -250,11 +250,10 @@ export default function SupportSavedJobsPage() {
                   key={page}
                   size="sm"
                   onClick={() => setCurrentPage(page)}
-                  className={`h-9 w-9 ${
-                    currentPage === page
+                  className={`h-9 w-9 ${currentPage === page
                       ? "bg-primary text-white hover:bg-primary/90"
                       : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {page}
                 </Button>

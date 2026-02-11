@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { Calendar, MapPoint, ClockSquare, } from "@solar-icons/react";
 import { cn } from "@/lib/design-utils";
-import { 
-  CARD_INTERACTIVE, 
-  CARD_CONTENT, 
-  BUTTON_PRIMARY, 
+import {
+  CARD_INTERACTIVE,
+  CARD_CONTENT,
+  BUTTON_PRIMARY,
   BADGE_BASE
 } from "@/lib/design-utils"; // Assuming design-utils exports these
-import { GAP, SHADOW,
-    TEXT_STYLES,
+import {
+  GAP, SHADOW,
+  TEXT_STYLES,
 
- } from "@/constants/design-system";
+} from "@/constants/design-system";
 import { Event } from "@/api/services/eventService";
 
 interface EventCardProps {
@@ -31,8 +32,8 @@ export default function EventCard({ event, basePath = "/participant/events" }: E
           className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
         />
         <button className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
-           <span className="sr-only">Bookmark</span>
-           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 21V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V21L12 17.5L5 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <span className="sr-only">Bookmark</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 21V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V21L12 17.5L5 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>
 
@@ -57,7 +58,7 @@ export default function EventCard({ event, basePath = "/participant/events" }: E
             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
             <span>{new Date(event.eventStartDate).toLocaleDateString()} - {new Date(event.eventEndDate).toLocaleDateString()}</span>
           </div>
-          
+
           <div className="flex items-center text-sm text-gray-600">
             <ClockSquare className="w-4 h-4 mr-2 text-gray-400" />
             <span>{event.eventStartTime} - {event.eventEndTime}</span>
@@ -67,13 +68,13 @@ export default function EventCard({ event, basePath = "/participant/events" }: E
         {/* Footer Actions */}
         <div className="pt-4 mt-2 border-t border-gray-100 flex items-center justify-between">
           <div className="flex items-center -space-x-2 overflow-hidden">
-             {/* Participant Avatars Simulation */}
-             {[1,2,3].map(i => (
-               <div key={i} className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-gray-200" />
-             ))}
-             <span className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-white bg-gray-100 text-xs text-gray-500 font-medium">
-               +20
-             </span>
+            {/* Participant Avatars Simulation */}
+            {[1, 2, 3].map(i => (
+              <div key={i} className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-gray-200" />
+            ))}
+            <span className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-white bg-gray-100 text-xs text-gray-500 font-montserrat-medium">
+              +20
+            </span>
           </div>
 
           <button

@@ -26,14 +26,14 @@ export default function ProviderJobDetailsPage() {
 
   // Fetch job data
   const { data: jobData, isLoading, error } = useGetJobById(jobId);
-  
+
   const job = jobData?.job;
 
   const getStatusColor = (status: string | null | undefined) => {
     if (!status) {
       return "bg-gray-100 text-gray-800";
     }
-    
+
     switch (status.toLowerCase()) {
       case "active":
         return "bg-green-100 text-green-800";
@@ -92,7 +92,7 @@ export default function ProviderJobDetailsPage() {
   // Get competencies as array
   const getCompetencies = () => {
     if (!job?.requiredCompetencies) return [];
-    
+
     const competencyMap: Record<string, string> = {
       rightToWorkInAustralia: "Right to Work in Australia",
       ndisWorkerScreeningCheck: "NDIS Worker Screening Check",
@@ -112,7 +112,7 @@ export default function ProviderJobDetailsPage() {
 
   if (isLoading) {
     return (
-     <Loader />
+      <Loader />
     );
   }
 
@@ -137,7 +137,7 @@ export default function ProviderJobDetailsPage() {
             title={job.jobRole}
             subtitle=""
             user={user}
-            onLogout={() => {}}
+            onLogout={() => { }}
             onViewProfile={() => navigate("/provider/profile")}
           />
         </div>
@@ -269,7 +269,7 @@ export default function ProviderJobDetailsPage() {
               <h3 className="text-lg font-montserrat-semibold text-gray-900 mb-4">
                 Key Responsibilities
               </h3>
-              <div 
+              <div
                 className="prose prose-sm max-w-none text-gray-600"
                 dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
               />
@@ -317,7 +317,7 @@ export default function ProviderJobDetailsPage() {
                     key={area._id}
                     className="p-3 rounded-lg border-2 border-primary bg-primary/5 text-center"
                   >
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-montserrat-medium text-gray-900">
                       {area.name}
                     </span>
                   </div>

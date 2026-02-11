@@ -54,7 +54,7 @@ export function InterviewCard({ session, onClick }: InterviewCardProps) {
         </div>
 
         {/* Duration Badge */}
-        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium">
+        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-montserrat-medium">
           {session.durationLabel}
         </div>
       </div>

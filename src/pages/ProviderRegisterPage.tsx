@@ -76,7 +76,7 @@ export default function ProviderRegisterPage() {
     if (currentStep !== 3) {
       return;
     }
-    
+
     try {
       await register.mutateAsync({
         firstName: values.firstName,
@@ -143,15 +143,14 @@ export default function ProviderRegisterPage() {
                   className="flex flex-col items-center z-10 bg-gray-50"
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${
-                      currentStep >= step.number
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${currentStep >= step.number
                         ? "bg-primary-600 text-white"
                         : "bg-gray-200 text-gray-500"
-                    }`}
+                      }`}
                   >
                     {currentStep > step.number ? "✓" : step.number}
                   </div>
-                  <span className="text-xs mt-2 font-medium text-gray-500 whitespace-nowrap">
+                  <span className="text-xs mt-2 font-montserrat-medium text-gray-500 whitespace-nowrap">
                     {step.title}
                   </span>
                 </div>
@@ -161,16 +160,16 @@ export default function ProviderRegisterPage() {
               {/* Active progress line */}
               <div
                 className="absolute top-4 left-4 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
-                style={{ 
-                  width: `calc((100% - 2rem) * ${(currentStep - 1) / (STEPS.length - 1)})` 
+                style={{
+                  width: `calc((100% - 2rem) * ${(currentStep - 1) / (STEPS.length - 1)})`
                 }}
               />
             </div>
           </div>
 
           <Form {...form}>
-            <form 
-              onSubmit={form.handleSubmit(onSubmit)} 
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
               onKeyDown={(e) => {
                 // Prevent form submission on Enter key press
                 if (e.key === 'Enter' && e.target instanceof HTMLElement && e.target.tagName !== 'BUTTON') {

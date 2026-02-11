@@ -160,7 +160,7 @@ Replace "description" with "jobDescription":
 Add "keyResponsibilities" field:
 ```typescript
 <div className="mb-6">
-  <Label htmlFor="keyResponsibilities" className="text-sm font-semibold text-gray-700 mb-2 block">
+  <Label htmlFor="keyResponsibilities" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
     Key Responsibilities (Markdown Supported)
   </Label>
   <Textarea
@@ -177,7 +177,7 @@ Add "keyResponsibilities" field:
 Add "additionalNote" field:
 ```typescript
 <div className="mb-6">
-  <Label htmlFor="additionalNote" className="text-sm font-semibold text-gray-700 mb-2 block">
+  <Label htmlFor="additionalNote" className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
     Additional Notes
   </Label>
   <Textarea
@@ -194,7 +194,7 @@ Add "additionalNote" field:
 #### D. Replace Skills section with Required Competencies:
 ```typescript
 <div className="mb-6">
-  <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+  <Label className="text-sm font-montserrat-semibold text-gray-700 mb-2 block">
     Required Competencies
   </Label>
   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -356,7 +356,7 @@ const statusCounts = useMemo(() => {
             )}
           </div>
           <div>
-            <p className="font-medium text-gray-900">{applicantName}</p>
+            <p className="font-montserrat-medium text-gray-900">{applicantName}</p>
             <p className="text-sm text-gray-500">{application.email}</p>
           </div>
         </div>

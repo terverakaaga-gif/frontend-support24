@@ -1,10 +1,10 @@
 import { CloseCircle, CheckRead } from "@solar-icons/react";
-import { 
-  MODAL_OVERLAY, 
-  MODAL_CONTENT, 
+import {
+  MODAL_OVERLAY,
+  MODAL_CONTENT,
   BUTTON_PRIMARY,
   BUTTON_OUTLINE,
-  cn 
+  cn
 } from "@/lib/design-utils";
 
 interface SubscriptionModalProps {
@@ -13,27 +13,27 @@ interface SubscriptionModalProps {
   onSelectPlan: (plan: 'free' | 'paid') => void;
 }
 
-export default function SubscriptionModal({ 
-  isOpen, 
+export default function SubscriptionModal({
+  isOpen,
   onClose,
-  onSelectPlan 
+  onSelectPlan
 }: SubscriptionModalProps) {
   if (!isOpen) return null;
 
   return (
     <div className={cn(MODAL_OVERLAY, "z-50 flex items-center justify-center p-4")}>
       <div className={cn(
-        MODAL_CONTENT, 
+        MODAL_CONTENT,
         "max-w-4xl w-full p-0 bg-white rounded-2xl overflow-hidden animate-in zoom-in-95 duration-200"
       )}>
-        
+
         {/* Header Section with soft gradient */}
         <div className="relative pt-12 pb-6 px-6 text-center bg-gradient-to-b from-primary-50/80 to-white">
-          <button 
+          <button
             onClick={onClose}
             className="absolute top-4 right-4 text-black hover:text-gray-700 transition-colors"
           >
-            <CloseCircle className="w-8 h-8"/>
+            <CloseCircle className="w-8 h-8" />
           </button>
 
           <h2 className="text-2xl md:text-3xl font-montserrat-bold text-gray-900 mb-3">
@@ -47,7 +47,7 @@ export default function SubscriptionModal({
         {/* Plans Grid */}
         <div className="p-6 md:p-10 bg-white">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            
+
             {/* 1. Basic Profile Card */}
             <div className="border border-gray-200 rounded-xl p-6 flex flex-col h-full hover:shadow-md transition-shadow">
               <div className="bg-gray-100 rounded-lg p-4 mb-6">
@@ -66,7 +66,7 @@ export default function SubscriptionModal({
                 <FeatureItem text="Basic Details" />
               </ul>
 
-              <button 
+              <button
                 onClick={() => onSelectPlan('free')}
                 className={cn(BUTTON_OUTLINE, "w-full py-3 rounded-lg border-primary-600 text-primary-600 hover:bg-primary-50 font-montserrat-bold")}
               >
@@ -95,7 +95,7 @@ export default function SubscriptionModal({
                 <FeatureItem text="Full profile + competency report" />
               </ul>
 
-              <button 
+              <button
                 onClick={() => onSelectPlan('paid')}
                 className={cn(BUTTON_PRIMARY, "w-full py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-montserrat-bold shadow-primary-200")}
               >
@@ -115,7 +115,7 @@ function FeatureItem({ text }: { text: string }) {
   return (
     <li className="flex items-center gap-3">
       <CheckRead className="w-5 h-5 text-gray-900 shrink-0" /> {/* Using CheckRead to simulate double tick look if available, else standard check */}
-      <span className="text-gray-700 text-sm font-medium">{text}</span>
+      <span className="text-gray-700 text-sm font-montserrat-medium">{text}</span>
     </li>
   );
 }

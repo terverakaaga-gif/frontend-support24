@@ -103,26 +103,26 @@ export default function SearchSupportWorkersPage() {
   // Build filter objects for each search type
   const locationFilters = hasLocationFilters
     ? {
-        stateId: selectedState || undefined,
-        regionId: selectedRegion || undefined,
-        serviceAreaId: selectedServiceArea || undefined,
-        maxDistanceKm: maxDistance ? Number(maxDistance) : undefined,
-        keyword: searchQuery || undefined,
-        minRating:
-          minRating && minRating !== "any" ? Number(minRating) : undefined,
-        maxHourlyRate: maxHourlyRate ? Number(maxHourlyRate) : undefined,
-        onlyVerified: onlyVerified || undefined,
-      }
+      stateId: selectedState || undefined,
+      regionId: selectedRegion || undefined,
+      serviceAreaId: selectedServiceArea || undefined,
+      maxDistanceKm: maxDistance ? Number(maxDistance) : undefined,
+      keyword: searchQuery || undefined,
+      minRating:
+        minRating && minRating !== "any" ? Number(minRating) : undefined,
+      maxHourlyRate: maxHourlyRate ? Number(maxHourlyRate) : undefined,
+      onlyVerified: onlyVerified || undefined,
+    }
     : undefined;
 
   const originalFilters = !hasLocationFilters
     ? {
-        keyword: searchQuery || undefined,
-        minRating:
-          minRating && minRating !== "any" ? Number(minRating) : undefined,
-        maxHourlyRate: maxHourlyRate ? Number(maxHourlyRate) : undefined,
-        onlyVerified: onlyVerified || undefined,
-      }
+      keyword: searchQuery || undefined,
+      minRating:
+        minRating && minRating !== "any" ? Number(minRating) : undefined,
+      maxHourlyRate: maxHourlyRate ? Number(maxHourlyRate) : undefined,
+      onlyVerified: onlyVerified || undefined,
+    }
     : undefined;
 
   // Use location-based search when location filters are present
@@ -235,7 +235,7 @@ export default function SearchSupportWorkersPage() {
       <div className="w-full">
         {/* Header */}
         <GeneralHeader
-          
+
           title="Find Support Workers"
           subtitle={
             hasLocationFilters
@@ -287,13 +287,13 @@ export default function SearchSupportWorkersPage() {
               placeholder="Search by name, skills..."
               className={cn(
                 "pl-10 pr-10 h-10 w-full",
-                 BORDER_STYLES.default,
-                 "focus:border-primary focus-visible:ring-primary/20"
+                BORDER_STYLES.default,
+                "focus:border-primary focus-visible:ring-primary/20"
               )}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-             {searchQuery && (
+            {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
@@ -461,7 +461,7 @@ export default function SearchSupportWorkersPage() {
           </div>
         ) : isError ? (
           <div className={cn(BG_COLORS.white, RADIUS.lg, SHADOW.sm, "border border-red-200 p-8 text-center")}>
-            <p className={cn("text-red-600 font-medium mb-2")}>
+            <p className={cn("text-red-600 font-montserrat-medium mb-2")}>
               Failed to load support workers
             </p>
             <p className="text-sm text-muted-foreground mb-4">
@@ -497,7 +497,7 @@ export default function SearchSupportWorkersPage() {
                 {searchResponse?.pagination?.totalResults || searchResults.length}{" "}
                 support worker
                 {(searchResponse?.pagination?.totalResults || searchResults.length) !==
-                1
+                  1
                   ? "s"
                   : ""}
                 {hasLocationFilters && " in your area"}

@@ -166,7 +166,7 @@ export default function Page() {
 className={`mb-${SPACING.xl}`}  // Results in "mb-5" which is invalid
 
 // ❌ WRONG: Hardcoded Tailwind
-className="p-4 m-3 text-lg font-semibold rounded-lg"
+className="p-4 m-3 text-lg font-montserrat-semibold rounded-lg"
 
 // ❌ WRONG: Mixing systems
 className={cn(CARD, "p-6", `gap-${GAP.base}`)}
@@ -263,12 +263,12 @@ className={`${FLEX_CENTER} ${GAP.base}`}
 **Design System Constants:**
 ```typescript
 HEADING_STYLES = {
-  h1: 'text-4xl sm:text-5xl font-bold text-gray-900',
-  h2: 'text-3xl sm:text-4xl font-bold text-gray-900',
-  h3: 'text-2xl sm:text-3xl font-semibold text-gray-900',
-  h4: 'text-xl sm:text-2xl font-semibold text-gray-900',
-  h5: 'text-lg sm:text-xl font-semibold text-gray-900',
-  h6: 'text-base font-semibold text-gray-900',
+  h1: 'text-4xl sm:text-5xl font-montserrat-bold text-gray-900',
+  h2: 'text-3xl sm:text-4xl font-montserrat-bold text-gray-900',
+  h3: 'text-2xl sm:text-3xl font-montserrat-semibold text-gray-900',
+  h4: 'text-xl sm:text-2xl font-montserrat-semibold text-gray-900',
+  h5: 'text-lg sm:text-xl font-montserrat-semibold text-gray-900',
+  h6: 'text-base font-montserrat-semibold text-gray-900',
 }
 
 TEXT_STYLES = {
@@ -276,7 +276,7 @@ TEXT_STYLES = {
   bodySecondary: 'text-base text-gray-600',
   small: 'text-sm text-gray-600',
   tiny: 'text-xs text-gray-600',
-  label: 'text-sm font-semibold text-gray-700',
+  label: 'text-sm font-montserrat-semibold text-gray-700',
   caption: 'text-xs text-gray-500',
   link: 'text-base text-primary hover:text-primary-700 underline',
 }
@@ -406,13 +406,13 @@ className={cn(CARD, SHADOW.md)}  // Already in CARD
 **Button Variants:**
 ```typescript
 // Primary (blue, filled)
-BUTTON_PRIMARY: 'px-4 py-2.5 rounded-lg bg-primary-600 text-white font-semibold hover:bg-primary-700 active:bg-primary-800 disabled:opacity-50 transition-colors duration-200'
+BUTTON_PRIMARY: 'px-4 py-2.5 rounded-lg bg-primary-600 text-white font-montserrat-semibold hover:bg-primary-700 active:bg-primary-800 disabled:opacity-50 transition-colors duration-200'
 
 // Secondary (gray, filled)
-BUTTON_SECONDARY: 'px-4 py-2.5 rounded-lg bg-gray-200 text-gray-900 font-semibold hover:bg-gray-300 active:bg-gray-400 transition-colors duration-200'
+BUTTON_SECONDARY: 'px-4 py-2.5 rounded-lg bg-gray-200 text-gray-900 font-montserrat-semibold hover:bg-gray-300 active:bg-gray-400 transition-colors duration-200'
 
 // Outline (bordered)
-BUTTON_OUTLINE: 'px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 font-semibold hover:bg-gray-50 transition-colors duration-200'
+BUTTON_OUTLINE: 'px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 font-montserrat-semibold hover:bg-gray-50 transition-colors duration-200'
 
 // And more...
 ```
@@ -667,7 +667,7 @@ TEXT_MUTED - Secondary text
 
 2. **Don't hardcode Tailwind classes**
    ```tsx
-   className="p-4 m-3 text-lg font-semibold"  // ❌
+   className="p-4 m-3 text-lg font-montserrat-semibold"  // ❌
    ```
 
 3. **Don't use arbitrary values**

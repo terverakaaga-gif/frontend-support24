@@ -9,10 +9,10 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Magnifer, 
-  Calendar, 
-  ClockCircle, 
+import {
+  Magnifer,
+  Calendar,
+  ClockCircle,
   MapPoint,
   CheckCircle,
   CloseCircle,
@@ -121,7 +121,7 @@ const MOCK_INTERVIEWS: InterviewInvitation[] = [
 export default function SupportWorkerInterviewsPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  
+
   // State
   const [activeTab, setActiveTab] = useState<"new" | "accepted">("new");
   const [interviews, setInterviews] = useState<InterviewInvitation[]>(MOCK_INTERVIEWS);
@@ -132,8 +132,8 @@ export default function SupportWorkerInterviewsPage() {
 
   // Filter interviews based on tab
   const filteredInterviews = interviews.filter(interview => {
-    const matchesTab = activeTab === "new" 
-      ? interview.status === "pending" 
+    const matchesTab = activeTab === "new"
+      ? interview.status === "pending"
       : interview.status === "accepted";
     const matchesSearch = interview.organizationName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       interview.role.toLowerCase().includes(searchQuery.toLowerCase());
@@ -143,7 +143,7 @@ export default function SupportWorkerInterviewsPage() {
   // Handlers
   const handleAcceptInterview = () => {
     if (selectedInterview) {
-      setInterviews(prev => prev.map(i => 
+      setInterviews(prev => prev.map(i =>
         i.id === selectedInterview.id ? { ...i, status: "accepted" } : i
       ));
       setShowConfirmDialog(null);
@@ -182,11 +182,11 @@ export default function SupportWorkerInterviewsPage() {
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative flex-grow md:w-64">
               <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input 
-                placeholder="Search interviews..." 
+              <Input
+                placeholder="Search interviews..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 h-11 rounded-full bg-white border-gray-200" 
+                className="w-full pl-10 h-11 rounded-full bg-white border-gray-200"
               />
             </div>
           </div>
@@ -200,9 +200,9 @@ export default function SupportWorkerInterviewsPage() {
           size="sm"
           onClick={() => setActiveTab("new")}
           className={cn(
-                "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
-                activeTab === 'new' ? "bg-primary text-white hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50"
-              )}
+            "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
+            activeTab === 'new' ? "bg-primary text-white hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50"
+          )}
         >
           New Invitations
           <Badge variant="secondary" className="ml-1 bg-white/20 text-inherit h-5 px-1.5">
@@ -213,10 +213,10 @@ export default function SupportWorkerInterviewsPage() {
           variant="ghost"
           size="sm"
           onClick={() => setActiveTab("accepted")}
-         className={cn(
-                "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
-                activeTab === 'accepted' ? "bg-primary text-white hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50"
-              )}
+          className={cn(
+            "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
+            activeTab === 'accepted' ? "bg-primary text-white hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50"
+          )}
         >
           Accepted
           <Badge variant="secondary" className="ml-1 bg-white/20 text-inherit h-5 px-1.5">
@@ -228,8 +228,8 @@ export default function SupportWorkerInterviewsPage() {
       {/* Interview Cards Grid */}
       <div className={cn(GRID_LAYOUTS.responsive, GAP.responsive)}>
         {filteredInterviews.map((interview) => (
-          <Card 
-            key={interview.id} 
+          <Card
+            key={interview.id}
             className="p-6 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-all cursor-pointer"
             onClick={() => setSelectedInterview(interview)}
           >
@@ -245,11 +245,11 @@ export default function SupportWorkerInterviewsPage() {
                 <h3 className="font-montserrat-bold text-gray-900 text-lg">{interview.organizationName}</h3>
                 <p className="text-sm text-gray-500">{interview.role}</p>
               </div>
-              <Badge 
+              <Badge
                 className={cn(
                   "text-xs",
-                  interview.type === 'video' 
-                    ? "bg-blue-50 text-blue-600 hover:bg-blue-50" 
+                  interview.type === 'video'
+                    ? "bg-blue-50 text-blue-600 hover:bg-blue-50"
                     : "bg-green-50 text-green-600 hover:bg-green-50"
                 )}
               >
@@ -323,9 +323,9 @@ export default function SupportWorkerInterviewsPage() {
         {/* Empty State */}
         {filteredInterviews.length === 0 && (
           <Card className="col-span-full py-20 text-center text-gray-500 bg-white rounded-xl border-gray-200 border-dashed">
-            <p className="font-medium">
-              {activeTab === 'new' 
-                ? "No new interview invitations at the moment." 
+            <p className="font-montserrat-medium">
+              {activeTab === 'new'
+                ? "No new interview invitations at the moment."
                 : "No accepted interviews scheduled."}
             </p>
           </Card>
@@ -347,7 +347,7 @@ export default function SupportWorkerInterviewsPage() {
                 </Avatar>
                 <div>
                   <h2 className="font-montserrat-bold text-gray-900 text-xl">{selectedInterview.organizationName}</h2>
-                  <p className="text-primary-600 font-medium">{selectedInterview.role}</p>
+                  <p className="text-primary-600 font-montserrat-medium">{selectedInterview.role}</p>
                   <Badge className="mt-2 bg-white text-primary-600 border border-primary-200">
                     {selectedInterview.type === 'video' ? 'Video Interview' : 'In-Person Interview'}
                   </Badge>
@@ -453,7 +453,7 @@ export default function SupportWorkerInterviewsPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-montserrat-bold text-center">Accept Interview?</DialogTitle>
             <DialogDescription className="text-center">
-              You're about to accept the interview invitation from <strong>{selectedInterview?.organizationName}</strong>. 
+              You're about to accept the interview invitation from <strong>{selectedInterview?.organizationName}</strong>.
               Make sure you're available on the scheduled date and time.
             </DialogDescription>
           </DialogHeader>
@@ -477,7 +477,7 @@ export default function SupportWorkerInterviewsPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-montserrat-bold text-center">Decline Interview?</DialogTitle>
             <DialogDescription className="text-center">
-              Are you sure you want to decline the interview invitation from <strong>{selectedInterview?.organizationName}</strong>? 
+              Are you sure you want to decline the interview invitation from <strong>{selectedInterview?.organizationName}</strong>?
               This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
@@ -506,7 +506,7 @@ export default function SupportWorkerInterviewsPage() {
                 </AvatarFallback>
               </Avatar>
             </div>
-            
+
             {/* Interviewer Name Label */}
             <div className="absolute bottom-24 left-6 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl">
               <span className="text-white font-montserrat-semibold">{selectedInterview?.interviewerName}</span>
@@ -524,7 +524,7 @@ export default function SupportWorkerInterviewsPage() {
               </div>
               {/* Self Label */}
               <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md">
-                <span className="text-white text-xs font-medium">You</span>
+                <span className="text-white text-xs font-montserrat-medium">You</span>
               </div>
               {/* Camera indicator */}
               <div className="absolute top-2 right-2 bg-green-500 p-1.5 rounded-full">

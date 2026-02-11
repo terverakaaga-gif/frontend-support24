@@ -111,9 +111,9 @@ export function SearchSupportWorkers({
 
   // Handlers
   const handleApplyFilters = (newFilters: WorkerSearchFilters) => {
-    setAppliedFilters((prev) => ({ 
-      ...prev, 
-      ...newFilters, 
+    setAppliedFilters((prev) => ({
+      ...prev,
+      ...newFilters,
       page: 1,
     }));
     setShowFilters(false); // Close mobile sheet
@@ -122,9 +122,9 @@ export function SearchSupportWorkers({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Trigger refetch by updating filters
-    setAppliedFilters((prev) => ({ 
-      ...prev, 
-      page: 1 
+    setAppliedFilters((prev) => ({
+      ...prev,
+      page: 1
     }));
   };
 
@@ -311,8 +311,8 @@ export function SearchSupportWorkers({
                             {/* Avatar and Status */}
                             <div className="relative flex-shrink-0">
                               <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-white shadow-lg">
-                                <AvatarImage 
-                                  src={worker.profileImage} 
+                                <AvatarImage
+                                  src={worker.profileImage}
                                   alt={`${worker.firstName} ${worker.lastName}`}
                                   className="object-cover"
                                 />
@@ -335,7 +335,7 @@ export function SearchSupportWorkers({
                                   <h3 className={cn("text-2xl", FONT_FAMILY.montserratBold, "text-gray-900 mb-1")}>
                                     {worker.firstName} {worker.lastName}
                                   </h3>
-                                  
+
                                   {/* Rating and Verification Badges */}
                                   <div className={cn("flex flex-wrap items-center mb-3", GAP.sm)}>
                                     <div className={cn("flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1", RADIUS.lg)}>
@@ -349,14 +349,14 @@ export function SearchSupportWorkers({
                                         </span>
                                       )}
                                     </div>
-                                    
+
                                     {worker.verificationStatus?.identityVerified && (
                                       <Badge className="bg-green-500 hover:bg-green-600 text-white border-0">
                                         <CheckCircle className="w-3 h-3 mr-1" />
                                         Verified
                                       </Badge>
                                     )}
-                                    
+
                                     {worker.verificationStatus?.ndisWorkerScreeningVerified && (
                                       <Badge variant="outline" className="border-primary-300 bg-primary-50 text-primary-700">
                                         Background Checked
@@ -368,8 +368,8 @@ export function SearchSupportWorkers({
                                   <div className={cn("flex flex-wrap items-center gap-3 text-sm text-gray-600")}>
                                     <div className="flex items-center gap-1.5">
                                       <MapPoint className="w-4 h-4 text-primary" />
-                                      <span className="font-medium">
-                                        {worker.serviceAreas?.length > 0 
+                                      <span className="font-montserrat-medium">
+                                        {worker.serviceAreas?.length > 0
                                           ? worker.serviceAreas.slice(0, 2).join(", ")
                                           : worker.stateIds?.map(s => s.name).join(", ") || "Australia"}
                                       </span>
@@ -420,7 +420,7 @@ export function SearchSupportWorkers({
                                   <Badge
                                     key={skill._id}
                                     variant="outline"
-                                    className="px-3 py-1.5 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 text-primary font-medium hover:bg-primary/20 transition-colors"
+                                    className="px-3 py-1.5 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 text-primary font-montserrat-medium hover:bg-primary/20 transition-colors"
                                   >
                                     {skill.name}
                                   </Badge>
@@ -440,7 +440,7 @@ export function SearchSupportWorkers({
                                   <Badge
                                     key={idx}
                                     variant="secondary"
-                                    className="px-3 py-1.5 bg-gray-100 text-gray-700 font-medium"
+                                    className="px-3 py-1.5 bg-gray-100 text-gray-700 font-montserrat-medium"
                                   >
                                     {lang}
                                   </Badge>
@@ -490,7 +490,7 @@ export function SearchSupportWorkers({
                             >
                               View Full Profile
                             </Button>
-                            
+
                             {status === "none" && (
                               <Button
                                 className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-montserrat-semibold shadow-md hover:shadow-lg transition-all"

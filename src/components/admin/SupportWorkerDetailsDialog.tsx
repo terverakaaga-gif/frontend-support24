@@ -135,7 +135,7 @@ export default function SupportWorkerDetailsDialog({
   // Helper to get available weekdays from the availability object
   const getAvailableWeekdays = (): string[] => {
     if (!worker.availability?.weekdays) return [];
-    
+
     // Handle both array of objects and array of strings
     return worker.availability.weekdays
       .filter((item: WeekdayAvailability | string) => {
@@ -231,24 +231,24 @@ export default function SupportWorkerDetailsDialog({
                 <div className="flex items-center gap-2 text-sm">
                   <Letter className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Email:</span>
-                  <span className="font-medium">{worker.email}</span>
+                  <span className="font-montserrat-medium">{worker.email}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Phone:</span>
-                  <span className="font-medium">{worker.phone || "Not provided"}</span>
+                  <span className="font-montserrat-medium">{worker.phone || "Not provided"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Bell className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Notifications:</span>
-                  <span className="font-medium capitalize">
+                  <span className="font-montserrat-medium capitalize">
                     {worker.notificationPreferences || "Not set"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <UsersGroupTwoRounded className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Organizations:</span>
-                  <span className="font-medium">{worker.organizationCount}</span>
+                  <span className="font-montserrat-medium">{worker.organizationCount}</span>
                 </div>
               </div>
             </div>
@@ -273,9 +273,8 @@ export default function SupportWorkerDetailsDialog({
                   {verificationItems.map((item) => (
                     <div
                       key={item.key}
-                      className={`flex items-center gap-2 p-2 rounded-md ${
-                        item.verified ? "bg-green-50" : "bg-gray-100"
-                      }`}
+                      className={`flex items-center gap-2 p-2 rounded-md ${item.verified ? "bg-green-50" : "bg-gray-100"
+                        }`}
                     >
                       {item.verified ? (
                         <CheckCircle className="h-4 w-4 text-green-500" />
@@ -283,9 +282,8 @@ export default function SupportWorkerDetailsDialog({
                         <CloseCircle className="h-4 w-4 text-gray-400" />
                       )}
                       <span
-                        className={`text-xs ${
-                          item.verified ? "text-green-700" : "text-gray-500"
-                        }`}
+                        className={`text-xs ${item.verified ? "text-green-700" : "text-gray-500"
+                          }`}
                       >
                         {item.label}
                       </span>
@@ -398,7 +396,7 @@ export default function SupportWorkerDetailsDialog({
                         key={qual._id}
                         className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                       >
-                        <p className="font-medium">{qual.title}</p>
+                        <p className="font-montserrat-medium">{qual.title}</p>
                         <p className="text-sm text-gray-500">{qual.institution}</p>
                         <p className="text-xs text-gray-400 mt-1">
                           Obtained: {format(new Date(qual.dateObtained), "MMM yyyy")}
@@ -428,7 +426,7 @@ export default function SupportWorkerDetailsDialog({
                         key={exp._id}
                         className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                       >
-                        <p className="font-medium">{exp.jobTitle}</p>
+                        <p className="font-montserrat-medium">{exp.jobTitle}</p>
                         <p className="text-sm text-gray-500">{exp.organization}</p>
                         <p className="text-xs text-gray-400 mt-1">
                           {format(new Date(exp.startDate), "MMM yyyy")} -{" "}

@@ -171,7 +171,7 @@ export function SupportWorkerSetup({
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [languageInput, setLanguageInput] = useState("");
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  
+
   // Address State
   const [showAddressPredictions, setShowAddressPredictions] = useState(false);
   const [addressInputValue, setAddressInputValue] = useState("");
@@ -305,10 +305,10 @@ export function SupportWorkerSetup({
   const handleAddressSelect = (prediction: any) => {
     // 1. Get address string
     const selectedAddress = prediction.description;
-    
+
     // 2. Update visual input immediately
     setAddressInputValue(selectedAddress);
-    
+
     // 3. Close prediction pane
     setShowAddressPredictions(false);
 
@@ -472,9 +472,9 @@ export function SupportWorkerSetup({
         serviceAreaIds: data.serviceAreaIds,
         baseLocation: data.address
           ? {
-              longitude: 0, // You'll need to get this from Google Places if needed
-              latitude: 0, // You'll need to get this from Google Places if needed
-            }
+            longitude: 0, // You'll need to get this from Google Places if needed
+            latitude: 0, // You'll need to get this from Google Places if needed
+          }
           : undefined,
         travelRadiusKm: undefined, // Add this field if needed
         address: data.address,
@@ -557,17 +557,17 @@ export function SupportWorkerSetup({
   const addTimeSlot = (dayIndex: number) => {
     const newAvailability = { ...formData.availability };
     const currentSlots = newAvailability.weekdays[dayIndex].slots;
-    
+
     // Sort slots by start time to find the latest available time
     const sortedSlots = [...currentSlots].sort((a, b) => a.start.localeCompare(b.start));
-    
+
     let startTime = "09:00";
     let endTime = "17:00";
-    
+
     if (sortedSlots.length > 0) {
       const lastSlot = sortedSlots[sortedSlots.length - 1];
       const lastEndTime = lastSlot.end;
-      
+
       // Use the last slot's end time as the new start time
       startTime = lastEndTime;
       const [hours, minutes] = lastEndTime.split(':').map(Number);
@@ -575,7 +575,7 @@ export function SupportWorkerSetup({
       const newHours = Math.min(hours + 8, 23);
       endTime = `${String(newHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
     }
-    
+
     newAvailability.weekdays[dayIndex].slots.push({
       start: startTime,
       end: endTime,
@@ -680,8 +680,8 @@ export function SupportWorkerSetup({
                           isCompleted && "bg-primary border-primary",
                           isActive && !isCompleted && "border-primary bg-white",
                           !isActive &&
-                            !isCompleted &&
-                            "border-gray-300 bg-white"
+                          !isCompleted &&
+                          "border-gray-300 bg-white"
                         )}
                       >
                         {isCompleted ? (
@@ -730,15 +730,14 @@ export function SupportWorkerSetup({
                       className="flex flex-col items-center z-10 bg-gray-100"
                     >
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${
-                          step >= s.number
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${step >= s.number
                             ? "bg-primary-600 text-white"
                             : "bg-gray-200 text-gray-500"
-                        }`}
+                          }`}
                       >
                         {step > s.number ? "✓" : s.number}
                       </div>
-                      <span className="text-xs mt-2 font-medium text-gray-500 whitespace-nowrap">
+                      <span className="text-xs mt-2 font-montserrat-medium text-gray-500 whitespace-nowrap">
                         {s.label}
                       </span>
                     </div>
@@ -749,8 +748,8 @@ export function SupportWorkerSetup({
                 {/* Active progress line */}
                 <div
                   className="absolute top-4 left-4 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
-                  style={{ 
-                    width: `calc((100% - 2rem) * ${(step - 1) / (steps.length - 1)})` 
+                  style={{
+                    width: `calc((100% - 2rem) * ${(step - 1) / (steps.length - 1)})`
                   }}
                 />
               </div>
@@ -945,7 +944,7 @@ export function SupportWorkerSetup({
                                           <div className="flex items-start gap-3">
                                             <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                                             <div className="flex-1 min-w-0">
-                                              <p className="text-sm text-gray-900 font-medium truncate">
+                                              <p className="text-sm text-gray-900 font-montserrat-medium truncate">
                                                 {prediction.structured_formatting?.main_text ||
                                                   prediction.description.split(",")[0]}
                                               </p>
@@ -1096,12 +1095,12 @@ export function SupportWorkerSetup({
                                         onClick={() => {
                                           const newServiceAreas = isSelected
                                             ? field.value?.filter(
-                                                (id) => id !== serviceArea._id
-                                              )
+                                              (id) => id !== serviceArea._id
+                                            )
                                             : [
-                                                ...(field.value || []),
-                                                serviceArea._id,
-                                              ];
+                                              ...(field.value || []),
+                                              serviceArea._id,
+                                            ];
                                           field.onChange(newServiceAreas);
                                           setFormData((prev) => ({
                                             ...prev,
@@ -1127,8 +1126,8 @@ export function SupportWorkerSetup({
                                   {!selectedRegionId
                                     ? "Please select a region first"
                                     : isLoadingServiceAreas
-                                    ? "Loading service areas..."
-                                    : "No service areas available"}
+                                      ? "Loading service areas..."
+                                      : "No service areas available"}
                                 </div>
                               )}
                               <FormMessage />
@@ -1205,12 +1204,12 @@ export function SupportWorkerSetup({
                                       onClick={() => {
                                         const newSkills = isSelected
                                           ? field.value?.filter(
-                                              (id) => id !== serviceType._id
-                                            )
+                                            (id) => id !== serviceType._id
+                                          )
                                           : [
-                                              ...(field.value || []),
-                                              serviceType._id,
-                                            ];
+                                            ...(field.value || []),
+                                            serviceType._id,
+                                          ];
                                         field.onChange(newSkills);
                                         setFormData({
                                           ...formData,

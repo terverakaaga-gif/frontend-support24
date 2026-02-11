@@ -120,7 +120,7 @@ export const OrganizationInfoStep = memo(({ form }: Props) => {
                     onClick={() => handleAddressSelect(prediction)}
                     className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-sm border-b last:border-0"
                   >
-                    <div className="font-medium text-gray-900">
+                    <div className="font-montserrat-medium text-gray-900">
                       {prediction.structured_formatting.main_text}
                     </div>
                     <div className="text-xs text-gray-500">

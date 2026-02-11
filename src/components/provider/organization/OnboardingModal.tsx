@@ -53,7 +53,7 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
     if (step === 'loading') {
       const timer = setTimeout(() => {
         setStep('success');
-      }, 2000); 
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -82,7 +82,7 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      
+
       {/* 1. VERIFICATION CHECKLIST */}
       {step === 'verify' && (
         <DialogContent className={cn(RADIUS.lg, 'overflow-hidden max-w-md p-0')}>
@@ -103,7 +103,7 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
             </Avatar>
             <DialogTitle className="flex items-center gap-1 text-xl font-montserrat-bold">
               {worker.name}
-              <VerifiedCheck className="w-5 h-5 text-primary-600"  />
+              <VerifiedCheck className="w-5 h-5 text-primary-600" />
             </DialogTitle>
             <DialogDescription className="text-gray-500 text-sm mb-2 text-center">
               {worker.role}
@@ -120,7 +120,7 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
           {/* Checklist Area */}
           <div className="bg-gray-50 p-6 space-y-4">
             <h4 className="font-montserrat-bold text-gray-900 text-sm mb-2">Onboarding Verification</h4>
-            
+
             {[
               { id: 'agreementSent', label: 'Letter of agreement sent' },
               { id: 'agreementSigned', label: 'Letter of agreement signed' },
@@ -128,14 +128,14 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
               { id: 'expectations', label: 'Roles of expectation explained' },
               { id: 'codeOfConduct', label: 'Code of conduct acknowledged' }
             ].map((item) => (
-              <div 
-                key={item.id} 
+              <div
+                key={item.id}
                 className="flex items-center justify-between cursor-pointer group"
                 onClick={() => toggleCheck(item.id as keyof typeof checks)}
               >
-                <label 
+                <label
                   htmlFor={item.id}
-                  className="text-sm text-gray-700 font-medium group-hover:text-gray-900 cursor-pointer"
+                  className="text-sm text-gray-700 font-montserrat-medium group-hover:text-gray-900 cursor-pointer"
                 >
                   {item.label}
                 </label>
@@ -144,7 +144,7 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
                   checked={checks[item.id as keyof typeof checks]}
                   onCheckedChange={() => toggleCheck(item.id as keyof typeof checks)}
                   onClick={() => toggleCheck(item.id as keyof typeof checks)}
-              
+
                   className="h-6 w-6 rounded border-gray-300 data-[state=checked]:bg-primary-600 data-[state=checked]:border-primary-600"
                 />
               </div>
@@ -158,8 +158,8 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
               disabled={!allChecked}
               className={cn(
                 "w-full py-6 rounded-xl font-montserrat-bold",
-                allChecked 
-                  ? "bg-primary-600 hover:bg-primary-700 text-white" 
+                allChecked
+                  ? "bg-primary-600 hover:bg-primary-700 text-white"
                   : "bg-primary-200 text-white cursor-not-allowed"
               )}
             >
@@ -189,19 +189,19 @@ export default function OnboardingModal({ isOpen, worker, onClose, onComplete }:
       {step === 'success' && (
         <DialogContent className="max-w-md p-8 rounded-2xl text-center">
           <div className="w-16 h-16 bg-white mx-auto mb-4 flex items-center justify-center">
-            <ConfettiMinimalistic className="w-12 h-12 text-yellow-500"  />
+            <ConfettiMinimalistic className="w-12 h-12 text-yellow-500" />
           </div>
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-lg font-montserrat-bold text-gray-900">
               Added to Workforce Successfully
             </DialogTitle>
             <DialogDescription className="text-gray-600 px-4 text-sm leading-relaxed">
-              You have successfully added <span className="font-bold text-gray-900">Support Worker</span> {worker?.name} to your workforce
+              You have successfully added <span className="font-montserrat-bold text-gray-900">Support Worker</span> {worker?.name} to your workforce
             </DialogDescription>
           </DialogHeader>
-          
+
           <DialogFooter className="mt-8">
-            <Button 
+            <Button
               onClick={onComplete}
               className="w-full py-6 bg-primary-600 hover:bg-primary-700 text-white font-montserrat-bold rounded-xl"
             >

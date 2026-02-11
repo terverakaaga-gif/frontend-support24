@@ -81,20 +81,20 @@ export default function UnifiedWorkerCard({
   // Get worker name
   const workerName = worker.name || `${worker.firstName} ${worker.lastName}`.trim();
   const workerId = worker._id || worker.id || '';
-  
+
   // Skip rendering if no ID
   if (!workerId) {
     console.warn('UnifiedWorkerCard: No worker ID provided (_id or id)');
     return null;
   }
-  
+
   // Get rating
   const rating = worker.rating ?? worker.ratings?.average ?? 0;
-  
+
   // Determine if vetting-specific UI should show
   const isVetted = worker.status === 'vetted';
   const isWorkforceContext = variant === 'workforce' || !!worker.status;
-  
+
   // Determine if marketplace-specific content should show
   const isMarketplaceContext = variant === 'marketplace' || !!worker.readabilityScore;
 
@@ -133,7 +133,7 @@ export default function UnifiedWorkerCard({
         "hover:shadow-lg h-full"
       )}
     >
-      <div className={cn(CARD_CONTENT, FLEX_COL,CONTAINER_PADDING.responsive)}>
+      <div className={cn(CARD_CONTENT, FLEX_COL, CONTAINER_PADDING.responsive)}>
         {/* Header: Avatar & Name */}
         <div className={cn(FLEX_COL_CENTER, `mb-${SPACING.sm}`)}>
           {/* Avatar with optional vetting badge */}
@@ -167,7 +167,7 @@ export default function UnifiedWorkerCard({
               <VerifiedCheck className="w-5 h-5 text-primary-600" />
             )}
           </div>
-          <p className="text-gray-500 text-xs font-medium">{worker.role}</p>
+          <p className="text-gray-500 text-xs font-montserrat-medium">{worker.role}</p>
         </div>
 
         {/* Stats Row */}
@@ -232,7 +232,7 @@ export default function UnifiedWorkerCard({
         )}
 
         {/* Actions - Flex grow to push to bottom */}
-        <div className={cn("mt-auto",  "flex gap-3", GAP.responsive)}>
+        <div className={cn("mt-auto", "flex gap-3", GAP.responsive)}>
           {/* Workforce context: Show appropriate actions */}
           {isWorkforceContext ? (
             isVetted ? (
@@ -276,7 +276,7 @@ export default function UnifiedWorkerCard({
               {/* Primary action: View Profile */}
               <Button
                 onClick={() => onViewProfile(workerId)}
-                className={cn('w-full',BUTTON_OUTLINE, BORDER_WIDTH.thin)}
+                className={cn('w-full', BUTTON_OUTLINE, BORDER_WIDTH.thin)}
               >
                 View Profile
               </Button>

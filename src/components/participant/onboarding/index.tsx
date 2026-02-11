@@ -67,7 +67,7 @@ export default function ParticipantSetup() {
       await authService.completeParticipantOnboarding(payload);
       toast.success("Profile setup completed!", { id: "onboarding" });
       completeOnboarding();
-      
+
       // Redirect to dashboard after successful onboarding
       setTimeout(() => {
         navigate("/participant");
@@ -118,8 +118,8 @@ export default function ParticipantSetup() {
                 step === s.number
                   ? "border-primary text-primary bg-white"
                   : completedSteps.includes(s.number)
-                  ? "bg-primary border-primary text-white"
-                  : "border-gray-200 text-gray-400 bg-white"
+                    ? "bg-primary border-primary text-white"
+                    : "border-gray-200 text-gray-400 bg-white"
               )}
             >
               {completedSteps.includes(s.number) ? (
@@ -130,7 +130,7 @@ export default function ParticipantSetup() {
             </div>
             <span
               className={cn(
-                "text-xs mt-2 font-medium hidden md:block",
+                "text-xs mt-2 font-montserrat-medium hidden md:block",
                 step === s.number ? "text-primary" : "text-gray-500"
               )}
             >

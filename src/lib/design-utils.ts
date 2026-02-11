@@ -223,7 +223,7 @@ export const DASHBOARD_PAGE_WRAPPER = cn(
   "min-h-screen",
   "bg-gray-100",
   "p-6",
-  "space-y-6"
+  "space-y-0"
 );
 
 /**
@@ -1098,7 +1098,7 @@ export function getStatusBadgeClass(status: string): string {
     'rejected': STATUS_CANCELLED,
     'approved': STATUS_CONFIRMED,
   };
-  
+
   return statusMap[status.toLowerCase()] || STATUS_PENDING;
 }
 
@@ -1118,14 +1118,14 @@ export function getButtonClass(
     danger: BUTTON_DANGER,
     success: BUTTON_SUCCESS,
   };
-  
+
   const sizeMap = {
     sm: BUTTON_SM,
     md: BUTTON_MD,
     lg: BUTTON_LG,
     xl: BUTTON_XL,
   };
-  
+
   return cn(variantMap[variant], sizeMap[size]);
 }
 
@@ -1144,12 +1144,12 @@ export function getBadgeClass(
     error: BADGE_ERROR,
     info: BADGE_INFO,
   };
-  
+
   const sizeMap = {
     sm: BADGE_SM,
     md: BADGE_MD,
     lg: BADGE_LG,
   };
-  
+
   return cn(variantMap[variant], sizeMap[size]);
 }

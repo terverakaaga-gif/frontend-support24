@@ -43,7 +43,7 @@ export function ChartSection({
       className={cn("transition-all duration-200 hover:shadow-lg", className)}
     >
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-guardian">
+        <CardTitle className="text-lg font-montserrat-medium text-guardian">
           {title}
         </CardTitle>
       </CardHeader>

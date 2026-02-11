@@ -9,8 +9,8 @@ interface TestimonialsSectionProps {
   className?: string;
 }
 
-export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ 
-  className = "" 
+export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
+  className = ""
 }) => {
   const fadeInUp = {
     initial: { opacity: 0, y: 40 },
@@ -26,7 +26,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           <div className="mb-6">
             <RoundedFigure icon={Star} text="Real Impact Stories" />
           </div>
-          
+
           <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold mb-6 md:mb-8 leading-tight text-center">
             Trusted by Thousands, across{" "}
             <InlineVectorText className="italic" text="Australia" imageClassName="bottom-0 sm:-bottom-1 w-[300px]  translate-y-[35%] sm:translate-y-[45%]" />
@@ -66,8 +66,8 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         {/* Masonry Grid - Matches the design layout with staggered positioning */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
           {testimonialData.map((testimonial, index) => (
-            <TestimonialCard 
-              key={testimonial.id} 
+            <TestimonialCard
+              key={testimonial.id}
               testimonial={testimonial}
               index={index}
             />
@@ -97,28 +97,25 @@ const TestimonialCard = ({ testimonial, index }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
-      className={`relative rounded-2xl p-5 sm:p-6 backdrop-blur-xl border shadow-lg transition-all duration-300 ${getStaggerClass(index)} ${
-        testimonial.hasVideo 
-          ? 'bg-gradient-to-br from-[#1e2a4a] to-[#0f1829] text-white border-gray-700/30 hover:shadow-2xl hover:shadow-primary-500/20' 
+      className={`relative rounded-2xl p-5 sm:p-6 backdrop-blur-xl border shadow-lg transition-all duration-300 ${getStaggerClass(index)} ${testimonial.hasVideo
+          ? 'bg-gradient-to-br from-[#1e2a4a] to-[#0f1829] text-white border-gray-700/30 hover:shadow-2xl hover:shadow-primary-500/20'
           : 'bg-white border-gray-200 hover:shadow-2xl hover:shadow-primary/20'
-      } min-h-[320px] sm:min-h-[340px] flex flex-col`}
+        } min-h-[320px] sm:min-h-[340px] flex flex-col`}
     >
       {/* Rating Badge */}
       <div className="absolute top-4 sm:top-5 right-4 sm:right-5">
-        <div className={`px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs sm:text-sm font-medium w-fit ${
-          testimonial.hasVideo 
-            ? 'bg-white/20 text-white' 
+        <div className={`px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs sm:text-sm font-montserrat-medium w-fit ${testimonial.hasVideo
+            ? 'bg-white/20 text-white'
             : 'bg-[#0D2BEC] text-white'
-        }`}>
+          }`}>
           <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
           <span>{testimonial.rating}</span>
         </div>
       </div>
 
       {/* Title */}
-      <h3 className={`text-base sm:text-lg lg:text-xl font-montserrat-semibold mt-8 mb-3 sm:mb-4 pr-12 sm:pr-16 ${
-        testimonial.hasVideo ? 'text-white' : 'text-gray-900'
-      }`}>
+      <h3 className={`text-base sm:text-lg lg:text-xl font-montserrat-semibold mt-8 mb-3 sm:mb-4 pr-12 sm:pr-16 ${testimonial.hasVideo ? 'text-white' : 'text-gray-900'
+        }`}>
         {testimonial.title}
       </h3>
 
@@ -139,9 +136,8 @@ const TestimonialCard = ({ testimonial, index }) => {
       )}
 
       {/* Content */}
-      <p className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow ${
-        testimonial.hasVideo ? 'text-white/90' : 'text-gray-700'
-      }`}>
+      <p className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow ${testimonial.hasVideo ? 'text-white/90' : 'text-gray-700'
+        }`}>
         "{testimonial.content}"
       </p>
 
@@ -153,14 +149,12 @@ const TestimonialCard = ({ testimonial, index }) => {
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
         /> */}
         <div>
-          <p className={`text-sm sm:text-base font-montserrat-semibold ${
-            testimonial.hasVideo ? 'text-white' : 'text-gray-900'
-          }`}>
+          <p className={`text-sm sm:text-base font-montserrat-semibold ${testimonial.hasVideo ? 'text-white' : 'text-gray-900'
+            }`}>
             {testimonial.userName}
           </p>
-          <p className={`text-xs sm:text-sm ${
-            testimonial.hasVideo ? 'text-white/80' : 'text-gray-600'
-          }`}>
+          <p className={`text-xs sm:text-sm ${testimonial.hasVideo ? 'text-white/80' : 'text-gray-600'
+            }`}>
             {testimonial.userRole}
           </p>
         </div>

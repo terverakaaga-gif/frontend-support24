@@ -30,7 +30,7 @@ export default function ShiftCard({ shift, onClick, variant = 'desktop' }: Shift
 
   if (variant === 'mobile') {
     return (
-      <div 
+      <div
         onClick={() => onClick(shift)}
         className={cn(
           "relative p-3 rounded-lg border mb-3 cursor-pointer transition-all active:scale-[0.98]",
@@ -40,12 +40,12 @@ export default function ShiftCard({ shift, onClick, variant = 'desktop' }: Shift
       >
         {/* Left Color Bar */}
         <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-lg", styles.indicator)} />
-        
+
         <div className="pl-3 flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <span className="font-montserrat-semibold text-sm text-gray-900">{shift.type}</span>
             <span className={cn("text-[10px] font-montserrat-bold px-2 py-0.5 rounded-full uppercase", styles.badge)}>
-               ● {shift.riskLevel}
+              ● {shift.riskLevel}
             </span>
           </div>
 
@@ -58,13 +58,13 @@ export default function ShiftCard({ shift, onClick, variant = 'desktop' }: Shift
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-gray-700">{shift.primaryWorker.name}</span>
+                <span className="text-xs font-montserrat-medium text-gray-700">{shift.primaryWorker.name}</span>
                 <span className="text-[10px] text-gray-500">{shift.primaryWorker.reliability}% reliability</span>
               </div>
             </div>
-            
+
             <div className="flex flex-col items-end gap-1">
-              <span className="text-xs font-medium text-gray-600">{shift.startTime}- {shift.endTime}</span>
+              <span className="text-xs font-montserrat-medium text-gray-600">{shift.startTime}- {shift.endTime}</span>
               {shift.backupWorker && (
                 <div className="relative">
                   <Avatar className="w-6 h-6 border border-white">
@@ -84,7 +84,7 @@ export default function ShiftCard({ shift, onClick, variant = 'desktop' }: Shift
 
   // Desktop Card (More compact vertically for calendar slots)
   return (
-    <div 
+    <div
       onClick={() => onClick(shift)}
       className={cn(
         "relative p-2 rounded-lg border h-full cursor-pointer hover:shadow-md transition-shadow",
@@ -93,7 +93,7 @@ export default function ShiftCard({ shift, onClick, variant = 'desktop' }: Shift
       )}
     >
       <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-lg", styles.indicator)} />
-      
+
       <div className="pl-2 flex flex-col h-full justify-between gap-1.5">
         <div className="flex items-center justify-between gap-1">
           <span className="font-montserrat-semibold text-xs text-gray-900 truncate">{shift.type}</span>
@@ -110,20 +110,20 @@ export default function ShiftCard({ shift, onClick, variant = 'desktop' }: Shift
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
-             <span className="text-[10px] font-medium text-gray-700 truncate">{shift.primaryWorker.name} - {shift.primaryWorker.reliability}%</span>
+            <span className="text-[10px] font-montserrat-medium text-gray-700 truncate">{shift.primaryWorker.name} - {shift.primaryWorker.reliability}%</span>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between mt-auto">
-           {shift.backupWorker && (
-              <Avatar className="w-5 h-5 border border-white">
-                <AvatarImage src={shift.backupWorker.avatar} alt={shift.backupWorker.name} className="object-cover" />
-                <AvatarFallback className="bg-gray-100 text-gray-900 font-montserrat-bold text-[8px]">
-                  {shift.backupWorker.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-           )}
-           <span className="text-[9px] text-gray-500 ml-auto">{shift.startTime}- {shift.endTime}</span>
+          {shift.backupWorker && (
+            <Avatar className="w-5 h-5 border border-white">
+              <AvatarImage src={shift.backupWorker.avatar} alt={shift.backupWorker.name} className="object-cover" />
+              <AvatarFallback className="bg-gray-100 text-gray-900 font-montserrat-bold text-[8px]">
+                {shift.backupWorker.name.split(' ').map(n => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
+          )}
+          <span className="text-[9px] text-gray-500 ml-auto">{shift.startTime}- {shift.endTime}</span>
         </div>
       </div>
     </div>

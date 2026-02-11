@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { CloseCircle } from "@solar-icons/react";
-import { 
-  MODAL_OVERLAY, 
-  MODAL_CONTENT, 
+import {
+  MODAL_OVERLAY,
+  MODAL_CONTENT,
   BUTTON_PRIMARY,
-  cn 
+  cn
 } from "@/lib/design-utils";
 
 interface FilterOption {
@@ -21,13 +21,13 @@ interface FilterSheetProps {
   selectedId: string;
 }
 
-export default function FilterSheet({ 
-  isOpen, 
-  onClose, 
-  title, 
-  options, 
+export default function FilterSheet({
+  isOpen,
+  onClose,
+  title,
+  options,
   onApply,
-  selectedId: initialSelected 
+  selectedId: initialSelected
 }: FilterSheetProps) {
   const [localSelected, setLocalSelected] = useState(initialSelected);
 
@@ -41,7 +41,7 @@ export default function FilterSheet({
   return (
     <div className={cn(MODAL_OVERLAY, "z-50 flex items-end sm:items-center justify-center p-0 sm:p-4")}>
       <div className={cn(
-        MODAL_CONTENT, 
+        MODAL_CONTENT,
         "w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[85vh] flex flex-col bg-white animate-in slide-in-from-bottom-10 fade-in"
       )}>
         {/* Header */}
@@ -49,7 +49,7 @@ export default function FilterSheet({
           <h3 className="text-lg font-montserrat-bold text-gray-900">{title}</h3>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <div className="bg-gray-500 rounded-full p-1 text-white">
-               <CloseCircle className="w-4 h-4" color="white" />
+              <CloseCircle className="w-4 h-4" color="white" />
             </div>
           </button>
         </div>
@@ -62,19 +62,19 @@ export default function FilterSheet({
         {/* Options List */}
         <div className="p-6 overflow-y-auto space-y-6">
           {options.map((option) => (
-            <div 
-              key={option.id} 
+            <div
+              key={option.id}
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => setLocalSelected(option.id)}
             >
-              <span className="text-gray-700 font-medium group-hover:text-primary-600">
+              <span className="text-gray-700 font-montserrat-medium group-hover:text-primary-600">
                 {option.label}
               </span>
-              
+
               <div className={cn(
                 "w-6 h-6 rounded-full border flex items-center justify-center transition-all",
-                localSelected === option.id 
-                  ? "border-primary-600" 
+                localSelected === option.id
+                  ? "border-primary-600"
                   : "border-gray-300 group-hover:border-primary-400"
               )}>
                 {localSelected === option.id && (
@@ -87,7 +87,7 @@ export default function FilterSheet({
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-100 mt-auto">
-          <button 
+          <button
             onClick={handleShowResults}
             className={cn(BUTTON_PRIMARY, "w-full py-3 bg-primary-700 hover:bg-primary-800 rounded-xl")}
           >

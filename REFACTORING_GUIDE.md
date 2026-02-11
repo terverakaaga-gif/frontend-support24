@@ -195,7 +195,7 @@ import { BORDER_STYLES, BORDER_WIDTH } from "@/constants/design-system";
 
 ### Before
 ```tsx
-<button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
+<button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-montserrat-semibold">
   Click me
 </button>
 ```
@@ -284,7 +284,7 @@ import { DASHBOARD_STAT_CARD, FLEX_ROW_BETWEEN, TEXT_STYLES } from "@/lib/design
     <span className={TEXT_STYLES.label}>Title</span>
     <div>Icon</div>
   </div>
-  <div className="text-2xl font-bold">Value</div>
+  <div className="text-2xl font-montserrat-bold">Value</div>
 </div>
 ```
 

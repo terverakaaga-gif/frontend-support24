@@ -199,7 +199,7 @@ export const TEXT_SIZE = {
  */
 export const FONT_WEIGHT = {
   normal: 'font-montserrat',
-  medium: 'font-medium',
+  medium: 'font-montserrat-medium',
   semibold: 'font-montserrat-semibold',
   bold: 'font-montserrat-bold',
 } as const;
@@ -208,7 +208,7 @@ export const FONT_WEIGHT = {
  * Montserrat font family variants
  */
 export const FONT_FAMILY = {
-  sans: 'font-sans',
+  sans: 'font-montserrat',
   montserrat: 'font-montserrat',
   montserratMedium: 'font-montserrat-medium',
   montserratSemibold: 'font-montserrat-semibold',

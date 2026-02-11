@@ -285,7 +285,7 @@ export default function ParticipantJobsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* State Selection */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-sm font-montserrat-medium text-gray-700 mb-2 block">
                 State
               </label>
               <Select
@@ -309,7 +309,7 @@ export default function ParticipantJobsPage() {
 
             {/* Region Selection */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-sm font-montserrat-medium text-gray-700 mb-2 block">
                 Region
               </label>
               <Select
@@ -337,7 +337,7 @@ export default function ParticipantJobsPage() {
 
             {/* Service Areas */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-sm font-montserrat-medium text-gray-700 mb-2 block">
                 Service Areas
               </label>
               {selectedRegionId && !isLoadingServiceAreas ? (
@@ -350,11 +350,10 @@ export default function ParticipantJobsPage() {
                           ? "default"
                           : "outline"
                       }
-                      className={`cursor-pointer transition-all ${
-                        selectedServiceAreaIds.includes(area._id)
+                      className={`cursor-pointer transition-all ${selectedServiceAreaIds.includes(area._id)
                           ? "bg-primary text-white"
                           : "hover:bg-primary/10"
-                      }`}
+                        }`}
                       onClick={() => handleServiceAreaToggle(area._id)}
                     >
                       {area.name}
@@ -414,11 +413,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                currentFilter === "all"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentFilter === "all"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setCurrentFilter("all");
                 setCurrentPage(1);
@@ -429,11 +427,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                currentFilter === "open"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentFilter === "open"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setCurrentFilter("open");
                 setCurrentPage(1);
@@ -444,11 +441,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                currentFilter === "closed"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentFilter === "closed"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setCurrentFilter("closed");
                 setCurrentPage(1);
@@ -464,11 +460,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                availabilityFilter === "all"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${availabilityFilter === "all"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setAvailabilityFilter("all");
                 setCurrentPage(1);
@@ -479,11 +474,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                availabilityFilter === "full-time"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${availabilityFilter === "full-time"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setAvailabilityFilter("full-time");
                 setCurrentPage(1);
@@ -494,11 +488,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                availabilityFilter === "part-time"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${availabilityFilter === "part-time"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setAvailabilityFilter("part-time");
                 setCurrentPage(1);
@@ -509,11 +502,10 @@ export default function ParticipantJobsPage() {
             <Button
               variant="default"
               size="sm"
-              className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                availabilityFilter === "casual"
+              className={`h-6 rounded-full text-xs font-montserrat-semibold ${availabilityFilter === "casual"
                   ? "hover:bg-white"
                   : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-              }`}
+                }`}
               onClick={() => {
                 setAvailabilityFilter("casual");
                 setCurrentPage(1);
@@ -587,11 +579,10 @@ export default function ParticipantJobsPage() {
                   key={page}
                   size="sm"
                   onClick={() => setCurrentPage(page)}
-                  className={`h-9 w-9 ${
-                    currentPage === page
+                  className={`h-9 w-9 ${currentPage === page
                       ? "bg-primary text-white hover:bg-primary/90"
                       : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {page}
                 </Button>

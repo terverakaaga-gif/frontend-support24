@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/table";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { 
-  useGetJobById, 
-  useGetJobApplications, 
-  useUpdateApplicationStatus 
+import {
+  useGetJobById,
+  useGetJobApplications,
+  useUpdateApplicationStatus
 } from "@/hooks/useJobHooks";
 import { JobApplication } from "@/api/services/jobService";
 import Loader from "@/components/Loader";
@@ -58,17 +58,17 @@ export default function ParticipantJobApplicantsPage() {
   const [actionType, setActionType] = useState<ActionType>("accept");
 
   // Fetch job details
-  const { 
-    data: jobData, 
-    isLoading: isLoadingJob, 
-    error: jobError 
+  const {
+    data: jobData,
+    isLoading: isLoadingJob,
+    error: jobError
   } = useGetJobById(jobId);
 
   // Fetch applications
-  const { 
-    data: applicationsData, 
-    isLoading: isLoadingApplications, 
-    error: applicationsError 
+  const {
+    data: applicationsData,
+    isLoading: isLoadingApplications,
+    error: applicationsError
   } = useGetJobApplications(jobId);
 
   // Update application status mutation
@@ -127,13 +127,13 @@ export default function ParticipantJobApplicantsPage() {
 
     try {
       const newStatus: JobApplication['status'] = actionType === "accept" ? "accepted" : "rejected";
-      
+
       await updateStatusMutation.mutateAsync({
         applicationId: selectedApplicant._id,
         status: newStatus,
       });
 
-      const applicantName = selectedApplicant.applicantId 
+      const applicantName = selectedApplicant.applicantId
         ? `${selectedApplicant.applicantId.firstName} ${selectedApplicant.applicantId.lastName}`
         : selectedApplicant.fullName;
 
@@ -158,7 +158,7 @@ export default function ParticipantJobApplicantsPage() {
   const getEntityData = (application: JobApplication | null): EntityData | null => {
     if (!application) return null;
 
-    const applicantName = application.applicantId 
+    const applicantName = application.applicantId
       ? `${application.applicantId.firstName} ${application.applicantId.lastName}`
       : application.fullName;
 
@@ -222,33 +222,30 @@ export default function ParticipantJobApplicantsPage() {
               <Button
                 size="sm"
                 onClick={() => handleTabChange("pending")}
-                className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "pending"
+                className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "pending"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-                }`}
+                  }`}
               >
                 New {applicationCounts.pending}
               </Button>
               <Button
                 size="sm"
                 onClick={() => handleTabChange("accepted")}
-                className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "accepted"
+                className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "accepted"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-                }`}
+                  }`}
               >
                 Accepted {applicationCounts.accepted}
               </Button>
               <Button
                 size="sm"
                 onClick={() => handleTabChange("rejected")}
-                className={`h-6 rounded-full text-xs font-montserrat-semibold ${
-                  currentTab === "rejected"
+                className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "rejected"
                     ? "hover:bg-primary"
                     : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
-                }`}
+                  }`}
               >
                 Rejected {applicationCounts.rejected}
               </Button>
@@ -291,10 +288,10 @@ export default function ParticipantJobApplicantsPage() {
                   </TableRow>
                 ) : (
                   paginatedApplicants.map((application) => {
-                    const applicantName = application.applicantId 
+                    const applicantName = application.applicantId
                       ? `${application.applicantId.firstName} ${application.applicantId.lastName}`
                       : application.fullName;
-                    
+
                     const applicantAvatar = application.applicantId?.profileImage;
                     const initials = applicantName
                       .split(" ")
@@ -326,17 +323,16 @@ export default function ParticipantJobApplicantsPage() {
                                 {applicantName}
                               </span>
                               <span
-                                className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                  application.status === "pending"
+                                className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-montserrat-medium ${application.status === "pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : application.status === "reviewed"
-                                    ? "bg-primary-100 text-primary-800"
-                                    : application.status === "shortlisted"
-                                    ? "bg-purple-100 text-purple-800"
-                                    : application.status === "accepted"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                }`}
+                                      ? "bg-primary-100 text-primary-800"
+                                      : application.status === "shortlisted"
+                                        ? "bg-purple-100 text-purple-800"
+                                        : application.status === "accepted"
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-red-100 text-red-800"
+                                  }`}
                               >
                                 {application.status}
                               </span>
@@ -458,11 +454,10 @@ export default function ParticipantJobApplicantsPage() {
                     key={page}
                     size="sm"
                     onClick={() => setCurrentPage(page)}
-                    className={`h-9 w-9 ${
-                      currentPage === page
+                    className={`h-9 w-9 ${currentPage === page
                         ? "bg-primary text-white hover:bg-primary/90"
                         : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {page}
                   </Button>

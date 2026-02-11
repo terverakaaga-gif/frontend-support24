@@ -7,6 +7,21 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouteMemory } from "@/hooks/useRouteMemory";
 
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
+  SidebarSeparator,
+  SidebarGroupLabel,
+} from "@/components/ui/sidebar";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SearchSupportWorkers } from "@/components/SearchSupportWorkers";
@@ -51,7 +66,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   if (!user) return null;
 
@@ -120,7 +134,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             active={isActive("/support-coordinator/draft")}
           />
 
-          <div className="my-4 border-t border-white/20"></div>
+          <SidebarSeparator className="my-4 bg-white/20" />
 
           <NavItem
             to="/support-coordinator/account-settings"
@@ -143,10 +157,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/admin")}
             />
 
-            <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-md font-montserrat-bold tracking-tight text-white/90">
+            <div className="px-3 py-2 space-y-1">
+              <SidebarGroupLabel className="px-4 text-white/90 font-montserrat-bold text-md h-auto mb-2">
                 Management
-              </h2>
+              </SidebarGroupLabel>
               <div className="space-y-1">
                 <NavItem
                   to="/admin/all-admin"
@@ -187,10 +201,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             </div>
 
-            <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-md font-montserrat-bold tracking-tight text-white/90">
+            <div className="px-3 py-2 space-y-1">
+              <SidebarGroupLabel className="px-4 text-white/90 font-montserrat-bold text-md h-auto mb-2">
                 Bookings
-              </h2>
+              </SidebarGroupLabel>
               <div className="space-y-1">
                 <NavItem
                   to="/admin/shifts"
@@ -219,10 +233,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             </div>
 
-            <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-md font-montserrat-bold tracking-tight text-white/90">
+            <div className="px-3 py-2 space-y-1">
+              <SidebarGroupLabel className="px-4 text-white/90 font-montserrat-bold text-md h-auto mb-2">
                 Others
-              </h2>
+              </SidebarGroupLabel>
               <div className="space-y-1">
                 <NavItem
                   to="/admin/compliance"
@@ -467,98 +481,77 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
-  const Sidebar = () => (
-    <div className="flex flex-col h-full bg-primary-900 rounded-xl overflow-hidden">
-      {/* Logo Section */}
-      <div className="px-6 py-6">
-        <Link to="/" className="flex items-center space-x-2">
-          <img src="/new-res/support24logo-blk.svg" alt="Support24 Logo" />
-        </Link>
-      </div>
-
-      {/* Navigation */}
-      <ScrollArea className="flex-1 px-4">
-        <div className="space-y-4 py-4">
-          <div className="space-y-1 font-montserrat-semibold">
-            {roleBasedLinks()}
-          </div>
-        </div>
-      </ScrollArea>
-
-      {/* User Profile Section */}
-      <div className="mt-auto p-4">
-        <div className="bg-primary rounded-lg p-4 text-center">
-          <Avatar className="h-16 w-16 mx-auto mb-3">
-            <AvatarImage
-              src={user?.profileImage}
-              alt={`${user?.firstName} ${user.lastName}`}
-            />
-            <AvatarFallback className="bg-primary text-white text-lg">
-              {user?.firstName?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="text-sm text-white font-montserrat-semibold truncate">
-            {user.email}
-          </div>
-          <div className="text-xs text-primary-300 capitalize font-montserrat">
-            {location.pathname.startsWith("/support-coordinator")
-              ? "Support Coordinator"
-              : user.role === "supportWorker"
-                ? "Support Worker"
-                : user.role}
-          </div>
-          <Button
-            className="w-full gap-2 items-center justify-center bg-primary-100 text-red-600/80 hover:text-red-600 hover:bg-primary-100 mt-3 font-montserrat-semibold"
-            onClick={() => logout()}
-          >
-            <Logout />
-            <span>Logout</span>
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Desktop Sidebar - Only show on large screens (1024px+) */}
-      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-72 p-4">
-        <Sidebar />
-      </aside>
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-gray-100 w-full font-montserrat">
+        {/* Sidebar Component */}
+        <Sidebar className="border-none">
+          {/* Logo Section */}
+          <SidebarHeader className="px-6 py-6">
+            <Link to="/" className="flex items-center space-x-2">
+              <img src="/new-res/support24logo-blk.svg" className="w-44" alt="Support24 Logo" />
+            </Link>
+          </SidebarHeader>
 
-      {/* Mobile & Tablet Sidebar - Show toggle button up to large screens */}
-      <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden fixed left-4 top-4 z-50 bg-white hover:bg-gray-100 shadow-md rounded-lg h-10 w-10"
-          >
-            <HamburgerMenu className="h-6 w-6 text-gray-700" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="w-72 p-4 bg-transparent border-none shadow-none"
-        >
-          <Sidebar />
-        </SheetContent>
-      </Sheet>
+          {/* Navigation */}
+          <SidebarContent className="px-4 overflow-x-hidden no-scrollbar">
+            <SidebarMenu className="space-y-1 py-4">
+              {roleBasedLinks()}
+            </SidebarMenu>
+          </SidebarContent>
 
-      {/* Main Content */}
-      <main className="flex-1 min-h-screen lg:pl-72 flex flex-col overflow-hidden">
-        {/* Content rendered by children */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
-          {children}
-        </div>
-      </main>
+          {/* User Profile Section */}
+          <SidebarFooter className="p-4 border-none">
+            <div className="bg-primary rounded-lg p-4 text-center">
+              <Avatar className="h-16 w-16 mx-auto mb-3">
+                <AvatarImage
+                  src={user?.profileImage}
+                  alt={`${user?.firstName} ${user.lastName}`}
+                />
+                <AvatarFallback className="bg-primary text-white text-lg">
+                  {user?.firstName?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-sm text-white font-montserrat-semibold truncate">
+                {user.email}
+              </div>
+              <div className="text-xs text-primary-300 capitalize font-montserrat">
+                {location.pathname.startsWith("/support-coordinator")
+                  ? "Support Coordinator"
+                  : user.role === "supportWorker"
+                    ? "Support Worker"
+                    : user.role}
+              </div>
+              <Button
+                className="w-full gap-2 items-center justify-center bg-primary-100 text-red-600/80 hover:text-red-600 hover:bg-primary-100 mt-3 font-montserrat-semibold"
+                onClick={() => logout()}
+              >
+                <Logout />
+                <span>Logout</span>
+              </Button>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
 
-      {/* Support Worker Search Dialog */}
-      {user.role === "participant" && (
-        <SearchSupportWorkers open={searchOpen} onOpenChange={setSearchOpen} />
-      )}
-    </div>
+        {/* Main Content */}
+        <main className="flex-1 min-h-screen flex flex-col overflow-hidden relative">
+          {/* Mobile Toggle Button */}
+          <div className="lg:hidden fixed left-4 top-4 z-50">
+            <SidebarTrigger className="bg-white hover:bg-gray-100 shadow-md rounded-lg h-10 w-10 text-gray-700 hover:text-gray-900" />
+          </div>
+
+          {/* Content rendered by children */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+            {children}
+          </div>
+        </main>
+
+        {/* Support Worker Search Dialog */}
+        {user.role === "participant" && (
+          <SearchSupportWorkers open={searchOpen} onOpenChange={setSearchOpen} />
+        )}
+      </div>
+    </SidebarProvider>
   );
 }
 
@@ -570,22 +563,38 @@ interface NavItemProps {
   badge?: number;
 }
 
-const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
-  <Link
-    to={to}
-    className={cn(
-      "flex items-center gap-3 rounded-lg px-4 py-3 text-xs font-montserrat-semibold transition-colors relative",
-      active
-        ? "bg-primary text-white"
-        : "text-white/80 hover:bg-primary-700 hover:text-white",
-    )}
-  >
-    {icon}
-    {label}
-    {badge && (
-      <Badge className="ml-auto bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center p-0">
-        {badge}
-      </Badge>
-    )}
-  </Link>
-);
+const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => {
+  const { setOpenMobile, isMobile } = useSidebar();
+
+  const handleClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={active}
+        onClick={handleClick}
+        className={cn(
+          "flex items-center gap-3 rounded-lg px-4 py-2 h-auto text-xs font-montserrat-semibold transition-colors relative",
+          active
+            ? "bg-primary text-white"
+            : "text-white/80 hover:bg-primary-700 hover:text-white",
+        )}
+      >
+        <Link to={to}>
+          {icon}
+          <span>{label}</span>
+          {badge && (
+            <Badge className="ml-auto bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center p-0">
+              {badge}
+            </Badge>
+          )}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};

@@ -99,7 +99,7 @@ export default function EventDetailsPage() {
 
                 <div className={cn("flex items-center gap-2 text-gray-600 bg-gray-50 px-4 py-2 rounded-lg")}>
                   <MapPoint className="w-5 h-5 text-primary" />
-                  <span className="text-sm font-medium">{event.eventLocation}</span>
+                  <span className="text-sm font-montserrat-medium">{event.eventLocation}</span>
                 </div>
               </div>
 
@@ -128,7 +128,7 @@ export default function EventDetailsPage() {
         <div className={cn("w-full lg:w-96 flex-shrink-0")}>
           <div className={cn("flex justify-between items-center mb-4")}>
             <h3 className={cn(HEADING_STYLES.h4)}>Similar Events</h3>
-            <Button variant="link" className="text-primary text-sm font-medium hover:underline p-0 h-auto">
+            <Button variant="link" className="text-primary text-sm font-montserrat-medium hover:underline p-0 h-auto">
               View all
             </Button>
           </div>

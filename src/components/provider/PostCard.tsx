@@ -341,7 +341,7 @@ export function PostCard({ post, basePath, onEdit, onDelete }: PostCardProps) {
 
           {/* Post Description/Title */}
           <div className="mb-2.5">
-            <p className="text-sm font-medium text-gray-900 line-clamp-1">
+            <p className="text-sm font-montserrat-medium text-gray-900 line-clamp-1">
               {post.title}
             </p>
           </div>

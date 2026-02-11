@@ -65,17 +65,17 @@ export default function SupportWorkerSetup() {
 
     setIsSubmitting(true);
     const RESUME_STORAGE_KEY = "sw_onboarding_resume_url";
-    
+
     try {
       // Check if resume was already uploaded (stored in localStorage)
       let resumeUrl = localStorage.getItem(RESUME_STORAGE_KEY) || "";
-      
+
       // If no stored resume and a new file exists, upload it
       if (!resumeUrl && fullData.resume instanceof File) {
         toast.loading("Uploading resume...", { id: "resume-upload" });
         const uploadResponse = await authService.uploadResume(fullData.resume);
         resumeUrl = uploadResponse.user;
-        
+
         // Store the resume URL in localStorage to prevent re-upload on retry
         localStorage.setItem(RESUME_STORAGE_KEY, resumeUrl);
         toast.success("Resume uploaded successfully", { id: "resume-upload" });
@@ -91,13 +91,13 @@ export default function SupportWorkerSetup() {
       // Submit the onboarding data
       toast.loading("Completing setup...", { id: "onboarding" });
       await authService.completeSupportWorkerOnboarding(finalSubmissionData);
-      
+
       // Clear the stored resume URL after successful submission
       localStorage.removeItem(RESUME_STORAGE_KEY);
-      
+
       toast.success("Setup Complete", { id: "onboarding" });
       completeOnboarding();
-      
+
       // Redirect to dashboard after successful onboarding
       setTimeout(() => {
         navigate("/support-worker");
@@ -150,8 +150,8 @@ export default function SupportWorkerSetup() {
                 step === s.number
                   ? "border-primary text-primary bg-white"
                   : completedSteps.includes(s.number)
-                  ? "bg-primary border-primary text-white"
-                  : "border-gray-200 text-gray-400 bg-white"
+                    ? "bg-primary border-primary text-white"
+                    : "border-gray-200 text-gray-400 bg-white"
               )}
             >
               {completedSteps.includes(s.number) ? (
@@ -162,7 +162,7 @@ export default function SupportWorkerSetup() {
             </div>
             <span
               className={cn(
-                "text-xs mt-2 font-medium hidden md:block",
+                "text-xs mt-2 font-montserrat-medium hidden md:block",
                 step === s.number ? "text-primary" : "text-gray-500"
               )}
             >

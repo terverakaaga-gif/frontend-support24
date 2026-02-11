@@ -1,8 +1,8 @@
-import { 
-  CheckCircle, 
-  Star, 
-  Suitcase, 
-  ClockCircle, 
+import {
+  CheckCircle,
+  Star,
+  Suitcase,
+  ClockCircle,
   CloseCircle,
   Danger
 } from "@solar-icons/react";
@@ -16,22 +16,22 @@ interface TabProps {
 // --- Helper Components ---
 
 // A row that blurs its text content if locked
-const DataRow = ({ 
-  label, 
-  value, 
-  isUnlocked, 
-  icon 
-}: { 
-  label: string; 
-  value?: string; 
-  isUnlocked: boolean; 
-  icon?: React.ReactNode 
+const DataRow = ({
+  label,
+  value,
+  isUnlocked,
+  icon
+}: {
+  label: string;
+  value?: string;
+  isUnlocked: boolean;
+  icon?: React.ReactNode
 }) => {
   return (
     <div className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
       <div className="flex items-center gap-2">
         {icon && <div className="text-gray-400">{icon}</div>}
-        <span className="text-gray-700 font-medium text-sm">{label}</span>
+        <span className="text-gray-700 font-montserrat-medium text-sm">{label}</span>
       </div>
       <div className={cn(
         "text-sm font-montserrat-semibold transition-all duration-500",
@@ -91,9 +91,9 @@ export const ComplianceTab = ({ isUnlocked }: TabProps) => {
             <div key={idx} className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-                <span className="text-sm text-gray-700 font-medium">{skill.name}</span>
+                <span className="text-sm text-gray-700 font-montserrat-medium">{skill.name}</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <span className="text-sm font-montserrat-bold text-gray-900 mr-2">{skill.score}</span>
                 <div className="flex">
@@ -122,7 +122,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-              <span className="text-sm text-gray-700 font-medium">Disability Support Worker</span>
+              <span className="text-sm text-gray-700 font-montserrat-medium">Disability Support Worker</span>
             </div>
             <div className="text-right">
               <div className={cn("text-sm font-montserrat-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
@@ -131,11 +131,11 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
               <div className="text-xs text-gray-500 italic">2 years</div>
             </div>
           </div>
-          
+
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-              <span className="text-sm text-gray-700 font-medium">Support Worker</span>
+              <span className="text-sm text-gray-700 font-montserrat-medium">Support Worker</span>
             </div>
             <div className="text-right">
               <div className={cn("text-sm font-montserrat-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
@@ -148,7 +148,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-              <span className="text-sm text-gray-700 font-medium">Casual Support Worker</span>
+              <span className="text-sm text-gray-700 font-montserrat-medium">Casual Support Worker</span>
             </div>
             <div className="text-right">
               <div className={cn("text-sm font-montserrat-bold text-gray-900 flex items-center justify-end gap-1", !isUnlocked && "blur-sm")}>
@@ -171,7 +171,7 @@ export const ExperienceTab = ({ isUnlocked }: TabProps) => {
           <DataRow label="Average Notice for Cancellation" value="2-5%" isUnlocked={isUnlocked} />
           <div className="flex items-center justify-between py-3">
             <div className="flex items-center gap-2">
-               <span className="text-gray-700 font-medium text-sm">Punctuality</span>
+              <span className="text-gray-700 font-montserrat-medium text-sm">Punctuality</span>
             </div>
             <div className={cn("text-sm font-montserrat-bold", isUnlocked ? "text-gray-900" : "blur-sm")}>
               95% on time arrivals
@@ -201,18 +201,18 @@ export const RiskTab = ({ isUnlocked }: TabProps) => {
       <section>
         <h3 className="font-montserrat-bold text-lg text-gray-900 mb-4">Specialization Match</h3>
         <div className="space-y-3">
-           <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-              <span className="text-sm text-gray-700">Autism (High match)</span>
-           </div>
-           <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-              <span className="text-sm text-gray-700">Behavioral Support (High match)</span>
-           </div>
-           <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-black shrink-0" />
-              <span className="text-sm text-gray-700">Manual Handling (Medium high match)</span>
-           </div>
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-black shrink-0" />
+            <span className="text-sm text-gray-700">Autism (High match)</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-black shrink-0" />
+            <span className="text-sm text-gray-700">Behavioral Support (High match)</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-black shrink-0" />
+            <span className="text-sm text-gray-700">Manual Handling (Medium high match)</span>
+          </div>
         </div>
       </section>
 
@@ -230,7 +230,7 @@ export const RiskTab = ({ isUnlocked }: TabProps) => {
         </p>
       </section>
 
-       <section>
+      <section>
         <h3 className="font-montserrat-bold text-lg text-gray-900 mb-2">Onboarding Readiness (95%)</h3>
         <p className={cn("text-sm text-gray-600 leading-relaxed", !isUnlocked && "blur-[3px] select-none")}>
           Ready to start within 48 hours of acceptance

@@ -399,9 +399,9 @@ export function ParticipantSetup({
           serviceAreaId: data.serviceAreaId,
           location: data.address
             ? {
-                longitude: 0,
-                latitude: 0,
-              }
+              longitude: 0,
+              latitude: 0,
+            }
             : undefined,
           address: data.address,
         };
@@ -476,7 +476,7 @@ export function ParticipantSetup({
         subtitle=" Answer a few quick questions to complete your participant profile
               and get started."
         user={user}
-        onLogout={() => {}}
+        onLogout={() => { }}
         onViewProfile={() => navigate("/provider/profile")}
       />
 
@@ -527,8 +527,8 @@ export function ParticipantSetup({
                           isCompleted && "bg-primary border-primary",
                           isActive && !isCompleted && "border-primary bg-white",
                           !isActive &&
-                            !isCompleted &&
-                            "border-gray-300 bg-white"
+                          !isCompleted &&
+                          "border-gray-300 bg-white"
                         )}
                       >
                         {isCompleted ? (
@@ -577,15 +577,14 @@ export function ParticipantSetup({
                       className="flex flex-col items-center z-10 bg-gray-100"
                     >
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${
-                          step >= s.number
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${step >= s.number
                             ? "bg-primary-600 text-white"
                             : "bg-gray-200 text-gray-500"
-                        }`}
+                          }`}
                       >
                         {step > s.number ? "✓" : s.number}
                       </div>
-                      <span className="text-xs mt-2 font-medium text-gray-500 whitespace-nowrap">
+                      <span className="text-xs mt-2 font-montserrat-medium text-gray-500 whitespace-nowrap">
                         {s.label}
                       </span>
                     </div>
@@ -596,8 +595,8 @@ export function ParticipantSetup({
                 {/* Active progress line */}
                 <div
                   className="absolute top-4 left-4 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
-                  style={{ 
-                    width: `calc((100% - 2rem) * ${(step - 1) / (steps.length - 1)})` 
+                  style={{
+                    width: `calc((100% - 2rem) * ${(step - 1) / (steps.length - 1)})`
                   }}
                 />
               </div>
@@ -804,7 +803,7 @@ export function ParticipantSetup({
                                             <div className="flex items-start gap-3">
                                               <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                                               <div className="flex-1 min-w-0">
-                                                <p className="text-sm text-gray-900 font-medium truncate">
+                                                <p className="text-sm text-gray-900 font-montserrat-medium truncate">
                                                   {prediction
                                                     .structured_formatting
                                                     ?.main_text ||
@@ -1055,12 +1054,12 @@ export function ParticipantSetup({
                                       onClick={() => {
                                         const newNeeds = isSelected
                                           ? field.value?.filter(
-                                              (id) => id !== supportNeed._id
-                                            )
+                                            (id) => id !== supportNeed._id
+                                          )
                                           : [
-                                              ...(field.value || []),
-                                              supportNeed._id,
-                                            ];
+                                            ...(field.value || []),
+                                            supportNeed._id,
+                                          ];
                                         field.onChange(newNeeds);
                                         setFormData({
                                           ...formData,

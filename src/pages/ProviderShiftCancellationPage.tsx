@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { 
-  Bell, 
-  Magnifer, 
-  Upload, 
+import {
+  Bell,
+  Magnifer,
+  Upload,
   AltArrowDown,
-  CalendarMinimalistic 
+  CalendarMinimalistic
 } from "@solar-icons/react";
-import { 
-  PAGE_WRAPPER, 
-  BUTTON_PRIMARY, 
-  cn 
+import {
+  PAGE_WRAPPER,
+  BUTTON_PRIMARY,
+  cn
 } from "@/lib/design-utils";
 import { Button } from "@/components/ui/button";
 import ShiftMetrics from "@/components/provider/shifts/ShiftMetrics";
@@ -239,24 +239,24 @@ const MOCK_CANDIDATES: Candidate[] = [
 ];
 
 export default function ProviderShiftCancellationPage() {
-  const {user, logout} = useAuth();
+  const { user, logout } = useAuth();
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'active'>('upcoming');
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   return (
     <div className={cn(PAGE_WRAPPER)}>
-      
+
       {/* 1. Header Section */}
-      <GeneralHeader user={user} onLogout={logout} title="Shift Cancellation" subtitle="Manage Support Worker Profiles, and Approvals" onViewProfile={()=>{}} rightComponent={
-         <div className="flex items-center gap-3 w-full md:w-auto">
+      <GeneralHeader user={user} onLogout={logout} title="Shift Cancellation" subtitle="Manage Support Worker Profiles, and Approvals" onViewProfile={() => { }} rightComponent={
+        <div className="flex items-center gap-3 w-full md:w-auto">
           {/* Search Bar */}
           <div className="relative flex-grow md:w-64">
-             <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-             <input 
-               placeholder="Search...." 
-               className="w-full pl-10 h-11 rounded-full bg-white border border-gray-200 focus:ring-primary focus:border-primary outline-none"
-             />
+            <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              placeholder="Search...."
+              className="w-full pl-10 h-11 rounded-full bg-white border border-gray-200 focus:ring-primary focus:border-primary outline-none"
+            />
           </div>
 
           <Button className={cn(BUTTON_PRIMARY, "hidden md:flex bg-primary hover:bg-primary-700 h-11 px-4 gap-2")}>
@@ -264,88 +264,88 @@ export default function ProviderShiftCancellationPage() {
             Upload New Rooster
           </Button>
         </div>
-      }/>
+      } />
 
-    
+
       {/* 2. Metrics Section */}
       <ShiftMetrics />
 
       {/* 3. Action Bar / Filter Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-         <div className="flex items-center gap-2 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 w-full md:w-auto">
-            <Button 
-              variant="ghost"
-              size="sm"
-              onClick={() => setActiveTab('upcoming')}
-              className={cn(
-                "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
-                activeTab === 'upcoming' ? "bg-primary text-white hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50"
-              )}
-            >
-              Upcoming Rooster
-            </Button>
-            <Button 
-              variant="ghost"
-              size="sm"
-              onClick={() => setActiveTab('active')}
-              className={cn(
-                "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap border",
-                activeTab === 'active' ? "bg-primary text-white border-primary hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50 bg-white border-gray-200"
-              )}
-            >
-              Active Cancellation - 6
-            </Button>
-            <Button variant="link" size="sm" className="md:hidden ml-auto text-primary text-sm font-montserrat-semibold">
-               View all metrics →
-            </Button>
-         </div>
+        <div className="flex items-center gap-2 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 w-full md:w-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setActiveTab('upcoming')}
+            className={cn(
+              "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
+              activeTab === 'upcoming' ? "bg-primary text-white hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50"
+            )}
+          >
+            Upcoming Rooster
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setActiveTab('active')}
+            className={cn(
+              "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap border",
+              activeTab === 'active' ? "bg-primary text-white border-primary hover:bg-primary-700" : "text-gray-600 hover:bg-gray-50 bg-white border-gray-200"
+            )}
+          >
+            Active Cancellation - 6
+          </Button>
+          <Button variant="link" size="sm" className="md:hidden ml-auto text-primary text-sm font-montserrat-semibold">
+            View all metrics →
+          </Button>
+        </div>
       </div>
 
       {/* 4. Info Banner */}
-      <div className="bg-gray-50 rounded-lg p-3 mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs md:text-sm text-gray-600 font-medium">
-         <span className="bg-gray-200/50 px-3 py-1 rounded-md text-gray-800 font-montserrat-bold">
-            Last Uploaded: Nov 23 2025, 8:00 AM
-         </span>
-         <span>Total Shifts: 134</span>
-         <span className="text-gray-300">|</span>
-         <span>High-Risk: 12</span>
-         <span className="text-gray-300">|</span>
-         <span>Workers: 25</span>
+      <div className="bg-gray-50 rounded-lg p-3 mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs md:text-sm text-gray-600 font-montserrat-medium">
+        <span className="bg-gray-200/50 px-3 py-1 rounded-md text-gray-800 font-montserrat-bold">
+          Last Uploaded: Nov 23 2025, 8:00 AM
+        </span>
+        <span>Total Shifts: 134</span>
+        <span className="text-gray-300">|</span>
+        <span>High-Risk: 12</span>
+        <span className="text-gray-300">|</span>
+        <span>Workers: 25</span>
       </div>
 
       {/* 5. Tab Content */}
       {activeTab === 'upcoming' ? (
         <>
-      {/* 5. Desktop Calendar Grid */}
-      <CalendarGrid 
-        shifts={MOCK_SHIFTS} 
-        onShiftClick={setSelectedShift}
-      />
+          {/* 5. Desktop Calendar Grid */}
+          <CalendarGrid
+            shifts={MOCK_SHIFTS}
+            onShiftClick={setSelectedShift}
+          />
 
-      {/* 6. Mobile List View */}
-      <div className="lg:hidden space-y-6">
-         {/* Mon 10 Section */}
-         <div>
-            <div className="flex items-center gap-2 mb-3">
-               <span className="text-primary font-montserrat-bold text-xs uppercase">Mon 10 - 5 Shifts</span>
+          {/* 6. Mobile List View */}
+          <div className="lg:hidden space-y-6">
+            {/* Mon 10 Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-primary font-montserrat-bold text-xs uppercase">Mon 10 - 5 Shifts</span>
+              </div>
+              {MOCK_SHIFTS.filter(s => s.dayName === 'Mon').map(shift => (
+                <ShiftCard key={shift.id} shift={shift} onClick={setSelectedShift} variant="mobile" />
+              ))}
             </div>
-            {MOCK_SHIFTS.filter(s => s.dayName === 'Mon').map(shift => (
-               <ShiftCard key={shift.id} shift={shift} onClick={setSelectedShift} variant="mobile" />
-            ))}
-         </div>
 
-         {/* Tue 11 Section */}
-         <div>
-            <div className="flex items-center gap-2 mb-3">
-               <span className="text-gray-500 font-montserrat-bold text-xs uppercase">Tue 11 - 31 Shifts</span>
+            {/* Tue 11 Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-gray-500 font-montserrat-bold text-xs uppercase">Tue 11 - 31 Shifts</span>
+              </div>
+              {MOCK_SHIFTS.filter(s => s.dayName === 'Tue').map(shift => (
+                <ShiftCard key={shift.id} shift={shift} onClick={setSelectedShift} variant="mobile" />
+              ))}
             </div>
-            {MOCK_SHIFTS.filter(s => s.dayName === 'Tue').map(shift => (
-               <ShiftCard key={shift.id} shift={shift} onClick={setSelectedShift} variant="mobile" />
-            ))}
-         </div>
-         
-         {/* ... render other days */}
-      </div>
+
+            {/* ... render other days */}
+          </div>
         </>
       ) : (
         /* Active Cancellation Tab - Candidates List */
@@ -373,7 +373,7 @@ export default function ProviderShiftCancellationPage() {
                   {MOCK_CANDIDATES.map((candidate) => {
                     const availabilityStyle = {
                       Available: 'bg-green-50 text-green-700',
-                      Maybe: 'bg-orange-50 text-orange-700', 
+                      Maybe: 'bg-orange-50 text-orange-700',
                       Unavailable: 'bg-red-50 text-red-700'
                     }[candidate.availability];
 
@@ -398,7 +398,7 @@ export default function ProviderShiftCancellationPage() {
                         </td>
                         <td className="px-4 py-3 text-sm font-montserrat-semibold text-gray-900">{candidate.matchScore}%</td>
                         <td className="px-4 py-3">
-                          <Button 
+                          <Button
                             variant="outline"
                             onClick={() => setSelectedCandidate(candidate)}
                             className={cn("px-4 py-2 border-primary text-primary font-montserrat-semibold rounded-lg hover:bg-primary-50")}
@@ -418,8 +418,8 @@ export default function ProviderShiftCancellationPage() {
 
 
       {/* 7. Detail Modal */}
-      <ShiftDetailModal 
-        isOpen={!!selectedShift} 
+      <ShiftDetailModal
+        isOpen={!!selectedShift}
         shift={selectedShift}
         onClose={() => setSelectedShift(null)}
       />

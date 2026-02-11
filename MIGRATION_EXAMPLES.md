@@ -50,12 +50,12 @@ import { getButtonClass } from '@/lib/design-utils';
 
 ```tsx
 <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-  <h3 className="text-xl font-semibold text-gray-900 mb-2">Title</h3>
+  <h3 className="text-xl font-montserrat-semibold text-gray-900 mb-2">Title</h3>
   <p className="text-gray-600 text-base">Content goes here</p>
 </div>
 
 <div className="bg-white rounded-md shadow p-5 border">
-  <h3 className="text-2xl font-bold mb-3">Another Card</h3>
+  <h3 className="text-2xl font-montserrat-bold mb-3">Another Card</h3>
   <p className="text-sm text-gray-500">Different styling</p>
 </div>
 ```
@@ -93,7 +93,7 @@ import { GAP } from '@/constants/design-system';
 
 ```tsx
 <div className="mb-4">
-  <label className="block text-sm font-bold mb-1 text-gray-800">
+  <label className="block text-sm font-montserrat-bold mb-1 text-gray-800">
     Name
   </label>
   <input 
@@ -104,7 +104,7 @@ import { GAP } from '@/constants/design-system';
 </div>
 
 <div className="mb-5">
-  <label className="text-xs font-semibold mb-2 block text-gray-700">
+  <label className="text-xs font-montserrat-semibold mb-2 block text-gray-700">
     Email
   </label>
   <input 
@@ -150,11 +150,11 @@ import { FORM_GROUP, FORM_LABEL, FORM_INPUT } from '@/lib/design-utils';
 ### Before (Inconsistent)
 
 ```tsx
-<span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+<span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-montserrat-semibold">
   Confirmed
 </span>
 
-<span className="px-3 py-1.5 bg-yellow-50 text-yellow-600 rounded-full text-sm font-bold">
+<span className="px-3 py-1.5 bg-yellow-50 text-yellow-600 rounded-full text-sm font-montserrat-bold">
   Pending
 </span>
 
@@ -191,7 +191,7 @@ import { getStatusBadgeClass } from '@/lib/design-utils';
 <div className="fixed inset-0 bg-black opacity-50 z-50" />
 <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full z-50">
   <div className="flex items-center justify-between p-6 border-b">
-    <h2 className="text-2xl font-bold">Modal Title</h2>
+    <h2 className="text-2xl font-montserrat-bold">Modal Title</h2>
     <button className="text-gray-500 hover:text-gray-700">✕</button>
   </div>
   <div className="p-6">
@@ -345,7 +345,7 @@ import { GAP } from '@/constants/design-system';
 
 ```tsx
 <header className="bg-white border-b px-4 py-3 flex items-center justify-between">
-  <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+  <h1 className="text-2xl font-montserrat-bold text-gray-900">Dashboard</h1>
   <div className="flex items-center gap-3">
     <button className="px-3 py-2 bg-blue-600 text-white rounded-md">
       New Item

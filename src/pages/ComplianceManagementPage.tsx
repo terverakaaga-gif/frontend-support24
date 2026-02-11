@@ -107,7 +107,7 @@ export default function ComplianceManagementPage() {
 
   // React Query hooks
   const { data: statistics, isLoading: isLoadingStats } = useGetComplianceStatistics();
-  
+
   const { data: compliancesData, isLoading: isLoadingList } = useGetPendingCompliances({
     status: statusFilter === "all" ? undefined : statusFilter as ComplianceStatus,
     page: currentPage,
@@ -129,7 +129,7 @@ export default function ComplianceManagementPage() {
   const filteredCompliances = useMemo(() => {
     if (!searchQuery) return compliances;
     const query = searchQuery.toLowerCase();
-    return compliances.filter((c: ICompliance) => 
+    return compliances.filter((c: ICompliance) =>
       c.workerId?.firstName?.toLowerCase().includes(query) ||
       c.workerId?.lastName?.toLowerCase().includes(query) ||
       c.workerId?.email?.toLowerCase().includes(query)
@@ -149,8 +149,8 @@ export default function ComplianceManagementPage() {
   };
 
   const handleToggleReason = (reason: string) => {
-    setSelectedReasons(prev => 
-      prev.includes(reason) 
+    setSelectedReasons(prev =>
+      prev.includes(reason)
         ? prev.filter(r => r !== reason)
         : [...prev, reason]
     );
@@ -207,7 +207,7 @@ export default function ComplianceManagementPage() {
         subtitle="Review and approve worker compliance submissions"
         user={user}
         onLogout={logout}
-        onViewProfile={() => {}}
+        onViewProfile={() => { }}
       />
 
       <div className={DASHBOARD_CONTENT}>
@@ -215,7 +215,7 @@ export default function ComplianceManagementPage() {
         <div className={DASHBOARD_STATS_GRID}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+              <CardTitle className="text-sm font-montserrat-medium">Total Submissions</CardTitle>
               <UsersGroupRounded className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -227,7 +227,7 @@ export default function ComplianceManagementPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+              <CardTitle className="text-sm font-montserrat-medium">Pending Review</CardTitle>
               <ClockCircle className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
@@ -239,7 +239,7 @@ export default function ComplianceManagementPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Approved</CardTitle>
+              <CardTitle className="text-sm font-montserrat-medium">Approved</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
@@ -251,7 +251,7 @@ export default function ComplianceManagementPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+              <CardTitle className="text-sm font-montserrat-medium">Rejected</CardTitle>
               <CloseCircle className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
@@ -328,7 +328,7 @@ export default function ComplianceManagementPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">
+                            <p className="font-montserrat-medium">
                               {compliance.workerId?.firstName || "Unknown"} {compliance.workerId?.lastName || "Worker"}
                             </p>
                             <p className="text-sm text-gray-500">{compliance.workerId?.email || "No email"}</p>
@@ -338,7 +338,7 @@ export default function ComplianceManagementPage() {
                       <TableCell>{getStatusBadge(compliance.status)}</TableCell>
                       <TableCell>{compliance.documents?.length || 0}</TableCell>
                       <TableCell>
-                        {compliance.submittedAt 
+                        {compliance.submittedAt
                           ? format(new Date(compliance.submittedAt), "MMM d, yyyy")
                           : "N/A"}
                       </TableCell>
@@ -431,7 +431,7 @@ export default function ComplianceManagementPage() {
                   {selectedCompliance.documents?.map((doc, idx) => (
                     <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
-                        <p className="font-medium">{DOCUMENT_TYPE_LABELS[doc.type] || doc.type}</p>
+                        <p className="font-montserrat-medium">{DOCUMENT_TYPE_LABELS[doc.type] || doc.type}</p>
                         {doc.expiryDate && (
                           <p className="text-sm text-gray-500">
                             Expires: {format(new Date(doc.expiryDate), "MMM d, yyyy")}
@@ -530,7 +530,7 @@ export default function ComplianceManagementPage() {
 
             {reviewDecision === "rejected" && (
               <div>
-                <label className="text-sm font-medium mb-2 block">
+                <label className="text-sm font-montserrat-medium mb-2 block">
                   Rejection Reasons <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-2 max-h-[200px] overflow-y-auto border rounded-lg p-3">
@@ -551,7 +551,7 @@ export default function ComplianceManagementPage() {
             )}
 
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <label className="text-sm font-montserrat-medium mb-2 block">
                 Admin Notes (optional)
               </label>
               <Textarea

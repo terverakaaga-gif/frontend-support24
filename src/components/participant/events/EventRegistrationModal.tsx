@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CloseCircle, MapPoint } from "@solar-icons/react";
-import { 
-  MODAL_OVERLAY, 
-  MODAL_CONTENT, 
-  MODAL_HEADER, 
-  MODAL_BODY, 
-  FORM_GROUP, 
-  FORM_LABEL, 
-  FORM_INPUT, 
+import {
+  MODAL_OVERLAY,
+  MODAL_CONTENT,
+  MODAL_HEADER,
+  MODAL_BODY,
+  FORM_GROUP,
+  FORM_LABEL,
+  FORM_INPUT,
   FORM_TEXTAREA,
   BUTTON_PRIMARY,
-  cn 
+  cn
 } from "@/lib/design-utils";
 import { Button } from "@/components/ui/button";
 import { useRegisterForEvent } from "@/hooks/useEventHooks";
@@ -44,7 +44,7 @@ export default function EventRegistrationModal({
 }: EventRegistrationModalProps) {
   const { data: profileData } = useProfile();
   const [useProfileLocation, setUseProfileLocation] = useState(false);
-  
+
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<RegistrationFormData>({
     defaultValues: {
       fullName: userName || "",
@@ -94,7 +94,7 @@ export default function EventRegistrationModal({
 
         <div className={MODAL_BODY}>
           <p className="mb-6 text-gray-600 text-sm leading-relaxed">
-            Enter your details below to register for <span className="font-montserrat-semibold text-gray-900">{eventName}</span>. 
+            Enter your details below to register for <span className="font-montserrat-semibold text-gray-900">{eventName}</span>.
             Additional information will be sent to your email.
           </p>
 
@@ -102,7 +102,7 @@ export default function EventRegistrationModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className={FORM_GROUP}>
                 <label className={FORM_LABEL}>Full Name</label>
-                <input 
+                <input
                   {...register("fullName", { required: "Name is required" })}
                   className={cn(FORM_INPUT, errors.fullName && "border-red-500")}
                   placeholder="John Doe Singh"
@@ -112,7 +112,7 @@ export default function EventRegistrationModal({
 
               <div className={FORM_GROUP}>
                 <label className={FORM_LABEL}>Email Address</label>
-                <input 
+                <input
                   {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })}
                   className={cn(FORM_INPUT, errors.email && "border-red-500")}
                   type="email"
@@ -124,7 +124,7 @@ export default function EventRegistrationModal({
 
             <div className={FORM_GROUP}>
               <label className={FORM_LABEL}>Phone Number</label>
-              <input 
+              <input
                 {...register("phone", { required: "Phone is required" })}
                 className={cn(FORM_INPUT, errors.phone && "border-red-500")}
                 placeholder="+61 67635567"
@@ -140,7 +140,7 @@ export default function EventRegistrationModal({
                     type="button"
                     onClick={() => setUseProfileLocation(!useProfileLocation)}
                     className={cn(
-                      "text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 flex items-center gap-1",
+                      "text-xs font-montserrat-medium px-3 py-1 rounded-full transition-all duration-200 flex items-center gap-1",
                       useProfileLocation
                         ? "bg-primary text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -151,7 +151,7 @@ export default function EventRegistrationModal({
                   </button>
                 )}
               </div>
-              <input 
+              <input
                 {...register("location", { required: "Location is required" })}
                 className={cn(FORM_INPUT, errors.location && "border-red-500", useProfileLocation && "bg-gray-50 cursor-not-allowed")}
                 placeholder="123 Main Street, Anytown, AU"
@@ -162,7 +162,7 @@ export default function EventRegistrationModal({
 
             <div className={FORM_GROUP}>
               <label className={FORM_LABEL}>Reason for Attending (Optional)</label>
-              <textarea 
+              <textarea
                 {...register("reason")}
                 className={cn(FORM_TEXTAREA, "min-h-24")}
                 placeholder="Tell us why you're interested in attending this event..."
@@ -170,8 +170,8 @@ export default function EventRegistrationModal({
             </div>
 
             <div className="pt-4 flex gap-3">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className={cn(BUTTON_PRIMARY, "flex-1")}
                 disabled={registerMutation.isPending}
               >

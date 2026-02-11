@@ -11,11 +11,11 @@ export const ReviewStep = ({ formData, shiftTypeLabel }: any) => {
                     <div className="grid grid-cols-2 gap-4 border-t pt-4">
                         <div>
                             <p className="text-xs text-gray-500">Start</p>
-                            <p className="font-medium">{formData.startTime ? format(new Date(formData.startTime), "PP p") : "-"}</p>
+                            <p className="font-montserrat-medium">{formData.startTime ? format(new Date(formData.startTime), "PP p") : "-"}</p>
                         </div>
                         <div>
                             <p className="text-xs text-gray-500">End</p>
-                            <p className="font-medium">{formData.endTime ? format(new Date(formData.endTime), "PP p") : "-"}</p>
+                            <p className="font-montserrat-medium">{formData.endTime ? format(new Date(formData.endTime), "PP p") : "-"}</p>
                         </div>
                     </div>
                     <div>

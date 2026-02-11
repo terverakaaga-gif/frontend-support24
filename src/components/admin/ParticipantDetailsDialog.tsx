@@ -118,17 +118,17 @@ export default function ParticipantDetailsDialog({
                 <div className="flex items-center gap-2 text-sm">
                   <Letter className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Email:</span>
-                  <span className="font-medium">{participant.email}</span>
+                  <span className="font-montserrat-medium">{participant.email}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Phone:</span>
-                  <span className="font-medium">{participant.phone || "Not provided"}</span>
+                  <span className="font-montserrat-medium">{participant.phone || "Not provided"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Bell className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Notifications:</span>
-                  <span className="font-medium capitalize">
+                  <span className="font-montserrat-medium capitalize">
                     {participant.notificationPreferences || "Not set"}
                   </span>
                 </div>
@@ -161,13 +161,13 @@ export default function ParticipantDetailsDialog({
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Auto Renew</p>
-                    <p className="font-medium">
+                    <p className="font-montserrat-medium">
                       {participant.subscription?.autoRenew ? "Yes" : "No"}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Start Date</p>
-                    <p className="font-medium text-sm">
+                    <p className="font-montserrat-medium text-sm">
                       {participant.subscription?.startDate
                         ? format(new Date(participant.subscription.startDate), "MMM dd, yyyy")
                         : "N/A"}
@@ -299,7 +299,7 @@ export default function ParticipantDetailsDialog({
                         key={index}
                         className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                       >
-                        <p className="font-medium">{guard.name || "Guardian"}</p>
+                        <p className="font-montserrat-medium">{guard.name || "Guardian"}</p>
                       </div>
                     ))}
                   </div>

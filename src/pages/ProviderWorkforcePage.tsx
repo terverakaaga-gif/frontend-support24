@@ -27,17 +27,17 @@ const MOCK_WORKERS: OrgWorker[] = [
 export default function ProviderWorkforcePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  
+
   // State
   const [activeTab, setActiveTab] = useState<"onboarding" | "vetted">("onboarding");
   const [workers, setWorkers] = useState<OrgWorker[]>(MOCK_WORKERS);
-  
+
   // Modal States
   const [onboardingWorkerId, setOnboardingWorkerId] = useState<string | null>(null);
   const [assignShiftId, setAssignShiftId] = useState<string | null>(null);
 
   // Filter Logic
-  const filteredWorkers = workers.filter(w => 
+  const filteredWorkers = workers.filter(w =>
     activeTab === "onboarding" ? w.status === "unvetted" : w.status === "vetted"
   );
 
@@ -49,7 +49,7 @@ export default function ProviderWorkforcePage() {
   const handleOnboardingComplete = () => {
     if (onboardingWorkerId) {
       // Move worker to 'vetted' status
-      setWorkers(prev => prev.map(w => 
+      setWorkers(prev => prev.map(w =>
         w.id === onboardingWorkerId ? { ...w, status: "vetted" } : w
       ));
       setOnboardingWorkerId(null);
@@ -63,21 +63,21 @@ export default function ProviderWorkforcePage() {
   };
 
   const handleDeleteWorker = (id: string) => {
-    if(window.confirm("Are you sure you want to remove this worker?")) {
-       setWorkers(prev => prev.filter(w => w.id !== id));
+    if (window.confirm("Are you sure you want to remove this worker?")) {
+      setWorkers(prev => prev.filter(w => w.id !== id));
     }
   };
 
   // Helper to get active worker object for modals
-  const activeOnboardingWorker = workers.find(w => w.id === onboardingWorkerId) 
+  const activeOnboardingWorker = workers.find(w => w.id === onboardingWorkerId)
     ? {
-        name: workers.find(w => w.id === onboardingWorkerId)!.name,
-        role: workers.find(w => w.id === onboardingWorkerId)!.role,
-        avatar: workers.find(w => w.id === onboardingWorkerId)!.avatar,
-        rating: workers.find(w => w.id === onboardingWorkerId)!.rating,
-        location: workers.find(w => w.id === onboardingWorkerId)!.location,
-        price: workers.find(w => w.id === onboardingWorkerId)!.hourlyRate
-      } 
+      name: workers.find(w => w.id === onboardingWorkerId)!.name,
+      role: workers.find(w => w.id === onboardingWorkerId)!.role,
+      avatar: workers.find(w => w.id === onboardingWorkerId)!.avatar,
+      rating: workers.find(w => w.id === onboardingWorkerId)!.rating,
+      location: workers.find(w => w.id === onboardingWorkerId)!.location,
+      price: workers.find(w => w.id === onboardingWorkerId)!.hourlyRate
+    }
     : null;
 
   return (
@@ -92,20 +92,20 @@ export default function ProviderWorkforcePage() {
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative flex-grow md:w-64">
               <Magnifer className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input 
-                placeholder="Search...." 
-                className="w-full pl-10 h-11 rounded-full bg-white border-gray-200 focus:ring-primary-500" 
+              <Input
+                placeholder="Search...."
+                className="w-full pl-10 h-11 rounded-full bg-white border-gray-200 focus:ring-primary-500"
               />
             </div>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="relative rounded-full border-gray-200 bg-white"
             >
-               <Bell className="w-5 h-5 text-gray-600" />
-               <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center p-0 rounded-full border-2 border-white">
-                 6
-               </Badge>
+              <Bell className="w-5 h-5 text-gray-600" />
+              <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center p-0 rounded-full border-2 border-white">
+                6
+              </Badge>
             </Button>
           </div>
         }
@@ -119,12 +119,12 @@ export default function ProviderWorkforcePage() {
           onClick={() => setActiveTab("onboarding")}
           className={cn(
             "px-4 h-6 rounded-full text-xs font-montserrat-semibold whitespace-nowrap overflow-hidden",
-            activeTab === 'onboarding' 
-              ? "bg-primary text-white hover:bg-primary-700 hover:text-white" 
+            activeTab === 'onboarding'
+              ? "bg-primary text-white hover:bg-primary-700 hover:text-white"
               : "text-gray-600 hover:bg-gray-50"
           )}
         >
-          Onboarding Candidates 
+          Onboarding Candidates
           <Badge variant="secondary" className="ml-1 bg-white/20 text-inherit h-5 px-1.5">
             {workers.filter(w => w.status === 'unvetted').length}
           </Badge>
@@ -135,12 +135,12 @@ export default function ProviderWorkforcePage() {
           onClick={() => setActiveTab("vetted")}
           className={cn(
             "px-4 h-8 rounded-full text-xs font-montserrat-semibold whitespace-nowrap",
-            activeTab === 'vetted' 
-              ? "bg-primary text-white hover:bg-primary-700 hover:text-white" 
+            activeTab === 'vetted'
+              ? "bg-primary text-white hover:bg-primary-700 hover:text-white"
               : "text-gray-600 hover:bg-gray-50"
           )}
         >
-          Vetted Support Workers 
+          Vetted Support Workers
           <Badge variant="secondary" className="ml-1 bg-white/20 text-inherit h-5 px-1.5">
             {workers.filter(w => w.status === 'vetted').length}
           </Badge>
@@ -154,37 +154,37 @@ export default function ProviderWorkforcePage() {
             key={worker.id}
             worker={worker}
             onViewProfile={() => navigate(`/provider/worker/${worker.id}`)}
-            onVetWorker={() => {}} // Not used in this flow
-            onHireWorker={() => {}} // Not used in this flow
+            onVetWorker={() => { }} // Not used in this flow
+            onHireWorker={() => { }} // Not used in this flow
             onAddToWorkforce={handleStartOnboarding}
             onAssignShift={handleAssignShift}
             onDeleteWorker={handleDeleteWorker}
           />
         ))}
-        
+
         {filteredWorkers.length === 0 && (
           <Card className="col-span-full py-20 text-center text-gray-500 bg-white rounded-xl border-gray-200 border-dashed">
-            <p className="font-medium">No workers found in this section.</p>
+            <p className="font-montserrat-medium">No workers found in this section.</p>
           </Card>
         )}
       </div>
 
       {/* Modals */}
-      <OnboardingModal 
+      <OnboardingModal
         isOpen={!!onboardingWorkerId}
         worker={activeOnboardingWorker}
         onClose={() => setOnboardingWorkerId(null)}
         onComplete={handleOnboardingComplete}
       />
 
-      <AssignShiftModal 
+      <AssignShiftModal
         isOpen={!!assignShiftId}
         workerName={workers.find(w => w.id === assignShiftId)?.name || ""}
         onClose={() => setAssignShiftId(null)}
         onConfirm={(shiftId) => {
-           // Handle shift assignment logic here
-           setAssignShiftId(null);
-           alert("Shift assigned successfully!");
+          // Handle shift assignment logic here
+          setAssignShiftId(null);
+          alert("Shift assigned successfully!");
         }}
       />
 

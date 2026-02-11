@@ -253,7 +253,7 @@ import { GAP, BG_COLORS, CONTAINER_PADDING } from '@/constants/design-system';
 
 2. **Don't hardcode Tailwind classes**
    ```typescript
-   className="p-4 m-3 text-lg font-semibold"  // WRONG
+   className="p-4 m-3 text-lg font-montserrat-semibold"  // WRONG
    ```
 
 3. **Don't use arbitrary values**

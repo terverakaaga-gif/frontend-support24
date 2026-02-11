@@ -123,7 +123,7 @@ export default function ProviderSupportWorkerProfilePage() {
         user={user}
         onLogout={logout}
         onViewProfile={() => navigate("/participant/profile")}
-        // Custom left component to match "Back to Marketplace" link in design
+      // Custom left component to match "Back to Marketplace" link in design
       />
 
       <div className={cn(PAGE_CONTAINER, "mt-6 max-w-4xl")}>
@@ -158,7 +158,7 @@ export default function ProviderSupportWorkerProfilePage() {
               )}
             </div>
 
-            <p className="text-gray-500 font-medium mb-3">
+            <p className="text-gray-500 font-montserrat-medium mb-3">
               {WORKER_DETAILS.role}
             </p>
 
@@ -216,7 +216,7 @@ export default function ProviderSupportWorkerProfilePage() {
             </Button>
 
             {/* Decline Button */}
-            {/* <Button variant="outline" onClick={()=>navigate(-1)} className="h-10 px-8 rounded-lg border-red-500 text-red-500 hover:bg-red-50 font-medium">
+            {/* <Button variant="outline" onClick={()=>navigate(-1)} className="h-10 px-8 rounded-lg border-red-500 text-red-500 hover:bg-red-50 font-montserrat-medium">
               <CloseCircle className="w-5 h-5" />
               Decline
             </Button> */}
@@ -254,7 +254,7 @@ export default function ProviderSupportWorkerProfilePage() {
             {/* Locked Overlay Hint (Optional - to guide user) */}
             {!isUnlocked && (
               <div className="mt-8 p-4 bg-primary-50 rounded-lg border border-primary-100 flex flex-col items-center text-center">
-                <p className="text-primary-800 font-medium mb-2">
+                <p className="text-primary-800 font-montserrat-medium mb-2">
                   Want to see full details?
                 </p>
                 <Button

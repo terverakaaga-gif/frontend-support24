@@ -17,7 +17,7 @@ interface FileDropZoneProps {
   // Files state
   files: UploadedFile[];
   onFilesChange: (files: UploadedFile[] | ((prevFiles: UploadedFile[]) => UploadedFile[])) => void;
-  
+
   // Configuration
   maxFiles?: number;
   maxSizeMB?: number;
@@ -25,12 +25,12 @@ interface FileDropZoneProps {
   showFileList?: boolean;
   showProgress?: boolean;
   simulateUpload?: boolean;
-  
+
   // Styling
   className?: string;
   dropZoneClassName?: string;
   compact?: boolean;
-  
+
   // Labels
   title?: string;
   subtitle?: string;
@@ -89,7 +89,7 @@ export function FileDropZone({
     (fileId: string, currentFiles: UploadedFile[]) => {
       if (!simulateUpload) {
         // Mark as complete immediately
-        const updated = currentFiles.map((f) => 
+        const updated = currentFiles.map((f) =>
           f.id === fileId ? { ...f, progress: 100 } : f
         );
         onFilesChange(updated);
@@ -230,8 +230,7 @@ export function FileDropZone({
 
   const defaultSubtitle =
     subtitle ||
-    `File type: ${getFileTypeLabels()}, File limit: ${maxSizeMB}MB${
-      maxFiles > 1 ? `, Max files: ${maxFiles}` : ""
+    `File type: ${getFileTypeLabels()}, File limit: ${maxSizeMB}MB${maxFiles > 1 ? `, Max files: ${maxFiles}` : ""
     }`;
 
   return (
@@ -269,7 +268,7 @@ export function FileDropZone({
 
         <p className={cn("text-gray-600", compact ? "text-sm" : "")}>
           {title}{" "}
-          <span className="text-primary font-medium hover:underline">
+          <span className="text-primary font-montserrat-medium hover:underline">
             {browseText}
           </span>
         </p>
@@ -304,7 +303,7 @@ export function FileDropZone({
                     <FileText className="h-8 w-8 text-red-500 flex-shrink-0" />
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-gray-900 text-sm truncate">
+                    <p className="font-montserrat-medium text-gray-900 text-sm truncate">
                       {file.name}
                     </p>
                     <p className="text-xs text-gray-500">{file.size}</p>
