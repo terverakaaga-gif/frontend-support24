@@ -56,7 +56,7 @@ export interface BaseUser {
   lastLogin?: Date;
   createdAt: string;
   updatedAt: string;
-  address?:string|{street:string,city:string,state:string,country:string,postalCode:string}
+  address?: string | { street: string, city: string, state: string, country: string, postalCode: string }
 }
 
 // Location types
@@ -237,6 +237,7 @@ export interface Coordinator extends BaseUser {
   licenseNumber?: string;
   qualifications: Qualification[];
   serviceAreas: string[];
+  onboardingComplete: boolean;
 }
 
 export interface Provider extends BaseUser {

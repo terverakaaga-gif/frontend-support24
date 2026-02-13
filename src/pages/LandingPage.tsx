@@ -145,7 +145,10 @@ export default function Support24Landing() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <Button className="flex gap-2 items-center px-6 py-6 backdrop-blur-sm border border-white/10 shadow-lg shadow-primary/20">
+              <Button
+                onClick={() => window.open('https://apps.apple.com/au/app/support24/id6756564961', '_blank')}
+                className="flex gap-2 items-center px-6 py-6 backdrop-blur-sm border border-white/10 shadow-lg shadow-primary/20"
+              >
                 <img src="/new-res/apple-icon.svg" alt="apple-logo" />
                 <div className="flex flex-col items-start justify-center">
                   <p className="text-xs opacity-80">Download on the</p>
@@ -160,6 +163,7 @@ export default function Support24Landing() {
             >
               <Button
                 variant="outline"
+                onClick={() => window.open('https://play.google.com/store/apps/details?id=com.support24.app&pcampaignid=web_share', '_blank')}
                 className="flex gap-2 items-center px-6 py-6 bg-white/5 backdrop-blur-sm border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300"
               >
                 <img src="/new-res/google-icon.svg" alt="google-logo" />

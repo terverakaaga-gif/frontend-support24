@@ -1,9 +1,11 @@
 
-import {  Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2,  MedalStarCircle,  Settings,  ShieldCheck, ShieldUser, } from "@solar-icons/react";
+import { Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2, MedalStarCircle, Settings, ShieldCheck, ShieldUser, } from "@solar-icons/react";
 
 export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works", hasDropdown: false },
-  { name: "Opportunities", href: "/opportunities", hasDropdown: true },
+  { name: "Events", href: "/events", hasDropdown: false },
+  { name: "Accommodations", href: "/accommodations", hasDropdown: false },
+  { name: "Find Jobs", href: "/opportunities", hasDropdown: false },
   { name: "Roles", href: "/roles", hasDropdown: true },
   { name: "FAQs", href: "/#faq", hasDropdown: false },
   { name: "Contact Us", href: "/#contact", hasDropdown: false },

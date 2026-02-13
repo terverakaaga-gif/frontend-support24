@@ -30,13 +30,12 @@ export const InlineVectorText = ({
   return (
     <span
       className={cn(
-        "relative inline-block z-10",
+        "relative inline-block italic font-montserrat-medium",
         className,
         spanClassName
       )}
     >
-      {/* The text content */}
-      <span className="relative z-10">{text}</span>
+      {text}
 
       {/* The Zigzag Image */}
       {showImage && (
@@ -45,10 +44,7 @@ export const InlineVectorText = ({
           src={imageSrc}
           alt={imageAlt}
           className={cn(
-            // Changed from h-[0.35em] to h-auto to preserve the SVG aspect ratio.
-            // w-full ensures it stretches to the text width.
-            // translate-y-[35%] positions it slightly below the baseline (adjustable).
-            "absolute left-0 w-full h-auto pointer-events-none bottom-0 translate-y-[35%]",
+            "absolute left-0 w-full h-[0.35em] pointer-events-none bottom-0 translate-y-[70%]",
             imageClassName
           )}
         />

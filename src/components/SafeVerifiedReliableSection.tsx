@@ -11,8 +11,8 @@ interface SafeVerifiedReliableSectionProps {
   className?: string;
 }
 
-export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionProps> = ({ 
-  className = "" 
+export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionProps> = ({
+  className = ""
 }) => {
   const fadeInUp = {
     initial: { opacity: 0, y: 40 },
@@ -45,9 +45,9 @@ export const SafeVerifiedReliableSection: React.FC<SafeVerifiedReliableSectionPr
           <div className="flex gap-1 items-center justify-center lg:justify-start">
             <motion.h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-montserrat-bold leading-tight">
               Safe. Verified.{" "}
-              <InlineVectorText 
-                className="italic" 
-                text="Reliable" 
+              <InlineVectorText
+                className="italic"
+                text="Reliable"
                 imageClassName="bottom-0 sm:-bottom-1 w-[200px] translate-y-[35%] sm:translate-y-[45%]"
               />.
             </motion.h1>

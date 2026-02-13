@@ -221,16 +221,17 @@ export const AUTH_LINK = cn(
  */
 export const DASHBOARD_PAGE_WRAPPER = cn(
   "min-h-screen",
+  "min-w-screen",
   "bg-gray-100",
   "p-6",
-  "space-y-0"
+  "space-y-2"
 );
 
 /**
  * Dashboard content container
  */
 export const DASHBOARD_CONTENT = cn(
-  "space-y-6"
+  "space-y-2"
 );
 
 /**

@@ -44,7 +44,7 @@ import {
   Widget5,
   ShieldKeyholeMinimalistic,
   Home,
-  SuitcaseTag,
+  Suitcase,
   Bookmark,
   ShieldCheck,
   Star,
@@ -53,6 +53,7 @@ import {
   ShopMinimalistic,
   CalendarMark,
   Videocamera,
+  Logout2,
 } from "@solar-icons/react";
 import { Nav } from "react-day-picker";
 
@@ -239,12 +240,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </SidebarGroupLabel>
               <div className="space-y-1">
                 <NavItem
-                  to="/admin/compliance"
-                  icon={<ShieldCheck className="w-6 h-6" />}
-                  label="Compliance"
-                  active={isActive("/admin/compliance")}
-                />
-                <NavItem
                   to="/admin/incidents"
                   icon={<ShieldUser className="w-6 h-6" />}
                   label="Incidents"
@@ -337,7 +332,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <NavItem
               to={"/participant/jobs"}
-              icon={<SuitcaseTag className="w-6 h-6" />}
+              icon={<Suitcase className="w-6 h-6" />}
               label="Jobs"
               active={isActive("/participant/jobs")}
             />
@@ -371,13 +366,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={isActive("/support-worker/timesheets")}
             />
             <NavItem
-              to="/support-worker/compliance"
-              icon={<ShieldCheck className="w-6 h-6" />}
-              label="Compliance"
-              active={isActive("/support-worker/compliance")}
-            />
-
-            <NavItem
               to="/support-worker/incidents"
               icon={<ShieldUser className="w-6 h-6" />}
               label="Incidents"
@@ -397,7 +385,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             <NavItem
               to="/support-worker/jobs"
-              icon={<SuitcaseTag className="w-6 h-6" />}
+              icon={<Suitcase className="w-6 h-6" />}
               label="Jobs"
               active={isActive("/support-worker/jobs")}
             />
@@ -457,7 +445,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <NavItem
               to="/provider/jobs"
-              icon={<SuitcaseTag className="w-6 h-6" />}
+              icon={<Suitcase className="w-6 h-6" />}
               label="Jobs"
               active={isActive("/provider/jobs")}
             />
@@ -485,50 +473,60 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-100 w-full font-montserrat">
         {/* Sidebar Component */}
-        <Sidebar className="border-none">
+        <Sidebar collapsible="icon" className="border-none">
           {/* Logo Section */}
-          <SidebarHeader className="px-6 py-6">
-            <Link to="/" className="flex items-center space-x-2">
-              <img src="/new-res/support24logo-blk.svg" className="w-44" alt="Support24 Logo" />
+          <SidebarHeader className="px-8 py-4 flex flex-row items-center justify-between group-data-[collapsible=icon]:pl-4">
+            <Link to="/" className="flex items-center space-x-2 group-data-[collapsible=icon]:hidden">
+              <img src="/new-res/support24logo-blk.svg" className="w-32" alt="Support24 Logo" />
             </Link>
+            <SidebarTrigger className="hidden lg:flex" />
           </SidebarHeader>
 
           {/* Navigation */}
-          <SidebarContent className="px-4 overflow-x-hidden no-scrollbar">
+          <SidebarContent className="px-6 overflow-x-hidden no-scrollbar group-data-[collapsible=icon]:pl-4">
             <SidebarMenu className="space-y-1 py-4">
               {roleBasedLinks()}
             </SidebarMenu>
           </SidebarContent>
 
           {/* User Profile Section */}
-          <SidebarFooter className="p-4 border-none">
-            <div className="bg-primary rounded-lg p-4 text-center">
-              <Avatar className="h-16 w-16 mx-auto mb-3">
-                <AvatarImage
-                  src={user?.profileImage}
-                  alt={`${user?.firstName} ${user.lastName}`}
-                />
-                <AvatarFallback className="bg-primary text-white text-lg">
-                  {user?.firstName?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-sm text-white font-montserrat-semibold truncate">
-                {user.email}
-              </div>
-              <div className="text-xs text-primary-300 capitalize font-montserrat">
-                {location.pathname.startsWith("/support-coordinator")
-                  ? "Support Coordinator"
-                  : user.role === "supportWorker"
-                    ? "Support Worker"
-                    : user.role}
-              </div>
+          <SidebarFooter className="p-0 border-t border-white/10">
+            {/* Logout Button */}
+            <div className="px-6 py-2 flex justify-center group-data-[collapsible=icon]:px-0">
               <Button
-                className="w-full gap-2 items-center justify-center bg-primary-100 text-red-600/80 hover:text-red-600 hover:bg-primary-100 mt-3 font-montserrat-semibold"
+                variant="ghost"
+                className="w-full justify-start gap-3 px-2 py-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-white/10 font-medium h-auto group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:aspect-square"
                 onClick={() => logout()}
+                title="Logout"
               >
-                <Logout />
-                <span>Logout</span>
+                <Logout2 className="w-4 h-4" />
+                <span className="group-data-[collapsible=icon]:hidden">Logout</span>
               </Button>
+            </div>
+
+            {/* User Profile */}
+            <div className="px-8 py-4 border-t border-white/10 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+              <div className="flex items-center gap-3 group-data-[collapsible=icon]:gap-0">
+                <Avatar className="h-9 w-9 bg-[#0D2BEC] shrink-0">
+                  <AvatarImage
+                    src={user?.profileImage}
+                    alt={`${user?.firstName} ${user.lastName}`}
+                  />
+                  <AvatarFallback className="bg-[#0D2BEC] text-white text-xs font-bold">
+                    {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+                  <p className="text-sm font-medium text-white truncate">{user.email}</p>
+                  <p className="text-xs text-white/50 capitalize truncate font-montserrat">
+                    {location.pathname.startsWith("/support-coordinator")
+                      ? "Support Coordinator"
+                      : user.role === "supportWorker"
+                        ? "Support Worker"
+                        : user.role}
+                  </p>
+                </div>
+              </div>
             </div>
           </SidebarFooter>
         </Sidebar>
@@ -579,17 +577,17 @@ const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => {
         isActive={active}
         onClick={handleClick}
         className={cn(
-          "flex items-center gap-3 rounded-lg px-4 py-2 h-auto text-xs font-montserrat-semibold transition-colors relative",
+          "flex items-center gap-3 rounded-lg px-2 py-2 h-auto text-sm transition-colors relative group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center",
           active
-            ? "bg-primary text-white"
-            : "text-white/80 hover:bg-primary-700 hover:text-white",
+            ? "bg-primary text-white font-montserrat-semibold"
+            : "text-white/80 hover:bg-white/10 hover:text-white font-montserrat",
         )}
       >
         <Link to={to}>
           {icon}
-          <span>{label}</span>
+          <span className="group-data-[collapsible=icon]:hidden">{label}</span>
           {badge && (
-            <Badge className="ml-auto bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center p-0">
+            <Badge className="ml-auto bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center p-0 group-data-[collapsible=icon]:hidden">
               {badge}
             </Badge>
           )}

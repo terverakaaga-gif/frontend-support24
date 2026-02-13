@@ -466,7 +466,7 @@ export default function TermsOfUse() {
                 </div>
 
                 <h3 className="text-xl font-montserrat-semibold text-white mb-3 mt-6">
-                  Compliance Requirements
+                  Regulatory Requirements
                 </h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
                   All Service Agreements must:
@@ -971,7 +971,7 @@ export default function TermsOfUse() {
                   </div>
                   <div>
                     <h3 className="text-lg font-montserrat-semibold text-white mb-2">
-                      Support24 
+                      Support24
                     </h3>
                     <p className="text-gray-300">ABN: 19673683817</p>
                     <p className="text-gray-300">
