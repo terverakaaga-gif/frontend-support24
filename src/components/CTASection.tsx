@@ -7,8 +7,8 @@ interface CTASectionProps {
   className?: string;
 }
 
-export const CTASection: React.FC<CTASectionProps> = ({ 
-  className = "" 
+export const CTASection: React.FC<CTASectionProps> = ({
+  className = ""
 }) => {
   const fadeInUp = {
     initial: { opacity: 0, y: 40 },
@@ -48,7 +48,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
                 <br className="mb-12" /> Support  {" "}
                 <span>Today</span>
               </motion.h1>
-              
+
               <p className="text-lg md:text-xl font-montserrat-medium max-w-xl my-4 lg:my-8 leading-loose tracking-wide">
                 Join Support24 and discover a simpler way to manage routines,
                 book support, and enjoy community programs with complete
@@ -57,7 +57,10 @@ export const CTASection: React.FC<CTASectionProps> = ({
 
               {/* Download Buttons */}
               <div className="flex  md:self-start justify-center gap-4 lg:mb-12 mb-2">
-                <Button className="flex gap-1 items-center p-6">
+                <Button
+                  onClick={() => window.open('https://apps.apple.com/au/app/support24/id6756564961', '_blank')}
+                  className="flex gap-1 items-center p-6"
+                >
                   <img src="/new-res/apple-icon.svg" alt="apple-logo" />
                   <div className="flex flex-col items-center justify-center">
                     <p className="text-xs">Download on the</p>
@@ -66,6 +69,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
                 </Button>
                 <Button
                   variant="outline"
+                  onClick={() => window.open('https://play.google.com/store/apps/details?id=com.support24.app&pcampaignid=web_share', '_blank')}
                   className="flex gap-1 items-center p-6 bg-transparent hover:bg-primary-900"
                 >
                   <img src="/new-res/google-icon.svg" alt="google-logo" />

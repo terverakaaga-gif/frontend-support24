@@ -3,8 +3,6 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouteMemory } from "@/hooks/useRouteMemory";
 
@@ -18,9 +16,7 @@ import {
   CalendarDate,
   ChatLine,
   ClipboardList,
-  HamburgerMenu,
   Heart,
-  Logout,
   HourglassLine,
   Scanner,
   Settings,
@@ -30,9 +26,25 @@ import {
   Widget5,
   ShieldKeyholeMinimalistic,
   Home,
-  SuitcaseTag,
+  Suitcase,
   Bookmark,
+  ShopMinimalistic,
+  CalendarMark,
+  Videocamera,
+  Logout2,
 } from "@solar-icons/react";
+import {
+  Sidebar,
+  SidebarHeader,
+  SidebarTrigger,
+  SidebarContent,
+  SidebarMenu,
+  SidebarFooter,
+  useSidebar,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarProvider,
+} from "../ui/sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -44,7 +56,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   if (!user) return null;
 
@@ -241,32 +252,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/participant/chats")}
             />
-            {/* 
-            
+
+
             <NavItem
-              to={"/participant/provider/dashboard"}
-              icon={<Widget5 className="w-6 h-6" />}
-              label="Dashboard"
-              active={isActive("/participant/provider/dashboard")}
-            />
-            <NavItem
-              to={"/participant/provider/events"}
-              icon={<CalendarDate className="w-6 h-6" />}
-              label="Events"
-              active={isActive("/participant/provider/events")}
-            />
-            <NavItem
-              to={"/participant/provider/accommodations"}
-              icon={<Home className="w-6 h-6" />}
-              label="Accommodations"
-              active={isActive("/participant/provider/accommodations")}
-            />
-            <NavItem
-              to={"/participant/provider/jobs"}
-              icon={<SuitcaseTag className="w-6 h-6" />}
+              to={"/participant/jobs"}
+              icon={<Suitcase className="w-6 h-6" />}
               label="Jobs"
               active={isActive("/participant/provider/jobs")}
-            /> */}
+            />
           </>
         );
       case "supportWorker":
@@ -308,9 +301,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               label="Messages"
               active={isActive("/support-worker/chats")}
             />
-            {/* <NavItem
+            <NavItem
               to="/support-worker/jobs"
-              icon={<SuitcaseTag className="w-6 h-6" />}
+              icon={<Suitcase className="w-6 h-6" />}
               label="Jobs"
               active={isActive("/support-worker/jobs")}
             />
@@ -319,7 +312,74 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               icon={<Bookmark className="w-6 h-6" />}
               label="Saved Jobs"
               active={isActive("/support-worker/saved-jobs")}
-            /> */}
+            />
+          </>
+        );
+
+      case "provider":
+        return (
+          <>
+            <NavItem
+              to="/provider/"
+              icon={<Widget5 className="w-6 h-6" />}
+              label="Dashboard"
+              active={isActive("/provider/")}
+            />
+
+            <NavItem
+              to="/provider/find-support-workers"
+              icon={<ShopMinimalistic className="w-6 h-6" />}
+              label="Support Workers"
+              active={isActive("/provider/find-support-workers")}
+            />
+
+            <NavItem
+              to="/provider/interviews"
+              icon={<Videocamera className="w-6 h-6" />}
+              label="Interviews"
+              active={isActive("/provider/interviews")}
+            />
+
+            <NavItem
+              to="/provider/workforce"
+              icon={<Buildings3 className="w-6 h-6" />}
+              label="Workforce"
+              active={isActive("/provider/workforce")}
+            />
+
+            <NavItem
+              to="/provider/accommodations"
+              icon={<Home className="w-6 h-6" />}
+              label="Accommodations"
+              active={isActive("/provider/accommodations")}
+            />
+
+            <NavItem
+              to="/provider/events"
+              icon={<CalendarDate className="w-6 h-6" />}
+              label="Events"
+              active={isActive("/provider/events")}
+            />
+
+            <NavItem
+              to="/provider/jobs"
+              icon={<Suitcase className="w-6 h-6" />}
+              label="Jobs"
+              active={isActive("/provider/jobs")}
+            />
+            <NavItem
+              to="/provider/chats"
+              icon={<ChatLine className="w-6 h-6" />}
+              label="Messages"
+              active={isActive("/provider/chats")}
+            />
+
+            <NavItem
+              to="/provider/shift-cancellation"
+              icon={<CalendarMark className="w-6 h-6" />}
+              label="Shift Cancellation"
+              active={isActive("/provider/shift-cancellation")}
+            />
           </>
         );
       default:
@@ -327,85 +387,115 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
-  const Sidebar = () => (
-    <div className="flex flex-col h-full bg-primary-900 rounded-xl overflow-hidden">
-      {/* Logo Section */}
-      <div className="px-6 py-6">
-        <Link to="/" className="flex items-center space-x-2">
-          <img src="/new-res/support24logo-blk.svg" alt="Support24 Logo" />
-        </Link>
-      </div>
-
-      {/* Navigation */}
-      <ScrollArea className="flex-1 px-4">
-        <div className="space-y-4 py-4">
-          <div className="space-y-1 font-montserrat-semibold">
-            {roleBasedLinks()}
-          </div>
-        </div>
-      </ScrollArea>
-
-      {/* User Profile Section */}
-      <div className="mt-auto p-4">
-        <div className="bg-primary rounded-lg p-4 text-center">
-          <Avatar className="h-16 w-16 mx-auto mb-3">
-            <AvatarImage
-              src={user?.profileImage}
-              alt={`${user?.firstName} ${user.lastName}`}
-            />
-            <AvatarFallback className="bg-primary text-white text-lg">
-              {user?.firstName?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="text-sm text-white font-montserrat-semibold truncate">
-            {user.email}
-          </div>
-          <div className="text-xs text-primary-300 capitalize font-montserrat">
-            {user.role === "supportWorker" ? "Support Worker" : user.role}
-          </div>
-          <Button
-            className="w-full gap-2 items-center justify-center bg-primary-100 text-red-600/80 hover:text-red-600 hover:bg-primary-100 mt-3 font-montserrat-semibold"
-            onClick={() => logout()}
-          >
-            <Logout />
-            <span>Logout</span>
-          </Button>
-        </div>
-      </div>
-    </div>
+  return (
+    <SidebarProvider>
+      <DashboardContent
+        user={user}
+        logout={logout}
+        location={location}
+        searchOpen={searchOpen}
+        setSearchOpen={setSearchOpen}
+        roleBasedLinks={roleBasedLinks}
+      >
+        {children}
+      </DashboardContent>
+    </SidebarProvider>
   );
+}
+
+function DashboardContent({
+  children,
+  user,
+  logout,
+  location,
+  searchOpen,
+  setSearchOpen,
+  roleBasedLinks,
+}: DashboardLayoutProps & {
+  user: any;
+  logout: () => void;
+  location: any;
+  searchOpen: boolean;
+  setSearchOpen: (open: boolean) => void;
+  roleBasedLinks: () => React.ReactNode;
+}) {
+  const { state } = useSidebar();
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Desktop Sidebar - Only show on large screens (1024px+) */}
-      <aside className="hidden lg:block fixed left-0 top-0 z-30 h-screen w-72 p-4">
-        <Sidebar />
-      </aside>
+    <div className="flex min-h-screen bg-gray-100 w-full font-montserrat">
+      {/* Sidebar Component */}
+      <Sidebar collapsible="icon" className="border-none">
+        {/* Logo Section */}
+        <SidebarHeader className="px-8 py-4 flex flex-row items-center justify-between group-data-[collapsible=icon]:pl-4">
+          <Link to="/" className="flex items-center space-x-2 group-data-[collapsible=icon]:hidden">
+            <img src="/new-res/support24logo-blk.svg" className="w-32" alt="Support24 Logo" />
+          </Link>
+          <SidebarTrigger className="hidden lg:flex" />
+        </SidebarHeader>
 
-      {/* Mobile & Tablet Sidebar - Show toggle button up to large screens */}
-      <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden fixed left-4 top-4 z-50 bg-white hover:bg-gray-100 shadow-md rounded-lg h-10 w-10"
-          >
-            <HamburgerMenu className="h-6 w-6 text-gray-700" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="w-72 p-4 bg-transparent border-none shadow-none"
-        >
-          <Sidebar />
-        </SheetContent>
-      </Sheet>
+        {/* Navigation */}
+        <SidebarContent className="px-6 overflow-x-hidden no-scrollbar group-data-[collapsible=icon]:pl-4">
+          <SidebarMenu className="space-y-1 py-4">
+            {roleBasedLinks()}
+          </SidebarMenu>
+        </SidebarContent>
+
+        {/* User Profile Section */}
+        <SidebarFooter className="p-0 border-t border-white/10">
+          {/* Logout Button */}
+          <div className="px-6 py-2 flex justify-center group-data-[collapsible=icon]:px-0">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 px-2 py-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-white/10 font-medium h-auto group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:aspect-square"
+              onClick={() => logout()}
+              title="Logout"
+            >
+              <Logout2 className="w-4 h-4" />
+              <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+            </Button>
+          </div>
+
+          {/* User Profile */}
+          <div className="px-8 py-4 border-t border-white/10 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+            <div className="flex items-center gap-3 group-data-[collapsible=icon]:gap-0">
+              <Avatar className="h-9 w-9 bg-[#0D2BEC] shrink-0">
+                <AvatarImage
+                  src={user?.profileImage}
+                  alt={`${user?.firstName} ${user.lastName}`}
+                />
+                <AvatarFallback className="bg-[#0D2BEC] text-white text-xs font-bold">
+                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+                <p className="text-sm font-medium text-white truncate">{user.email}</p>
+                <p className="text-xs text-white/50 capitalize truncate font-montserrat">
+                  {location.pathname.startsWith("/support-coordinator")
+                    ? "Support Coordinator"
+                    : user.role === "supportWorker"
+                      ? "Support Worker"
+                      : user.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        </SidebarFooter>
+      </Sidebar>
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen lg:pl-72 flex flex-col overflow-hidden">
+      <main
+        className={cn(
+          "flex-1 min-h-screen flex flex-col overflow-hidden transition-[padding] duration-200 ease-linear",
+          state === "expanded" ? "md:pl-64" : "md:pl-16"
+        )}
+      >
+        {/* Mobile Toggle Button */}
+        <div className="md:hidden fixed left-4 top-4 z-50">
+          <SidebarTrigger className="bg-white hover:bg-gray-100 shadow-md rounded-lg h-10 w-10 text-gray-700 hover:text-gray-900" />
+        </div>
+
         {/* Content rendered by children */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-16 md:pt-0">
           {children}
         </div>
       </main>
@@ -426,22 +516,38 @@ interface NavItemProps {
   badge?: number;
 }
 
-const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => (
-  <Link
-    to={to}
-    className={cn(
-      "flex items-center gap-3 rounded-lg px-4 py-3 text-xs font-montserrat-semibold transition-colors relative",
-      active
-        ? "bg-primary text-white"
-        : "text-white/80 hover:bg-primary-700 hover:text-white"
-    )}
-  >
-    {icon}
-    {label}
-    {badge && (
-      <Badge className="ml-auto bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center p-0">
-        {badge}
-      </Badge>
-    )}
-  </Link>
-);
+const NavItem = ({ to, icon, label, active = false, badge }: NavItemProps) => {
+  const { setOpenMobile, isMobile } = useSidebar();
+
+  const handleClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={active}
+        onClick={handleClick}
+        className={cn(
+          "flex items-center gap-3 rounded-lg px-2 py-2 h-auto text-sm transition-colors relative group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center",
+          active
+            ? "bg-primary text-white font-montserrat-semibold"
+            : "text-white/80 hover:bg-white/10 hover:text-white font-montserrat",
+        )}
+      >
+        <Link to={to}>
+          {icon}
+          <span className="group-data-[collapsible=icon]:hidden">{label}</span>
+          {badge && (
+            <Badge className="ml-auto bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center p-0 group-data-[collapsible=icon]:hidden">
+              {badge}
+            </Badge>
+          )}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};

@@ -9,7 +9,8 @@ export enum EUserRole {
   PARTICIPANT = "participant",
   SUPPORT_WORKER = "supportWorker",
   GUARDIAN = "guardian",
-  COORDINATOR = "coordinator", // Add this
+  COORDINATOR = "coordinator",
+  PROVIDER = "provider",
 }
 export enum EUserStatus {
   ACTIVE = "active",
@@ -55,7 +56,7 @@ export interface BaseUser {
   lastLogin?: Date;
   createdAt: string;
   updatedAt: string;
-  address?:string|{street:string,city:string,state:string,country:string,postalCode:string}
+  address?: string | { street: string, city: string, state: string, country: string, postalCode: string }
 }
 
 // Location types
@@ -236,6 +237,7 @@ export interface Coordinator extends BaseUser {
   licenseNumber?: string;
   qualifications: Qualification[];
   serviceAreas: string[];
+  onboardingComplete: boolean;
 }
 
 // Union type for all user types

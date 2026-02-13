@@ -36,14 +36,16 @@ export const InlineVectorText = ({
       )}
     >
       {text}
+
+      {/* The Zigzag Image */}
       {showImage && (
         <img
           style={imgStyle}
           src={imageSrc}
           alt={imageAlt}
           className={cn(
-            "absolute left-0 w-full h-auto pointer-events-none",
-            imageClassName || "bottom-0 translate-y-[30%]"
+            "absolute left-0 w-full h-[0.35em] pointer-events-none bottom-0 translate-y-[70%]",
+            imageClassName
           )}
         />
       )}

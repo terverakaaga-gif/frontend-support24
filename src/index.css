@@ -17,7 +17,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 217 91% 60%; /* Changed from purple to primary-500 */
+    --primary: 217 91% 60%;
+    /* Changed from purple to primary-500 */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -26,7 +27,8 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 213 94% 95%; /* Changed from purple to light blue */
+    --accent: 213 94% 95%;
+    /* Changed from purple to light blue */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -34,17 +36,19 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 217 91% 60%; /* Changed from purple to primary-500 */
+    --ring: 217 91% 60%;
+    /* Changed from purple to primary-500 */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 217 91% 30%; /* Changed to primary-800 */
+    --sidebar-background: 232 89% 22%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 217 91% 30%;
+    /* Changed to primary-800 */
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
+    --sidebar-accent: 232 89% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 232 89% 25%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -58,7 +62,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%; /* Changed from purple to primary-500 */
+    --primary: 217 91% 60%;
+    /* Changed from purple to primary-500 */
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -67,7 +72,8 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 213 94% 95%; /* Changed from purple to light blue */
+    --accent: 213 94% 95%;
+    /* Changed from purple to light blue */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -76,13 +82,14 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 217 91% 30%; /* Changed to primary-800 */
+    --sidebar-background: 232 89% 22%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 217 91% 30%;
+    /* Changed to primary-800 */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 232 89% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 232 89% 25%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -98,20 +105,20 @@
 
   @font-face {
     font-family: "Montserrat";
-    src: url("/fonts/Montserrat/static/Montserrat-Regular.ttf")
-        format("trueType"),
+    src: url("/fonts/Montserrat/static/Montserrat-Regular.ttf") format("trueType"),
       url("/fonts/Montserrat/static/Montserrat-Regular.ttf") format("woff");
     font-weight: 400;
     font-style: normal;
   }
+
   @font-face {
     font-family: "Montserrat Medium";
-    src: url("/fonts/Montserrat/static/Montserrat-Medium.ttf")
-        format("trueType"),
+    src: url("/fonts/Montserrat/static/Montserrat-Medium.ttf") format("trueType"),
       url("/fonts/Montserrat/static/Montserrat-MediumItalic.ttf") format("woff");
     font-weight: 400;
     font-style: normal;
   }
+
   @font-face {
     font-family: "Montserrat Bold";
     src: url("/fonts/Montserrat/static/Montserrat-Bold.ttf") format("trueType"),
@@ -119,21 +126,23 @@
     font-weight: 400;
     font-style: normal;
   }
+
   @font-face {
     font-family: "Montserrat Semibold";
-    src: url("/fonts/Montserrat/static/Montserrat-SemiBold.ttf")
-        format("trueType"),
-      url("/fonts/Montserrat/static/Montserrat-SemiBoldItalic.ttf")
-        format("woff");
+    src: url("/fonts/Montserrat/static/Montserrat-SemiBold.ttf") format("trueType"),
+      url("/fonts/Montserrat/static/Montserrat-SemiBoldItalic.ttf") format("woff");
     font-weight: 400;
     font-style: normal;
   }
+
   @keyframes wave {
+
     0%,
     60%,
     100% {
       transform: translateY(0);
     }
+
     30% {
       transform: translateY(-10px);
     }

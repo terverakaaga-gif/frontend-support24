@@ -1,14 +1,38 @@
 
-import {  Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2,  ShieldCheck, } from "@solar-icons/react";
-import { BadgeCheck, Headset, Settings2 } from "lucide-react";
+import { Calendar, CalendarAdd, CheckCircle, EyeClosed, Flag2, MedalStarCircle, Settings, ShieldCheck, ShieldUser, } from "@solar-icons/react";
+import { Settings2, Headset, BadgeCheck } from "lucide-react";
 
 export const LANDINGPAGE_NAVS = [
-  { name: "How it Works", href: "/how-it-works" },
-  { name: "Events", href: "/coming-soon" },
-  { name: "Accommodation", href: "/coming-soon" },
-  { name: "Find jobs", href: "/coming-soon" },
-  { name: "FAQs", href: "/#faq" },
-  { name: "Contact Us", href: "/#contact" },
+  { name: "How it Works", href: "/how-it-works", hasDropdown: false },
+  { name: "Events", href: "/events", hasDropdown: false },
+  { name: "Accommodations", href: "/accommodations", hasDropdown: false },
+  { name: "Find Jobs", href: "/opportunities", hasDropdown: false },
+  { name: "Roles", href: "/roles", hasDropdown: true },
+  { name: "FAQs", href: "/#faq", hasDropdown: false },
+  { name: "Contact Us", href: "/#contact", hasDropdown: false },
+] as const;
+
+export const ROLES_DROPDOWN_ITEMS = [
+  {
+    title: "Support Provider",
+    description: "Grow your services and reach more participants",
+    href: "/support-provider",
+  },
+  {
+    title: "Support Coordinator",
+    description: "Manage support, plans, and people with ease",
+    href: "/login",
+  },
+  {
+    title: "Participant",
+    description: "Access the right support your way",
+    href: "/login",
+  },
+  {
+    title: "Support Worker",
+    description: "Find meaningful work that fits your schedule",
+    href: "/login",
+  },
 ] as const;
 
 export const FEATURE_CARDS = [
