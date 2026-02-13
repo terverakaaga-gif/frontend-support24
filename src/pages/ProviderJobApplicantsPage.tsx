@@ -127,7 +127,6 @@ export default function ProviderJobApplicantsPage() {
       skills: "",
       availability: "",
       avatar: applicant.applicantId?.profileImage || null,
-      complianceStatus: [],
       attachments: applicant.attachments?.map((att: any) => ({
         name: att.fileName,
         size: `${(att.fileSize / 1024).toFixed(0)} KB`,
@@ -177,8 +176,8 @@ export default function ProviderJobApplicantsPage() {
                 size="sm"
                 onClick={() => handleTabChange("pending")}
                 className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "pending"
-                    ? "hover:bg-primary"
-                    : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
+                  ? "hover:bg-primary"
+                  : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                   }`}
               >
                 New {applicationsData?.applications?.filter(a => a.status === "pending").length || 0}
@@ -187,8 +186,8 @@ export default function ProviderJobApplicantsPage() {
                 size="sm"
                 onClick={() => handleTabChange("accepted")}
                 className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "accepted"
-                    ? "hover:bg-primary"
-                    : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
+                  ? "hover:bg-primary"
+                  : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                   }`}
               >
                 Accepted {applicationsData?.applications?.filter(a => a.status === "accepted").length || 0}
@@ -197,8 +196,8 @@ export default function ProviderJobApplicantsPage() {
                 size="sm"
                 onClick={() => handleTabChange("rejected")}
                 className={`h-6 rounded-full text-xs font-montserrat-semibold ${currentTab === "rejected"
-                    ? "hover:bg-primary"
-                    : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
+                  ? "hover:bg-primary"
+                  : "bg-gray-50 text-black hover:text-white hover:bg-primary border border-gray-200"
                   }`}
               >
                 Rejected {applicationsData?.applications?.filter(a => a.status === "rejected").length || 0}
@@ -304,8 +303,8 @@ export default function ProviderJobApplicantsPage() {
                         </TableCell>
                         <TableCell className="px-4 md:px-6 py-4 hidden 2xl:table-cell">
                           <span className={`inline-block px-2 py-1 rounded-full text-xs font-montserrat-medium ${applicant.status === "accepted" ? "bg-green-100 text-green-800" :
-                              applicant.status === "rejected" ? "bg-red-100 text-red-800" :
-                                "bg-yellow-100 text-yellow-800"
+                            applicant.status === "rejected" ? "bg-red-100 text-red-800" :
+                              "bg-yellow-100 text-yellow-800"
                             }`}>
                             {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
                           </span>
@@ -390,8 +389,8 @@ export default function ProviderJobApplicantsPage() {
                     size="sm"
                     onClick={() => setCurrentPage(page)}
                     className={`h-9 w-9 ${currentPage === page
-                        ? "bg-primary text-white hover:bg-primary/90"
-                        : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                      ? "bg-primary text-white hover:bg-primary/90"
+                      : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                   >
                     {page}

@@ -3,7 +3,7 @@ import { cn } from "@/lib/design-utils";
 import { BG_COLORS, SPACING, RADIUS } from "@/constants/design-system";
 
 export const WaveLoader = () => (
-  <div className={cn("flex items-center justify-center min-h-screen", BG_COLORS.muted)}>
+  <div className={cn("flex items-center justify-center min-h-screen")}>
     <div className={`flex space-x-${SPACING.sm}`}>
       <div className={cn(`w-${SPACING.base} h-${SPACING.base}`, "bg-primary", RADIUS.full, "animate-wave")}></div>
       <div
@@ -23,7 +23,7 @@ export const WaveLoader = () => (
 );
 
 export const PulseLoader = () => (
-  <div className={cn("flex items-center justify-center min-h-screen", BG_COLORS.muted)}>
+  <div className={cn("flex items-center justify-center min-h-screen")}>
     <div className="relative">
       <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -38,7 +38,7 @@ export const PulseLoader = () => (
 );
 
 export const BounceLoader = () => (
-  <div className={cn("flex items-center justify-center min-h-screen", BG_COLORS.muted)}>
+  <div className={cn("flex items-center justify-center min-h-screen")}>
     <div className={`flex space-x-${SPACING.xs}`}>
       <div className={cn(`w-${SPACING.md} h-${SPACING.md}`, "bg-primary", RADIUS.full, "animate-bounce")}></div>
       <div

@@ -118,8 +118,8 @@ function StatCard({
             trendDirection === "up"
               ? "text-green-600"
               : trendDirection === "down"
-              ? "text-red-600"
-              : "text-gray-600"
+                ? "text-red-600"
+                : "text-gray-600"
           )}
         >
           {trendDirection === "up" && <CourseUp className="h-3 w-3" />}
@@ -133,7 +133,7 @@ function StatCard({
 
 // Performance chart component
 function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
-  console.log('datarange: ',dateRange)
+  console.log('datarange: ', dateRange)
   // Update hook calls
   const { data: overviewData, isLoading: overviewLoading } =
     useGetSupportWorkerOverview(dateRange, true, true);
@@ -218,11 +218,10 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
           </div>
           {metrics.percentageChange > 0 && (
             <div
-              className={`${
-                metrics.hasIncrease
-                  ? "text-green-600 bg-green-600/10"
-                  : "text-red-600 bg-red-600/10"
-              } rounded-lg px-2 py-1 text-sm font-montserrat-semibold flex items-center`}
+              className={`${metrics.hasIncrease
+                ? "text-green-600 bg-green-600/10"
+                : "text-red-600 bg-red-600/10"
+                } rounded-lg px-2 py-1 text-sm font-montserrat-semibold flex items-center`}
             >
               <span className="mr-1">{metrics.hasIncrease ? "↑" : "↓"}</span>
               {metrics.percentageChange.toFixed(1)}%
@@ -280,7 +279,7 @@ function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
         </ComposedChart>
       </ResponsiveContainer>
 
-      <div className={cn(GAP.responsive, FLEX_LAYOUTS.rowWrap,TEXT_SMALL, "mt-4" )}>
+      <div className={cn(GAP.responsive, FLEX_LAYOUTS.rowWrap, TEXT_SMALL, "mt-4")}>
         <div className="flex items-center">
           <div className="w-4 h-3 rounded mr-2 bg-[#0D2BEC]"></div>
           <span className="text-gray-600">Completion Rate</span>
@@ -588,8 +587,8 @@ function InvitationsTable({ invitations, isLoading }) {
                       invitation.status === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : invitation.status === "Confirmed"
-                        ? "bg-primary-100 text-primary-800"
-                        : "bg-green-100 text-green-800"
+                          ? "bg-primary-100 text-primary-800"
+                          : "bg-green-100 text-green-800"
                     )}
                   >
                     {invitation.status}
@@ -665,11 +664,10 @@ function InvitationsTable({ invitations, isLoading }) {
                 key={page}
                 size="sm"
                 onClick={() => setCurrentPage(page)}
-                className={` ${
-                  currentPage === page
-                    ? "bg-primary text-white hover:bg-primary/90"
-                    : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                }`}
+                className={` ${currentPage === page
+                  ? "bg-primary text-white hover:bg-primary/90"
+                  : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
               >
                 {page}
               </Button>
@@ -682,7 +680,7 @@ function InvitationsTable({ invitations, isLoading }) {
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
-            <AltArrowRight  className="h-4 w-4" />
+            <AltArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -766,9 +764,8 @@ export default function SupportWorkerDashboard() {
         <div className={cn(DASHBOARD_STATS_GRID,)}>
           <StatCard
             title="Hours Worked"
-            value={`${
-              analytics?.workSummary?.hoursWorked?.current.toFixed(2) || 0
-            }h`}
+            value={`${analytics?.workSummary?.hoursWorked?.current.toFixed(2) || 0
+              }h`}
             icon={ClockCircle}
             trend="From last period"
             trendDirection={getTrendDirection(
@@ -795,9 +792,8 @@ export default function SupportWorkerDashboard() {
               analytics?.performanceMetrics?.averageRating.toFixed(2) || "N/A"
             }
             icon={Star}
-            trend={`${
-              analytics?.performanceMetrics?.totalReviews || 0
-            } total reviews`}
+            trend={`${analytics?.performanceMetrics?.totalReviews || 0
+              } total reviews`}
             trendDirection="stable"
           />
         </div>
@@ -816,7 +812,7 @@ export default function SupportWorkerDashboard() {
           <div className={cn(CARD, "col-span-full md:col-span-3", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
             <div className={FLEX_ROW_BETWEEN + " mb-6"}>
               <h2 className={HEADING_5}>
-                Upcoming Schedules
+                Upcoming Shifts
               </h2>
               <Button
                 onClick={() => {
@@ -825,7 +821,7 @@ export default function SupportWorkerDashboard() {
                 variant="link"
                 className="ml-auto"
               >
-                View All
+                View all →
               </Button>
             </div>
             {analytics?.workSummary?.upcomingShifts.length > 0 ? (

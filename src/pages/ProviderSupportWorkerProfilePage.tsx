@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  ComplianceTab,
+  VerificationTab,
   ExperienceTab,
   RiskTab,
 } from "@/components/provider/martketplaces/WorkerProfileTabs";
@@ -62,8 +62,8 @@ export default function ProviderSupportWorkerProfilePage() {
 
   // State
   const [activeTab, setActiveTab] = useState<
-    "compliance" | "experience" | "risk"
-  >("compliance");
+    "verification" | "experience" | "risk"
+  >("verification");
   const [isUnlocked, setIsUnlocked] = useState(false); // Controls Blurred vs Clear view
   const [showSubscription, setShowSubscription] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -225,9 +225,9 @@ export default function ProviderSupportWorkerProfilePage() {
           {/* 3. Tabs Navigation */}
           <div className="bg-gray-100 p-1 rounded-lg flex flex-col md:flex-row gap-1 mb-8">
             <TabButton
-              label="Compliance Status & Competency Score"
-              isActive={activeTab === "compliance"}
-              onClick={() => setActiveTab("compliance")}
+              label="Verification Status & Competency Score"
+              isActive={activeTab === "verification"}
+              onClick={() => setActiveTab("verification")}
             />
             <TabButton
               label="Experience & Readability Score"
@@ -243,8 +243,8 @@ export default function ProviderSupportWorkerProfilePage() {
 
           {/* 4. Tab Content (Blur logic handled inside) */}
           <div className="min-h-[400px]">
-            {activeTab === "compliance" && (
-              <ComplianceTab isUnlocked={isUnlocked} />
+            {activeTab === "verification" && (
+              <VerificationTab isUnlocked={isUnlocked} />
             )}
             {activeTab === "experience" && (
               <ExperienceTab isUnlocked={isUnlocked} />

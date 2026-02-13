@@ -109,11 +109,6 @@ import SupportSavedJobsPage from "./pages/SupportSavedJobsPage";
 import SupportJobDetailsPage from "./pages/SupportJobDetailsPage";
 import SupportWorkerInterviewsPage from "./pages/SupportWorkerInterviewsPage";
 
-import ComplianceCheckPage from "./pages/ComplianceCheckPage";
-import ComplianceFormPage from "./pages/ComplianceFormPage";
-import ComplianceEditPage from "./pages/ComplianceEditPage";
-import ComplianceManagementPage from "./pages/ComplianceManagementPage";
-
 import ParticipantJobsPage from "./pages/ParticipantJobsPage";
 import ParticipantJobFormPage from "./pages/ParticipantJobFormPage";
 import ParticipantJobApplicantsPage from "./pages/ParticipantJobApplicantsPage";
@@ -300,14 +295,6 @@ const AppRoutes = () => {
                   element={<ServiceTypesManagementPage />}
                 />
 
-                <Route
-                  path="service-types/:id"
-                  element={<ServiceTypeDetailPage />}
-                />
-                <Route
-                  path="compliance"
-                  element={<ComplianceManagementPage />}
-                />
                 <Route path="incidents" element={<IncidentsPage />} />
 
                 <Route path="chats" element={<Converations />} />
@@ -446,15 +433,6 @@ const AppRoutes = () => {
                 <Route
                   path="/timesheets/:id"
                   element={<SupportWorkerTimesheetDetails />}
-                />
-                <Route path="/compliance" element={<ComplianceCheckPage />} />
-                <Route
-                  path="/compliance/verify"
-                  element={<ComplianceFormPage />}
-                />
-                <Route
-                  path="/compliance/edit"
-                  element={<ComplianceEditPage />}
                 />
                 <Route path="/incidents" element={<IncidentsPage />} />
 

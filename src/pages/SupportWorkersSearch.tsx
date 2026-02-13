@@ -37,6 +37,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import UnifiedWorkerCard from "@/components/UnifiedWorkerCard";
+import { OnboardingNoticeModal } from "@/components/modals/OnboardingNoticeModal";
 
 import {
   cn,
@@ -74,6 +75,7 @@ export default function SearchSupportWorkersPage() {
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedState, setSelectedState] = useState<string>("");
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [selectedServiceArea, setSelectedServiceArea] = useState<string>("");
   const [maxDistance, setMaxDistance] = useState<string>("50");
@@ -162,7 +164,11 @@ export default function SearchSupportWorkersPage() {
 
   const error = hasLocationFilters ? locationError : originalError;
 
-  const searchResults = searchResponse?.workers || [];
+  // Filter results: only show workers who have completed onboarding
+  const searchResults = (searchResponse?.workers || []).filter(worker =>
+    worker.verificationStatus?.onboardingComplete === true ||
+    worker.verificationStatus?.profileSetupComplete === true
+  );
 
   // Reset dependent filters when parent changes
   useEffect(() => {
@@ -194,6 +200,17 @@ export default function SearchSupportWorkersPage() {
   };
 
   const handleInvite = (workerId: string) => {
+    // Check if current user (Participant/Coordinator) is onboarded
+    const isOnboarded =
+      (user?.role === 'participant' && (user as any).onboardingComplete) ||
+      (user?.role === 'coordinator' && (user as any).onboardingComplete) ||
+      (user?.role === 'admin');
+
+    if (!isOnboarded) {
+      setIsOnboardingModalOpen(true);
+      return;
+    }
+
     navigate(`/participant/invite/${workerId}`);
   };
 
@@ -549,6 +566,13 @@ export default function SearchSupportWorkersPage() {
           </>
         )}
       </div>
+
+      <OnboardingNoticeModal
+        isOpen={isOnboardingModalOpen}
+        onClose={() => setIsOnboardingModalOpen(false)}
+        title="Onboarding Required"
+        description="You need to complete your onboarding process before you can invite support workers to your organization."
+      />
     </div>
   );
 }

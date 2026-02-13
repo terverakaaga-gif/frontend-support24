@@ -36,6 +36,7 @@ import { SupportWorker } from "@/types/user.types";
 import GeneralHeader from "@/components/GeneralHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { Spinner } from "@/components/Spinner";
+import { OnboardingNoticeModal } from "@/components/modals/OnboardingNoticeModal";
 
 const inviteFormSchema = z.object({
   baseHourlyRate: z.number().min(1, "Base rate must be greater than 0"),
@@ -71,6 +72,7 @@ export default function SupportWorkerInvite() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [organizationId, setOrganizationId] = useState("");
 
   const {
@@ -128,6 +130,17 @@ export default function SupportWorkerInvite() {
 
   const sendInvite = async (data: InviteFormValues) => {
     if (!workerProfile || !organizationId) return;
+
+    // Check if current user (Participant/Coordinator) is onboarded
+    const isOnboarded =
+      (user?.role === 'participant' && (user as any).onboardingComplete) ||
+      (user?.role === 'coordinator' && (user as any).onboardingComplete) ||
+      (user?.role === 'admin');
+
+    if (!isOnboarded) {
+      setIsOnboardingModalOpen(true);
+      return;
+    }
 
     try {
       console.debug("Sending invitation with data:", {
@@ -376,6 +389,13 @@ export default function SupportWorkerInvite() {
           </Form>
         </CardContent>
       </Card>
+
+      <OnboardingNoticeModal
+        isOpen={isOnboardingModalOpen}
+        onClose={() => setIsOnboardingModalOpen(false)}
+        title="Onboarding Required"
+        description="You need to complete your onboarding process before you can send invitations to support workers."
+      />
     </div>
   );
 }

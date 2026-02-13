@@ -7,6 +7,7 @@ import { BG_COLORS, CONTAINER_PADDING, GAP } from "@/constants/design-system";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import SupportJobApplicationModal from "@/components/supportworker/SupportJobApplicationModal";
+import { OnboardingNoticeModal } from "@/components/modals/OnboardingNoticeModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { JobPostingCard } from "@/components/supportworker/JobPostingCard";
 import { useGetJobById, useToggleSaveJob } from "@/hooks/useJobHooks";
@@ -18,6 +19,7 @@ export default function SupportJobDetailsPage() {
   const navigate = useNavigate();
   const { jobId } = useParams<{ jobId: string }>();
   const { user, logout } = useAuth();
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   // Fetch job details
@@ -25,6 +27,16 @@ export default function SupportJobDetailsPage() {
   const toggleSaveMutation = useToggleSaveJob();
 
   const handleApply = () => {
+    // Check if worker is onboarded
+    const isOnboarded =
+      (user as any)?.verificationStatus?.onboardingComplete === true ||
+      (user as any)?.verificationStatus?.profileSetupComplete === true ||
+      (user?.role === 'admin');
+
+    if (!isOnboarded) {
+      setIsOnboardingModalOpen(true);
+      return;
+    }
     setIsApplicationModalOpen(true);
   };
 
@@ -123,7 +135,7 @@ export default function SupportJobDetailsPage() {
             <JobPostingCard
               job={jobForCard}
               onSaveJob={(e) => handleSaveJob(e, job._id)}
-              onApply={() => setIsApplicationModalOpen(true)}
+              onApply={handleApply}
               isActive={true}
               variant="default"
             />
@@ -243,6 +255,13 @@ export default function SupportJobDetailsPage() {
         onSubmit={handleApplicationSubmit}
         jobId={job._id}
         jobTitle={job.jobRole}
+      />
+
+      <OnboardingNoticeModal
+        isOpen={isOnboardingModalOpen}
+        onClose={() => setIsOnboardingModalOpen(false)}
+        title="Application Restricted"
+        description="To apply for jobs, you must complete your onboarding process. This ensures your profile visibility."
       />
     </div>
   );

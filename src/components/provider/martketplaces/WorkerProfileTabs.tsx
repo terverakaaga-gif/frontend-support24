@@ -43,9 +43,9 @@ const DataRow = ({
   );
 };
 
-// --- Tab 1: Compliance & Competency ---
-export const ComplianceTab = ({ isUnlocked }: TabProps) => {
-  const complianceItems = [
+// --- Tab 1: Verification & Competency ---
+export const VerificationTab = ({ isUnlocked }: TabProps) => {
+  const verificationItems = [
     { label: "NDIS Screening Check: Valid until 2026-08-15" },
     { label: "Working with Children Check: Valid until 2025-12-31" },
     { label: "Police Check: Completed 2024-03-20" },
@@ -62,11 +62,11 @@ export const ComplianceTab = ({ isUnlocked }: TabProps) => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Compliance Section */}
+      {/* Verification Section */}
       <section>
-        <h3 className="font-montserrat-bold text-lg text-gray-900 mb-4">Compliance Status</h3>
+        <h3 className="font-montserrat-bold text-lg text-gray-900 mb-4">Verification Status</h3>
         <div className="space-y-4">
-          {complianceItems.map((item, idx) => (
+          {verificationItems.map((item, idx) => (
             <div key={idx} className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-black shrink-0" />
@@ -219,7 +219,7 @@ export const RiskTab = ({ isUnlocked }: TabProps) => {
       <section>
         <h3 className="font-montserrat-bold text-lg text-gray-900 mb-2">Recommendation</h3>
         <p className={cn("text-sm text-gray-600 leading-relaxed", !isUnlocked && "blur-[3px] select-none")}>
-          Highly recommended for immediate hire. Strong compliance, excellent reliability, specific autism expertise aligns with your service needs.
+          Highly recommended for immediate hire. Strong verification, excellent reliability, specific autism expertise aligns with your service needs.
         </p>
       </section>
 

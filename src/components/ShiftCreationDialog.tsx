@@ -28,6 +28,7 @@ import { ShiftTypeStep } from "@/components/shifts/steps/ShiftTypeStep";
 import { ShiftDetailsStep } from "@/components/shifts/steps/ShiftDetailsStep";
 import { AssignWorkersStep } from "@/components/shifts/steps/AssignWorkersStep";
 import { ReviewStep } from "@/components/shifts/steps/ReviewStep";
+import { OnboardingNoticeModal } from "@/components/modals/OnboardingNoticeModal";
 
 interface ShiftCreationDialogProps {
   open: boolean;
@@ -37,11 +38,12 @@ interface ShiftCreationDialogProps {
 export default function ShiftCreationDialog({ open, onOpenChange }: ShiftCreationDialogProps) {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [shiftTypeSelection, setShiftTypeSelection] = useState("");
-  
+
   // Routine State
   const [routineOption, setRoutineOption] = useState<"none" | "create" | "select">("none");
-  
+
 
   // Queries
   const { data: serviceTypes = [] } = useGetActiveServiceTypes();
@@ -80,63 +82,83 @@ export default function ShiftCreationDialog({ open, onOpenChange }: ShiftCreatio
   // Routine Actions Wrapper
   const routineActions = {
     setOption: (opt: "none" | "create" | "select") => {
-        setRoutineOption(opt);
-        // Reset routine data based on option
-        if (opt === "create") {
-            setFormData(prev => ({ ...prev, routineId: undefined, routine: { name: "", description: "", tasks: [{ title: "", description: "" }] } }));
-        } else if (opt === "select") {
-            setFormData(prev => ({ ...prev, routine: undefined, routineId: "" }));
-        } else {
-            setFormData(prev => ({ ...prev, routine: undefined, routineId: undefined }));
-        }
+      setRoutineOption(opt);
+      // Reset routine data based on option
+      if (opt === "create") {
+        setFormData(prev => ({ ...prev, routineId: undefined, routine: { name: "", description: "", tasks: [{ title: "", description: "" }] } }));
+      } else if (opt === "select") {
+        setFormData(prev => ({ ...prev, routine: undefined, routineId: "" }));
+      } else {
+        setFormData(prev => ({ ...prev, routine: undefined, routineId: undefined }));
+      }
     },
-    
-    setRoutineField: (field: string, val: string) => 
-        setFormData(prev => ({ ...prev, routine: { ...prev.routine, [field]: val } })),
-    
-    setRoutineId: (id: string) => 
-        handleInputChange("routineId", id),
-    
-    addTask: () => 
-        setFormData(prev => ({ ...prev, routine: { ...prev.routine, tasks: [...(prev.routine?.tasks || []), { title: "", description: "" }] } })),
-    
-    removeTask: (index: number) => 
-        setFormData(prev => ({ ...prev, routine: { ...prev.routine, tasks: prev.routine?.tasks.filter((_: any, i: number) => i !== index) } })),
-    
-    updateTask: (index: number, field: string, val: string) => 
-        setFormData(prev => {
-            const newTasks = [...(prev.routine?.tasks || [])];
-            newTasks[index] = { ...newTasks[index], [field]: val };
-            return { ...prev, routine: { ...prev.routine, tasks: newTasks } };
-        }),
+
+    setRoutineField: (field: string, val: string) =>
+      setFormData(prev => ({ ...prev, routine: { ...prev.routine, [field]: val } })),
+
+    setRoutineId: (id: string) =>
+      handleInputChange("routineId", id),
+
+    addTask: () =>
+      setFormData(prev => ({ ...prev, routine: { ...prev.routine, tasks: [...(prev.routine?.tasks || []), { title: "", description: "" }] } })),
+
+    removeTask: (index: number) =>
+      setFormData(prev => ({ ...prev, routine: { ...prev.routine, tasks: prev.routine?.tasks.filter((_: any, i: number) => i !== index) } })),
+
+    updateTask: (index: number, field: string, val: string) =>
+      setFormData(prev => {
+        const newTasks = [...(prev.routine?.tasks || [])];
+        newTasks[index] = { ...newTasks[index], [field]: val };
+        return { ...prev, routine: { ...prev.routine, tasks: newTasks } };
+      }),
   };
 
   const handleNext = () => {
-      // Validate current step here
-      setStep(prev => prev + 1);
+    // Validate current step here
+    const isOnboarded =
+      (user?.role === 'participant' && (user as any).onboardingComplete) ||
+      (user?.role === 'coordinator' && (user as any).onboardingComplete) ||
+      (user?.role === 'admin');
+
+    if (!isOnboarded) {
+      setIsOnboardingModalOpen(true);
+      return;
+    }
+
+    setStep(prev => prev + 1);
   };
 
   const handleSubmit = async () => {
-      // Logic for submitting routine first if needed, then shift
-      // ... (Implementation same as original but cleaner)
-      
-      const payload = { ...formData };
-      
-      if (routineOption === "create" && formData.routine) {
-          try {
-             const res = await createRoutineMutation.mutateAsync(formData.routine);
-             payload.routineId = res._id; // Attach newly created ID
-          } catch(e) { return; }
-      }
+    // Logic for submitting routine first if needed, then shift
+    // ... (Implementation same as original but cleaner)
 
-      createShiftMutation.mutate(payload, {
-          onSuccess: () => {
-              toast.success("Shift Created");
-              onOpenChange(false);
-              setStep(1);
-          },
-          onError: (e: any) => toast.error(e.message)
-      });
+    const isOnboarded =
+      (user?.role === 'participant' && (user as any).onboardingComplete) ||
+      (user?.role === 'coordinator' && (user as any).onboardingComplete) ||
+      (user?.role === 'admin');
+
+    if (!isOnboarded) {
+      setIsOnboardingModalOpen(true);
+      return;
+    }
+
+    const payload = { ...formData };
+
+    if (routineOption === "create" && formData.routine) {
+      try {
+        const res = await createRoutineMutation.mutateAsync(formData.routine);
+        payload.routineId = res._id; // Attach newly created ID
+      } catch (e) { return; }
+    }
+
+    createShiftMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success("Shift Created");
+        onOpenChange(false);
+        setStep(1);
+      },
+      onError: (e: any) => toast.error(e.message)
+    });
   };
 
   return (
@@ -154,42 +176,48 @@ export default function ShiftCreationDialog({ open, onOpenChange }: ShiftCreatio
 
         {/* Step Content */}
         {step === 1 && <ShiftTypeStep selection={shiftTypeSelection} onSelect={(id: string) => { setShiftTypeSelection(id); handleInputChange("isMultiWorkerShift", id === "multiple"); }} />}
-        
-        {step === 2 && <ShiftDetailsStep 
-            formData={formData} 
-            onChange={handleInputChange} 
-            serviceTypes={serviceTypes}
-            shiftTypeSelection={shiftTypeSelection}
-            routineState={{ option: routineOption, existing: existingRoutines, loading: loadingRoutines }}
-            routineActions={routineActions}
+
+        {step === 2 && <ShiftDetailsStep
+          formData={formData}
+          onChange={handleInputChange}
+          serviceTypes={serviceTypes}
+          shiftTypeSelection={shiftTypeSelection}
+          routineState={{ option: routineOption, existing: existingRoutines, loading: loadingRoutines }}
+          routineActions={routineActions}
         />}
 
-        {step === 3 && <AssignWorkersStep 
-            workers={workers} 
-            shiftType={shiftTypeSelection} 
-            formData={formData} 
-            onChange={handleInputChange} 
+        {step === 3 && <AssignWorkersStep
+          workers={workers}
+          shiftType={shiftTypeSelection}
+          formData={formData}
+          onChange={handleInputChange}
         />}
 
         {step === 4 && <ReviewStep formData={formData} shiftTypeLabel={SHIFT_TYPES.find(t => t.id === shiftTypeSelection)?.title} />}
 
         {/* Footer */}
         <div className={cn(FLEX_ROW_BETWEEN, "pt-6 border-t")}>
-            <Button variant="outline" onClick={() => step === 1 ? onOpenChange(false) : setStep(prev => prev - 1)}>
-                <AltArrowLeft className="w-5 h-5 mr-2" /> {step === 1 ? "Cancel" : "Back"}
+          <Button variant="outline" onClick={() => step === 1 ? onOpenChange(false) : setStep(prev => prev - 1)}>
+            <AltArrowLeft className="w-5 h-5 mr-2" /> {step === 1 ? "Cancel" : "Back"}
+          </Button>
+
+          {step < 4 ? (
+            <Button onClick={handleNext} disabled={false /* Add validation check here */}>
+              Next <AltArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            
-            {step < 4 ? (
-                <Button onClick={handleNext} disabled={false /* Add validation check here */}>
-                    Next <AltArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-            ) : (
-                <Button onClick={handleSubmit} disabled={createShiftMutation.isPending}>
-                    {createShiftMutation.isPending ? <Refresh className="animate-spin w-5 h-5" /> : <><CheckCircle className="w-5 h-5 mr-2" /> Create Shift</>}
-                </Button>
-            )}
+          ) : (
+            <Button onClick={handleSubmit} disabled={createShiftMutation.isPending}>
+              {createShiftMutation.isPending ? <Refresh className="animate-spin w-5 h-5" /> : <><CheckCircle className="w-5 h-5 mr-2" /> Create Shift</>}
+            </Button>
+          )}
         </div>
       </DialogContent>
+      <OnboardingNoticeModal
+        isOpen={isOnboardingModalOpen}
+        onClose={() => setIsOnboardingModalOpen(false)}
+        title="Shift Creation Restricted"
+        description="You need to complete your onboarding process before you can create shifts."
+      />
     </Dialog>
   );
 }
