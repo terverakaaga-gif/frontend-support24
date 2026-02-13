@@ -44,7 +44,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
             <div className="flex-1 p-8 md:p-16 flex flex-col justify-center">
               <motion.h1 className="text-2xl md:text-4xl lg:text-4xl font-montserrat-bold mb-6 md:mb-0 leading-tight">
                 Take Control of{" "}
-                <InlineVectorText className="italic" text="your" y={-24} imageClassName="-bottom-8 sm:-bottom-10 w-[200px]  translate-y-[35%] sm:translate-y-[45%]" />{" "}
+                <InlineVectorText className="italic" text="your" y={-30} imageClassName="-bottom-8 sm:-bottom-10 w-[200px]  translate-y-[35%] sm:translate-y-[45%]" />{" "}
                 <br className="mb-12" /> Support  {" "}
                 <span>Today</span>
               </motion.h1>

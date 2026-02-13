@@ -4,10 +4,10 @@ import { Settings2, Headset, BadgeCheck } from "lucide-react";
 
 export const LANDINGPAGE_NAVS = [
   { name: "How it Works", href: "/how-it-works", hasDropdown: false },
-  { name: "Events", href: "/events", hasDropdown: false },
-  { name: "Accommodations", href: "/accommodations", hasDropdown: false },
-  { name: "Find Jobs", href: "/opportunities", hasDropdown: false },
-  { name: "Roles", href: "/roles", hasDropdown: true },
+  // { name: "Events", href: "/events", hasDropdown: false },
+  // { name: "Accommodations", href: "/accommodations", hasDropdown: false },
+  // { name: "Find Jobs", href: "/opportunities", hasDropdown: false },
+  // { name: "Roles", href: "/roles", hasDropdown: true },
   { name: "FAQs", href: "/#faq", hasDropdown: false },
   { name: "Contact Us", href: "/#contact", hasDropdown: false },
 ] as const;

@@ -132,9 +132,9 @@ export const HowItWorks = () => {
                                     y: -5,
                                     transition: { duration: 0.3 }
                                 }}
-                                                            
+
                             >
-                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-16 -bottom-11  w-[230px]  translate-y-[35%] sm:translate-y-[45%]"  text="Enhances" y={-24} />
+                                <InlineVectorText className="font-thin text-white" imageClassName=" sm:-bottom-16 -bottom-11  w-[230px] sm:translate-y-[45%]" text="Enhances" y={-48} />
                             </motion.span>{" "}
                             Your Care
                             <motion.br

@@ -10,8 +10,8 @@ interface ContactSectionProps {
   className?: string;
 }
 
-export const ContactSection: React.FC<ContactSectionProps> = ({ 
-  className = "" 
+export const ContactSection: React.FC<ContactSectionProps> = ({
+  className = ""
 }) => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -45,7 +45,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       {/* 💎 Bottom-right glow */}
       <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-primary/30 blur-[180px] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
-      
+
       <div className="lg:px-12 px-4 mx-auto relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left Content */}
@@ -66,7 +66,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             </motion.div>
 
             {/* Main Title */}
-            <motion.h1 
+            <motion.h1
               className="text-3xl md:text-4xl lg:text-5xl font-montserrat-bold text-gray-900 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -82,12 +82,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
-                <InlineVectorText className="italic text-gray-900" imageClassName=" sm:-bottom-10   translate-y-[35%] sm:translate-y-[45%]" text="Today" y={-20} />
+                <InlineVectorText className="italic text-gray-900" imageClassName=" sm:-bottom-10   translate-y-[35%] sm:translate-y-[45%]" text="Today" y={-30} />
               </motion.span>
             </motion.h1>
 
             {/* Description */}
-            <motion.p 
+            <motion.p
               className="text-base md:text-xl text-gray-700 leading-relaxed font-montserrat-medium max-w-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             </motion.p>
 
             {/* Contact Image */}
-            <motion.div 
+            <motion.div
               className="relative mt-6 lg:mt-8"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -108,7 +108,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               <div className="relative w-full max-w-xl">
                 {/* primary L-shaped background */}
                 <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-primary rounded-3xl" style={{ borderTopRightRadius: '0' }} />
-                
+
                 {/* Image */}
                 <img
                   src="/images/sec-lady.png"
@@ -127,7 +127,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-2xl md:text-3xl font-montserrat-bold text-gray-900 mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -156,7 +156,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     required
                   />
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
