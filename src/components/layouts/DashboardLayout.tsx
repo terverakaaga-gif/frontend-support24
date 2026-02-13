@@ -485,8 +485,7 @@ function DashboardContent({
       {/* Main Content */}
       <main
         className={cn(
-          "flex-1 min-h-screen flex flex-col overflow-hidden transition-[padding] duration-200 ease-linear",
-          state === "expanded" ? "md:pl-64" : "md:pl-16"
+          "flex-1 min-h-screen flex flex-col overflow-hidden transition-[padding] duration-200 ease-linear"
         )}
       >
         {/* Mobile Toggle Button */}
