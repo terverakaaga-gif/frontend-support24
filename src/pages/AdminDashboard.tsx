@@ -1,15 +1,41 @@
 import { useState } from "react";
-import { 
-  Users, Clock, DollarSign, Calendar, Search, Filter, Download,
-  ArrowRight, ArrowLeft
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatCard } from "@/components/StatCard";
 import { ChartSection } from "@/components/ChartSection";
 import { NotificationsList } from "@/components/NotificationsList";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/design-utils";
+import {
+  SPACING,
+  GAP,
+  CONTAINER_PADDING,
+  HEADING_STYLES,
+  TEXT_STYLES,
+  FONT_FAMILY,
+  RADIUS,
+  SHADOW,
+  BORDER_STYLES,
+  GRID_LAYOUTS,
+  FLEX_LAYOUTS,
+  TEXT_COLORS,
+  BG_COLORS,
+  ICON_SIZES,
+} from "@/constants/design-system";
+import {
+  AltArrowRight,
+  Bell,
+  Chart,
+  ClockCircle,
+  CloudDownload,
+  CourseUp,
+  Dollar,
+  Filter,
+  Magnifer,
+  UsersGroupRounded,
+} from "@solar-icons/react";
 
 // Mock data for charts
 const bookingTrendsData = [
@@ -30,302 +56,305 @@ const revenueData = [
   { month: "Jun", revenue: 75000 },
 ];
 
-// Mock notifications - fixed type values to match the allowed types
+// Mock notifications
 const notifications = [
   {
     id: "1",
     type: "booking" as const,
     title: "New Booking Request",
     description: "John Smith requested a booking for tomorrow",
-    time: "5 minutes ago"
+    time: "5 minutes ago",
   },
   {
     id: "2",
     type: "message" as const,
     title: "New Message",
     description: "Sarah Johnson sent you a message",
-    time: "1 hour ago"
+    time: "1 hour ago",
   },
   {
     id: "3",
     type: "update" as const,
     title: "System Update",
     description: "New features available in the admin panel",
-    time: "2 hours ago"
-  }
+    time: "2 hours ago",
+  },
 ];
 
 // Mock bookings data
 const bookingsData = [
   {
     id: "1",
+    participant: {
+      name: "John Smith",
+      avatar: "/avatars/john.jpg",
+    },
+    worker: {
+      name: "Sarah Johnson",
+      avatar: "/avatars/sarah.jpg",
+    },
     date: "2024-03-15",
     timeStart: "09:00 AM",
     timeEnd: "01:00 PM",
-    guardian: "John Smith",
-    worker: "Sarah Johnson",
-    hours: 4,
-    status: "Confirmed",
-    type: "Personal Care"
+    status: "confirmed",
+    type: "Personal Care",
   },
   {
     id: "2",
+    participant: {
+      name: "Emma Wilson",
+      avatar: "/avatars/emma.jpg",
+    },
+    worker: {
+      name: "Michael Brown",
+      avatar: "/avatars/michael.jpg",
+    },
     date: "2024-03-15",
     timeStart: "02:00 PM",
     timeEnd: "06:00 PM",
-    guardian: "Emma Wilson",
-    worker: "Michael Brown",
-    hours: 4,
-    status: "In Progress",
-    type: "Community Access"
+    status: "in-progress",
+    type: "Community Access",
   },
   {
     id: "3",
+    participant: {
+      name: "David Lee",
+      avatar: "/avatars/david.jpg",
+    },
+    worker: {
+      name: "Jessica White",
+      avatar: "/avatars/jessica.jpg",
+    },
     date: "2024-03-16",
     timeStart: "10:00 AM",
     timeEnd: "03:00 PM",
-    guardian: "David Lee",
-    worker: "Jessica White",
-    hours: 5,
-    status: "Pending",
-    type: "Therapy Support"
-  }
-];
-
-// Mock stakeholders data
-const stakeholders = [
-  {
-    type: "Guardians",
-    count: 450,
-    active: 380,
-    pending: 15,
-    growth: "+12%",
-    progress: 75
+    status: "pending",
+    type: "Therapy Support",
   },
-  {
-    type: "Support Workers",
-    count: 320,
-    active: 280,
-    pending: 25,
-    growth: "+8%",
-    progress: 65
-  },
-  {
-    type: "Coordinators",
-    count: 45,
-    active: 42,
-    pending: 3,
-    growth: "+5%",
-    progress: 85
-  }
 ];
 
 export default function AdminDashboard() {
   const [currentMonth, setCurrentMonth] = useState("Mar 2024");
 
   return (
-    <div className="container py-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className={cn("min-h-screen", BG_COLORS.muted, CONTAINER_PADDING.responsive)}>
+      {/* Header Section */}
+      <div className={cn(FLEX_LAYOUTS.colToRow, GAP.base, `mb-${SPACING['2xl']}`)}>
         <div>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">System overview and management</p>
+          <h1 className={HEADING_STYLES.h2}>Admin Dashboard</h1>
+          <p className={TEXT_STYLES.body}>
+            Welcome back! Here's your system overview.
+          </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
+        <div className={cn(FLEX_LAYOUTS.rowWrap, GAP.sm)}>
+          <Button variant="outline" size="sm" className="h-9">
+            <Filter className={ICON_SIZES.sm} />
+            <span className={`ml-${SPACING.sm}`}>Filter</span>
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="h-9">
             {currentMonth}
           </Button>
-          <Button variant="default" className="bg-guardian hover:bg-guardian-dark">
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
+          <Button
+            variant="default"
+            size="sm"
+            className="h-9 bg-gradient-to-r from-guardian to-guardian-dark hover:from-guardian-dark hover:to-guardian"
+          >
+            <CloudDownload className={ICON_SIZES.sm} />
+            <span className={`ml-${SPACING.sm}`}>Export Report</span>
           </Button>
         </div>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {/* Stats Grid */}
+      <div className={cn(GRID_LAYOUTS.cols4, GAP.base, `mb-${SPACING['2xl']}`)}>
         <StatCard
           title="Total Users"
           value="1,234"
-          icon={<Users size={24} />}
-          change={{ value: "+12% from last month", positive: true }}
+          icon={<UsersGroupRounded className={ICON_SIZES.sm} />}
+          change={{ value: "+12%", positive: true }}
+          trend="up"
         />
         <StatCard
           title="Total Hours"
           value="8,560"
-          icon={<Clock size={24} />}
-          change={{ value: "+8% from last month", positive: true }}
+          icon={<ClockCircle className={ICON_SIZES.sm} />}
+          change={{ value: "+8%", positive: true }}
+          trend="up"
         />
         <StatCard
           title="Revenue"
           value="$375,000"
-          icon={<DollarSign size={24} />}
-          change={{ value: "+15% from last month", positive: true }}
+          icon={<Dollar className={ICON_SIZES.sm} />}
+          change={{ value: "+15%", positive: true }}
+          trend="up"
         />
         <StatCard
-          title="Active Bookings"
-          value="342"
-          icon={<Calendar size={24} />}
-          additionalText="28 pending approval"
+          title="Pending Invitations"
+          value="5"
+          icon={<Bell className={ICON_SIZES.sm} />}
+          additionalText="3 new today"
+          trend="none"
         />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <ChartSection 
-          title="Booking Trends" 
-          data={bookingTrendsData} 
-          type="bar" 
-          dataKey="bookings"
-          xAxisKey="month"
-        />
-        <ChartSection 
-          title="Revenue Overview" 
-          data={revenueData} 
-          type="line" 
-          dataKey="revenue"
-          xAxisKey="month"
-        />
-      </div>
-
-      {/* Bookings Table & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Bookings Management</h2>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search bookings..."
-                    className="pl-9 w-[250px]"
-                  />
+      {/* Charts Section */}
+      <div className={cn(GRID_LAYOUTS.cols2, GAP.base, `mb-${SPACING['2xl']}`)}>
+        <Card className={CONTAINER_PADDING.card}>
+          <CardHeader className="px-0 pt-0">
+            <div className={FLEX_LAYOUTS.rowBetween}>
+              <CardTitle className={cn(HEADING_STYLES.h5, GAP.sm)}>
+                <div className={cn("flex items-center", GAP.sm)}>
+                  <Chart className={cn(ICON_SIZES.md, TEXT_COLORS.brand)} />
+                  <span>Booking Trends</span>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-                <Button variant="secondary" size="sm">
-                  Export
-                </Button>
-              </div>
-            </div>
-
-            {/* Bookings Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left border-b">
-                    <th className="pb-3 pl-0">
-                      <Checkbox />
-                    </th>
-                    <th className="pb-3 font-medium">Date</th>
-                    <th className="pb-3 font-medium">Time</th>
-                    <th className="pb-3 font-medium">Guardian</th>
-                    <th className="pb-3 font-medium">Worker</th>
-                    <th className="pb-3 font-medium">Hours</th>
-                    <th className="pb-3 font-medium">Status</th>
-                    <th className="pb-3 font-medium">Type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookingsData.map((booking) => (
-                    <tr key={booking.id} className="border-b last:border-0">
-                      <td className="py-4 pl-0">
-                        <Checkbox />
-                      </td>
-                      <td className="py-4">
-                        {new Date(booking.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit'
-                        })}
-                      </td>
-                      <td className="py-4">
-                        {booking.timeStart} - {booking.timeEnd}
-                      </td>
-                      <td className="py-4">{booking.guardian}</td>
-                      <td className="py-4">{booking.worker}</td>
-                      <td className="py-4">{booking.hours}</td>
-                      <td className="py-4">
-                        <span className={`
-                          status-badge 
-                          ${booking.status === 'Confirmed' ? 'status-confirmed' : 
-                            booking.status === 'Pending' ? 'status-pending' :
-                            'status-progress'}
-                        `}>
-                          {booking.status}
-                        </span>
-                      </td>
-                      <td className="py-4">{booking.type}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between mt-6">
-              <span className="text-sm text-muted-foreground">
-                Showing 1 to 3 of 3 entries
-              </span>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" disabled>
-                  Previous
-                </Button>
-                <Button variant="default" size="sm" className="bg-guardian hover:bg-guardian-dark">
-                  1
-                </Button>
-                <Button variant="outline" size="sm" disabled>
-                  Next
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {/* Notifications Section */}
-          <NotificationsList notifications={notifications} />
-
-          {/* Stakeholders Overview */}
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Stakeholder Overview</h2>
-              <Button variant="outline" size="sm">
-                Add New
+              </CardTitle>
+              <Button variant="ghost" size="sm">
+                View Details
               </Button>
             </div>
-            <div className="space-y-6">
-              {stakeholders.map((item) => (
-                <div key={item.type} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-guardian/10 rounded-full">
-                        <Users className="h-5 w-5 text-guardian" />
-                      </div>
+          </CardHeader>
+          <CardContent className="px-0 pb-0">
+            <ChartSection
+              data={bookingTrendsData}
+              type="bar"
+              dataKey="bookings"
+              xAxisKey="month"
+              height={300}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className={CONTAINER_PADDING.card}>
+          <CardHeader className="px-0 pt-0">
+            <div className={FLEX_LAYOUTS.rowBetween}>
+              <CardTitle className={cn(HEADING_STYLES.h5)}>
+                <div className={cn("flex items-center", GAP.sm)}>
+                  <CourseUp className={cn(ICON_SIZES.md, TEXT_COLORS.brand)} />
+                  <span>Revenue Overview</span>
+                </div>
+              </CardTitle>
+              <Button variant="ghost" size="sm">
+                View Details
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="px-0 pb-0">
+            <ChartSection
+              data={revenueData}
+              type="line"
+              dataKey="revenue"
+              xAxisKey="month"
+              height={300}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Bookings & Notifications */}
+      <div className={cn(GRID_LAYOUTS.cols3, GAP.base)}>
+        <Card className={cn("md:col-span-2", BORDER_STYLES.subtle, "transition-all duration-200", SHADOW.lg)}>
+          <CardHeader>
+            <div className={FLEX_LAYOUTS.rowBetween}>
+              <CardTitle className={cn(HEADING_STYLES.h5, TEXT_COLORS.brand)}>
+                Recent Bookings
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(TEXT_COLORS.brand, BG_COLORS.primaryLightHover)}
+              >
+                View All
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className={`space-y-${SPACING.lg}`}>
+              <div className={cn("flex items-center", GAP.base)}>
+                <div className="flex-1">
+                  <Input
+                    placeholder="Search bookings..."
+                    className={cn(BORDER_STYLES.subtle, "max-w-sm focus:border-primary focus-visible:ring-primary/20")}
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(BORDER_STYLES.subtle, BG_COLORS.primaryLightHover)}
+                >
+                  <Magnifer className={cn(ICON_SIZES.sm, TEXT_COLORS.brand)} />
+                </Button>
+              </div>
+
+              <div className={`space-y-${SPACING.base}`}>
+                {bookingsData.map((booking) => (
+                  <div
+                    key={booking.id}
+                    className={cn(
+                      "flex items-center justify-between",
+                      `p-${SPACING.base}`,
+                      RADIUS.lg,
+                      BORDER_STYLES.subtle,
+                      "bg-card hover:bg-primary-50 transition-colors"
+                    )}
+                  >
+                    <div className={cn("flex items-center", GAP.base)}>
+                      <Avatar className={cn(BORDER_STYLES.subtle)}>
+                        <AvatarImage src={booking.participant.avatar} />
+                        <AvatarFallback className={cn(BG_COLORS.primaryLight, TEXT_COLORS.brand, FONT_FAMILY.montserratSemibold)}>
+                          {booking.participant.name[0]}
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
-                        <h3 className="font-medium">{item.type}</h3>
-                        <p className="text-xs text-muted-foreground">
-                          {item.active} active ��� {item.pending} pending
-                        </p>
+                        <div className={cn(FONT_FAMILY.montserratSemibold, "text-gray-900")}>
+                          {booking.participant.name}
+                        </div>
+                        <div className={TEXT_STYLES.bodySecondary}>
+                          {booking.type} • {booking.timeStart}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold">{item.count}</span>
-                      <span className="text-xs text-green-600">{item.growth} this month</span>
+                    <div className={cn("flex items-center", GAP.base)}>
+                      <Badge
+                        variant={
+                          booking.status === "confirmed"
+                            ? "default"
+                            : booking.status === "in-progress"
+                            ? "secondary"
+                            : "outline"
+                        }
+                        className={cn("capitalize", {
+                          "bg-primary text-white": booking.status === "confirmed",
+                          "bg-primary/10 text-primary border-primary/20": booking.status === "in-progress",
+                          "border-primary/20 text-primary": booking.status === "pending",
+                        })}
+                      >
+                        {booking.status}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={BG_COLORS.primaryLightHover}
+                      >
+                        <AltArrowRight className={cn(ICON_SIZES.sm, TEXT_COLORS.brand)} />
+                      </Button>
                     </div>
                   </div>
-                  <Progress value={item.progress} className="h-2 bg-gray-100" />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card className={cn(BORDER_STYLES.subtle, "transition-all duration-200", SHADOW.lg)}>
+          <CardHeader>
+            <CardTitle className={cn(HEADING_STYLES.h5, TEXT_COLORS.brand)}>
+              Notifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <NotificationsList notifications={notifications} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
-
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { SupportWorkerSkill } from "@/entities/types";
 import { Button } from "@/components/ui/button";
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+
 import {
   Form,
   FormControl,
@@ -16,87 +16,140 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { 
-  ArrowLeft,
-  ArrowRight,
-  Briefcase,
-  Languages,
-  Clock,
-  DollarSign,
-  CheckCircle,
-  Heart,
-  Car,
-  Stethoscope,
-  Users,
-  Home,
-  MessageSquare,
-  ShieldAlert,
-  Pill,
-  UtensilsCrossed,
-  Bandage
-} from "lucide-react";
+
 import { toast } from "sonner";
-import { Calendar } from "@/components/ui/calendar";
-import { TimeInput } from "@/components/auth/TimeInput";
+import { cn } from "@/lib/utils";
+import authService from "@/api/services/authService";
+import { useGetServiceTypes } from "@/hooks/useServiceTypeHooks";
+import { useGetRateTimeBands } from "@/hooks/useRateTimeBandHooks";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Spinner } from "../Spinner";
+import {
+  useRegions,
+  useServiceAreasByRegion,
+  useStates,
+} from "@/hooks/useLocationHooks";
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  DollarMinimalistic,
+  Global,
+  Heart,
+  Magnifer,
+  MapPoint,
+  Refresh,
+  Suitcase,
+  TrashBinMinimalistic,
+} from "@solar-icons/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { commonLanguages } from "@/constants/common-languages";
+import { SupportWorkerOnboardingInput } from "@/types/user.types";
 
 const bioSchema = z.object({
-  bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
-  languages: z.string().min(1, { message: "Please enter at least one language." }),
+  bio: z
+    .string()
+    .min(10, { message: "Bio must be at least 10 characters." })
+    .max(500, { message: "Bio must be at most 500 characters." }),
+  languages: z
+    .array(z.string().min(1))
+    .min(1, { message: "Please enter at least one language." }),
+  address: z.string().min(5, { message: "Please enter your address." }),
+  stateId: z.string().min(1, { message: "Please select a state." }),
+  regionId: z.string().min(1, { message: "Please select a region." }),
+  serviceAreaIds: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one service area." }),
 });
 
 const skillsSchema = z.object({
-  skills: z.array(z.string()).min(1, { message: "Please select at least one skill." }),
+  skills: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one skill." }),
 });
 
 const experienceSchema = z.object({
-  title: z.string().min(2, { message: "Job title is required." }),
-  organization: z.string().min(2, { message: "Organization name is required." }),
-  startDate: z.string().min(1, { message: "Start date is required." }),
-  endDate: z.string().optional(),
-  description: z.string().min(10, { message: "Please provide a description of your experience." }),
+  experience: z
+    .array(
+      z.object({
+        title: z.string().min(2, { message: "Job title is required." }),
+        organization: z
+          .string()
+          .min(2, { message: "Organization name is required." }),
+        startDate: z.string().min(1, { message: "Start date is required." }),
+        endDate: z.string().optional(),
+        description: z.string().min(10, {
+          message: "Please provide a description of your experience.",
+        }),
+      })
+    )
+    .min(1, { message: "Please add at least one experience." })
+    .refine((experiences) => {
+      return experiences.every((exp) => {
+        if (!exp.endDate) return true;
+        return new Date(exp.startDate) <= new Date(exp.endDate);
+      });
+    }, {
+      message: "End date must be after start date.",
+    }),
+  resume: z.instanceof(File),
 });
 
 const rateSchema = z.object({
-  baseRate: z.string().min(1, { message: "Base rate is required." }),
-  weekendRate: z.string().optional(),
-  holidayRate: z.string().optional(),
-  overnightRate: z.string().optional(),
-});
-
-const timeSlotSchema = z.object({
-  start: z.string().min(1, { message: "Start time is required." }),
-  end: z.string().min(1, { message: "End time is required." }),
+  shiftRates: z
+    .array(
+      z.object({
+        rateTimeBandId: z
+          .string()
+          .min(1, { message: "Rate time band is required." }),
+        hourlyRate: z
+          .string()
+          .min(1, { message: "Hourly rate is required." })
+          .refine((val) => parseFloat(val) >= 38, {
+            message: "Hourly rate must be at least $38",
+          }),
+      })
+    )
+    .min(1, { message: "Please set at least one rate." }),
 });
 
 const availabilitySchema = z.object({
-  availableWeekdays: z.array(z.string()).min(1, { message: "Please select at least one day of availability." }),
-  timeSlots: z.record(z.array(timeSlotSchema).optional()),
+  availability: z.object({
+    weekdays: z
+      .array(
+        z.object({
+          day: z.string(),
+          available: z.boolean(),
+          slots: z.array(
+            z.object({
+              start: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+                message: "Start time must be in HH:mm format",
+              }),
+              end: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+                message: "End time must be in HH:mm format",
+              }),
+            })
+          ),
+        })
+      )
+      .min(1, { message: "Please set your availability." }),
+  }),
 });
 
 interface SupportWorkerSetupProps {
   onComplete: () => void;
+  isSubmitting?: boolean;
 }
-
-const availableSkills: { value: SupportWorkerSkill; label: string; icon: React.ElementType }[] = [
-  { value: "personal-care", label: "Personal Care", icon: Heart },
-  { value: "transport", label: "Transport", icon: Car },
-  { value: "therapy", label: "Therapy Support", icon: Stethoscope },
-  { value: "social-support", label: "Social Support", icon: Users },
-  { value: "household", label: "Household Tasks", icon: Home },
-  { value: "communication", label: "Communication Support", icon: MessageSquare },
-  { value: "behavior-support", label: "Behavior Support", icon: ShieldAlert },
-  { value: "medication-management", label: "Medication Management", icon: Pill },
-  { value: "meal-preparation", label: "Meal Preparation", icon: UtensilsCrossed },
-  { value: "first-aid", label: "First Aid", icon: Bandage },
-];
 
 const weekdays = [
   { value: "monday", label: "Monday" },
@@ -108,42 +161,99 @@ const weekdays = [
   { value: "sunday", label: "Sunday" },
 ];
 
-// Australian names and details for mock data
-const australianCities = [
-  "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", 
-  "Gold Coast", "Newcastle", "Canberra", "Wollongong", "Hobart"
-];
-
-export function SupportWorkerSetup({ onComplete }: SupportWorkerSetupProps) {
+export function SupportWorkerSetup({
+  onComplete,
+  isSubmitting = false,
+}: SupportWorkerSetupProps) {
+  const { completeOnboarding, user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [isOnboarding, setIsOnboarding] = useState(false);
+  const [languageInput, setLanguageInput] = useState("");
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+
+  // Address State
+  const [showAddressPredictions, setShowAddressPredictions] = useState(false);
+  const [addressInputValue, setAddressInputValue] = useState("");
+  // FIX 1: Defined the missing Ref
+  const addressContainerRef = useRef<HTMLDivElement>(null);
+
+  // Google Places Autocomplete Hook
+  const {
+    placesService,
+    placePredictions,
+    getPlacePredictions,
+    isPlacePredictionsLoading,
+  } = usePlacesService({
+    apiKey: import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "",
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    },
+  });
+
+  const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } =
+    useGetServiceTypes();
+  const { data: rateTimeBands = [], isLoading: isLoadingRateTimeBands } =
+    useGetRateTimeBands();
+
+  // Location hooks
+  const { data: states = [], isLoading: isLoadingStates } = useStates();
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [selectedRegionId, setSelectedRegionId] = useState("");
+
+  const { data: regions = [], isLoading: isLoadingRegions } = useRegions(
+    selectedStateId,
+    !!selectedStateId
+  );
+
+  const { data: serviceAreas = [], isLoading: isLoadingServiceAreas } =
+    useServiceAreasByRegion(selectedRegionId, !!selectedRegionId);
+
   const [formData, setFormData] = useState({
     bio: "",
-    languages: "English, Australian Sign Language",
+    languages: [] as string[],
+    stateId: "",
+    regionId: "",
+    address: "",
+    serviceAreaIds: [] as string[],
     skills: [] as string[],
-    experience: {
-      title: "",
-      organization: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-    },
-    rates: {
-      baseRate: "",
-      weekendRate: "",
-      holidayRate: "",
-      overnightRate: "",
-    },
+    experience: [
+      {
+        title: "",
+        organization: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+      },
+    ],
+    resume: undefined as File | undefined,
+    shiftRates: [] as { rateTimeBandId: string; hourlyRate: string }[],
     availability: {
-      availableWeekdays: [] as string[],
-      timeSlots: {} as Record<string, { start: string; end: string }[]>,
-    }
+      weekdays: weekdays.map((day) => ({
+        day: day.value,
+        available: false,
+        slots: [] as { start: string; end: string }[],
+      })),
+    },
   });
+
+  // FIX 2: Initialize address input value from form data (for persistence when navigating back)
+  useEffect(() => {
+    if (formData.address && !addressInputValue) {
+      setAddressInputValue(formData.address);
+    }
+  }, [formData.address]);
 
   const bioForm = useForm<z.infer<typeof bioSchema>>({
     resolver: zodResolver(bioSchema),
     defaultValues: {
       bio: formData.bio,
       languages: formData.languages,
+      address: formData.address,
+      stateId: formData.stateId,
+      regionId: formData.regionId,
+      serviceAreaIds: formData.serviceAreaIds,
     },
   });
 
@@ -157,33 +267,132 @@ export function SupportWorkerSetup({ onComplete }: SupportWorkerSetupProps) {
   const experienceForm = useForm<z.infer<typeof experienceSchema>>({
     resolver: zodResolver(experienceSchema),
     defaultValues: {
-      title: formData.experience.title,
-      organization: formData.experience.organization,
-      startDate: formData.experience.startDate,
-      endDate: formData.experience.endDate,
-      description: formData.experience.description,
+      experience: formData.experience,
+      resume: formData.resume,
     },
   });
 
   const rateForm = useForm<z.infer<typeof rateSchema>>({
     resolver: zodResolver(rateSchema),
     defaultValues: {
-      baseRate: formData.rates.baseRate,
-      weekendRate: formData.rates.weekendRate,
-      holidayRate: formData.rates.holidayRate,
-      overnightRate: formData.rates.overnightRate,
+      shiftRates: formData.shiftRates,
     },
   });
 
   const availabilityForm = useForm<z.infer<typeof availabilitySchema>>({
     resolver: zodResolver(availabilitySchema),
     defaultValues: {
-      availableWeekdays: formData.availability.availableWeekdays,
-      timeSlots: formData.availability.timeSlots,
+      availability: formData.availability,
     },
   });
 
+  // Handle address input changes (Typing)
+  const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAddressInputValue(value);
+    setFormData((prev) => ({ ...prev, address: value }));
+    bioForm.setValue("address", value);
+
+    if (value.trim().length > 2) {
+      getPlacePredictions({ input: value });
+      setShowAddressPredictions(true);
+    } else {
+      setShowAddressPredictions(false);
+    }
+  };
+
+  // Handle address selection from predictions (Click)
+  const handleAddressSelect = (prediction: any) => {
+    // 1. Get address string
+    const selectedAddress = prediction.description;
+
+    // 2. Update visual input immediately
+    setAddressInputValue(selectedAddress);
+
+    // 3. Close prediction pane
+    setShowAddressPredictions(false);
+
+    // 4. Update form data and validation
+    setFormData((prev) => ({ ...prev, address: selectedAddress }));
+    bioForm.setValue("address", selectedAddress, { shouldValidate: true });
+
+    // 5. Get detailed info if needed
+    if (placesService) {
+      placesService.getDetails(
+        {
+          placeId: prediction.place_id,
+          fields: ["formatted_address", "geometry", "address_components"],
+        },
+        (placeDetails: any) => {
+          if (placeDetails?.formatted_address) {
+            const finalAddress = placeDetails.formatted_address;
+            setAddressInputValue(finalAddress);
+            setFormData((prev) => ({ ...prev, address: finalAddress }));
+            bioForm.setValue("address", finalAddress);
+          }
+        }
+      );
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        addressContainerRef.current &&
+        !addressContainerRef.current.contains(event.target as Node)
+      ) {
+        setShowAddressPredictions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Reset dependent fields when state changes
+  React.useEffect(() => {
+    if (selectedStateId !== formData.stateId) {
+      setSelectedRegionId("");
+      setFormData((prev) => ({
+        ...prev,
+        regionId: "",
+        serviceAreaIds: [],
+      }));
+      bioForm.setValue("regionId", "");
+      bioForm.setValue("serviceAreaIds", []);
+    }
+  }, [selectedStateId, formData.stateId, bioForm]);
+
+  // Reset service areas when region changes
+  React.useEffect(() => {
+    if (selectedRegionId !== formData.regionId) {
+      setFormData((prev) => ({
+        ...prev,
+        serviceAreaIds: [],
+      }));
+      bioForm.setValue("serviceAreaIds", []);
+    }
+  }, [selectedRegionId, formData.regionId, bioForm]);
+
+  React.useEffect(() => {
+    if (
+      rateTimeBands.length > 0 &&
+      formData.shiftRates.length !== rateTimeBands.length
+    ) {
+      const initialRates = rateTimeBands.map((band) => ({
+        rateTimeBandId: band._id,
+        hourlyRate: "",
+      }));
+      setFormData((prev) => ({ ...prev, shiftRates: initialRates }));
+      rateForm.reset({ shiftRates: initialRates });
+    }
+  }, [rateTimeBands, formData.shiftRates.length, rateForm]);
+
   const nextStep = () => {
+    if (!completedSteps.includes(step)) {
+      setCompletedSteps([...completedSteps, step]);
+    }
     setStep(step + 1);
   };
 
@@ -191,628 +400,1500 @@ export function SupportWorkerSetup({ onComplete }: SupportWorkerSetupProps) {
     setStep(step - 1);
   };
 
-  const handleBioSubmit = (data: z.infer<typeof bioSchema>) => {
-    setFormData({ ...formData, bio: data.bio, languages: data.languages });
+  const goToStep = (targetStep: number) => {
+    if (targetStep <= step || completedSteps.includes(targetStep - 1)) {
+      setStep(targetStep);
+    }
+  };
+
+  const handleBioSubmit = async (data: z.infer<typeof bioSchema>) => {
+    setFormData({
+      ...formData,
+      bio: data.bio,
+      languages: data.languages,
+      address: data.address,
+      stateId: data.stateId,
+      regionId: data.regionId,
+      serviceAreaIds: data.serviceAreaIds,
+    });
     nextStep();
   };
 
-  const handleSkillsSubmit = (data: z.infer<typeof skillsSchema>) => {
+  const handleSkillsSubmit = async (data: z.infer<typeof skillsSchema>) => {
     setFormData({ ...formData, skills: data.skills });
     nextStep();
   };
 
-  const handleExperienceSubmit = (data: z.infer<typeof experienceSchema>) => {
-    setFormData({ 
-      ...formData, 
-      experience: {
-        title: data.title,
-        organization: data.organization,
-        startDate: data.startDate,
-        endDate: data.endDate || "",
-        description: data.description,
-      }
+  const handleExperienceSubmit = async (
+    data: z.infer<typeof experienceSchema>
+  ) => {
+    setFormData({
+      ...formData,
+      experience: data.experience as any,
+      resume: data.resume,
     });
     nextStep();
   };
 
-  const handleRateSubmit = (data: z.infer<typeof rateSchema>) => {
-    setFormData({
-      ...formData,
-      rates: {
-        baseRate: data.baseRate,
-        weekendRate: data.weekendRate || "",
-        holidayRate: data.holidayRate || "",
-        overnightRate: data.overnightRate || "",
-      }
-    });
+  const handleRateSubmit = async (data: z.infer<typeof rateSchema>) => {
+    setFormData({ ...formData, shiftRates: data.shiftRates as any });
     nextStep();
   };
 
-  const handleAvailabilitySubmit = (data: z.infer<typeof availabilitySchema>) => {
-    const timeSlots: Record<string, { start: string; end: string }[]> = {};
-    
-    Object.entries(data.timeSlots || {}).forEach(([day, slots]) => {
-      if (slots && slots.length > 0) {
-        timeSlots[day] = slots.map(slot => ({
-          start: slot.start || "09:00",
-          end: slot.end || "17:00"
-        }));
-      }
-    });
-
-    setFormData({
-      ...formData,
-      availability: {
-        availableWeekdays: data.availableWeekdays,
-        timeSlots: timeSlots,
-      }
-    });
-    
-    toast.success("Profile setup completed!");
-    
-    onComplete();
+  const handleAvailabilitySubmit = async (
+    data: z.infer<typeof availabilitySchema>
+  ) => {
+    const finalData = { ...formData, availability: data.availability as any };
+    setFormData(finalData as any);
+    await submitOnboarding(finalData as any);
   };
 
-  const addTimeSlot = (day: string) => {
-    const currentSlots = availabilityForm.getValues().timeSlots || {};
-    const daySlots = currentSlots[day] || [];
-    
-    const updatedSlots = {
-      ...currentSlots,
-      [day]: [...daySlots, { start: "09:00", end: "17:00" }]
-    };
-    
-    availabilityForm.setValue("timeSlots", updatedSlots);
-  };
+  const submitOnboarding = async (data: typeof formData) => {
+    setIsOnboarding(true);
 
-  const removeTimeSlot = (day: string, index: number) => {
-    const currentSlots = availabilityForm.getValues().timeSlots || {};
-    const daySlots = currentSlots[day] || [];
-    
-    if (daySlots.length > 0) {
-      const updatedDaySlots = daySlots.filter((_, i) => i !== index);
-      
-      const updatedSlots = {
-        ...currentSlots,
-        [day]: updatedDaySlots
+    try {
+      // Transform data to match backend validation exactly
+      const transformedData = {
+        bio: data.bio,
+        skills: data.skills, // Already array of ObjectId strings
+        languages: data.languages,
+        experience: data.experience.map((exp) => ({
+          ...exp,
+          startDate: new Date(exp.startDate),
+          endDate: exp.endDate ? new Date(exp.endDate) : undefined,
+        })),
+        shiftRates: data.shiftRates.map((rate) => ({
+          rateTimeBandId: rate.rateTimeBandId,
+          hourlyRate: parseFloat(rate.hourlyRate),
+        })),
+        availability: data.availability,
+        stateIds: data.stateId ? [data.stateId] : undefined,
+        regionIds: data.regionId ? [data.regionId] : undefined,
+        serviceAreaIds: data.serviceAreaIds,
+        baseLocation: data.address
+          ? {
+            longitude: 0, // You'll need to get this from Google Places if needed
+            latitude: 0, // You'll need to get this from Google Places if needed
+          }
+          : undefined,
+        travelRadiusKm: undefined, // Add this field if needed
+        address: data.address,
       };
-      
-      availabilityForm.setValue("timeSlots", updatedSlots);
+
+      await authService.completeSupportWorkerOnboarding(
+        transformedData as unknown as SupportWorkerOnboardingInput
+      );
+      completeOnboarding();
+      toast.success("Profile setup completed successfully!");
+      onComplete();
+    } catch (error) {
+      console.error("Failed to complete onboarding:", error);
+      toast.error("Failed to complete profile setup. Please try again.");
+    } finally {
+      setIsOnboarding(false);
     }
   };
 
-  const stepComponents = [
-    <Card key="bio" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">1</span>
-          About You
-        </CardTitle>
-        <CardDescription>Tell us about yourself and languages you speak.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...bioForm}>
-          <form onSubmit={bioForm.handleSubmit(handleBioSubmit)} className="space-y-4">
-            <FormField
-              control={bioForm.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="G'day! Tell us about yourself, your experience in supporting people, and what you enjoy about being a support worker..." 
-                      {...field} 
-                      className="min-h-[120px]"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    You can edit this information later in your profile.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={bioForm.control}
-              name="languages"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Languages</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="English, Auslan, etc." 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    List languages you speak, separated by commas.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end">
-              <Button type="submit" className="w-full mt-4">
-                Next
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>,
+  const addLanguage = () => {
+    if (
+      languageInput.trim() &&
+      !formData.languages.includes(languageInput.trim())
+    ) {
+      const newLanguages = [...formData.languages, languageInput.trim()];
+      setFormData({ ...formData, languages: newLanguages });
+      bioForm.setValue("languages", newLanguages);
+      setLanguageInput("");
+    }
+  };
 
-    <Card key="skills" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">2</span>
-          Skills & Qualifications
-        </CardTitle>
-        <CardDescription>Select the services you can provide.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...skillsForm}>
-          <form onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)} className="space-y-4">
-            <FormField
-              control={skillsForm.control}
-              name="skills"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Select your skills</FormLabel>
-                    <FormDescription>
-                      Choose all that apply. You can update these later.
-                    </FormDescription>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {availableSkills.map((skill) => {
-                      const isSelected = field.value?.includes(skill.value);
-                      
-                      return (
-                        <div
-                          key={skill.value}
-                          onClick={() => {
-                            if (isSelected) {
-                              field.onChange(field.value?.filter((value) => value !== skill.value));
-                            } else {
-                              field.onChange([...(field.value || []), skill.value]);
-                            }
-                          }}
-                          className={`cursor-pointer p-3 rounded-lg border transition-all ${
-                            isSelected
-                              ? "border-guardian bg-guardian/10 shadow-sm"
-                              : "border-gray-200 hover:border-guardian/50 hover:bg-gray-50"
-                          }`}
-                        >
-                          <div className="flex flex-col items-center text-center">
-                            <div className={`p-2 rounded-full mb-2 ${
-                              isSelected ? "bg-guardian text-white" : "bg-gray-100 text-gray-600"
-                            }`}>
-                              <skill.icon className="h-5 w-5" />
-                            </div>
-                            <span className="font-medium text-sm">{skill.label}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-              <Button type="submit">
-                Next
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>,
+  const removeLanguage = (language: string) => {
+    const newLanguages = formData.languages.filter((l) => l !== language);
+    setFormData({ ...formData, languages: newLanguages });
+    bioForm.setValue("languages", newLanguages);
+  };
 
-    <Card key="experience" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">3</span>
-          Work Experience
-        </CardTitle>
-        <CardDescription>Add your most relevant work experience.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...experienceForm}>
-          <form onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)} className="space-y-4">
-            <FormField
-              control={experienceForm.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Support Worker" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={experienceForm.control}
-              name="organization"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization</FormLabel>
-                  <FormControl>
-                    <Input placeholder="NDIS Provider Sydney" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={experienceForm.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={experienceForm.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>End Date (leave empty if current)</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={experienceForm.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Supported participants in Sydney with daily activities and community access..." 
-                      className="min-h-[100px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    You can add more experiences later in your profile.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-              <Button type="submit">
-                Next
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>,
+  const addExperience = () => {
+    const newExperience = [
+      ...formData.experience,
+      {
+        title: "",
+        organization: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+      },
+    ];
+    setFormData({ ...formData, experience: newExperience });
+    experienceForm.setValue("experience", newExperience);
+  };
 
-    <Card key="rates" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">4</span>
-          Hourly Rates
-        </CardTitle>
-        <CardDescription>Set your hourly rates for different types of work.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...rateForm}>
-          <form onSubmit={rateForm.handleSubmit(handleRateSubmit)} className="space-y-4">
-            <FormField
-              control={rateForm.control}
-              name="baseRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Base Hourly Rate (AUD $)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="35" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Standard weekday rate
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={rateForm.control}
-              name="weekendRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Weekend Rate (AUD $) (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="45" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Rate for weekend shifts
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={rateForm.control}
-              name="holidayRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Holiday Rate (AUD $) (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="55" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Rate for holiday shifts
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={rateForm.control}
-              name="overnightRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Overnight Rate (AUD $) (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="65" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Rate for overnight shifts
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-              <Button type="submit">
-                Next
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>,
+  const removeExperience = (index: number) => {
+    const newExperience = formData.experience.filter((_, i) => i !== index);
+    setFormData({ ...formData, experience: newExperience });
+    experienceForm.setValue("experience", newExperience);
+  };
 
-    <Card key="availability" className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">5</span>
-          Availability
-        </CardTitle>
-        <CardDescription>Let us know when you're available to work.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...availabilityForm}>
-          <form onSubmit={availabilityForm.handleSubmit(handleAvailabilitySubmit)} className="space-y-6">
-            <FormField
-              control={availabilityForm.control}
-              name="availableWeekdays"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Available Days</FormLabel>
-                    <FormDescription>
-                      Select the days you're typically available to work and set your available hours.
-                    </FormDescription>
-                  </div>
-                  <div className="space-y-6">
-                    {weekdays.map((day) => {
-                      const isSelected = availabilityForm.watch("availableWeekdays")?.includes(day.value);
-                      
-                      return (
-                        <div key={day.value} className="border rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={`day-${day.value}`}
-                                checked={isSelected}
-                                onChange={(e) => {
-                                  const currentWeekdays = availabilityForm.getValues("availableWeekdays") || [];
-                                  
-                                  if (e.target.checked) {
-                                    if (!currentWeekdays.includes(day.value)) {
-                                      availabilityForm.setValue("availableWeekdays", [...currentWeekdays, day.value]);
-                                      // Add a default time slot when day is selected
-                                      addTimeSlot(day.value);
-                                    }
-                                  } else {
-                                    availabilityForm.setValue(
-                                      "availableWeekdays",
-                                      currentWeekdays.filter((d) => d !== day.value)
-                                    );
-                                    
-                                    const currentTimeSlots = availabilityForm.getValues("timeSlots") || {};
-                                    const { [day.value]: _, ...restTimeSlots } = currentTimeSlots;
-                                    availabilityForm.setValue("timeSlots", restTimeSlots);
-                                  }
-                                }}
-                                className="h-4 w-4 rounded border-gray-300 text-guardian focus:ring-guardian"
-                              />
-                              <label htmlFor={`day-${day.value}`} className="font-medium">
-                                {day.label}
-                              </label>
-                            </div>
-                            
-                            {isSelected && (
-                              <Button 
-                                type="button" 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => addTimeSlot(day.value)}
-                              >
-                                Add Time Slot
-                              </Button>
-                            )}
-                          </div>
-                          
-                          {isSelected && (
-                            <div className="mt-3 space-y-3 pl-6">
-                              {(availabilityForm.watch(`timeSlots.${day.value}`) || []).map((slot, index) => (
-                                <div key={index} className="flex items-center space-x-3">
-                                  <div className="grid grid-cols-2 gap-2 flex-1">
-                                    <div>
-                                      <FormLabel className="text-xs">Start Time</FormLabel>
-                                      <TimeInput
-                                        value={slot.start || ""}
-                                        onChange={(value) => {
-                                          const currentSlots = availabilityForm.getValues().timeSlots || {};
-                                          const daySlots = [...(currentSlots[day.value] || [])];
-                                          daySlots[index] = { ...daySlots[index], start: value };
-                                          
-                                          availabilityForm.setValue("timeSlots", {
-                                            ...currentSlots,
-                                            [day.value]: daySlots
-                                          });
-                                        }}
-                                      />
-                                    </div>
-                                    <div>
-                                      <FormLabel className="text-xs">End Time</FormLabel>
-                                      <TimeInput
-                                        value={slot.end || ""}
-                                        onChange={(value) => {
-                                          const currentSlots = availabilityForm.getValues().timeSlots || {};
-                                          const daySlots = [...(currentSlots[day.value] || [])];
-                                          daySlots[index] = { ...daySlots[index], end: value };
-                                          
-                                          availabilityForm.setValue("timeSlots", {
-                                            ...currentSlots,
-                                            [day.value]: daySlots
-                                          });
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 mt-4"
-                                    onClick={() => removeTimeSlot(day.value, index)}
-                                  >
-                                    ✕
-                                  </Button>
-                                </div>
-                              ))}
-                              
-                              {!(availabilityForm.watch(`timeSlots.${day.value}`) || []).length && (
-                                <div className="flex justify-center">
-                                  <Button 
-                                    type="button" 
-                                    variant="ghost" 
-                                    size="sm"
-                                    onClick={() => addTimeSlot(day.value)}
-                                    className="text-guardian"
-                                  >
-                                    + Add Time Slot
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <FormMessage />
-                  <FormDescription className="mt-4">
-                    You can set more detailed availability preferences later.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-              <Button type="submit">
-                Complete Setup
-                <CheckCircle className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>,
-  ];
+  const toggleDayAvailability = (dayIndex: number) => {
+    const newAvailability = { ...formData.availability };
+    newAvailability.weekdays[dayIndex].available =
+      !newAvailability.weekdays[dayIndex].available;
+
+    if (
+      newAvailability.weekdays[dayIndex].available &&
+      newAvailability.weekdays[dayIndex].slots.length === 0
+    ) {
+      newAvailability.weekdays[dayIndex].slots.push({
+        start: "09:00",
+        end: "17:00",
+      });
+    } else if (!newAvailability.weekdays[dayIndex].available) {
+      newAvailability.weekdays[dayIndex].slots = [];
+    }
+
+    setFormData({ ...formData, availability: newAvailability });
+    availabilityForm.setValue("availability", newAvailability);
+  };
+
+  const addTimeSlot = (dayIndex: number) => {
+    const newAvailability = { ...formData.availability };
+    const currentSlots = newAvailability.weekdays[dayIndex].slots;
+
+    // Sort slots by start time to find the latest available time
+    const sortedSlots = [...currentSlots].sort((a, b) => a.start.localeCompare(b.start));
+
+    let startTime = "09:00";
+    let endTime = "17:00";
+
+    if (sortedSlots.length > 0) {
+      const lastSlot = sortedSlots[sortedSlots.length - 1];
+      const lastEndTime = lastSlot.end;
+
+      // Use the last slot's end time as the new start time
+      startTime = lastEndTime;
+      const [hours, minutes] = lastEndTime.split(':').map(Number);
+      // Set end time to 8 hours later or end of day
+      const newHours = Math.min(hours + 8, 23);
+      endTime = `${String(newHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    newAvailability.weekdays[dayIndex].slots.push({
+      start: startTime,
+      end: endTime,
+    });
+
+    setFormData({ ...formData, availability: newAvailability });
+    availabilityForm.setValue("availability", newAvailability);
+  };
+
+  const removeTimeSlot = (dayIndex: number, slotIndex: number) => {
+    const newAvailability = { ...formData.availability };
+    newAvailability.weekdays[dayIndex].slots.splice(slotIndex, 1);
+
+    setFormData({ ...formData, availability: newAvailability });
+    availabilityForm.setValue("availability", newAvailability);
+  };
 
   const steps = [
-    { icon: <Languages className="h-5 w-5" />, label: "Bio" },
-    { icon: <Briefcase className="h-5 w-5" />, label: "Skills" },
-    { icon: <Briefcase className="h-5 w-5" />, label: "Experience" },
-    { icon: <DollarSign className="h-5 w-5" />, label: "Rates" },
-    { icon: <Clock className="h-5 w-5" />, label: "Availability" },
+    {
+      number: 1,
+      label: "Bio & Location",
+      icon: <Global className="h-4 w-4" />,
+    },
+    { number: 2, label: "Skills", icon: <Suitcase className="h-4 w-4" /> },
+    { number: 3, label: "Experience", icon: <Suitcase className="h-4 w-4" /> },
+    {
+      number: 4,
+      label: "Rates",
+      icon: <DollarMinimalistic className="h-4 w-4" />,
+    },
+    {
+      number: 5,
+      label: "Availability",
+      icon: <ClockCircle className="h-4 w-4" />,
+    },
   ];
 
+  const handleSkipSetup = () => {
+    navigate(-1);
+  };
+
   return (
-    <div className="flex flex-col h-screen">
-      <div className="bg-white shadow-sm py-4 sticky top-0 z-10">
-        <div className="container max-w-3xl mx-auto px-4">
-          <div className="flex justify-between items-center overflow-x-auto pb-2">
-            {steps.map((item, i) => (
-              <div key={i} className="flex flex-col items-center mx-2">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    i + 1 === step
-                      ? "bg-guardian text-white"
-                      : i + 1 < step
-                      ? "bg-gray-200 text-guardian"
-                      : "bg-gray-100 text-gray-400"
-                  }`}
-                >
-                  {i + 1 < step ? <CheckCircle className="h-5 w-5" /> : item.icon}
-                </div>
-                <span
-                  className={`text-xs mt-1 ${
-                    i + 1 === step ? "text-guardian font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {item.label}
-                </span>
-              </div>
-            ))}
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+      {/* Back Button & Header */}
+      <div className="">
+        <button
+          onClick={handleSkipSetup}
+          className="font-montserrat-semibold flex items-center hover:text-gray-900 mb-6"
+        >
+          <AltArrowLeft className="h-4 w-4 mr-2" />
+          Back to Dashboard
+        </button>
+
+        {/* Progress Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-montserrat-semibold">Profile Setup</h2>
+            <p className="text-sm text-gray-600 mt-1 ">
+              Answer a few quick questions to complete your support worker
+              profile and get started
+            </p>
+          </div>
+          <div className="text-sm font-montserrat-semibold text-primary">
+            {step}/5
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-8 px-4">
-        <div className="container max-w-3xl mx-auto">
-          {stepComponents[step - 1]}
+      {/* Main */}
+      <div className="flex flex-1 gap-5 overflow-hidden mt-6">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:flex w-80 bg-white border rounded-xl border-gray-200 flex-col flex-shrink-0">
+          {/* Steps Navigation */}
+          <div className="flex-1 p-6">
+            <div className="relative">
+              {steps.map((s, index) => {
+                const isActive = s.number === step;
+                const isCompleted = completedSteps.includes(s.number);
+                const isAccessible = s.number <= step || isCompleted;
+
+                return (
+                  <div key={s.number} className="relative">
+                    {/* Vertical Line */}
+                    {index < steps.length - 1 && (
+                      <div
+                        className="absolute left-4 top-8 bottom-0 w-0.5 bg-gray-200 -mb-2"
+                        style={{ height: "44px" }}
+                      />
+                    )}
+
+                    <button
+                      onClick={() => goToStep(s.number)}
+                      disabled={!isAccessible}
+                      className={cn(
+                        "relative w-full flex items-center py-3 text-left transition-all",
+                        !isAccessible && "opacity-50 cursor-not-allowed"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center mr-4 flex-shrink-0 transition-all border-2 z-10 bg-white",
+                          isCompleted && "bg-primary border-primary",
+                          isActive && !isCompleted && "border-primary bg-white",
+                          !isActive &&
+                          !isCompleted &&
+                          "border-gray-300 bg-white"
+                        )}
+                      >
+                        {isCompleted ? (
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        ) : (
+                          <span
+                            className={cn(
+                              "text-sm font-montserrat-semibold",
+                              isActive ? "text-primary" : "text-gray-400"
+                            )}
+                          >
+                            {s.number}
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        className={cn(
+                          "text-base font-montserrat-semibold",
+                          isActive ? "text-primary" : "text-gray-700"
+                        )}
+                      >
+                        {s.label}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden w-full flex-shrink-0">
+          {/* Mobile/Desktop Header */}
+          <div className="lg:px-8 flex-shrink-0">
+            {/* Mobile Progress Steps */}
+            <div className="lg:hidden my-4 relative px-4">
+              <div className="flex items-center justify-between relative">
+                {steps.map((s) => {
+                  const isCompleted = completedSteps.includes(s.number);
+                  const isActive = s.number === step;
+
+                  return (
+                    <div
+                      key={s.number}
+                      className="flex flex-col items-center z-10 bg-gray-100"
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-montserrat-bold text-sm ${step >= s.number
+                            ? "bg-primary-600 text-white"
+                            : "bg-gray-200 text-gray-500"
+                          }`}
+                      >
+                        {step > s.number ? "✓" : s.number}
+                      </div>
+                      <span className="text-xs mt-2 font-montserrat-medium text-gray-500 whitespace-nowrap">
+                        {s.label}
+                      </span>
+                    </div>
+                  );
+                })}
+                {/* Progress line background */}
+                <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -z-0" />
+                {/* Active progress line */}
+                <div
+                  className="absolute top-4 left-4 h-0.5 bg-primary-600 -z-0 transition-all duration-300"
+                  style={{
+                    width: `calc((100% - 2rem) * ${(step - 1) / (steps.length - 1)})`
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable Content Area */}
+          <div className="w-full">
+            {/* Step 1: Bio & Location */}
+            {step === 1 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Bio & Location
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Tell us about yourself, languages you speak, and where
+                    you're located
+                  </p>
+
+                  <Form {...bioForm}>
+                    <form
+                      onSubmit={bioForm.handleSubmit(handleBioSubmit)}
+                      className="space-y-6"
+                    >
+                      <FormField
+                        control={bioForm.control}
+                        name="bio"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                              About
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Good day! Tell us about yourself, your experience in supporting people, and what you enjoy about being a support worker....."
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  setFormData({
+                                    ...formData,
+                                    bio: e.target.value,
+                                  });
+                                }}
+                                className="min-h-[100px] text-sm resize-none"
+                              />
+                            </FormControl>
+                            <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
+                              <span className="text-primary mt-0.5">ⓘ</span>
+                              <span>
+                                You can edit this info later in your profile
+                              </span>
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="space-y-3">
+                        <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                          Languages
+                        </FormLabel>
+
+                        {formData.languages.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {formData.languages.map((language, index) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200  text-xs"
+                              >
+                                {language}
+                                <button
+                                  type="button"
+                                  onClick={() => removeLanguage(language)}
+                                  className="hover:text-gray-700"
+                                >
+                                  <CloseCircle className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        <Input
+                          placeholder="Add any language you speak...."
+                          value={languageInput}
+                          onChange={(e) => setLanguageInput(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addLanguage();
+                            }
+                          }}
+                          className="text-sm"
+                        />
+
+                        <div className="flex flex-wrap gap-2">
+                          {commonLanguages
+                            .filter(
+                              (lang) => !formData.languages.includes(lang)
+                            )
+                            .map((language) => (
+                              <Button
+                                key={language}
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const newLanguages = [
+                                    ...formData.languages,
+                                    language,
+                                  ];
+                                  setFormData({
+                                    ...formData,
+                                    languages: newLanguages,
+                                  });
+                                  bioForm.setValue("languages", newLanguages);
+                                }}
+                                className="h-8 px-3 text-xs border hover:text-white hover:bg-primary hover:border-gray-600 text-black"
+                              >
+                                + {language}
+                              </Button>
+                            ))}
+                        </div>
+
+                        <p className="text-xs text-gray-1000 flex items-start gap-1.5 mt-2">
+                          <span className="text-primary mt-0.5">ⓘ</span>
+                          <span>
+                            Select from common languages or add your own
+                          </span>
+                        </p>
+
+                        {formData.languages.length === 0 &&
+                          bioForm.formState.isSubmitted && (
+                            <p className="text-sm text-red-500">
+                              Please add at least one language.
+                            </p>
+                          )}
+                      </div>
+
+                      {/* Address with Google Autocomplete */}
+                      <div className="space-y-4 border-t pt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPoint className="h-5 w-5 text-primary" />
+                          <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                            Address *
+                          </FormLabel>
+                        </div>
+
+                        <FormField
+                          control={bioForm.control}
+                          name="address"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div className="relative" ref={addressContainerRef}>
+                                  <div className="relative">
+                                    <MapPoint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                                    <Input
+                                      id="address"
+                                      type="text"
+                                      placeholder="Start typing your address..."
+                                      value={addressInputValue}
+                                      onChange={handleAddressInputChange}
+                                      onFocus={() => {
+                                        if (
+                                          addressInputValue.trim().length > 2 &&
+                                          placePredictions.length > 0
+                                        ) {
+                                          setShowAddressPredictions(true);
+                                        }
+                                      }}
+                                      className="pl-10 text-sm"
+                                      autoComplete="off"
+                                    />
+                                    {isPlacePredictionsLoading && (
+                                      <Refresh className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                                    )}
+                                  </div>
+
+                                  {/* Predictions Dropdown */}
+                                  {showAddressPredictions && placePredictions.length > 0 && (
+                                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                      {placePredictions.map((prediction) => (
+                                        <div
+                                          key={prediction.place_id}
+                                          onMouseDown={(e) => e.preventDefault()} // Keeps focus on input
+                                          onClick={() => handleAddressSelect(prediction)}
+                                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                        >
+                                          <div className="flex items-start gap-3">
+                                            <MapPoint className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm text-gray-900 font-montserrat-medium truncate">
+                                                {prediction.structured_formatting?.main_text ||
+                                                  prediction.description.split(",")[0]}
+                                              </p>
+                                              <p className="text-xs text-gray-500 truncate mt-0.5">
+                                                {prediction.structured_formatting?.secondary_text ||
+                                                  prediction.description
+                                                    .split(",")
+                                                    .slice(1)
+                                                    .join(",")
+                                                    .trim()}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormDescription className="text-xs text-gray-1000 flex items-start gap-1.5">
+                                <span className="text-primary mt-0.5">ⓘ</span>
+                                <span>Start typing to search for your address in Australia</span>
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Location Section */}
+                      <div className="space-y-4 border-t pt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Magnifer className="h-5 w-5 text-primary" />
+                          <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                            Service Location
+                          </FormLabel>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* State Selection */}
+                          <FormField
+                            control={bioForm.control}
+                            name="stateId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">State</FormLabel>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    setSelectedStateId(value);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      stateId: value,
+                                    }));
+                                  }}
+                                  disabled={isLoadingStates}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="text-sm">
+                                      <SelectValue placeholder="Select state..." />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {states.map((state) => (
+                                      <SelectItem
+                                        key={state._id}
+                                        value={state._id}
+                                      >
+                                        {state.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {/* Region Selection */}
+                          <FormField
+                            control={bioForm.control}
+                            name="regionId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">
+                                  Region
+                                </FormLabel>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    setSelectedRegionId(value);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      regionId: value,
+                                    }));
+                                  }}
+                                  disabled={
+                                    !selectedStateId || isLoadingRegions
+                                  }
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="text-sm">
+                                      <SelectValue placeholder="Select region..." />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {regions.map((region) => (
+                                      <SelectItem
+                                        key={region._id}
+                                        value={region._id}
+                                      >
+                                        {region.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Service Areas Selection */}
+                        <FormField
+                          control={bioForm.control}
+                          name="serviceAreaIds"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm">
+                                Service Areas
+                              </FormLabel>
+                              <FormDescription className="text-xs text-gray-1000">
+                                Select the areas where you can provide services
+                              </FormDescription>
+
+                              {selectedRegionId && !isLoadingServiceAreas ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                                  {serviceAreas.map((serviceArea) => {
+                                    const isSelected = field.value?.includes(
+                                      serviceArea._id
+                                    );
+
+                                    return (
+                                      <div
+                                        key={serviceArea._id}
+                                        onClick={() => {
+                                          const newServiceAreas = isSelected
+                                            ? field.value?.filter(
+                                              (id) => id !== serviceArea._id
+                                            )
+                                            : [
+                                              ...(field.value || []),
+                                              serviceArea._id,
+                                            ];
+                                          field.onChange(newServiceAreas);
+                                          setFormData((prev) => ({
+                                            ...prev,
+                                            serviceAreaIds: newServiceAreas,
+                                          }));
+                                        }}
+                                        className={cn(
+                                          "cursor-pointer p-3 rounded-lg border-2 transition-all text-center",
+                                          isSelected
+                                            ? "bg-primary border-primary text-white"
+                                            : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
+                                        )}
+                                      >
+                                        <span className="text-sm font-montserrat-medium">
+                                          {serviceArea.name}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                <div className="flex items-center justify-center py-8 text-gray-1000 text-sm">
+                                  {!selectedRegionId
+                                    ? "Please select a region first"
+                                    : isLoadingServiceAreas
+                                      ? "Loading service areas..."
+                                      : "No service areas available"}
+                                </div>
+                              )}
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <p className="text-xs text-gray-1000 flex items-start gap-1.5">
+                          <span className="text-primary mt-0.5">ⓘ</span>
+                          <span>
+                            Your service location helps participants find you in
+                            their area
+                          </span>
+                        </p>
+                      </div>
+
+                      <div className="flex justify-end pt-4">
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary-700 text-white px-8"
+                          disabled={
+                            formData.languages.length === 0 ||
+                            !formData.stateId ||
+                            !formData.regionId ||
+                            formData.serviceAreaIds.length === 0
+                          }
+                        >
+                          Next
+                          <AltArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Skills */}
+            {step === 2 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 2 ... */}
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Skills & Services
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Select the services you can provide, you can update later.
+                  </p>
+
+                  <Form {...skillsForm}>
+                    <form
+                      onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)}
+                      className="space-y-6"
+                    >
+                      <FormField
+                        control={skillsForm.control}
+                        name="skills"
+                        render={({ field }) => (
+                          <FormItem>
+                            {isLoadingServiceTypes ? (
+                              <div className="flex justify-center py-12">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {serviceTypes.map((serviceType) => {
+                                  const isSelected = field.value?.includes(
+                                    serviceType._id
+                                  );
+
+                                  return (
+                                    <div
+                                      key={serviceType._id}
+                                      onClick={() => {
+                                        const newSkills = isSelected
+                                          ? field.value?.filter(
+                                            (id) => id !== serviceType._id
+                                          )
+                                          : [
+                                            ...(field.value || []),
+                                            serviceType._id,
+                                          ];
+                                        field.onChange(newSkills);
+                                        setFormData({
+                                          ...formData,
+                                          skills: newSkills,
+                                        });
+                                      }}
+                                      className={cn(
+                                        "cursor-pointer p-4 rounded-xl border-2 transition-all",
+                                        isSelected
+                                          ? "bg-primary border-primary"
+                                          : "border-gray-200 hover:border-primary/50 hover:bg-gray-100"
+                                      )}
+                                    >
+                                      <div className="flex flex-col items-center text-center">
+                                        <div
+                                          className={cn(
+                                            "p-3 rounded-full mb-3 transition-colors",
+                                            isSelected
+                                              ? "bg-white/20 text-white"
+                                              : "bg-gray-100 text-gray-600"
+                                          )}
+                                        >
+                                          <Heart className="h-5 w-5" />
+                                        </div>
+                                        <span
+                                          className={cn(
+                                            "font-montserrat-semibold text-sm",
+                                            isSelected
+                                              ? "text-white"
+                                              : "text-gray-900"
+                                          )}
+                                        >
+                                          {serviceType.name}
+                                        </span>
+                                        <span
+                                          className={cn(
+                                            "text-xs mt-1",
+                                            isSelected
+                                              ? "text-white/80"
+                                              : "text-gray-1000"
+                                          )}
+                                        >
+                                          {serviceType.code}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="flex justify-between pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary-700"
+                        >
+                          <AltArrowLeft className="mr-2 h-8 w-8" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary-700 text-white"
+                        >
+                          Next
+                          <AltArrowRight className="ml-2 h-8 w-8" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Experience */}
+            {step === 3 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 3 ... */}
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Work Experience
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Add your relevant work experience and upload your resume
+                  </p>
+
+                  <Form {...experienceForm}>
+                    <form
+                      onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)}
+                      className="space-y-6"
+                    >
+                      {formData.experience.map((exp, index) => (
+                        <div
+                          key={index}
+                          className="border border-gray-200 rounded-lg p-5 space-y-4 bg-gray-100"
+                        >
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-montserrat-semibold text-gray-700 text-sm italic">
+                              Experience {index + 1}
+                            </h4>
+                            {formData.experience.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeExperience(index)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <TrashBinMinimalistic className="h-4 w-4 text-gray-1000" />
+                              </Button>
+                            )}
+                          </div>
+
+                          <FormField
+                            control={experienceForm.control}
+                            name={`experience.${index}.title`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Job Title *</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="e.g Support Worker"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      const newExp = [...formData.experience];
+                                      newExp[index].title = e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        experience: newExp,
+                                      });
+                                    }}
+                                    className="text-sm bg-white"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={experienceForm.control}
+                            name={`experience.${index}.organization`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Organization *</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="e.g NDIS Care Services"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      const newExp = [...formData.experience];
+                                      newExp[index].organization = e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        experience: newExp,
+                                      });
+                                    }}
+                                    className="text-sm bg-white"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <FormField
+                              control={experienceForm.control}
+                              name={`experience.${index}.startDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm">Start Date *</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      {...field}
+                                      max={new Date().toISOString().split('T')[0]}
+                                      onChange={(e) => {
+                                        field.onChange(e);
+                                        const newExp = [...formData.experience];
+                                        newExp[index].startDate = e.target.value;
+                                        setFormData({
+                                          ...formData,
+                                          experience: newExp,
+                                        });
+                                      }}
+                                      className="text-sm bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={experienceForm.control}
+                              name={`experience.${index}.endDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm">
+                                    End Date
+                                    <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      {...field}
+                                      min={formData.experience[index].startDate}
+                                      max={new Date().toISOString().split('T')[0]}
+                                      onChange={(e) => {
+                                        field.onChange(e);
+                                        const newExp = [...formData.experience];
+                                        newExp[index].endDate = e.target.value;
+                                        setFormData({
+                                          ...formData,
+                                          experience: newExp,
+                                        });
+                                      }}
+                                      className="text-sm bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormDescription className="text-xs text-gray-500">
+                                    Leave empty if current position
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={experienceForm.control}
+                            name={`experience.${index}.description`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Description *</FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Describe your responsibilities and achievements..."
+                                    className="min-h-[80px] text-sm resize-none bg-white"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      const newExp = [...formData.experience];
+                                      newExp[index].description = e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        experience: newExp,
+                                      });
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      ))}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addExperience}
+                        className="w-full text-primary border-primary/30 hover:bg-primary/5 hover:border-primary/50"
+                      >
+                        + Add Another Experience
+                      </Button>
+
+                      {/* Resume Upload - Single for all experiences */}
+                      <div className="border-t pt-6">
+                        <FormField
+                          control={experienceForm.control}
+                          name="resume"
+                          render={({ field: { onChange, value, ...field } }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-montserrat-semibold text-gray-900">
+                                Resume/CV
+                              </FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  <Input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        onChange(file);
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          resume: file,
+                                        }));
+                                      }
+                                    }}
+                                    className="text-sm bg-white"
+                                    {...field}
+                                  />
+                                  {formData.resume && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                      <CheckCircle className="h-4 w-4 text-green-600" />
+                                      <span>{formData.resume.name}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          setFormData((prev) => ({
+                                            ...prev,
+                                            resume: undefined,
+                                          }));
+                                          onChange(undefined);
+                                        }}
+                                        className="h-6 w-6 p-0"
+                                      >
+                                        <CloseCircle className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormDescription className="text-xs text-gray-500">
+                                Upload PDF, DOC, or DOCX (Max 5MB)
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="flex justify-between pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary-700"
+                        >
+                          <AltArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary/90 text-white"
+                        >
+                          Next
+                          <AltArrowRight className="ml-2 h-8 w-8" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Rates */}
+            {step === 4 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 4 ... */}
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Hourly Rates
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Set your hourly rates for different time bands (Minimum $38/hour)
+                  </p>
+
+                  <Form {...rateForm}>
+                    <form
+                      onSubmit={rateForm.handleSubmit(handleRateSubmit)}
+                      className="space-y-4"
+                    >
+                      {isLoadingRateTimeBands ? (
+                        <div className="flex justify-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {rateTimeBands.map((band, index) => {
+                            const rate = formData.shiftRates[index];
+                            const isSelected = rate && rate.hourlyRate;
+
+                            return (
+                              <div
+                                key={band._id}
+                                className={cn(
+                                  "border-2 rounded-xl p-5 transition-all",
+                                  isSelected
+                                    ? "border-primary bg-primary/5"
+                                    : "border-gray-200 hover:border-primary/30"
+                                )}
+                              >
+                                <div className="flex items-start justify-between mb-4">
+                                  <div className="flex-1">
+                                    <h4 className="font-montserrat-semibold text-gray-900 text-base mb-1">
+                                      {band.name}
+                                    </h4>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                      {band.description}
+                                    </p>
+                                    <p className="text-xs text-gray-1000">
+                                      {band.startTime} - {band.endTime}
+                                    </p>
+                                  </div>
+                                  <div
+                                    className={cn(
+                                      "w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ml-3 transition-all",
+                                      isSelected
+                                        ? "bg-primary border-primary"
+                                        : "border-gray-300 bg-white"
+                                    )}
+                                  >
+                                    {isSelected && (
+                                      <CheckCircle className="h-4 w-4 text-white" />
+                                    )}
+                                  </div>
+                                </div>
+
+                                <FormField
+                                  control={rateForm.control}
+                                  name={`shiftRates.${index}.hourlyRate`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-sm text-gray-700">
+                                        Hourly Rate ($) *
+                                      </FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          step="0.01"
+                                          min="38"
+                                          placeholder="38.00"
+                                          {...field}
+                                          onChange={(e) => {
+                                            field.onChange(e);
+                                            const newRates = [
+                                              ...(formData.shiftRates || []),
+                                            ];
+                                            if (newRates[index]) {
+                                              newRates[index].hourlyRate =
+                                                e.target.value;
+                                              setFormData({
+                                                ...formData,
+                                                shiftRates: newRates,
+                                              });
+                                            }
+                                          }}
+                                          className="text-sm"
+                                        />
+                                      </FormControl>
+                                      <FormDescription className="text-xs text-gray-500">
+                                        Minimum $38/hour
+                                      </FormDescription>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <input
+                                  type="hidden"
+                                  {...rateForm.register(
+                                    `shiftRates.${index}.rateTimeBandId`
+                                  )}
+                                  value={band._id}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="flex justify-between pt-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary-700"
+                        >
+                          <AltArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-primary hover:bg-primary-700 text-white"
+                        >
+                          Next
+                          <AltArrowRight className="ml-2 h-8 w-8" />
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Availability */}
+            {step === 5 && (
+              <div className="bg-white rounded-xl border border-gray-200">
+                {/* ... existing code for step 5 ... */}
+                <div className="p-6 lg:p-8">
+                  <h3 className="text-xl font-montserrat-bold text-gray-900 mb-2">
+                    Availability
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Set your weekly availability with multiple time slots per day
+                  </p>
+
+                  <Form {...availabilityForm}>
+                    <form
+                      onSubmit={availabilityForm.handleSubmit(
+                        handleAvailabilitySubmit
+                      )}
+                      className="space-y-3"
+                    >
+                      {formData.availability.weekdays.map((day, dayIndex) => (
+                        <div
+                          key={day.day}
+                          className={cn(
+                            "border-2 rounded-xl transition-all",
+                            day.available
+                              ? "border-primary bg-primary/5"
+                              : "border-gray-200 bg-white"
+                          )}
+                        >
+                          <div className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  onClick={() => toggleDayAvailability(dayIndex)}
+                                  className={cn(
+                                    "w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all",
+                                    day.available
+                                      ? "bg-primary border-primary"
+                                      : "border-gray-300 bg-white hover:border-primary/40"
+                                  )}
+                                >
+                                  {day.available && (
+                                    <CheckCircle className="h-4 w-4 text-white" />
+                                  )}
+                                </div>
+                                <label
+                                  className="font-montserrat-semibold text-gray-900 capitalize cursor-pointer text-base"
+                                  onClick={() => toggleDayAvailability(dayIndex)}
+                                >
+                                  {day.day}
+                                </label>
+                              </div>
+                              {day.available && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => addTimeSlot(dayIndex)}
+                                  className="text-xs text-primary hover:text-primary hover:bg-primary/10"
+                                >
+                                  + Add Time Slot
+                                </Button>
+                              )}
+                            </div>
+
+                            {day.available && day.slots.length > 0 && (
+                              <div className="mt-4 space-y-3 pl-9">
+                                {day.slots.map((slot, slotIndex) => (
+                                  <div
+                                    key={slotIndex}
+                                    className="bg-white rounded-lg p-3 border border-gray-200"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div className="grid grid-cols-2 gap-3 flex-1">
+                                        <div>
+                                          <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
+                                            Start Time
+                                          </label>
+                                          <Input
+                                            type="time"
+                                            value={slot.start}
+                                            onChange={(e) => {
+                                              const newAvailability = {
+                                                ...formData.availability,
+                                              };
+                                              newAvailability.weekdays[
+                                                dayIndex
+                                              ].slots[slotIndex].start =
+                                                e.target.value;
+                                              setFormData({
+                                                ...formData,
+                                                availability: newAvailability,
+                                              });
+                                              availabilityForm.setValue(
+                                                "availability",
+                                                newAvailability
+                                              );
+                                            }}
+                                            className="text-sm"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-xs text-gray-600 block mb-1.5 font-montserrat-semibold">
+                                            End Time
+                                          </label>
+                                          <Input
+                                            type="time"
+                                            value={slot.end}
+                                            min={slot.start}
+                                            onChange={(e) => {
+                                              const newAvailability = {
+                                                ...formData.availability,
+                                              };
+                                              newAvailability.weekdays[
+                                                dayIndex
+                                              ].slots[slotIndex].end =
+                                                e.target.value;
+                                              setFormData({
+                                                ...formData,
+                                                availability: newAvailability,
+                                              });
+                                              availabilityForm.setValue(
+                                                "availability",
+                                                newAvailability
+                                              );
+                                            }}
+                                            className="text-sm"
+                                          />
+                                        </div>
+                                      </div>
+                                      {day.slots.length > 1 && (
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() =>
+                                            removeTimeSlot(dayIndex, slotIndex)
+                                          }
+                                          className="h-8 w-8 p-0 mt-5"
+                                        >
+                                          <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="flex justify-between pt-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={prevStep}
+                          className="border-primary text-primary hover:bg-primary/5"
+                        >
+                          <AltArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="submit"
+                          disabled={isOnboarding || isSubmitting}
+                          className="bg-primary hover:bg-primary/90 text-white"
+                        >
+                          {isOnboarding || isSubmitting ? (
+                            <>
+                              <Spinner />
+                              <span className="ml-2">Submitting...</span>
+                            </>
+                          ) : (
+                            <>
+                              Complete Setup
+                              <CheckCircle className="ml-2 h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,367 +1,875 @@
-
-import { 
-  Clock, Users, DollarSign, Star, MessageSquare, CalendarIcon, Download,
-  FileCheck, FileWarning, Inbox, Calendar, CheckCircle
-} from "lucide-react";
+import { SupportWorkerSetupAlert } from "@/components/SupportWorkerSetupAlert";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  useGetSupportWorkerOverview,
+  useGetSupportWorkerPerformance,
+} from "@/hooks/useAnalyticsHooks";
+import { useGetOrganizationInvites } from "@/hooks/useInviteHooks";
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  Calendar,
+  Chart,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  CourseDown,
+  CourseUp,
+  DollarMinimalistic,
+  Eye,
+  InfoCircle,
+  Star,
+  UsersGroupTwoRounded,
+} from "@solar-icons/react";
+import { SupportWorker } from "@/types/user.types";
+import { useState, useMemo } from "react";
+import {
+  Line,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ComposedChart,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import GeneralHeader from "@/components/GeneralHeader";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { StatCard } from "@/components/StatCard";
-import { NotificationsList } from "@/components/NotificationsList";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Loader from "@/components/Loader";
+import { DateRangePicker } from "@/components/analytics/DateRangePicker";
+import { DateRange, DateRangeType } from "@/entities/Analytics";
+import { createDateRange } from "@/api/services/analyticsService";
 import { Progress } from "@/components/ui/progress";
-import { useState } from "react";
+import {
+  DASHBOARD_PAGE_WRAPPER,
+  DASHBOARD_CONTENT,
+  DASHBOARD_STATS_GRID,
+  DASHBOARD_STAT_CARD,
+  CARD,
+  FLEX_ROW_CENTER,
+  FLEX_ROW_BETWEEN,
+  FLEX_CENTER,
+  FLEX_COL,
+  GRID_2_COLS,
+  HEADING_5,
+  TEXT_SMALL,
+  TEXT_MUTED,
+  TEXT_BODY,
+  cn,
+  GRID_RESPONSIVE,
+  DASHBOARD_STAT_ICON,
+  DASHBOARD_STAT_ICON_CONTAINER,
+} from "@/lib/design-utils";
+import { BG_COLORS, BORDER_STYLES, CONTAINER_PADDING, FLEX_LAYOUTS, GAP, RADIUS, TEXT_COLORS, TEXT_STYLES } from "@/constants/design-system";
 
-// Mock notifications - fixed type values to match the allowed types
-const notifications = [
-  {
-    id: "1",
-    type: "booking" as const,
-    title: "New Booking Request",
-    description: "Emma Wilson requested support for tomorrow at 2 PM",
-    time: "10 minutes ago"
-  },
-  {
-    id: "2",
-    type: "message" as const,
-    title: "New Message",
-    description: "John's guardian sent you a message about the upcoming session",
-    time: "1 hour ago"
-  },
-  {
-    id: "3",
-    type: "reminder" as const,
-    title: "Shift Starting Soon",
-    description: "You have a shift with Emma Wilson in 30 minutes",
-    time: "unread"
-  }
-];
+// Stat card component
 
-// Mock upcoming shifts
-const upcomingShifts = [
-  {
-    id: "1",
-    client: "John Smith",
-    date: "03/15/2024",
-    timeStart: "9:00 AM",
-    timeEnd: "2:00 PM",
-    location: "Brighton East",
-    details: "Personal care and mobility assistance"
-  },
-  {
-    id: "2",
-    client: "John Smith",
-    date: "03/17/2024",
-    timeStart: "9:00 AM",
-    timeEnd: "2:00 PM",
-    location: "Brighton East",
-    details: "Community outing to library and park"
-  },
-  {
-    id: "3",
-    client: "John Smith",
-    date: "03/19/2024",
-    timeStart: "9:00 AM",
-    timeEnd: "2:00 PM",
-    location: "Brighton East",
-    details: "Swimming therapy and exercise routine"
-  }
-];
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  trend?: string;
+  trendDirection?: "up" | "down" | "neutral" | "stable";
+}
 
-// Mock certifications
-const certifications = [
-  {
-    id: "1",
-    name: "First Aid Certification",
-    status: "expiring",
-    description: "Required for all support workers. Must be completed within 30 days.",
-    dueDate: "2024-04-15",
-    action: "Start Training",
-    actionType: "training"
-  },
-  {
-    id: "2",
-    name: "Manual Handling",
-    status: "valid",
-    description: "Completed: 2024-02-01",
-    expiry: "2025-02-01",
-    action: "View Certificate",
-    actionType: "view"
-  },
-  {
-    id: "3",
-    name: "Infection Control",
-    status: "recommended",
-    description: "Recommended for enhanced safety protocols.",
-    action: "Start Training",
-    actionType: "training"
-  }
-];
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  trendDirection,
+}: StatCardProps) {
+  return (
+    <div className={cn(CARD, CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+      <div className={FLEX_ROW_BETWEEN + " mb-3"}>
+        <div className={cn(TEXT_STYLES.label)}>{title}</div>
+        <div className={cn(DASHBOARD_STAT_ICON_CONTAINER)}>
+          <Icon className={cn(DASHBOARD_STAT_ICON)} />
+        </div>
+      </div>
+      <div className={cn(TEXT_STYLES.title, "mb-2")}>
+        {value}
+      </div>
+      {trend && (
+        <div
+          className={cn(
+            FLEX_ROW_CENTER,
+            TEXT_MUTED,
+            GAP.sm,
+            trendDirection === "up"
+              ? "text-green-600"
+              : trendDirection === "down"
+                ? "text-red-600"
+                : "text-gray-600"
+          )}
+        >
+          {trendDirection === "up" && <CourseUp className="h-3 w-3" />}
+          {trendDirection === "down" && <CourseDown className="h-3 w-3" />}
+          {trend}
+        </div>
+      )}
+    </div>
+  );
+}
 
-// Calendar data
-const calendarData = {
-  month: "March 2024",
-  days: [
-    { number: 1, day: "Fri", shifts: 0 },
-    { number: 2, day: "Sat", shifts: 0 },
-    { number: 3, day: "Sun", shifts: 0 },
-    { number: 4, day: "Mon", shifts: 0 },
-    { number: 5, day: "Tue", shifts: 0 },
-    { number: 6, day: "Wed", shifts: 0 },
-    { number: 7, day: "Thu", shifts: 0 },
-    { number: 8, day: "Fri", shifts: 0 },
-    { number: 9, day: "Sat", shifts: 0 },
-    { number: 10, day: "Sun", shifts: 0 },
-    { number: 11, day: "Mon", shifts: 0 },
-    { number: 12, day: "Tue", shifts: 2 },
-    { number: 13, day: "Wed", shifts: 2 },
-    { number: 14, day: "Thu", shifts: 0 },
-    { number: 15, day: "Fri", shifts: 0 },
-    { number: 16, day: "Sat", shifts: 0 },
-    { number: 17, day: "Sun", shifts: 0 },
-    { number: 18, day: "Mon", shifts: 0 },
-    { number: 19, day: "Tue", shifts: 0 },
-    { number: 20, day: "Wed", shifts: 0 },
-    { number: 21, day: "Thu", shifts: 0 },
-    { number: 22, day: "Fri", shifts: 0 },
-    { number: 23, day: "Sat", shifts: 0 },
-    { number: 24, day: "Sun", shifts: 0 },
-    { number: 25, day: "Mon", shifts: 0 },
-    { number: 26, day: "Tue", shifts: 0 },
-    { number: 27, day: "Wed", shifts: 0 },
-    { number: 28, day: "Thu", shifts: 0 },
-    { number: 29, day: "Fri", shifts: 0 },
-    { number: 30, day: "Sat", shifts: 0 },
-  ],
-  upcomingShifts: [
-    {
-      date: "3/12/2024",
-      time: "9:00 AM - 2:00 PM",
-      location: "Brighton East",
-      type: "Personal Care"
+// Performance chart component
+function PerformanceChart({ dateRange }: { dateRange: DateRange }) {
+  console.log('datarange: ', dateRange)
+  // Update hook calls
+  const { data: overviewData, isLoading: overviewLoading } =
+    useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: performanceData, isLoading: performanceLoading } =
+    useGetSupportWorkerPerformance(dateRange);
+
+  const chartData = useMemo(() => {
+    if (
+      !performanceData?.monthlyTrends ||
+      performanceData.monthlyTrends.length === 0
+    ) {
+      return [];
     }
-  ]
-};
 
-export default function SupportWorkerDashboard() {
-  const [availabilityStatus, setAvailabilityStatus] = useState("available");
-  const navigate = useNavigate();
+    return performanceData.monthlyTrends.map((trend) => ({
+      month: new Date(trend.month).toLocaleDateString("en-US", {
+        month: "short",
+      }),
+      completionRate: trend.completionRate || 0,
+      onTimeRate: trend.onTimeRate || 0,
+    }));
+  }, [performanceData]);
 
-  // Function to handle view shift details
-  const handleViewShiftDetails = (shiftId: string) => {
-    navigate(`/support-worker/shifts/${shiftId}`);
+  const metrics = {
+    completionRate: overviewData?.performanceMetrics?.completionRate || 0,
+    percentageChange: Math.abs(
+      overviewData?.workSummary?.hoursWorked?.percentageChange || 0
+    ),
+    hasIncrease:
+      (overviewData?.workSummary?.hoursWorked?.percentageChange || 0) > 0,
   };
 
+  const isLoading = overviewLoading || performanceLoading;
+
+  if (isLoading) {
+    return (
+      <div className={cn(CARD, "col-span-full md:col-span-5", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+          <div className="h-64 bg-gray-100 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className={cn(CARD, "col-span-full md:col-span-5", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+        <div className={cn(FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base, "mb-6")}>
+          <h2 className={HEADING_5}>
+            Performance Overview
+          </h2>
+        </div>
+
+        <div className={cn(FLEX_CENTER, "h-64 ", TEXT_COLORS.gray300, RADIUS.lg, BORDER_STYLES.subtle, "border-dashed")}>
+          <div className="text-center p-8">
+            <Chart className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+            <p className="text-sm font-montserrat-semibold">
+              No performance data available yet
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Complete shifts to see your performance trends
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container py-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Support Worker Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Sarah! Here's your overview.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Contact Admin
-          </Button>
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={() => navigate("/support-worker/shifts")}
-          >
-            <CalendarIcon className="h-4 w-4" />
-            View Schedule
-          </Button>
-          <Button className="flex items-center gap-2 bg-guardian hover:bg-guardian-dark">
-            <Download className="h-4 w-4" />
-            Export Report
-          </Button>
-          <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600">
-            <CheckCircle className="h-4 w-4" />
-            Start Shift
-          </Button>
-        </div>
+    <div className={cn(CARD, "col-span-full md:col-span-5", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+      <div className={cn(FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base, "mb-6")}>
+        <h2 className={HEADING_5}>
+          Performance Overview
+        </h2>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title="Monthly Hours"
-          value="86"
-          icon={<Clock size={24} />}
-          change={{ value: "+12% from last month", positive: true }}
-        />
-        <StatCard
-          title="Active Guardians"
-          value="5"
-          icon={<Users size={24} />}
-          additionalText="All shifts covered"
-        />
-        <StatCard
-          title="Monthly Earnings"
-          value="$2,450"
-          icon={<DollarSign size={24} />}
-          // Fix: Changed from React element to string
-          additionalText="Export"
-        />
-        <StatCard
-          title="Average Rating"
-          value="4.9"
-          icon={<Star size={24} />}
-          additionalText="★★★★★"
-        />
-      </div>
-
-      {/* Shifts & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-xl font-bold mb-6">Upcoming Shifts</h2>
-          <div className="space-y-4">
-            {upcomingShifts.map((shift, index) => (
-              <div key={shift.id} className="flex items-center justify-between border-b pb-4 last:border-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-guardian/10 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-guardian" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{shift.client}</h3>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>{shift.timeStart} - {shift.timeEnd}</span>
-                      <MapPin className="h-3 w-3 ml-1" />
-                      <span>{shift.location}</span>
-                    </div>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleViewShiftDetails(shift.id)}
-                >
-                  View Details
-                </Button>
-              </div>
-            ))}
+      <div className={cn("flex flex-wrap items-center", GAP.lg, "md:" + GAP.xl, "mb-6")}>
+        <div className="flex gap-3 items-center">
+          <div className="text-2xl md:text-3xl font-montserrat-bold text-gray-900">
+            {metrics.completionRate}%
           </div>
+          {metrics.percentageChange > 0 && (
+            <div
+              className={`${metrics.hasIncrease
+                ? "text-green-600 bg-green-600/10"
+                : "text-red-600 bg-red-600/10"
+                } rounded-lg px-2 py-1 text-sm font-montserrat-semibold flex items-center`}
+            >
+              <span className="mr-1">{metrics.hasIncrease ? "↑" : "↓"}</span>
+              {metrics.percentageChange.toFixed(1)}%
+            </div>
+          )}
         </div>
-        
-        <NotificationsList notifications={notifications} />
       </div>
 
-      {/* Trainings & Calendar */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-xl font-bold mb-6">Training & Certifications</h2>
-          <div className="space-y-6">
-            {certifications.map((cert) => (
-              <div key={cert.id} className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-full ${
-                    cert.status === 'valid' ? 'bg-green-100' :
-                    cert.status === 'expiring' ? 'bg-red-100' :
-                    'bg-yellow-100'
-                  }`}>
-                    {cert.status === 'valid' ? 
-                      <FileCheck className={`h-5 w-5 ${cert.status === 'valid' ? 'text-green-600' : 'text-red-600'}`} /> : 
-                      <FileWarning className={`h-5 w-5 ${cert.status === 'expiring' ? 'text-red-600' : 'text-yellow-600'}`} />
-                    }
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium">{cert.name}</h3>
-                    <p className="text-xs text-muted-foreground">{cert.description}</p>
-                    {cert.dueDate && (
-                      <p className="text-xs text-red-600 font-medium">Due by: {cert.dueDate}</p>
-                    )}
-                    {cert.expiry && (
-                      <p className="text-xs text-green-600">Expires: {cert.expiry}</p>
-                    )}
-                  </div>
-                  <Button variant="outline" size="sm" className={`${
-                    cert.actionType === 'training' ? 'text-guardian' : 'text-blue-600'
-                  }`}>
-                    {cert.action}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+      <ResponsiveContainer width="100%" height={250}>
+        <ComposedChart
+          data={chartData}
+          margin={{ top: 20, right: 10, left: -20, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#E5E7EB"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="month"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6B7280", fontSize: 12 }}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6B7280", fontSize: 12 }}
+            domain={[0, 100]}
+            ticks={[0, 20, 40, 60, 80, 100]}
+            tickFormatter={(value) => `${value}%`}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "white",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+            }}
+            formatter={(value) => `${value}%`}
+          />
+          <Bar
+            dataKey="completionRate"
+            fill="#0D2BEC"
+            radius={[4, 4, 0, 0]}
+            barSize={40}
+          />
+          <Line
+            type="monotone"
+            dataKey="onTimeRate"
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: "#FBBF24", r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+
+      <div className={cn(GAP.responsive, FLEX_LAYOUTS.rowWrap, TEXT_SMALL, "mt-4")}>
+        <div className="flex items-center">
+          <div className="w-4 h-3 rounded mr-2 bg-[#0D2BEC]"></div>
+          <span className="text-gray-600">Completion Rate</span>
         </div>
-
-        <div>
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">Monthly Schedule</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">Previous</Button>
-                  <span className="text-sm font-medium">{calendarData.month}</span>
-                  <Button variant="ghost" size="sm">Next</Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-7 gap-1 mb-4">
-                <div className="text-center text-xs font-medium">Sun</div>
-                <div className="text-center text-xs font-medium">Mon</div>
-                <div className="text-center text-xs font-medium">Tue</div>
-                <div className="text-center text-xs font-medium">Wed</div>
-                <div className="text-center text-xs font-medium">Thu</div>
-                <div className="text-center text-xs font-medium">Fri</div>
-                <div className="text-center text-xs font-medium">Sat</div>
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {calendarData.days.map((day, i) => (
-                  <div 
-                    key={i} 
-                    className={`aspect-square flex flex-col items-center justify-center border rounded-md p-1
-                      ${day.shifts > 0 ? 'bg-guardian/10 border-guardian' : ''}
-                    `}
-                  >
-                    <div className="text-xs font-medium">{day.number}</div>
-                    {day.shifts > 0 && <div className="text-[10px] text-guardian-dark">{day.shifts} shifts</div>}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-medium mb-2">Upcoming Shifts</h3>
-                {calendarData.upcomingShifts.map((shift, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm border-l-2 border-guardian pl-2">
-                    <Calendar className="h-4 w-4 text-guardian shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-medium">{shift.date}</div>
-                      <div className="text-xs text-muted-foreground">{shift.time}</div>
-                      <div className="text-xs text-muted-foreground">{shift.location}</div>
-                      <div className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full inline-block mt-1">
-                        {shift.type}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex items-center">
+          <div className="w-8 h-1 bg-yellow-400 rounded mr-2"></div>
+          <span className="text-gray-600">On-Time Trend</span>
         </div>
       </div>
     </div>
   );
 }
 
-function MapPin(props: any) {
+// NEW: Document Alerts Component
+function DocumentAlerts({ alerts }) {
+  if (!alerts || alerts.length === 0) return null;
+
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
+    <div className={cn("mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg", CONTAINER_PADDING.cardSm)}>
+      <div className={cn(FLEX_ROW_CENTER, "items-start")}>
+        <InfoCircle className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
+        <div>
+          <h3 className="font-montserrat-semibold">Action Required</h3>
+          <ul className={cn("list-disc list-inside text-sm", "mt-1")}>
+            {alerts.map((alert, index) => (
+              <li key={index}>{alert.message}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// NEW: Availability & Utilization Component
+function AvailabilityUtilization({ overviewData, performanceData }) {
+  const availability = overviewData?.analytics?.availability;
+  const comparison = performanceData?.availabilityComparison;
+  const skills = performanceData?.skillUtilization;
+
+  const COLORS = ["#0D2BEC", "#4B7BF5", "#A4BCF6", "#CACEE8"];
+
+  if (!availability || !comparison) return null;
+
+  return (
+    <div className={cn(GRID_RESPONSIVE, GAP.lg, "mb-6")}>
+      {/* Availability Card */}
+      <div className={cn(CARD, "lg:col-span-1", CONTAINER_PADDING.card)}>
+        <h2 className={cn(HEADING_5, "mb-4")}>
+          Availability
+        </h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-gray-600">Utilization Rate</p>
+            <p className="text-2xl font-montserrat-bold text-gray-900">
+              {comparison.utilizationPercentage?.toFixed(1) || 0}%
+            </p>
+            <Progress
+              value={comparison.utilizationPercentage || 0}
+              className="h-2 mt-1"
+            />
+          </div>
+          <div className="flex justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Booked Hours</p>
+              <p className="font-montserrat-semibold text-gray-900">
+                {comparison.bookedHours?.toFixed(1) || 0}h
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Available Hours</p>
+              <p className="font-montserrat-semibold text-gray-900">
+                {comparison.availableHours?.toFixed(1) || 0}h
+              </p>
+            </div>
+          </div>
+          <hr />
+          <div>
+            <p className="text-sm text-gray-600">Peak Work Days</p>
+            <p className="font-montserrat-semibold text-gray-900">
+              {availability.peakWorkDays?.join(", ") || "N/A"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Average Shift Length</p>
+            <p className="font-montserrat-semibold text-gray-900">
+              {availability.averageShiftLength?.toFixed(1) || 0} hours
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Skill Utilization Card */}
+      <div className={cn(CARD, "lg:col-span-2", CONTAINER_PADDING.card)}>
+        <h2 className={cn(HEADING_5, "mb-4")}>
+          Skill Utilization
+        </h2>
+        {skills && skills.length > 0 ? (
+          <div className={cn(GRID_2_COLS, GAP.lg)}>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={skills}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="utilizationRate"
+                    nameKey="skill"
+                  >
+                    {skills.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value, name) => [`${value}%`, name]} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className={FLEX_COL + " justify-center"}>
+              <p className={TEXT_BODY + " mb-2"}>
+                Breakdown of hours by skill type:
+              </p>
+              <ul className="space-y-2">
+                {skills.map((skill, index) => (
+                  <li key={index} className={FLEX_ROW_CENTER + " text-sm"}>
+                    <span
+                      className="h-3 w-3 rounded-full mr-3"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    ></span>
+                    <span className="font-montserrat-semibold text-gray-800 mr-2">
+                      {skill.skill || "General"}:
+                    </span>
+                    <span className="text-gray-600">
+                      {skill.totalHours} hours ({skill.utilizationRate}%)
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <div className={cn(FLEX_CENTER, "h-full text-gray-500")}>
+            <p>No skill utilization data available.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Invitations Table Component
+function InvitationsTable({ invitations, isLoading }) {
+  const navigate = useNavigate();
+  const [entriesPerPage, setEntriesPerPage] = useState("5");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  if (isLoading) {
+    return (
+      <div className={cn(CARD, "mt-8")}>
+        <div className={cn("p-4 md:p-6 border-b border-gray-200")}>
+          <div className="h-6 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+        </div>
+        <div className="p-8">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 bg-gray-100 rounded mb-3 animate-pulse"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!invitations || invitations.length === 0) {
+    return (
+      <div className={cn(CARD, "mt-8")}>
+        <div className={cn(CONTAINER_PADDING.responsive, FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base)}>
+          <h2 className={HEADING_5}>
+            All Invitations
+          </h2>
+        </div>
+        <div className="p-12 text-center text-gray-500">
+          <UsersGroupTwoRounded className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+          <p className="text-sm font-montserrat-semibold text-gray-600">
+            No invitations available
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            You'll see organization invitations here when they're sent to you
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const displayInvitations = invitations.map((org) => {
+    const workerData = org.workers?.find((w) => w.workerId);
+    const isConfirmed = workerData && workerData.joinedDate;
+
+    return {
+      id: org._id,
+      clientName: org.name,
+      serviceRequested: org.description || "Support Services",
+      date: formatDate(org.createdAt),
+      location: "Organization Network",
+      hourlyRate: workerData?.serviceAgreement?.baseHourlyRate
+        ? `$${workerData.serviceAgreement.baseHourlyRate.toFixed(2)}/hr`
+        : "N/A",
+      status: isConfirmed ? "Confirmed" : "Pending",
+    };
+  });
+
+  const totalPages = Math.ceil(
+    displayInvitations.length / parseInt(entriesPerPage)
+  );
+  const startIndex = (currentPage - 1) * parseInt(entriesPerPage);
+  const endIndex = startIndex + parseInt(entriesPerPage);
+  const currentInvitations = displayInvitations.slice(startIndex, endIndex);
+
+  return (
+    <div className={cn(CARD, "mt-8")}>
+      <div className={cn("p-4 md:p-6 border-b border-gray-200", FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base)}>
+        <h2 className={HEADING_5}>All Invitations</h2>
+        <Button
+          onClick={() => {
+            navigate("/support-worker/organizations");
+          }}
+          variant="link"
+        >
+          View all →
+        </Button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-gray-200 bg-white font-montserrat-semibold">
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
+                Client Name
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden md:table-cell">
+                Service Requested
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden lg:table-cell">
+                Date
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider hidden xl:table-cell">
+                Location
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
+                Hourly Rate
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3 text-left text-xs text-black uppercase tracking-wider">
+                Status
+              </TableHead>
+              <TableHead className="px-4 md:px-6 py-3"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200 bg-white">
+            {currentInvitations.map((invitation) => (
+              <TableRow
+                key={invitation.id}
+                className="hover:bg-white transition-colors"
+              >
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
+                  <div className={FLEX_ROW_CENTER + " gap-3"}>
+                    <div className={cn(FLEX_CENTER, "w-8 h-8 bg-primary-100 rounded-full text-primary font-montserrat-semibold text-sm flex-shrink-0")}>
+                      {invitation.clientName.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-sm font-montserrat-semibold text-gray-900">
+                      {invitation.clientName}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">
+                  {invitation.serviceRequested}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
+                  {invitation.date}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden xl:table-cell">
+                  {invitation.location}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-montserrat-semibold text-gray-900">
+                  {invitation.hourlyRate}
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-montserrat-semibold",
+                      invitation.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : invitation.status === "Confirmed"
+                          ? "bg-primary-100 text-primary-800"
+                          : "bg-green-100 text-green-800"
+                    )}
+                  >
+                    {invitation.status}
+                  </span>
+                </TableCell>
+                <TableCell className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
+                  {invitation.status === "Pending" ? (
+                    <div className={cn("flex gap-2 justify-end")}>
+                      <Button
+                        size="sm"
+                        className="w-8 h-8 p-0 bg-primary hover:bg-primary/90"
+                        title="Accept"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="w-8 h-8 p-0 bg-red-600 hover:bg-red-700"
+                        title="Decline"
+                      >
+                        <CloseCircle className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        navigate(
+                          `/support-worker/organizations/${invitation.id}`
+                        );
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="border-primary text-primary hover:bg-primary hover:text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-1" /> View
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className={cn("p-4 border-t border-gray-200", FLEX_COL, "md:flex-row justify-between md:items-center", GAP.base)}>
+        <div className={cn(FLEX_ROW_CENTER, "gap-2 text-sm text-gray-600")}>
+          <span>Showing</span>
+          <Select value={entriesPerPage} onValueChange={setEntriesPerPage}>
+            <SelectTrigger className="w-20 h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+            </SelectContent>
+          </Select>
+          <span>entries</span>
+        </div>
+        <div className={cn(FLEX_ROW_CENTER, "gap-3")}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-gray-200"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            <AltArrowLeft className="h-4 w-4" />
+          </Button>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
+            (page) => (
+              <Button
+                key={page}
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+                className={` ${currentPage === page
+                  ? "bg-primary text-white hover:bg-primary/90"
+                  : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                {page}
+              </Button>
+            )
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-gray-200"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            <AltArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SupportWorkerDashboard() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [dateRange, setDateRange] = useState<DateRange>(
+    createDateRange(DateRangeType.MONTH)
+  );
+
+  const { data: overviewData, isLoading: overviewLoading } =
+    useGetSupportWorkerOverview(dateRange, true, true);
+  const { data: performanceData, isLoading: performanceLoading } =
+    useGetSupportWorkerPerformance(dateRange);
+  const { data: invitations, isLoading: invitationsLoading } =
+    useGetOrganizationInvites();
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    let greeting = "";
+    if (hour >= 6 && hour < 12) {
+      greeting = "Good Morning";
+    } else if (hour >= 12 && hour < 18) {
+      greeting = "Good Afternoon";
+    } else if (hour >= 18 && hour < 22) {
+      greeting = "Good Evening";
+    } else {
+      greeting = "Good Night";
+    }
+    if (user?.firstName) {
+      greeting += `, ${user.firstName}`;
+    }
+    return greeting;
+  };
+
+  const getTrendDirection = (trend) => {
+    if (!trend || trend === "stable") return "up";
+    return trend === "up" ? "up" : "down";
+  };
+
+
+  if (overviewLoading || invitationsLoading || performanceLoading) {
+    return <Loader />;
+  }
+
+  // Extracting nested analytics data
+  const analytics = overviewData?.analytics;
+
+  return (
+    <div className={cn(DASHBOARD_PAGE_WRAPPER)}>
+      <div className={DASHBOARD_CONTENT}>
+        <GeneralHeader
+          stickyTop={true}
+          title={getGreeting()}
+          subtitle="Here's a summary of your recent activities and performance"
+          user={user}
+          onLogout={logout}
+          onViewProfile={() => navigate("/support-worker/profile")}
+          rightComponent={
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+          }
+        />
+
+        {user &&
+          user.role === "supportWorker" &&
+          !(user as SupportWorker).verificationStatus?.onboardingComplete &&
+          !(user as SupportWorker).verificationStatus?.profileSetupComplete && (
+            <div className="mb-6">
+              <SupportWorkerSetupAlert />
+            </div>
+          )}
+
+        {/* NEW: Document Alerts */}
+        <DocumentAlerts alerts={performanceData?.documentAlerts} />
+
+        {/* Stats */}
+        <div className={cn(DASHBOARD_STATS_GRID,)}>
+          <StatCard
+            title="Hours Worked"
+            value={`${analytics?.workSummary?.hoursWorked?.current.toFixed(2) || 0
+              }h`}
+            icon={ClockCircle}
+            trend="From last period"
+            trendDirection={getTrendDirection(
+              analytics?.workSummary?.hoursWorked?.trend
+            )}
+          />
+          <StatCard
+            title="Acceptance Rate"
+            value={`${analytics?.performanceMetrics?.acceptanceRate || 0}%`}
+            icon={CheckCircle}
+            trend="All time"
+            trendDirection="stable"
+          />
+          <StatCard
+            title="On-Time Rate"
+            value={`${analytics?.performanceMetrics?.onTimeRate || 0}%`}
+            icon={UsersGroupTwoRounded}
+            trend="Based on completed shifts"
+            trendDirection="stable"
+          />
+          <StatCard
+            title="Avg. Rating"
+            value={
+              analytics?.performanceMetrics?.averageRating.toFixed(2) || "N/A"
+            }
+            icon={Star}
+            trend={`${analytics?.performanceMetrics?.totalReviews || 0
+              } total reviews`}
+            trendDirection="stable"
+          />
+        </div>
+
+        {/* NEW: Availability & Utilization Section */}
+        <AvailabilityUtilization
+          overviewData={overviewData}
+          performanceData={performanceData}
+        />
+
+        {/* Two columns layout for charts */}
+        <div className={cn("grid grid-cols-1 md:grid-cols-8", GAP.base, "mb-6")}>
+          {/* Performance Chart */}
+          <PerformanceChart dateRange={dateRange} />
+          {/* Upcoming Schedules */}
+          <div className={cn(CARD, "col-span-full md:col-span-3", CONTAINER_PADDING.cardSm, "md:" + CONTAINER_PADDING.card)}>
+            <div className={FLEX_ROW_BETWEEN + " mb-6"}>
+              <h2 className={HEADING_5}>
+                Upcoming Shifts
+              </h2>
+              <Button
+                onClick={() => {
+                  navigate("/support-worker/shifts");
+                }}
+                variant="link"
+                className="ml-auto"
+              >
+                View all →
+              </Button>
+            </div>
+            {analytics?.workSummary?.upcomingShifts.length > 0 ? (
+              <Table className="mt-4">
+                <TableBody className="divide-y divide-gray-200 bg-white">
+                  {analytics.workSummary.upcomingShifts.map((shift) => (
+                    <TableRow
+                      key={shift.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="px-4 md:px-6 py-3 whitespace-nowrap">
+                        {new Date(shift.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
+                        {shift.clientName}
+                      </TableCell>
+                      <TableCell className="px-4 md:px-6 py-3 text-sm text-gray-600">
+                        {shift.location || "N/A"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className={cn(FLEX_CENTER, "h-64 text-gray-500 border border-dashed border-gray-300 rounded-lg")}>
+                <div className="text-center p-8">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-sm font-montserrat-semibold">
+                    No upcoming schedules
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Your upcoming shifts will appear here once scheduled
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Invitations Table */}
+        <InvitationsTable
+          invitations={invitations}
+          isLoading={invitationsLoading}
+        />
+      </div>
+    </div>
   );
 }
